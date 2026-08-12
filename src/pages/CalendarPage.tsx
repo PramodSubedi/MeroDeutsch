@@ -1,15 +1,24 @@
-import { useState } from 'react';
-import { calendarData, sharedTextDatabase } from '../data/sharedContent';
+import { useEffect, useState } from 'react';
+import { sharedTextDatabase } from '../data/sharedContent';
 import { useLang } from '../hooks/useLang';
 import { FlipCard } from '../components/FlipCard';
 import { SectionGrid } from '../components/SectionGrid';
 import { theme } from '../config/theme';
+import { curriculumService } from '../services';
+import type { CalendarItem } from '../types';
 
 export function CalendarPage() {
   const { langMode } = useLang();
   const isDE = langMode === 'german';
   const [tab, setTab] = useState<'days' | 'months'>('days');
-  const data = tab === 'days' ? calendarData.slice(0, 7) : calendarData.slice(7);
+  const [calendar, setCalendar] = useState<CalendarItem[]>([]);
+
+  useEffect(() => {
+    curriculumService.getCalendar().then(setCalendar);
+  }, []);
+
+  const data = tab === 'days' ? calendar.slice(0, 7) : calendar.slice(7);
+
   const title = isDE ? 'Tage & Monate' : sharedTextDatabase.calendar.title;
   const description = isDE
     ? 'Lerne die Wochentage und Monate'

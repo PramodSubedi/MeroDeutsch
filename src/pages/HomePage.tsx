@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { theme } from '../config/theme';
-import { sharedTextDatabase } from '../data/sharedContent';
 import { AuthGate } from '../components/AuthGate';
 import { BrandMark } from '../components/BrandMark';
 import { DailyChallenge } from '../components/DailyChallenge';
+import { LearningPath } from '../components/learning/LearningPath';
 import { PracticeToolsGrid } from '../components/PracticeToolsGrid';
 import { useProgress } from '../hooks/useProgress';
 import { useReviewQueue } from '../hooks/useReviewQueue';
@@ -13,7 +13,6 @@ import { useStreak } from '../hooks/useStreak';
 import { useAchievements } from '../hooks/useAchievements';
 import { useInstallPrompt } from '../hooks/useInstallPrompt';
 import { useAuth } from '../hooks/useAuth';
-import { useLastModule } from '../hooks/useLastModule';
 
 // Main page component for MeroDeutsch German learning app
 export function HomePage() {
@@ -25,9 +24,7 @@ export function HomePage() {
   const { unlockedBadges, lockedBadges, checkAndUnlock } = useAchievements();
   const { canInstall, promptInstall } = useInstallPrompt();
   const { isAuthenticated } = useAuth();
-  const { getLastModule } = useLastModule();
   const isDE = langMode === 'german';
-  const [isLearningActive, setIsLearningActive] = useState(false);
 
   // Evaluate badge rules whenever progress data changes.
   useEffect(() => {
@@ -43,60 +40,6 @@ export function HomePage() {
     ? Math.min(100, Math.max(0, Math.round(((progress.quizCorrect ?? 0) / progress.quizTotal) * 100)))
     : 0;
   const reviewCount = queue?.length ?? 0;
-  const continuePath = getLastModule();
-
-  // Region: Learning path grid sections
-  const sections = [
-    { key: 'alphabet', label: isDE ? 'Alphabet' : 'Alphabet', path: '/alphabet', icon: '🔤' },
-    { key: 'numbers', label: isDE ? 'Zahlen' : 'Numbers', path: '/numbers', icon: '🔢' },
-    { key: 'articles', label: isDE ? 'Artikel' : 'Articles', path: '/articles', icon: '📖' },
-    { key: 'greetings', label: isDE ? 'Grüße' : 'Greetings', path: '/greetings', icon: '👋' },
-    { key: 'calendar', label: isDE ? 'Kalender' : 'Calendar', path: '/calendar', icon: '📅' },
-  ] as const;
-
-  // Region: A1 Learning Path component
-  const learningPath = (
-    <div className="mb-8" id="learning-path">
-      <div className="flex items-center gap-4 mb-4">
-        <h2 className="text-2xl font-bold">{isDE ? 'Lernpfad A1' : 'A1 Learning Path'}</h2>
-        <div className="h-px flex-1 bg-slate-200 dark:bg-slate-700"></div>
-      </div>
-
-      <div className="mb-6 flex gap-2 overflow-x-auto pb-2 scrollbar-thin">
-        {sections.map((sec) => (
-          <Link
-            key={sec.key + '-quick'}
-            to={sec.path}
-            className="flex-shrink-0 rounded-full border border-slate-200 bg-white px-4 py-1.5 text-xs font-semibold text-slate-700 hover:border-blue-300 hover:text-blue-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300"
-          >
-            {sec.icon} {sec.label}
-          </Link>
-        ))}
-      </div>
-
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-        {sections.map((section) => (
-          <Link
-            key={section.key}
-            to={section.path}
-            className="group overflow-hidden rounded-[28px] border border-slate-200 bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-blue-300 hover:bg-slate-50 hover:shadow-xl dark:border-slate-700 dark:bg-slate-950 dark:hover:border-blue-500 dark:hover:bg-slate-900"
-            aria-label={`${section.label} module`}
-          >
-            <div className="mb-5 text-4xl" aria-hidden="true">
-              {section.icon}
-            </div>
-            <h3 className="text-xl font-semibold tracking-tight text-slate-950 dark:text-white">{section.label}</h3>
-            <p className="mt-3 text-sm leading-7 text-slate-600 dark:text-slate-400">
-              {sharedTextDatabase[section.key]?.description || ''}
-            </p>
-            <div className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-blue-600 transition group-hover:text-blue-800 dark:text-blue-300 dark:group-hover:text-blue-200">
-              {isDE ? 'Starten' : 'Start'} →
-            </div>
-          </Link>
-        ))}
-      </div>
-    </div>
-  );
 
   // Region: Hero component with streak and CTAs
   const hero = (
@@ -142,14 +85,8 @@ export function HomePage() {
         {isAuthenticated ? (
           <>
             <Link
-              to={continuePath}
+              to="/learn"
               className={`${theme.button.primary} min-w-[180px] px-8 py-4 text-base font-semibold transition duration-300 hover:-translate-y-0.5 hover:shadow-lg`}
-              onClick={(e) => {
-                e.preventDefault();
-                setIsLearningActive(true);
-                const el = document.getElementById('learning-path');
-                if (el) el.scrollIntoView({ behavior: 'smooth' });
-              }}
             >
               {isDE ? 'Weiterlernen' : 'Continue Learning'}
             </Link>
@@ -224,80 +161,6 @@ export function HomePage() {
     </div>
   );
 
-  // Region: Practice tools cards section
-  const practiceTools = (
-    <>
-      <div className="grid gap-4 md:grid-cols-3 mb-8">
-        <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm transition duration-300 hover:shadow-xl dark:border-slate-700 dark:bg-slate-950">
-          <div className="flex items-center gap-3">
-            <div className="text-3xl">📚</div>
-            <div>
-              <h3 className="font-semibold text-slate-950 dark:text-white">{isDE ? 'Wörterbuch' : 'Glossary'}</h3>
-              <p className="text-sm text-slate-500 dark:text-slate-400">{isDE ? 'Suche nach deutschen Wörtern' : 'Search German words'}</p>
-            </div>
-          </div>
-          <Link to="/glossary" className={`${theme.button.secondary} w-full mt-3 py-2 text-sm text-center`}>
-            {isDE ? 'Zu Wörterbuch' : 'To Glossary'}
-          </Link>
-        </div>
-
-        <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm transition duration-300 hover:shadow-xl dark:border-slate-700 dark:bg-slate-950">
-          <div className="flex items-center gap-3">
-            <div className="text-3xl">🎙️</div>
-            <div>
-              <h3 className="font-semibold text-slate-950 dark:text-white">{isDE ? 'Diktat' : 'Dictation'}</h3>
-              <p className="text-sm text-slate-500 dark:text-slate-400">{isDE ? 'Höre und tippe Wörter' : 'Listen and type words'}</p>
-            </div>
-          </div>
-          <Link to="/dictation" className={`${theme.button.secondary} w-full mt-3 py-2 text-sm text-center`}>
-            {isDE ? 'Zu Diktat' : 'To Dictation'}
-          </Link>
-        </div>
-
-        <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm transition duration-300 hover:shadow-xl dark:border-slate-700 dark:bg-slate-950">
-          <div className="flex items-center gap-3">
-            <div className="text-3xl">📖</div>
-            <div>
-              <h3 className="font-semibold text-slate-950 dark:text-white">{isDE ? 'Grammatik' : 'Grammar'}</h3>
-              <p className="text-sm text-slate-500 dark:text-slate-400">{isDE ? 'Grammatik-Übungen' : 'Grammar exercises'}</p>
-            </div>
-          </div>
-          <Link to="/grammar" className={`${theme.button.secondary} w-full mt-3 py-2 text-sm text-center`}>
-            {isDE ? 'Zu Grammatik' : 'To Grammar'}
-          </Link>
-        </div>
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-2 mb-8">
-        <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm transition duration-300 hover:shadow-xl dark:border-slate-700 dark:bg-slate-950">
-          <div className="flex items-center gap-3">
-            <div className="text-3xl">🎭</div>
-            <div>
-              <h3 className="font-semibold text-slate-950 dark:text-white">{isDE ? 'Rollenspiel' : 'Role-play'}</h3>
-              <p className="text-sm text-slate-500 dark:text-slate-400">{isDE ? 'Konversations-Übungen' : 'Conversation exercises'}</p>
-            </div>
-          </div>
-          <Link to="/roleplay" className={`${theme.button.secondary} w-full mt-3 py-2 text-sm text-center`}>
-            {isDE ? 'Zu Rollenspiel' : 'To Role-play'}
-          </Link>
-        </div>
-
-        <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm transition duration-300 hover:shadow-xl dark:border-slate-700 dark:bg-slate-950">
-          <div className="flex items-center gap-3">
-            <div className="text-3xl">🔊</div>
-            <div>
-              <h3 className="font-semibold text-slate-950 dark:text-white">{isDE ? 'Audio' : 'Pronunciation'}</h3>
-              <p className="text-sm text-slate-500 dark:text-slate-400">{isDE ? 'Wörter aussprechen' : 'Practice pronunciation'}</p>
-            </div>
-          </div>
-          <Link to="/pronunciation" className={`${theme.button.secondary} w-full mt-3 py-2 text-sm text-center`}>
-            {isDE ? 'Zu Aussprache' : 'To Pronunciation'}
-          </Link>
-        </div>
-      </div>
-    </>
-  );
-
   // Region: Achievements component
   const achievements = (
     <div className="mb-8">
@@ -356,32 +219,26 @@ export function HomePage() {
   );
 
   // Region: Authenticated user layout
+  // Dashboard summary + achievements + tools + Continue Learning → /learn
+  // WOTD and A1 Learning Path live on /learn to avoid duplication.
   const authenticatedLayout = (
     <>
-      {/* Hero section */}
+      {/* Hero section — Continue Learning now navigates to /learn */}
       {hero}
 
       {/* At-a-glance stats */}
       {atAGlance}
 
-      {/* Practice Tools & Extras section */}
-      {practiceTools}
-
-      {/* Practice Tools Grid */}
-      {isAuthenticated && <PracticeToolsGrid />}
-
       {/* Achievements section */}
       {achievements}
 
-      {/* Word of the Day component */}
-      <DailyChallenge />
-
-      {/* A1 Learning Path */}
-      {isLearningActive && learningPath}
+      {/* Practice tools grid */}
+      <PracticeToolsGrid />
     </>
   );
 
   // Region: Guest (not logged-in) layout
+  // Guests keep access to WOTD + A1 Learning Path on the homepage.
   const guestLayout = (
     <>
       {/* Guest greeting */}
@@ -397,8 +254,11 @@ export function HomePage() {
       {/* Hero section */}
       {hero}
 
-      {/* A1 Learning Path */}
-      {isLearningActive && learningPath}
+      {/* Word of the Day — visible to guests */}
+      <DailyChallenge />
+
+      {/* A1 Learning Path — visible to guests */}
+      <LearningPath />
 
       {/* Guest pitch */}
       {guestPitch}

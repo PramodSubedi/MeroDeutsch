@@ -13,6 +13,7 @@ import { DictationPage } from './pages/DictationPage';
 import { GrammarPage } from './pages/GrammarPage';
 import { PronunciationPage } from './pages/PronunciationPage';
 import { RoleplayPage } from './pages/RoleplayPage';
+import { ContinueLearningPage } from './pages/ContinueLearningPage';
 import { ErrorBoundary } from './components/ErrorBoundary';
 
 /** Routes only — do not put feature logic here */
@@ -35,6 +36,7 @@ export default function App() {
             <Route path="pronunciation" element={<PronunciationPage />} />
             <Route path="roleplay" element={<RoleplayPage />} />
             <Route path="dashboard" element={<DashboardPage />} />
+            <Route path="learn" element={<ContinueLearningPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Route>
         </Routes>

@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react';
-import { alphabetData, sharedTextDatabase } from '../data/sharedContent';
+import { useEffect, useMemo, useState } from 'react';
+import { sharedTextDatabase } from '../data/sharedContent';
 import { LetterCard } from '../components/alphabet/LetterCard';
 import { LetterDetailModal } from '../components/alphabet/LetterDetailModal';
 import { AlphabetQuiz } from '../components/alphabet/AlphabetQuiz';
@@ -8,17 +8,11 @@ import { speakLetter, speakWord, useSpeechSpeed } from '../hooks/useSpeech';
 import { useLang } from '../hooks/useLang';
 import { useProgress } from '../hooks/useProgress';
 import { theme } from '../config/theme';
+import { curriculumService } from '../services';
 import type { AlphabetItem } from '../types';
 
 type Filter = 'all' | 'vowel' | 'consonant';
 type Sub = 'learn' | 'quiz' | 'spelling';
-
-function letterOfDay() {
-  const today = new Date().toDateString();
-  let idx = 0;
-  for (let i = 0; i < today.length; i++) idx += today.charCodeAt(i);
-  return alphabetData[idx % alphabetData.length];
-}
 
 export function AlphabetPage() {
   const { langMode } = useLang();
@@ -28,7 +22,20 @@ export function AlphabetPage() {
   const [filter, setFilter] = useState<Filter>('all');
   const [search, setSearch] = useState('');
   const [detail, setDetail] = useState<AlphabetItem | null>(null);
-  const lotd = useMemo(() => letterOfDay(), []);
+  const [alphabet, setAlphabet] = useState<AlphabetItem[]>([]);
+
+  useEffect(() => {
+    curriculumService.getAlphabet().then(setAlphabet);
+  }, []);
+
+  const lotd = useMemo(() => {
+    if (!alphabet.length) return null;
+    const today = new Date().toDateString();
+    let idx = 0;
+    for (let i = 0; i < today.length; i++) idx += today.charCodeAt(i);
+    return alphabet[idx % alphabet.length];
+  }, [alphabet]);
+
   const isDE = langMode === 'german';
   const quizPct = progress.quizTotal
     ? Math.round((progress.quizCorrect / progress.quizTotal) * 100)
@@ -40,13 +47,13 @@ export function AlphabetPage() {
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
-    return alphabetData.filter((item) => {
+    return alphabet.filter((item) => {
       if (filter !== 'all' && item.type !== filter) return false;
       if (q && !item.letter.toLowerCase().includes(q) && !item.gerPhonetic.toLowerCase().includes(q))
         return false;
       return true;
     });
-  }, [filter, search]);
+  }, [filter, search, alphabet]);
 
   const standard = filtered.filter((i) => i.category === 'standard');
   const special = filtered.filter((i) => i.category === 'special');
@@ -61,7 +68,7 @@ export function AlphabetPage() {
     </button>
   );
 
-  const meaning = lotd.exampleFull.match(/\((.+)\)/)?.[1] || '';
+  const meaning = lotd?.exampleFull?.match(/\((.+)\)/)?.[1] || '';
 
   return (
     <div className={theme.page.container}>
@@ -69,7 +76,7 @@ export function AlphabetPage() {
         <h1 className={theme.section.title}>{pageTitle}</h1>
         <p className={theme.section.description}>{pageDescription}</p>
       </div>
-      {sub === 'learn' && (
+      {sub === 'learn' && lotd && (
         <div className="mb-5 grid gap-3 md:grid-cols-2">
           <div className="flex items-stretch gap-3 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 p-3 text-white shadow">
             <div className="flex flex-1 items-center gap-3 min-w-0">

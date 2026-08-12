@@ -1,4 +1,4 @@
-import type { GrammarItem, GrammarDrill } from '../types/curriculum';
+import type { GrammarDrill } from '../types/curriculum';
 
 export const CONJUGATIONS = {
   sein: {

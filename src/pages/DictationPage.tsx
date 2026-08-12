@@ -1,27 +1,10 @@
-import { useState, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { speakWord } from '../hooks/useSpeech';
 import { useLang } from '../hooks/useLang';
 import { useReviewQueue } from '../hooks/useReviewQueue';
 import { theme } from '../config/theme';
-
-interface DictationWord {
-  word: string;
-}
-
-const DICTATION_WORDS: DictationWord[] = [
-  { word: 'Hallo' },
-  { word: 'Danke' },
-  { word: 'Bitte' },
-  { word: 'Haus' },
-  { word: 'Buch' },
-  { word: 'Zug' },
-  { word: 'Name' },
-  { word: 'Wasser' },
-  { word: 'Schule' },
-  { word: 'Freund' },
-  { word: 'Morgen' },
-  { word: 'Mutter' },
-];
+import { curriculumService } from '../services';
+import type { DictationWord } from '../types/curriculum';
 
 function normalize(input: string): string {
   return input.trim().toLowerCase();
@@ -31,17 +14,29 @@ export function DictationPage() {
   const { langMode } = useLang();
   const isDE = langMode === 'german';
   const { addWrongAnswer } = useReviewQueue();
-  const [word, setWord] = useState<DictationWord>(() => DICTATION_WORDS[Math.floor(Math.random() * DICTATION_WORDS.length)]);
+  const [word, setWord] = useState<DictationWord | null>(null);
+  const [dictationWords, setDictationWords] = useState<DictationWord[]>([]);
   const [attempt, setAttempt] = useState('');
   const [status, setStatus] = useState<'idle' | 'correct' | 'wrong'>('idle');
   const [score, setScore] = useState(0);
   const [total, setTotal] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    curriculumService.getDictationWords().then(data => {
+      setDictationWords(data);
+      if (data.length > 0) {
+        setWord(data[Math.floor(Math.random() * data.length)]);
+      }
+    });
+  }, []);
+
+  if (!word) return null;
+
   const play = () => speakWord(word.word);
 
   const next = () => {
-    const pool = DICTATION_WORDS.filter((item) => item.word !== word.word);
+    const pool = dictationWords.filter((item) => item.word !== word.word);
     setWord(pool[Math.floor(Math.random() * pool.length)]);
     setAttempt('');
     setStatus('idle');

@@ -8,7 +8,6 @@ import { SectionGrid } from '../components/SectionGrid';
 import { theme } from '../config/theme';
 import { sharedTextDatabase } from '../data/sharedContent';
 import { curriculumService } from '../services';
-import { numbersData } from '../data/numbers';
 
 const ranges: { id: NumberRange; label: string }[] = [
   { id: '0-12', label: '0 – 12' },
@@ -16,10 +15,6 @@ const ranges: { id: NumberRange; label: string }[] = [
   { id: '20-99', label: '20 – 99' },
   { id: '100plus', label: '100+' },
 ];
-
-function allNumbers() {
-  return curriculumService.getNumbers().then(data => [...data]);
-}
 
 const numberRules: Record<NumberRange, { title: string; description: string }> = {
   '0-12': { title: '', description: '' },
@@ -36,14 +31,6 @@ const numberRules: Record<NumberRange, { title: string; description: string }> =
     description: '100 = hundert · 1000 = tausend · 1 000 000 = eine Million',
   },
 };
-
-function getItemsByRange(range: NumberRange): NumberItem[] {
-  const data = numbersData[range] || [];
-  if (range === '0-12') return data.filter((item) => item.n <= 12);
-  if (range === '13-19') return data.filter((item) => item.n >= 13 && item.n <= 19);
-  if (range === '20-99') return data.filter((item) => item.n >= 20 && item.n <= 99);
-  return data.filter((item) => item.n >= 100);
-}
 
 function normalize(input: string): string {
   return input.trim().toLowerCase().replace(/\s+/g, ' ');

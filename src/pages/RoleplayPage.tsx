@@ -1,55 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { speakWord } from '../hooks/useSpeech';
 import { useLang } from '../hooks/useLang';
 import { useMilestoneToast } from '../hooks/useMilestoneToast';
 import { theme } from '../config/theme';
-
-type Opt = { text: string; ok: boolean; fb: string };
-type Step = { npc: string; prompt: string; options: Opt[] };
-type Scenario = { id: string; title: string; emoji: string; steps: Step[] };
-
-const SCENARIOS: Scenario[] = [
-  {
-    id: 'cafe', title: 'Im Café', emoji: '☕',
-    steps: [
-      { npc: 'Guten Tag! Was möchten Sie?', prompt: 'What do you order?', options: [
-        { text: 'Ich hätte gern einen Kaffee, bitte.', ok: true, fb: 'Sehr gut!' },
-        { text: 'Wo ist der Bahnhof?', ok: false, fb: 'That is directions, not an order.' },
-        { text: 'Ich bin müde.', ok: false, fb: 'True, but you still need to order!' },
-      ]},
-      { npc: 'Möchten Sie auch etwas zu essen?', prompt: 'What do you answer?', options: [
-        { text: 'Nein, danke. Nur den Kaffee.', ok: true, fb: 'Perfekt!' },
-        { text: 'Ich heiße Anna.', ok: false, fb: 'That is your name, not about food.' },
-      ]},
-    ],
-  },
-  {
-    id: 'intro', title: 'Vorstellung', emoji: '👋',
-    steps: [
-      { npc: 'Hallo! Wie heißt du?', prompt: 'Introduce yourself.', options: [
-        { text: 'Ich heiße Pramod. Und du?', ok: true, fb: 'Sehr gut!' },
-        { text: 'Ich bin aus Nepal.', ok: false, fb: 'That answers origin, not name.' },
-      ]},
-      { npc: 'Woher kommst du?', prompt: 'Answer where you are from.', options: [
-        { text: 'Ich komme aus Nepal.', ok: true, fb: 'Perfekt!' },
-        { text: 'Ich habe Hunger.', ok: false, fb: 'That is about hunger, not origin.' },
-      ]},
-    ],
-  },
-  {
-    id: 'hotel', title: 'Hotel-Check-in', emoji: '🏨',
-    steps: [
-      { npc: 'Guten Abend. Haben Sie eine Reservierung?', prompt: 'Answer the hotel clerk.', options: [
-        { text: 'Ja, ich habe eine Reservierung.', ok: true, fb: 'Sehr gut!' },
-        { text: 'Ich brauche ein Taxi.', ok: false, fb: 'A taxi is not a reservation.' },
-      ]},
-      { npc: 'Ihr Zimmer ist Nummer 12. Hier ist der Schlüssel.', prompt: 'What do you say?', options: [
-        { text: 'Vielen Dank!', ok: true, fb: 'Perfekt!' },
-        { text: 'Auf Wiedersehen!', ok: false, fb: 'Thank the clerk first!' },
-      ]},
-    ],
-  },
-];
+import { curriculumService } from '../services';
+import type { RoleplayScenario, RoleplayOption } from '../types/curriculum';
 
 export function RoleplayPage() {
   const { langMode } = useLang();
@@ -59,14 +14,21 @@ export function RoleplayPage() {
   const [stepIdx, setStepIdx] = useState(0);
   const [status, setStatus] = useState<'idle' | 'correct' | 'wrong'>('idle');
   const [correctCount, setCorrectCount] = useState(0);
+  const [scenarios, setScenarios] = useState<RoleplayScenario[]>([]);
 
-  const scenario = SCENARIOS[scenarioIdx];
+  useEffect(() => {
+    curriculumService.getRoleplayScenarios().then(setScenarios);
+  }, []);
+
+  const scenario = scenarios[scenarioIdx];
+  if (!scenario) return null;
+
   const step = scenario.steps[stepIdx];
   const isLastStep = stepIdx === scenario.steps.length - 1;
-  const isLastScenario = scenarioIdx === SCENARIOS.length - 1;
-  const totalSteps = SCENARIOS.reduce((acc, s) => acc + s.steps.length, 0);
+  const isLastScenario = scenarioIdx === scenarios.length - 1;
+  const totalSteps = scenarios.reduce((acc, s) => acc + s.steps.length, 0);
 
-  const choose = (opt: Opt) => {
+  const choose = (opt: RoleplayOption) => {
     if (status !== 'idle') return;
     if (opt.ok) {
       setStatus('correct');
@@ -103,15 +65,7 @@ export function RoleplayPage() {
       )}
 
       <div className="mb-4 flex flex-wrap gap-2">
-        {SCENARIOS.map((s, i) => (
-          <button key={s.id} type="button" onClick={() => { setScenarioIdx(i); setStepIdx(0); setStatus('idle'); }} className={i === scenarioIdx ? theme.button.toggleActive : theme.button.toggleInactive}>
-            {s.emoji} {s.title}
-          </button>
-        ))}
-      </div>
-
-      <div className="mb-4 flex flex-wrap gap-2">
-        {SCENARIOS.map((s, i) => (
+        {scenarios.map((s, i) => (
           <button key={s.id} type="button" onClick={() => { setScenarioIdx(i); setStepIdx(0); setStatus('idle'); }} className={i === scenarioIdx ? theme.button.toggleActive : theme.button.toggleInactive}>
             {s.emoji} {s.title}
           </button>
@@ -133,23 +87,23 @@ export function RoleplayPage() {
 
         <div className="mb-4 text-sm font-medium text-slate-600 dark:text-slate-300">{step.prompt}</div>
 
-          <div className="space-y-2">
-            {step.options.map((opt) => {
-              let cls = theme.button.pill + ' w-full text-left';
-              if (status === 'correct' && opt.ok) cls += ' border-green-500 bg-green-100 text-green-800';
-              else if (status === 'wrong' && opt.ok) cls += ' opacity-50';
-              return (
-                <button
-                  key={opt.text}
-                  type="button"
-                  className={cls}
-                  onClick={() => choose(opt)}
-                >
-                  {opt.text}
-                </button>
-              );
-            })}
-          </div>
+        <div className="space-y-2">
+          {step.options.map((opt) => {
+            let cls = theme.button.pill + ' w-full text-left';
+            if (status === 'correct' && opt.ok) cls += ' border-green-500 bg-green-100 text-green-800';
+            else if (status === 'wrong' && opt.ok) cls += ' opacity-50';
+            return (
+              <button
+                key={opt.text}
+                type="button"
+                className={cls}
+                onClick={() => choose(opt)}
+              >
+                {opt.text}
+              </button>
+            );
+          })}
+        </div>
 
         {status !== 'idle' && (
           <div className="mt-4 flex items-center justify-between gap-3">
