@@ -1,0 +1,14 @@
+[
+  { "id": "food-brot", "de": "Brot", "en": "bread", "ne": "रोटी", "tags": ["food"], "level": "A1", "exampleDe": "Ich esse Brot." },
+  { "id": "food-wasser", "de": "Wasser", "en": "water", "ne": "पानी", "tags": ["food", "drink"], "level": "A1", "exampleDe": "Ich trinke Wasser." },
+  { "id": "food-kaffee", "de": "Kaffee", "en": "coffee", "ne": "कफी", "tags": ["food", "drink"], "level": "A1" },
+  { "id": "food-tee", "de": "Tee", "en": "tea", "ne": "चिया", "tags": ["food", "drink"], "level": "A1" },
+  { "id": "food-milch", "de": "Milch", "en": "milk", "ne": "दूध", "tags": ["food", "drink"], "level": "A1" },
+  { "id": "food-apfel", "de": "Apfel", "en": "apple", "ne": "स्याउ", "tags": ["food"], "level": "A1" },
+  { "id": "food-fisch", "de": "Fisch", "en": "fish", "ne": "माछा", "tags": ["food"], "level": "A1" },
+  { "id": "food-fleisch", "de": "Fleisch", "en": "meat", "ne": "मासु", "tags": ["food"], "level": "A1" },
+  { "id": "food-ei", "de": "Ei", "en": "egg", "ne": "अण्डा", "tags": ["food"], "level": "A1" },
+  { "id": "food-zucker", "de": "Zucker", "en": "sugar", "ne": "चिनी", "tags": ["food"], "level": "A1" },
+  { "id": "food-salz", "de": "Salz", "en": "salt", "ne": "नुन", "tags": ["food"], "level": "A1" },
+  { "id": "food-reis", "de": "Reis", "en": "rice", "ne": "भात", "tags": ["food"], "level": "A1" }
+]

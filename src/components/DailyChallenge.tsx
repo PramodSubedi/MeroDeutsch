@@ -1,0 +1,166 @@
+import { useMemo, useState, useEffect } from 'react';
+import { vocabularyData } from '../data/loadVocabulary';
+import { alphabetData, numbersData } from '../data/sharedContent';
+import { speakWord } from '../hooks/useSpeech';
+import { useLang } from '../hooks/useLang';
+import { useAchievements } from '../hooks/useAchievements';
+import { getItem, setItem } from '../utils/safeStorage';
+import { theme } from '../config/theme';
+
+const KEY = 'meroDeutschLastDailyChallenge';
+type QA = { prompt: string; options: string[]; correct: string };
+const daySeed = () => {
+  const d = new Date();
+  const s = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+  let h = 0;
+  for (let i = 0; i < s.length; i += 1) h = (h << 5) - h + s.charCodeAt(i);
+  return Math.abs(h);
+};
+const pick = <T,>(arr: T[], seed: number): T => arr[seed % arr.length];
+
+function buildQuestions(seed: number): QA[] {
+  const out: QA[] = [];
+  const vw = pick(vocabularyData, seed);
+  out.push({
+    prompt: `What does "${vw.de}" mean?`,
+    options: [vw.en, ...vocabularyData.filter((x) => x.id !== vw.id).slice(seed % 10, seed % 10 + 3).map((x) => x.en)],
+    correct: vw.en,
+  });
+  const al = pick(alphabetData, seed + 1);
+  out.push({
+    prompt: `How is "${al.letter.split(' ')[0]}" pronounced?`,
+    options: [al.gerPhonetic, ...alphabetData.filter((x) => x.id !== al.id).slice(seed % 5, seed % 5 + 3).map((x) => x.gerPhonetic)],
+    correct: al.gerPhonetic,
+  });
+  const num = pick(numbersData, seed + 2);
+  out.push({
+    prompt: `Which German number is "${num.n}"?`,
+    options: [num.de, ...numbersData.filter((x) => x.n !== num.n).slice(seed % 7, seed % 7 + 3).map((x) => x.de)],
+    correct: num.de,
+  });
+  return out;
+}
+
+export function DailyChallenge() {
+  const { langMode } = useLang();
+  const isDE = langMode === 'german';
+  const { unlockBadge } = useAchievements();
+  const seed = useMemo(daySeed, []);
+  const wordOfDay = useMemo(() => pick(vocabularyData, seed), [seed]);
+  const questions = useMemo(() => buildQuestions(seed), [seed]);
+  const [answers, setAnswers] = useState<Record<number, string>>({});
+  const [started, setStarted] = useState(false);
+  const done = getItem(KEY) === new Date().toDateString();
+  const count = Object.keys(answers).length;
+  const allOk = questions.every((q, i) => answers[i] === q.correct);
+
+  // Collapsible WOTD state
+  const [isExpanded, setIsExpanded] = useState(() => !done);
+  const expandTimer = useMemo(() => {
+    if (done) return undefined;
+    return setTimeout(() => setIsExpanded(false), 5500);
+  }, [done]);
+
+  useEffect(() => {
+    return () => clearTimeout(expandTimer);
+  }, [expandTimer]);
+
+  const choose = (qi: number, opt: string) => {
+    const next = { ...answers, [qi]: opt };
+    setAnswers(next);
+    if (Object.keys(next).length === questions.length && !done) {
+      if (questions.every((q, i) => next[i] === q.correct)) {
+        setItem(KEY, new Date().toDateString());
+        unlockBadge('daily_challenger');
+        setIsExpanded(false);
+      }
+    }
+  };
+
+  return (
+    <div className={`${theme.panel.surface} mb-6`}>
+      <div className="mb-4 flex items-center gap-3">
+        <div>
+          <h2 className="text-lg font-semibold text-slate-950 dark:text-white">
+            {isDE ? 'Wort des Tages' : 'Word of the Day'} 🗓️
+          </h2>
+          <button
+            type="button"
+            onClick={() => setIsExpanded((v) => !v)}
+            className={isExpanded ? 'hover:opacity-80' : 'hover:opacity-80'}
+            aria-controls="wotd-content"
+            aria-expanded={isExpanded}
+          >
+            {isDE ? 'Wort zusammenklappen' : 'Collapse word'}
+          </button>
+        </div>
+        {!isDE && (
+          <div className="mb-4 rounded-xl bg-slate-50 p-3 text-sm dark:bg-slate-900">
+            <div className="text-slate-700 dark:text-slate-200">{wordOfDay.en}</div>
+            <div className="text-slate-500 dark:text-slate-400">{wordOfDay.ne}</div>
+          </div>
+        )}
+        <button type="button" onClick={() => speakWord(wordOfDay.de)} className={theme.button.icon}>🔊</button>
+      </div>
+
+      {/* Expanded content when not completed */}
+      {isExpanded && !done && (
+        <div className="mb-4 p-4 rounded-bg border-l-4 border-blue-500">
+          <div className="text-sm text-slate-700 dark:text-slate-300">
+            {isDE ? 'Tägliches Wort' : 'Daily Word'}
+            <br />
+            {wordOfDay.de}
+          </div>
+          {!isDE && (
+            <div className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+              {wordOfDay.en}
+            </div>
+          )}
+        </div>
+      )}
+
+      {!isExpanded || done ? (
+        <div className="mb-3 text-sm font-semibold text-slate-700 dark:text-slate-200">
+          {isDE ? 'Tägliche Herausforderung' : 'Daily Challenge'} — {count}/{questions.length}
+        </div>
+      ) : (
+        <div className="mb-3 text-sm font-semibold text-slate-700 dark:text-slate-200">
+          {isDE ? 'Herausforderung läuft' : 'In progress'} — {count}/{questions.length}
+        </div>
+      )}
+
+      {!started ? (
+        <button type="button" onClick={() => setStarted(true)} className={theme.button.primary}>
+          {isDE ? 'Herausforderung starten' : 'Start challenge'}
+        </button>
+      ) : (
+        <div className="space-y-4">
+          {questions.map((q, i) => (
+            <div key={q.prompt}>
+              <div className="mb-2 text-sm font-medium text-slate-700 dark:text-slate-200">{q.prompt}</div>
+              <div className="grid gap-2 sm:grid-cols-2">
+                {q.options.map((opt) => {
+                  const chosen = answers[i] === opt;
+                  const ok = q.correct === opt;
+                  let cls = theme.button.pill;
+                  if (chosen && ok) cls += ' border-green-500 bg-green-100 text-green-800';
+                  else if (chosen && !ok) cls += ' border-red-500 bg-red-100 text-red-800';
+                  return (
+                    <button key={opt} type="button" className={cls} onClick={() => choose(i, opt)}>{opt}</button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+          {count === questions.length && (
+            <div className={`rounded-xl p-3 text-sm font-semibold ${allOk ? 'bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-300' : 'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300'}`}>
+              {allOk
+                ? (isDE ? '🎉 Alle richtig! Badge freigeschaltet!' : '🎉 All correct! Badge unlocked!')
+                : (isDE ? 'Nicht alle richtig — versuche es morgen!' : 'Not all correct — try again tomorrow!')}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
