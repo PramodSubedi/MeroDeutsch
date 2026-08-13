@@ -2,15 +2,10 @@
 
 ## NOW
 
-- **Glossary cleanup** — `GlossaryPage.tsx` imports 5 datasets from `sharedContent` directly. Consider routing through service methods.
-- **Daily Challenge cleanup** — `DailyChallenge.tsx` component imports `alphabetData`, `numbersData` from `sharedContent`. Consider service usage.
+- **Phase 2** — Standardize content types and stable IDs across all data files (already using stable string IDs; verify consistency).
+- **Phase 3** — Introduce curriculum metadata hierarchy (Level → Module → Lesson → Content).
 
 ## NEXT
-
-- **Phase 2** — Standardize content types and stable IDs across all data files. Replace array-index-based keys with stable string IDs (e.g., `"a1-articles-tisch"`).
-- **Phase 3** — Introduce curriculum metadata hierarchy (Level → Module → Lesson → Content).
-- **Unused service methods** — `getSpellingWords()` and `getGrammarConjugations()` are defined but never called. Wire them to pages or remove if unnecessary.
-- **Type cleanup** — `getVocabulary()` returns `Promise<any[]>`; define a proper `VocabularyItem` type. `DictationWord` interface duplicated in `data/dictation.ts` and `types/curriculum.ts`.
 
 ## LATER
 
@@ -21,6 +16,42 @@
 - **ContinueLearningPage enhancements** — Add progress summary + quick-access links to recent modules inside `/learn` (Phase B). The basic `/learn` route is already live.
 
 ## COMPLETED
+
+### Visibility Bugs, Orphan Wiring, Duplicate Cleanup (2026-08-14)
+
+- ✅ **NumbersPage quiz visibility** — Removed `mode === 'learn'` gate so the Quick Number Quiz shows in both Learn and Listen modes; Listen & Type section still gated to listen mode
+- ✅ **PronunciationPage Check button** — Wired dead `onClick={() => {}}` to `handleResult(typed)` (same path as Enter key); input now controlled via `typed` state
+- ✅ **Layout → UserMenu** — Replaced inline profile dropdown markup/state with existing `UserMenu` component; removed `profileOpen`, `handleSignOut`, `useNavigate`; sign out/auth preserved
+- ✅ **App Suspense → SkeletonLoader** — Replaced plain "Loading..." fallback with `SkeletonLoader`
+- ✅ **BadgeShowcase deleted** — Orphan (0 imports); `BadgeData` type incompatible with `useAchievements`'s `Badge` type
+- ✅ **useKeyboardShortcuts wired** — Into AlphabetQuiz (Space/1-4/Enter) + NumbersPage quiz (Space/1-4/Enter)
+- ✅ **MasteryIndicator wired** — Rendered as Leitner box-level dots in Dashboard review queue items
+- ✅ Verification: tsc PASS, build PASS (740 modules), lint 0 errors (4 pre-existing warnings)
+
+### Review Queue Integration + Navigation Cleanup (2026-08-14)
+
+- ✅ **SpellingPractice → review queue** — Wired `useReviewQueue().addWrongAnswer()` into the wrong-answer branch of `check()` (moduleType: 'spelling', correctAnswer uses `gerPhonetic || id` fallback)
+- ✅ **AlphabetQuiz → review queue** — Verified already wired via `addWrongAnswer()` (moduleType: 'alphabet')
+- ✅ **Module registry** — `src/config/modules.ts` is the single source of truth; Layout uses `getModuleRoutes()`, ModuleSwitcher uses `getNavigationModules()`
+- ✅ **ModuleSwitcher dark mode** — Uses `theme.button.toggleActive`/`toggleInactive` tokens with `dark:` variants (verified)
+- ✅ **ActivityHeatmap fake data** — Component is unused in the codebase and defaults to empty `activities` array; no fake data rendered
+- ✅ **Footer path sanity** — Converted `<a href>` to `<Link>` for SPA client-side navigation
+- ✅ **Footer fake status removed** — Removed fake "Speech API Active" animated pulse badge
+- ✅ Verification: tsc PASS, build PASS (736 modules), lint 0 errors (4 pre-existing warnings)
+
+### Phase 4-6 — Data Layer Cleanup + Database Hardening + Deploy Readiness (2026-08-14)
+
+- ✅ **GlossaryPage through curriculumService** — Already routes through service (verified)
+- ✅ **DailyChallenge through curriculumService** — Already routes through service (verified)
+- ✅ **Type getVocabulary() properly** — Returns `Promise<VocabEntry[]>` (verified)
+- ✅ **Dedupe DictationWord type** — Removed duplicate from `src/data/dictation.ts`, now imports from `types/curriculum.ts`
+- ✅ **Stable string IDs verified** — All modules use semantic string keys (German words, phrases, letter IDs) for progress/review tracking, not array indexes
+- ✅ **Unused service methods** — Commented out `getSpellingWords()` and `getGrammarConjugations()` in interface and implementation
+- ✅ **Database migration** — Created `20260814000000_harden_database.sql` with missing columns (`last_result`, `box_level`), performance index, updated_at triggers, RLS INSERT policy
+- ✅ **TypeScript interfaces updated** — ReviewRow, userDataService, useReviewQueue all sync new fields
+- ✅ **Deploy documentation** — Created `DEPLOY.md` with complete deployment checklist, smoke tests, troubleshooting
+- ✅ **.env.example** — Created template with `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`
+- ✅ Verification: tsc PASS, build PASS (735 modules), no RLS errors
 
 ### Data Cleanup — Orphaned Files Removal (2026-08-13)
 
@@ -56,6 +87,19 @@
 - ✅ **Numbers** — Stabilization: `numbersData` in `sharedContent.ts` now derived from `numbers.ts` via `Object.values().flat()`; dead code removed from `NumbersPage.tsx`
 - ✅ **Greetings** — Stabilization: `GreetingsPage.tsx` fixed to use `getGreetings()` instead of `getCalendar()`; calendar tabs removed
 - ✅ **Grammar** — Stabilization: dead code removed from `GrammarPage.tsx`; page uses `curriculumService.getGrammarDrills()`
+
+### Phase 1 Production Polish (2026-08-13)
+
+- ✅ **usePageTitle hook** — `src/hooks/usePageTitle.ts` created; applied to all existing + new route pages
+- ✅ **Settings page** — `src/pages/SettingsPage.tsx` at `/settings` (language toggle, dark mode, TTS speed, sign out, reset progress)
+- ✅ **Privacy & Terms pages** — `src/pages/PrivacyPage.tsx` + `src/pages/TermsPage.tsx` (i18n, five sections each)
+- ✅ **Help/FAQ page** — `src/pages/HelpPage.tsx` at `/help` (expandable FAQ accordion)
+- ✅ **Feedback page** — `src/pages/FeedbackPage.tsx` at `/feedback` (category + message form)
+- ✅ **SEO meta** — `index.html` updated with description + OG + Twitter Card tags
+- ✅ **Footer** — `src/components/Footer.tsx` rewired with `Link` navigation, removed fake "Speech API Active" pulse
+- ✅ Dashboard: added Settings link next to review queue badge
+- ✅ Layout: Settings link added to profile dropdown menu
+- ✅ Verification: tsc PASS, build PASS (735 modules), lint 0 errors (4 pre-existing warnings)
 
 ### Stabilization Baseline (2026-08-12)
 

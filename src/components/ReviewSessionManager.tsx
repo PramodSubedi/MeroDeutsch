@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { triggerConfetti } from '../utils/confetti';
 import { useLang } from '../hooks/useLang';
+import { useXp } from '../hooks/useXp';
 import type { WrongAnswerItem } from '../types';
 
 interface ReviewSessionManagerProps {
@@ -26,6 +27,7 @@ export function ReviewSessionManager({
   onCompleteSession,
 }: ReviewSessionManagerProps) {
   const { langMode } = useLang();
+  const { reportAnswer } = useXp();
   const isDE = langMode === 'german';
 
   const [activeFilter, setActiveFilter] = useState<FilterId>('all');
@@ -58,7 +60,7 @@ export function ReviewSessionManager({
     if (!currentItem) return;
 
     if (isCorrect) {
-      // Promote in Leitner system.
+      // Promote in Leitner system + award real XP (10 per correctly recalled item).
       onMarkCorrect(currentItem.id);
       setSessionStats((prev) => ({
         ...prev,
@@ -66,14 +68,16 @@ export function ReviewSessionManager({
         promoted: prev.promoted + 1,
         xp: prev.xp + 10,
       }));
+      reportAnswer({ correct: true, module: currentItem.moduleType || 'review', amount: 10 });
     } else {
-      // Keep item in queue for future review (no promotion).
+      // Keep item in queue for future review (no promotion, no XP).
       setSessionStats((prev) => ({
         ...prev,
         reviewed: prev.reviewed + 1,
         demoted: prev.demoted + 1,
-        xp: prev.xp + 2,
+        xp: prev.xp + 0,
       }));
+      reportAnswer({ correct: false, module: currentItem.moduleType || 'review' });
     }
 
     if (currentIndex + 1 < sessionItems.length) {

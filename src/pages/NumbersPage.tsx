@@ -1,7 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { speakWord } from '../hooks/useSpeech';
 import { useLang } from '../hooks/useLang';
+import { usePageTitle } from '../hooks/usePageTitle';
 import { useReviewQueue } from '../hooks/useReviewQueue';
+import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
+import { useXp } from '../hooks/useXp';
 import type { NumberItem, NumberRange } from '../types';
 import { Card } from '../components/Card';
 import { SectionGrid } from '../components/SectionGrid';
@@ -37,9 +40,11 @@ function normalize(input: string): string {
 }
 
 export function NumbersPage() {
+  usePageTitle('Numbers');
   const { langMode } = useLang();
   const isDE = langMode === 'german';
   const { addWrongAnswer } = useReviewQueue();
+  const { reportAnswer } = useXp();
   const [range, setRange] = useState<NumberRange>('0-12');
   const [mode, setMode] = useState<'learn' | 'listen'>('learn');
   const [numbersData, setNumbersData] = useState<NumberItem[]>([]);
@@ -120,6 +125,8 @@ export function NumbersPage() {
     if (correct) {
       setListenStatus('correct');
       setListenScore((s) => s + 1);
+      // +10 XP for a correct listen-and-type answer
+      reportAnswer({ correct: true, module: 'numbers' });
     } else {
       setListenStatus('wrong');
       addWrongAnswer({
@@ -130,6 +137,32 @@ export function NumbersPage() {
       });
     }
   };
+
+  const selectQuizOption = (o: NumberItem) => {
+    if (o.de === quiz?.de) {
+      setFb('🎉 Richtig!');
+      // +10 XP for a correct quiz answer
+      reportAnswer({ correct: true, module: 'numbers' });
+    } else {
+      setFb(`❌ ${quiz?.de}`);
+      addWrongAnswer({
+        moduleType: 'numbers',
+        itemKey: quiz?.de ?? '',
+        userAnswer: o.de,
+        correctAnswer: quiz?.de ?? '',
+      });
+    }
+    speakWord(quiz?.de ?? o.de);
+  };
+
+  // Desktop keyboard shortcuts: Space = hear number, 1-4 = pick option, Enter = next.
+  useKeyboardShortcuts({
+    onAudioPlay: () => speakWord(quiz?.de ?? ''),
+    onSelectOption: (index) => {
+      if (opts[index]) selectQuizOption(opts[index]);
+    },
+    onNext: () => nextQuiz(),
+  });
 
   if (numbersData.length === 0 || !quiz || !listenItem) {
     return <div className={theme.page.container}>Loading...</div>;
@@ -257,9 +290,8 @@ export function NumbersPage() {
         </div>
       )}
 
-      {mode === 'learn' && (
-        <div className={`${theme.panel.surface} mx-auto max-w-lg text-center`}>
-          <h3 className="mb-2 font-bold">{isDE ? 'Zahlen-Quiz' : 'Quick Number Quiz'}</h3>
+      <div className={`${theme.panel.surface} mx-auto max-w-lg text-center`}>
+        <h3 className="mb-2 font-bold">{isDE ? 'Zahlen-Quiz' : 'Quick Number Quiz'}</h3>
           <div className="mb-3 text-5xl font-bold text-blue-600 dark:text-blue-400">{quiz.n}</div>
           <div className="mb-3 grid grid-cols-2 gap-2">
             {(opts.length ? opts : [quiz]).map((o) => (
@@ -267,31 +299,17 @@ export function NumbersPage() {
                 key={o.de}
                 type="button"
                 className={theme.button.pill}
-                onClick={() => {
-                  if (o.de === quiz.de) {
-                    setFb('🎉 Richtig!');
-                  } else {
-                    setFb(`❌ ${quiz.de}`);
-                    addWrongAnswer({
-                      moduleType: 'numbers',
-                      itemKey: quiz.de,
-                      userAnswer: o.de,
-                      correctAnswer: quiz.de,
-                    });
-                  }
-                  speakWord(quiz.de);
-                }}
+                onClick={() => selectQuizOption(o)}
               >
                 {o.de}
               </button>
             ))}
           </div>
-          {fb && <div className="mb-2 font-bold text-green-600">{fb}</div>}
-          <button type="button" onClick={nextQuiz} className={theme.button.primary}>
-            {isDE ? 'Weiter' : 'Next'}
-          </button>
-        </div>
-      )}
+        {fb && <div className="mb-2 font-bold text-green-600">{fb}</div>}
+        <button type="button" onClick={nextQuiz} className={theme.button.primary}>
+          {isDE ? 'Weiter' : 'Next'}
+        </button>
+      </div>
     </div>
   );
 }

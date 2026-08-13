@@ -1,4 +1,5 @@
 import { useLang } from '../hooks/useLang';
+import { usePageTitle } from '../hooks/usePageTitle';
 import { PracticeToolsGrid } from '../components/PracticeToolsGrid';
 import { theme } from '../config/theme';
 
@@ -7,6 +8,7 @@ import { theme } from '../config/theme';
  * Separates practice utilities from core curriculum modules to reduce cognitive load.
  */
 export function PracticeHubPage() {
+  usePageTitle('Practice');
   const { langMode } = useLang();
   const isDE = langMode === 'german';
 

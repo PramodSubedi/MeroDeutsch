@@ -1,6 +1,4 @@
-export interface DictationWord {
-  word: string;
-}
+import type { DictationWord } from '../types/curriculum';
 
 export const DICTATION_WORDS: DictationWord[] = [
   { word: 'Hallo' },

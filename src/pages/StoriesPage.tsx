@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useLang } from '../hooks/useLang';
+import { usePageTitle } from '../hooks/usePageTitle';
 import { theme } from '../config/theme';
 import { microStories, type MicroStory, type StorySentence, type StoryWord } from '../data/stories';
 
@@ -130,6 +131,7 @@ function StoryCard({ story, onSelect }: { story: MicroStory; onSelect: () => voi
  * Micro-Stories Page - Interactive German stories with word-level translations
  */
 export function StoriesPage() {
+  usePageTitle('Stories');
   const { langMode } = useLang();
   const [selectedStory, setSelectedStory] = useState<MicroStory | null>(null);
 

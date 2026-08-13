@@ -6,18 +6,22 @@ import { useProgress } from '../hooks/useProgress';
 import { useLang } from '../hooks/useLang';
 import { useStreak } from '../hooks/useStreak';
 import { useMilestoneToast } from '../hooks/useMilestoneToast';
+import { usePageTitle } from '../hooks/usePageTitle';
 import { theme } from '../config/theme';
 import { BrandMark } from '../components/BrandMark';
 import { EmptyState } from '../components/EmptyState';
 import { ActivityHeatmap } from '../components/ActivityHeatmap';
 import { ReviewSessionManager } from '../components/ReviewSessionManager';
+import { MasteryIndicator } from '../components/MasteryIndicator';
 import { triggerConfetti } from '../utils/confetti';
+import { Link } from 'react-router-dom';
 import type { WrongAnswerItem } from '../types';
 
 /** Locale-aware number formatter shared by dashboard stats + review queue counts. */
 const numberFormatter = (locale: string) => new Intl.NumberFormat(locale);
 
 export function DashboardPage() {
+  usePageTitle('Dashboard');
   const { user, isAuthenticated } = useAuth();
   const { queue, markCorrect, markResolved, clearQueue } = useReviewQueue();
   const { progress } = useProgress();
@@ -85,12 +89,17 @@ const resolvedLabel = isDE ? 'Erledigt' : 'Resolved';
             {user ? `${greeting}, ${user.username} 👋` : 'Your learning progress and review queue.'}
           </p>
         </div>
-        {queue.length > 0 && (
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow dark:border-amber-700/60 dark:bg-amber-900/30 dark:text-amber-300">
-            <span aria-hidden="true">⚠️</span>
-            {formatCount.format(queue.length)} {isDE ? 'fehlende Einträge' : 'missed items'}
-          </span>
-        )}
+        <div className="flex flex-wrap items-center gap-3">
+          {queue.length > 0 && (
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow dark:border-amber-700/60 dark:bg-amber-900/30 dark:text-amber-300">
+              <span aria-hidden="true">⚠️</span>
+              {formatCount.format(queue.length)} {isDE ? 'fehlende Einträge' : 'missed items'}
+            </span>
+          )}
+          <Link to="/settings" className={theme.button.secondary}>
+            ⚙️ {isDE ? 'Einstellungen' : 'Settings'}
+          </Link>
+        </div>
       </div>
 
       {toast && (
@@ -238,7 +247,10 @@ const resolvedLabel = isDE ? 'Erledigt' : 'Resolved';
                         {isDue(item) ? dueLabel : scheduledLabel}
                       </span>
                     </div>
-                    <div className="text-sm text-slate-600 dark:text-slate-400">{item.itemKey}</div>
+                    <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+                      {item.itemKey}
+                      <MasteryIndicator boxLevel={item.boxLevel} />
+                    </div>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     <button type="button" onClick={() => markCorrect(item.id)} className={theme.button.primary}>

@@ -25,6 +25,8 @@ interface ReviewRow {
   repetitions: number;
   due_at: string;
   updated_at: string;
+  last_result?: 'correct' | 'wrong';
+  box_level?: number;
 }
 
 function loadQueue(key: string): WrongAnswerItem[] {
@@ -60,6 +62,8 @@ function rowToItem(row: ReviewRow): WrongAnswerItem {
     intervalDays: row.interval_days,
     repetitions: row.repetitions,
     dueAt: row.due_at,
+    lastResult: row.last_result,
+    boxLevel: row.box_level,
   };
 }
 
@@ -75,6 +79,8 @@ function itemToRow(item: WrongAnswerItem): Omit<ReviewRow, 'updated_at'> {
     interval_days: item.intervalDays ?? 1,
     repetitions: item.repetitions ?? 0,
     due_at: item.dueAt ?? new Date().toISOString(),
+    last_result: item.lastResult,
+    box_level: item.boxLevel,
   };
 }
 
@@ -95,7 +101,7 @@ export function useReviewQueue() {
       const fetchRemoteQueue = async () => {
         const { data, error } = await supabase
           .from('review_queue')
-          .select('id, module_type, item_key, user_answer, correct_answer, error_count, ease, interval_days, repetitions, due_at, updated_at')
+          .select('id, module_type, item_key, user_answer, correct_answer, error_count, ease, interval_days, repetitions, due_at, updated_at, last_result, box_level')
           .eq('user_id', user.userId);
 
         if (!error && data) {

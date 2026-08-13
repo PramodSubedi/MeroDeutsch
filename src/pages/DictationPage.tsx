@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { speakWord } from '../hooks/useSpeech';
 import { useLang } from '../hooks/useLang';
+import { usePageTitle } from '../hooks/usePageTitle';
 import { useReviewQueue } from '../hooks/useReviewQueue';
-import { useXp } from '../hooks/useXp';
-import { LevelUpModal } from '../components/LevelUpModal';
+import { useXp, XP_REWARDS } from '../hooks/useXp';
 import { theme } from '../config/theme';
 import { curriculumService } from '../services';
 import type { DictationWord } from '../types/curriculum';
@@ -13,27 +13,18 @@ function normalize(input: string): string {
 }
 
 export function DictationPage() {
+  usePageTitle('Dictation');
   const { langMode } = useLang();
   const isDE = langMode === 'german';
   const { addWrongAnswer } = useReviewQueue();
-  const { level: _level, rank, awardXp, onLevelUp } = useXp();
+  const { reportAnswer } = useXp();
   const [word, setWord] = useState<DictationWord | null>(null);
   const [dictationWords, setDictationWords] = useState<DictationWord[]>([]);
   const [attempt, setAttempt] = useState('');
   const [status, setStatus] = useState<'idle' | 'correct' | 'wrong'>('idle');
   const [score, setScore] = useState(0);
   const [total, setTotal] = useState(0);
-  const [levelUpModalOpen, setLevelUpModalOpen] = useState(false);
-  const [newLevel, setNewLevel] = useState(1);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  // Set up level-up callback
-  useEffect(() => {
-    onLevelUp((lvl) => {
-      setNewLevel(lvl);
-      setLevelUpModalOpen(true);
-    });
-  }, [onLevelUp]);
 
   useEffect(() => {
     curriculumService.getDictationWords().then(data => {
@@ -63,8 +54,8 @@ export function DictationPage() {
     if (correct) {
       setStatus('correct');
       setScore((s) => s + 1);
-      // Award +50 XP for completing a Dictation drill
-      void awardXp(50, 'dictation');
+      // Award +50 XP for completing a Dictation drill (single, centralized award)
+      reportAnswer({ correct: true, module: 'dictation', amount: XP_REWARDS.dictation });
     } else {
       setStatus('wrong');
       addWrongAnswer({
@@ -91,13 +82,6 @@ export function DictationPage() {
 
   return (
     <>
-      <LevelUpModal
-        isOpen={levelUpModalOpen}
-        level={newLevel}
-        rank={rank}
-        onClose={() => setLevelUpModalOpen(false)}
-      />
-      
       <div className={theme.page.container}>
         <h1 className="text-2xl font-semibold tracking-tight text-slate-950 dark:text-white">{title}</h1>
         <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{subtitle}</p>

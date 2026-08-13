@@ -1,7 +1,9 @@
 import { useCallback, useMemo, useState, useEffect } from 'react';
 import { speakWord } from '../hooks/useSpeech';
 import { useLang } from '../hooks/useLang';
+import { usePageTitle } from '../hooks/usePageTitle';
 import { useReviewQueue } from '../hooks/useReviewQueue';
+import { useXp } from '../hooks/useXp';
 import { useSpeechRecognition, isSpeechRecognitionSupported } from '../hooks/useSpeechRecognition';
 import { theme } from '../config/theme';
 import { curriculumService } from '../services';
@@ -16,13 +18,16 @@ function normalizeForCompare(input: string): string {
 }
 
 export function PronunciationPage() {
+  usePageTitle('Pronunciation');
   const { langMode } = useLang();
   const isDE = langMode === 'german';
   const { addWrongAnswer } = useReviewQueue();
+  const { reportAnswer } = useXp();
   const [word, setWord] = useState<any>(null);
   const [score, setScore] = useState(0);
   const [total, setTotal] = useState(0);
   const [result, setResult] = useState<null | 'correct' | 'partial' | 'wrong'>(null);
+  const [typed, setTyped] = useState('');
 
   useEffect(() => {
     curriculumService.getVocabulary().then(vocab => {
@@ -45,6 +50,8 @@ export function PronunciationPage() {
       if (isMatch) {
         setResult('correct');
         setScore((s) => s + 1);
+        // +10 XP for a correct pronunciation answer
+        reportAnswer({ correct: true, module: 'pronunciation' });
       } else {
         // Loosely check: does the spoken transcript contain a word close to target?
         const wordMatch = spoken.length > 3 && word.de.split(' ').some((part: string) => spoken.includes(normalizeForCompare(part)));
@@ -61,7 +68,7 @@ export function PronunciationPage() {
         }
       }
     },
-    [addWrongAnswer, word]
+    [addWrongAnswer, reportAnswer, word]
   );
 
   const { listening, status, start } = useSpeechRecognition({
@@ -87,6 +94,7 @@ export function PronunciationPage() {
       const pool = vocab.filter((item: any) => item.id !== word?.id);
       setWord(pool[Math.floor(Math.random() * pool.length)]);
       setResult(null);
+      setTyped('');
     });
   };
 
@@ -130,10 +138,12 @@ export function PronunciationPage() {
           <div>
             <input
               type="text"
+              value={typed}
+              onChange={(e) => setTyped(e.target.value)}
               placeholder={isDE ? 'Tippe das Wort…' : 'Type the word…'}
               onKeyDown={(e) => {
-                if (e.key === 'Enter' && (e.target as HTMLInputElement).value.trim()) {
-                  handleResult((e.target as HTMLInputElement).value);
+                if (e.key === 'Enter' && typed.trim()) {
+                  handleResult(typed);
                 }
               }}
               className={theme.input}
@@ -144,7 +154,13 @@ export function PronunciationPage() {
                   {isDE ? 'Nächstes Wort →' : 'Next Word →'}
                 </button>
               ) : (
-                <button type="button" className={theme.button.secondary} onClick={() => {}}>
+                <button
+                  type="button"
+                  className={theme.button.secondary}
+                  onClick={() => {
+                    if (typed.trim()) handleResult(typed);
+                  }}
+                >
                   {isDE ? 'Prüfen' : 'Check'}
                 </button>
               )}

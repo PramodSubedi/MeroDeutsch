@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import { useLang } from '../hooks/useLang';
+import { usePageTitle } from '../hooks/usePageTitle';
 import { theme } from '../config/theme';
 import type { VocabEntry, WrongAnswerItem } from '../types';
 import { useReviewQueue } from '../hooks/useReviewQueue';
@@ -56,6 +57,7 @@ function validateRow(row: ParsedRow, lineNumber: number): string | null {
 }
 
 export function ImportDeckPage() {
+  usePageTitle('Import Deck');
   const { langMode } = useLang();
   const isDE = langMode === 'german';
   const { addWrongAnswer } = useReviewQueue();

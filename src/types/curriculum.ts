@@ -43,10 +43,12 @@ export interface CurriculumService {
   getCalendar(): Promise<import('./index').CalendarItem[]>;
   getGreetings(): Promise<import('./index').GreetingItem[]>;
   getArticles(): Promise<import('./index').ArticleItem[]>;
-  getSpellingWords(): Promise<import('./index').SpellingWord[]>;
   getVocabulary(): Promise<import('./index').VocabEntry[]>;
   getGrammarDrills(category: string): Promise<GrammarDrill[]>;
-  getGrammarConjugations(): Promise<Record<string, GrammarItem>>;
   getRoleplayScenarios(): Promise<RoleplayScenario[]>;
   getDictationWords(): Promise<DictationWord[]>;
+  
+  // Available but currently unused methods:
+  // getSpellingWords(): Promise<import('./index').SpellingWord[]>;
+  // getGrammarConjugations(): Promise<Record<string, GrammarItem>>;
 }

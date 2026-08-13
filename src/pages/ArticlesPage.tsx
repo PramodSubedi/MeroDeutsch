@@ -4,6 +4,7 @@ import { speakText, speakWord } from '../hooks/useSpeech';
 import { useLang } from '../hooks/useLang';
 import { useTranslation } from '../hooks/useTranslation';
 import { useReviewQueue } from '../hooks/useReviewQueue';
+import { useXp } from '../hooks/useXp';
 import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
 import { theme } from '../config/theme';
 import { curriculumService } from '../services';
@@ -181,6 +182,8 @@ export function ArticlesPage() {
     if (normalized === target) {
       setFeedback(isDE ? `✅ Sehr gut! ${targetPhrase}` : `✅ Excellent! ${targetPhrase}`);
       setArticleScore((score) => score + 1);
+      // +10 XP for a fully correct spoken article phrase
+      reportAnswer({ correct: true, module: 'articles' });
     } else if (currentItem && words[0] === currentItem.art && words.length === 1) {
       setFeedback(
         isDE
@@ -205,6 +208,7 @@ export function ArticlesPage() {
   };
 
   const { addWrongAnswer } = useReviewQueue();
+  const { reportAnswer } = useXp();
 
   const checkArticle = (choice: 'der' | 'die' | 'das') => {
     if (locked || !currentItem) return;
@@ -216,6 +220,8 @@ export function ArticlesPage() {
     if (correct) {
       setArticleScore((score) => score + 1);
       setFeedback(isDE ? '🎉 Richtig! ' + targetPhrase : '🎉 Correct! ' + targetPhrase);
+      // +10 XP for a correct article answer
+      reportAnswer({ correct: true, module: 'articles' });
     } else {
       setFeedback(
         isDE

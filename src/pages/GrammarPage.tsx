@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useLang } from '../hooks/useLang';
+import { usePageTitle } from '../hooks/usePageTitle';
 import { useReviewQueue } from '../hooks/useReviewQueue';
+import { useXp } from '../hooks/useXp';
 import { theme } from '../config/theme';
 import { curriculumService } from '../services';
 import type { GrammarDrill } from '../types/curriculum';
@@ -11,9 +13,11 @@ const CASES = [
 ] as const;
 
 export function GrammarPage() {
+  usePageTitle('Grammar');
   const { langMode } = useLang();
   const isDE = langMode === 'german';
   const { addWrongAnswer } = useReviewQueue();
+  const { reportAnswer } = useXp();
   const [tab, setTab] = useState<'sein' | 'haben' | 'weakVerb' | 'cases'>('sein');
   const [answers, setAnswers] = useState<Record<number, string>>({});
 
@@ -30,7 +34,10 @@ export function GrammarPage() {
   const choose = (qi: number, opt: string) => {
     const next = { ...answers, [qi]: opt };
     setAnswers(next);
-    if (opt !== drills[qi].correct) {
+    if (opt === drills[qi].correct) {
+      // +10 XP for a correct grammar drill answer (first selection only)
+      if (answers[qi] !== opt) reportAnswer({ correct: true, module: 'grammar' });
+    } else {
       addWrongAnswer({ moduleType: 'grammar', itemKey: drills[qi].prompt, userAnswer: opt, correctAnswer: drills[qi].correct });
     }
   };

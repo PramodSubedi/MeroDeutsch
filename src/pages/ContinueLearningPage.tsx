@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useLang } from '../hooks/useLang';
 import { useLastModule } from '../hooks/useLastModule';
+import { usePageTitle } from '../hooks/usePageTitle';
 import { DailyChallenge } from '../components/DailyChallenge';
 import { LearningPath } from '../components/learning/LearningPath';
 import { PracticeToolsGrid } from '../components/PracticeToolsGrid';
@@ -16,6 +17,7 @@ import { theme } from '../config/theme';
  * Accessible to both guest and authenticated users.
  */
 export function ContinueLearningPage() {
+  usePageTitle('Learn');
   const { langMode } = useLang();
   const { getLastModule } = useLastModule();
   const isDE = langMode === 'german';

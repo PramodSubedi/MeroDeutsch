@@ -14,9 +14,11 @@ import { useStreak } from '../hooks/useStreak';
 import { useAchievements } from '../hooks/useAchievements';
 import { useInstallPrompt } from '../hooks/useInstallPrompt';
 import { useAuth } from '../hooks/useAuth';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 // Main page component for MeroDeutsch German learning app
 export function HomePage() {
+  usePageTitle('Home');
   // Region: Hook initializations
   const { progress } = useProgress();
   const { queue } = useReviewQueue();
@@ -205,19 +207,14 @@ export function HomePage() {
 
   // Region: Guest pitch component
   const guestPitch = (
-    <div className="rounded-[32px] border border-blue-200/70 bg-blue-50/80 p-6 shadow-sm transition duration-300 hover:bg-blue-50 dark:border-blue-900/40 dark:bg-blue-950/50">
-      <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-        <div className="max-w-2xl">
-          <h2 className="text-2xl font-semibold text-slate-950 dark:text-white mb-2">{isDE ? 'Warum anmelden?' : 'Why sign in?'}</h2>
-          <p className="text-base leading-8 text-slate-700 dark:text-slate-300">
-            {isDE
-              ? 'Registriere dich und sichere dir personalisierte Review-Listen, Fortschrittsspeicherung, tägliche Herausforderungen und Abzeichen.'
-              : 'Sign in to unlock the daily challenge, personalized review, achievements, and progress reports.'}
-          </p>
-        </div>
-        <Link to="/auth" className={`${theme.button.primary} px-7 py-3 text-base font-semibold`}>
-          {isDE ? 'Jetzt registrieren' : 'Register now'}
-        </Link>
+    <div className="rounded-[32px] border border-blue-200/70 bg-blue-50/80 p-6 shadow-sm dark:border-blue-900/40 dark:bg-blue-950/50">
+      <div className="max-w-2xl">
+        <h2 className="text-2xl font-semibold text-slate-950 dark:text-white mb-2">{isDE ? 'Warum anmelden?' : 'Why sign in?'}</h2>
+        <p className="text-base leading-8 text-slate-700 dark:text-slate-300">
+          {isDE
+            ? 'Registriere dich und sichere dir personalisierte Review-Listen, Fortschrittsspeicherung und Abzeichen.'
+            : 'Sign in to unlock personalized review, achievements, and progress reports.'}
+        </p>
       </div>
     </div>
   );

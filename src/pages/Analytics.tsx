@@ -4,6 +4,7 @@ import {
   LineChart, Line, CartesianGrid, PieChart, Pie, Cell, Legend,
 } from 'recharts';
 import { useLang } from '../hooks/useLang';
+import { usePageTitle } from '../hooks/usePageTitle';
 import { theme } from '../config/theme';
 
 // Chart colors
@@ -55,6 +56,7 @@ function generateModuleAccuracy(): ModuleAccuracy[] {
 }
 
 export function AnalyticsPage() {
+  usePageTitle('Analytics');
   const { langMode } = useLang();
   const isDE = langMode === 'german';
   

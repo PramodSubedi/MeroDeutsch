@@ -5,6 +5,7 @@ import { speakWord } from '../hooks/useSpeech';
 import { useLang } from '../hooks/useLang';
 import { useAchievements } from '../hooks/useAchievements';
 import { getItem, setItem } from '../utils/safeStorage';
+import { useAuth } from '../hooks/useAuth';
 import { theme } from '../config/theme';
 
 // Article mapping for common German nouns
@@ -88,6 +89,7 @@ export function DailyChallenge() {
   const { langMode } = useLang();
   const isDE = langMode === 'german';
   const { unlockBadge } = useAchievements();
+  const { isAuthenticated } = useAuth();
   const seed = useMemo(daySeed, []);
   
   // State for data from curriculumService
@@ -218,6 +220,11 @@ export function DailyChallenge() {
               {allOk
                 ? (isDE ? '🎉 Alle richtig! Badge freigeschaltet!' : '🎉 All correct! Badge unlocked!')
                 : (isDE ? 'Nicht alle richtig — versuche es morgen!' : 'Not all correct — try again tomorrow!')}
+            </div>
+          )}
+          {!isAuthenticated && !allOk && (
+            <div className="rounded-xl border border-blue-200 bg-blue-50 p-3 text-sm text-blue-800 dark:border-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
+              💡 {isDE ? 'Melden Sie sich an, um Ihren Fortschritt zu speichern und Abzeichen zu sammeln!' : 'Sign in to save your progress and collect badges!'}
             </div>
           )}
         </div>

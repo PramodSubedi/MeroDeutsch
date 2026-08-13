@@ -14,10 +14,10 @@ React single-page application (SPA) with offline PWA capabilities.
 - **Routing:** React Router 7
 - **PWA:** `vite-plugin-pwa` (Workbox) — offline caching, install prompt, SW auto-update
 - **Linting:** oxlint (react, typescript, oxc plugins)
-- **State management:** `localStorage` via `src/utils/safeStorage.ts` (in-memory fallback)
+- **State management:** per-user `localStorage` via `src/utils/safeStorage.ts` (in-memory fallback) + Supabase cloud sync
 - **Speech output:** Web Speech API (`speechSynthesis`) via `useSpeech.ts`
 - **Speech input:** `SpeechRecognition` API (webkitSpeechRecognition fallback) via `useSpeechRecognition.ts`
-- **Auth:** localStorage-based auth via `useAuth.tsx`
+- **Auth:** Supabase Auth (`VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY`) via `useAuth.tsx` + `src/lib/supabase.ts`
 - **Dev server:** Vite (HMR on port 5173+)
 
 ## Core Architecture
@@ -65,7 +65,7 @@ Each module is a direct page route:
 
 - `/` — HomePage (landing: guest sees WOTD + A1 path; authed sees dashboard + → /learn)
 - `/learn` — ContinueLearningPage (Learning Hub: WOTD + A1 path + tools)
-- `/auth` — AuthPage (login/register)
+- `/auth` — AuthPage (login/register via Supabase)
 - `/alphabet` — AlphabetPage
 - `/numbers` — NumbersPage
 - `/calendar` — CalendarPage
@@ -77,6 +77,12 @@ Each module is a direct page route:
 - `/dictation` — DictationPage
 - `/glossary` — GlossaryPage
 - `/dashboard` — DashboardPage (auth-gated)
+- `/practice` — PracticeHubPage (public hub)
+- `/stories` — StoriesPage
+- `/analytics` — AnalyticsPage (auth-gated)
+- `/import` — ImportDeckPage (auth-gated)
+- `/settings` — SettingsPage (language, theme, TTS speed, reset progress)
+- `/privacy`, `/terms`, `/help`, `/feedback` — static/support pages
 
 ## Current Migration Status
 
@@ -117,9 +123,15 @@ Each module is a direct page route:
 
 - `src/pages/ArticlesPage.tsx` — speech recognition + MediaRecorder + audio visualization
 - `src/hooks/useSpeechRecognition.ts` — speech recognition hook
-- `src/hooks/useAuth.tsx` — authentication system
+- `src/hooks/useAuth.tsx` — Supabase authentication context (session bridge)
 
 Do not modify these unless explicitly required by a task or a genuine blocker.
+
+## Next Task
+
+Production polish: dynamic page titles (`usePageTitle`), `/settings` page,
+privacy/terms/help/feedback pages, SEO meta in `index.html`, and footer
+wiring. See `CHANGELOG_AI.md` for the latest completed phase.
 
 ## Key Architectural Rules
 

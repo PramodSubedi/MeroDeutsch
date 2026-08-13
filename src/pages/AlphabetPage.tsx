@@ -6,6 +6,7 @@ import { AlphabetQuiz } from '../components/alphabet/AlphabetQuiz';
 import { SpellingPractice } from '../components/alphabet/SpellingPractice';
 import { speakLetter, speakWord, useSpeechSpeed } from '../hooks/useSpeech';
 import { useLang } from '../hooks/useLang';
+import { usePageTitle } from '../hooks/usePageTitle';
 import { useProgress } from '../hooks/useProgress';
 import { theme } from '../config/theme';
 import { curriculumService } from '../services';
@@ -15,6 +16,7 @@ type Filter = 'all' | 'vowel' | 'consonant';
 type Sub = 'learn' | 'quiz' | 'spelling';
 
 export function AlphabetPage() {
+  usePageTitle('Alphabet');
   const { langMode } = useLang();
   const { progress, markPracticed, reset } = useProgress();
   const { speed, setNextSpeed } = useSpeechSpeed();

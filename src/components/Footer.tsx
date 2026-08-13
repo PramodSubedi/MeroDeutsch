@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+
 export function Footer() {
   return (
     <footer className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-12 mt-24 transition-colors">
@@ -23,10 +25,10 @@ export function Footer() {
               Explore
             </h4>
             <ul className="space-y-2.5 text-sm text-slate-600 dark:text-slate-400 font-medium">
-              <li><a href="/" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Dashboard</a></li>
-              <li><a href="/alphabet" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Alphabet & Sounds</a></li>
-              <li><a href="/articles" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Article Trainer</a></li>
-              <li><a href="/glossary" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Glossary & Words</a></li>
+              <li><Link to="/" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Dashboard</Link></li>
+              <li><Link to="/alphabet" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Alphabet & Sounds</Link></li>
+              <li><Link to="/articles" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Article Trainer</Link></li>
+              <li><Link to="/glossary" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Glossary & Words</Link></li>
             </ul>
           </div>
 
@@ -36,11 +38,7 @@ export function Footer() {
               System
             </h4>
             <div className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
-              <div className="flex items-center gap-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3 py-2 rounded-xl">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span className="text-xs font-medium text-slate-700 dark:text-slate-300">Speech API Active</span>
-              </div>
-              <p className="text-xs text-slate-500 pt-1">Production v1.2.0</p>
+              <p className="text-xs text-slate-500">Production v1.2.0</p>
             </div>
           </div>
 

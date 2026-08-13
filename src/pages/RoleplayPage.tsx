@@ -1,15 +1,19 @@
 import { useEffect, useState } from 'react';
 import { speakWord } from '../hooks/useSpeech';
 import { useLang } from '../hooks/useLang';
+import { usePageTitle } from '../hooks/usePageTitle';
 import { useMilestoneToast } from '../hooks/useMilestoneToast';
+import { useXp } from '../hooks/useXp';
 import { theme } from '../config/theme';
 import { curriculumService } from '../services';
 import type { RoleplayScenario, RoleplayOption } from '../types/curriculum';
 
 export function RoleplayPage() {
+  usePageTitle('Roleplay');
   const { langMode } = useLang();
   const isDE = langMode === 'german';
   const { toast, showToast, dismissToast } = useMilestoneToast();
+  const { reportAnswer } = useXp();
   const [scenarioIdx, setScenarioIdx] = useState(0);
   const [stepIdx, setStepIdx] = useState(0);
   const [status, setStatus] = useState<'idle' | 'correct' | 'wrong'>('idle');
@@ -33,6 +37,8 @@ export function RoleplayPage() {
     if (opt.ok) {
       setStatus('correct');
       setCorrectCount((c) => c + 1);
+      // +10 XP for a correct roleplay response
+      reportAnswer({ correct: true, module: 'roleplay' });
       if (isLastStep && isLastScenario) {
         showToast({ message: isDE ? 'Alle Szenarien geschafft! 🎉' : 'All scenarios complete! 🎉', icon: '🏅' });
       }

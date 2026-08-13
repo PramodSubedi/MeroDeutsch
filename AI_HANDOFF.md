@@ -1,9 +1,9 @@
 # CURRENT AI HANDOFF
 
-Date: 2026-08-13
+Date: 2026-08-14
 Last Agent: Cline
-Current Phase: Per-User Progress Isolation + Guest UX Cleanup — COMPLETE
-Current Task: Documentation update complete
+Current Phase: Documentation Reconciliation + Housekeeping — COMPLETE
+Current Task: Doc honesty, env onboarding, verification
 
 ## Current Status
 
@@ -120,12 +120,8 @@ through the service layer:
 
 ## Known Issues
 
-- 7 pre-existing lint warnings (useSpeechRecognition, useAuth, LanguageContext, NumbersPage, ArticlesPage) — not introduced by Phase 1
-- Unused service methods: `getSpellingWords()`, `getGrammarConjugations()` — defined but never called by any page
-- Orphaned data files: `src/data/calendar.ts`, `src/data/greetings.ts` — not imported anywhere (data exists inline in `sharedContent.ts`)
-- `getVocabulary()` returns `Promise<any[]>` — weak typing (pre-existing)
-- Minor type duplication: `DictationWord` interface in both `types/curriculum.ts` and `data/dictation.ts`
-- `dictation.ts` has its own local `DictationWord` interface instead of importing from `types/curriculum.ts`
+- 7 pre-existing lint warnings (useSpeechRecognition, useAuth, LanguageContext, NumbersPage, ArticlesPage) — not introduced by recent work
+- Authentication: **Supabase Auth** (not localStorage-based) — requires `.env` with `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`; without these, guest lessons work but login/register fail gracefully
 
 ## Phase A — COMPLETE (Homepage + Learning Hub)
 
@@ -157,15 +153,25 @@ All 15 routes return HTTP 200 (was 13, now +2: /learn).
 
 ## Next Recommended Action
 
-Phase 1 is COMPLETE. Phase A (homepage + learning hub) is COMPLETE. The remaining
-next steps are:
+Phase 1 (data architecture) and Phase A (homepage + learning hub) are COMPLETE.
+The **current** work is the production-polish pass:
 
-- **Phase 2** (from TASKS.md): Standardize content types and stable IDs across all
-  data files. Replace array-index-based keys with stable string IDs.
-- **Optional cleanup**: Route remaining direct imports (GlossaryPage, DailyChallenge)
-  through service methods where applicable.
-- **Phase B** (planned): Continue Learning readiness — see below. The `/learn` route
-  is now live and reuses existing infrastructure.
+- **Dynamic titles** — `usePageTitle(title)` hook + per-route `document.title`.
+- **`/settings`** — language (EN+NE / Nur DE), theme, TTS speed (wires
+  `useSpeechSpeed`), sign out, reset current-user progress (confirm dialog;
+  clears scoped keys + best-effort cloud clear).
+- **`/privacy` + `/terms`** — honest static pages covering Supabase auth, local
+  device cache, browser speech APIs, "no selling personal data", PWA cache.
+- **`/help`** — FAQ (streaks, SRS review, badges, offline, German-only, mic
+  permissions, guest vs account progress).
+- **`/feedback`** — mailto / copy-to-clipboard only (no fake server).
+- **SEO meta** in `index.html` (description, og:*, twitter:card).
+- **Footer wiring** — Privacy / Terms / Help / Feedback links; remove the fake
+  "Speech API Online" pulse.
+
+After that: **Phase 2** (from TASKS.md) — standardize content types and stable
+IDs across data files. Optional cleanup: route remaining direct imports
+(GlossaryPage, DailyChallenge) through service methods.
 
 ## Continue Learning Readiness
 

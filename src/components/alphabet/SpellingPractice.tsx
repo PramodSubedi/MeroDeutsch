@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { alphabetData, spellingWords } from '../../data/sharedContent';
 import { speakLetter, speakWord } from '../../hooks/useSpeech';
 import { useProgress } from '../../hooks/useProgress';
+import { useReviewQueue } from '../../hooks/useReviewQueue';
+import { useXp } from '../../hooks/useXp';
 import type { LangMode } from '../../types';
 
 const MISSING_LETTER_FALLBACKS: Record<string, string> = {
@@ -17,6 +19,8 @@ function resolvePhonetic(id: string, gerPhonetic?: string): string {
 
 export function SpellingPractice({ langMode }: { langMode: LangMode }) {
   const { progress, save } = useProgress();
+  const { addWrongAnswer } = useReviewQueue();
+  const { reportAnswer } = useXp();
   const [difficulty, setDifficulty] = useState<'easy' | 'medium'>('easy');
   const [word, setWord] = useState(() => spellingWords.easy[0]);
   const [idx, setIdx] = useState(0);
@@ -67,6 +71,8 @@ export function SpellingPractice({ langMode }: { langMode: LangMode }) {
         save({ ...progress, spellCompleted: (progress.spellCompleted || 0) + 1 });
         setFeedback('🎉 Perfekt!');
         speakWord(word.word);
+        // +25 XP for completing a spelling drill (centralized award)
+        reportAnswer({ correct: true, module: 'spelling', amount: 25 });
       } else {
         setIdx(next);
         const prev = alphabetData.find((d) => d.id === word.letters[idx]);
@@ -74,6 +80,13 @@ export function SpellingPractice({ langMode }: { langMode: LangMode }) {
       }
     } else {
       setFeedback('❌');
+      // Add to review queue for wrong answers
+      addWrongAnswer({
+        moduleType: 'spelling',
+        itemKey: target,
+        userAnswer: id,
+        correctAnswer: correct.gerPhonetic || correct.id,
+      });
       if (timeoutRef.current) {
         window.clearTimeout(timeoutRef.current);
       }

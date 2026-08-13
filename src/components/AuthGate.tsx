@@ -1,5 +1,4 @@
 import { type ReactNode } from 'react';
-import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useReviewQueue } from '../hooks/useReviewQueue';
 import { useLang } from '../hooks/useLang';
@@ -22,13 +21,10 @@ export function AuthGate({ children }: AuthGateProps) {
 
   const greeting = isDE ? 'Hallo' : 'Welcome back';
   const missedLabel = isDE ? 'fehlende Einträge' : 'missed items';
-  const signInBanner = isDE
-    ? 'Melde dich an, um deinen Fortschritt zu speichern und deine Review-Liste freizuschalten.'
-    : 'Sign in to save your progress and unlock your personalized review list.';
 
   return (
     <div className="space-y-6">
-      {isAuthenticated ? (
+      {isAuthenticated && (
         /* In-flow greeting — no action buttons; sign-out lives in the navbar dropdown */
         <div className="flex flex-wrap items-center gap-3">
           <h2 className="text-lg font-semibold tracking-tight text-slate-950 dark:text-white">
@@ -40,20 +36,6 @@ export function AuthGate({ children }: AuthGateProps) {
               {formatCount.format(missedCount)} {missedLabel}
             </span>
           )}
-        </div>
-      ) : (
-        /* Centered in-flow banner — clearly in page flow, no collision with the sticky navbar */
-        <div className="flex justify-center pt-2">
-          <Link
-            to="/auth"
-            className="group inline-flex max-w-full items-center justify-center gap-2 rounded-full border border-blue-200/70 bg-gradient-to-r from-blue-50 via-white to-blue-50 px-5 py-2.5 text-sm font-medium text-slate-600 shadow-sm ring-1 ring-blue-100 transition duration-300 hover:-translate-y-0.5 hover:border-blue-300 hover:text-blue-700 hover:shadow-md dark:border-blue-800/50 dark:from-blue-950/60 dark:via-slate-900/80 dark:to-blue-950/60 dark:text-slate-300 dark:ring-blue-900/40 dark:hover:border-blue-600 dark:hover:text-blue-300"
-          >
-            <span aria-hidden="true">✨</span>
-            <span>{signInBanner}</span>
-            <span aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-0.5">
-              →
-            </span>
-          </Link>
         </div>
       )}
       {children}

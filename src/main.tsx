@@ -5,6 +5,7 @@ import App from './App';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { AuthProvider } from './hooks/useAuth';
 import { LanguageProvider } from './context/LanguageContext';
+import { XpProvider } from './context/XpContext';
 import './pwa-register';
 
 createRoot(document.getElementById('root')!).render(
@@ -12,7 +13,9 @@ createRoot(document.getElementById('root')!).render(
     <ErrorBoundary>
       <AuthProvider>
         <LanguageProvider>
-          <App />
+          <XpProvider>
+            <App />
+          </XpProvider>
         </LanguageProvider>
       </AuthProvider>
     </ErrorBoundary>

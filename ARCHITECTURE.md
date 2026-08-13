@@ -17,17 +17,27 @@ German learning, with Nepali and English support. This document describes the
 | Routing            | React Router 7                                                            |
 | PWA                | `vite-plugin-pwa` (Workbox) — offline caching, install prompt, push     |
 | Linting            | oxlint (with react, typescript, oxc plugins)                                |
-| Auth & state       | `localStorage` via `src/utils/safeStorage.ts` (falls back to in-memory)  |
+| Auth               | Supabase Auth (`@supabase/supabase-js`) — email/password, session recovery |
+| State              | Per-user `localStorage` via `src/utils/safeStorage.ts` (in-memory fallback) + Supabase cloud sync |
 | Speech output      | Web Speech API (`speechSynthesis`)                                        |
 | Speech input       | `SpeechRecognition` API (webkitSpeechRecognition fallback)               |
 
 ### State Management
 
-All user state (auth, progress, review queue, streak, achievements, dark mode,
-language mode) is persisted in `localStorage` through the `safeStorage` utility
-(`src/utils/safeStorage.ts`), which gracefully degrades to an in-memory store
-when `localStorage` is unavailable. There is no global state manager; each
-concern is managed by a dedicated `src/hooks/` hook.
+Authentication is handled by **Supabase Auth** (`src/hooks/useAuth.tsx` +
+`src/lib/supabase.ts`), using `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY`.
+There is no localStorage-backed "fake" auth.
+
+User progress, review queue, streak, and achievements are persisted per user in
+`localStorage` through the `safeStorage` utility (`src/utils/safeStorage.ts`),
+which gracefully degrades to an in-memory store when `localStorage` is
+unavailable. Per-user keys are built with `src/utils/userStorage.ts` →
+`scopedKey(base, userId)` (`:userId` suffix for authenticated users, `:guest`
+for guests) so accounts never share data. When authenticated, the same hooks
+additionally sync to Supabase tables (`user_progress`, `review_queue`,
+`user_streaks`, `user_achievements`, `user_xp`) with a union/max merge on
+login. There is no global state manager; each concern is managed by a dedicated
+`src/hooks/` hook.
 
 ### PWA
 
@@ -45,7 +55,7 @@ PWA support is configured in `vite.config.ts` via `VitePWA`:
 | Route         | Page component        | Data source                                | Service-backed? |
 |---------------|-----------------------|--------------------------------------------|-----------------|
 | `/`           | `HomePage`            | Aggregated overview + `DailyChallenge`     | No (presentation) |
-| `/auth`       | `AuthPage`            | `useAuth` (localStorage)                    | No (auth only)  |
+| `/auth`       | `AuthPage`            | `useAuth` (Supabase)                        | No (auth only)  |
 | `/alphabet`   | `AlphabetPage`        | `curriculumService.getAlphabet()`           | Yes             |
 | `/numbers`    | `NumbersPage`         | `curriculumService.getNumbers()`           | Yes             |
 | `/calendar`   | `CalendarPage`        | `curriculumService.getCalendar()`           | Yes             |
@@ -56,8 +66,17 @@ PWA support is configured in `vite.config.ts` via `VitePWA`:
 | `/pronunciation` | `PronunciationPage` | `curriculumService.getVocabulary()`      | Yes             |
 | `/roleplay`   | `RoleplayPage`        | `curriculumService.getRoleplayScenarios()`   | Yes             |
 | `/dictation`  | `DictationPage`       | `curriculumService.getDictationWords()`      | Yes             |
+| `/practice`   | `PracticeHubPage`     | `PracticeToolsGrid` + tool links            | No (public hub) |
+| `/stories`    | `StoriesPage`         | `stories.ts` / micro-stories                | Partial         |
+| `/analytics`  | `AnalyticsPage`       | `useXp`, `useStreak`, `useDailyQuests`      | No (auth-gated) |
+| `/import`     | `ImportDeckPage`      | `useAuth`, deck import (local + Supabase)   | No (auth-gated) |
 | `/dashboard`  | `DashboardPage`       | `useAuth`, `useProgress`, `useReviewQueue`, `useStreak` | No (auth-gated) |
 | `/learn`      | `ContinueLearningPage` | `DailyChallenge` (WOTD), `LearningPath`, `PracticeToolsGrid` | No (public hub) |
+| `/settings`   | `SettingsPage`        | `useLang`, `useDarkMode`, `useSpeechSpeed`, `useAuth` | No (public)   |
+| `/privacy`    | `PrivacyPage`         | Static content                              | No (static)    |
+| `/terms`      | `TermsPage`           | Static content                              | No (static)    |
+| `/help`       | `HelpPage`            | Static FAQ content                          | No (static)    |
+| `/feedback`   | `FeedbackPage`        | mailto / copy-to-clipboard (no server)      | No (static)    |
 
 ### Feature Notes
 
@@ -248,7 +267,7 @@ src/
       food.json        # Food vocabulary
       travel.json      # Travel vocabulary
   hooks/
-    useAuth.tsx        # Auth context + localStorage-based login/register (protected)
+    useAuth.tsx        # Auth context (Supabase Auth) — login/register/session (protected)
     useLang.tsx        # Language mode (normal / german)
     useDarkMode.ts     # Dark mode toggle (localStorage)
     useTranslation.ts  # Translation helper (sharedTextDatabase, sharedTranslations)
@@ -322,15 +341,23 @@ public/
 
 ---
 
+## Component Conventions — When to Use Which Card
+
+| Component            | Purpose                                                              | Used by                                |
+|----------------------|----------------------------------------------------------------------|----------------------------------------|
+| `StandardStudyCard`  | **Canonical study/quiz card** — badge, German term, phonetic, translations, context note, mastery bar. Use for ALL study lists & quizzes. | Greetings, Calendar |
+| `Card`               | Generic simple card (badge, title, lines, footer, optional note). Use for lightweight content cards that don't need the quiz/study shape. | Numbers (learn list), roleplay options |
+| `SectionGrid`        | Layout wrapper — title, description, optional controls, card grid. Use to wrap any card grid consistently. | Numbers, Greetings, Calendar |
+| `LetterCard`         | Alphabet-specific card for letter practice, tied to `markPracticed`. Use ONLY in AlphabetPage. | AlphabetPage (learn tab) |
+
+> No mass migration in this task — this is a reference for future card cleanup (Chat B).
+
+---
+
 ## Known Duplications & Issues (to be resolved in future phases)
 
 | Feature | Issue | Impact |
 |---------|-------|--------|
-| Numbers | `sharedContent.ts` previously had an inline flat `numbersData` duplicate of `numbers.ts`. **Fixed in this baseline** — `sharedContent.ts` now sources from `numbers.ts` via `Object.values(numbersByRange).flat()`. | Resolved. |
-| Greetings | Orphaned `src/data/greetings.ts` file **removed (2026-08-13)** — `sharedContent.ts` is the canonical source. | Resolved. |
-| Calendar | Orphaned `src/data/calendar.ts` file **removed (2026-08-13)** — `sharedContent.ts` is the canonical source. | Resolved. |
-| Roleplay | `RoleplayPage.tsx` defined its own local `SCENARIES`; `data/roleplay.ts` had the same data. **Resolved in Phase 1** — page now uses `curriculumService.getRoleplayScenarios()`. | Resolved. |
-| Dictation | `DictationPage.tsx` defined its own local `DICTATION_WORDS`; `data/dictation.ts` had the same data. **Resolved in Phase 1** — page now uses `curriculumService.getDictationWords()`. | Resolved. |
 | Numbers | `NumbersPage.tsx` has component-level `getItemsByRange` that filters flat array data from the service by `item.n`. The `numberRules` constant is also defined locally in the page. | Low — functional, just duplicated definitions. |
 
 ---
@@ -351,7 +378,9 @@ npm run preview    # Preview production build locally
 - **TypeScript:** PASS (`npx tsc --noEmit`)
 - **Build:** PASS (`npm run build`) — 87 modules transformed
 - **Lint:** PASS (`npx oxlint` — 0 errors, 7 pre-existing warnings)
-- **Routes:** 15 routes all return HTTP 200 on dev server (incl. `/learn`)
+- **Routes:** 15 routes all return HTTP 200 on dev server (incl. `/learn`). Dynamic
+  `document.title` set via `usePageTitle` on each page; production/polish routes
+  (`/settings`, `/privacy`, `/terms`, `/help`, `/feedback`) added in Phase 1.
 
 ### Pre-existing Lint Warnings (not introduced by this baseline)
 

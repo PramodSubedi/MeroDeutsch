@@ -134,6 +134,7 @@ export const userDataService = {
       repetitions: d.repetitions,
       dueAt: d.due_at,
       lastResult: d.last_result,
+      boxLevel: d.box_level,
     }));
   },
 
@@ -165,6 +166,7 @@ export const userDataService = {
         repetitions: item.repetitions,
         due_at: item.dueAt,
         last_result: item.lastResult,
+        box_level: item.boxLevel,
       })));
     
     if (error) throw error;

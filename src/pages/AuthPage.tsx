@@ -4,8 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import { theme } from '../config/theme';
 import { useAuth } from '../hooks/useAuth';
 import { BrandMark } from '../components/BrandMark';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 export function AuthPage() {
+  usePageTitle('Auth');
   const navigate = useNavigate();
   const { register, login } = useAuth();
   const [mode, setMode] = useState<'login' | 'register'>('register');

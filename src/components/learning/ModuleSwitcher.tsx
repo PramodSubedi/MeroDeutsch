@@ -1,89 +1,39 @@
 import { NavLink } from 'react-router-dom';
-import React from 'react';
+import { useLang } from '../../hooks/useLang';
+import { getNavigationModules } from '../../config/modules';
+import { theme } from '../../config/theme';
 
 /**
- * Navigation component that renders pill links for German language modules.
- * - Links: /alphabet, /numbers, /calendar, /articles, /greetings
- * - Optional /learn link
- * - Active link styling via NavLink's isActive prop
- * - aria-label="A1 modules" for accessibility
+ * Navigation component that renders pill links for all German language modules.
+ * - Links derived from modules.ts registry (single source of truth)
+ * - Active link styling via NavLink's isActive prop + theme.button tokens
+ * - Dark mode support via theme.button.toggleActive / toggleInactive
+ * - aria-label="Module navigation" for accessibility
  * - Horizontal scroll container for mobile views
  */
-const ModuleSwitcher: React.FC = () => (
-  <nav
-    aria-label="A1 modules"
-    style={{
-      overflowX: 'auto',
-      whiteSpace: 'nowrap',
-      padding: '0.5rem 0',
-    }}
-  >
-    <NavLink
-      to="/alphabet"
-      className={({ isActive }) =>
-        `px-4 py-2 rounded mr-2 text-sm font-medium ${
-          isActive ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800'
-        } transition-colors`
-      }
-    >
-      Alphabet
-    </NavLink>
+export function ModuleSwitcher() {
+  const { langMode } = useLang();
+  const isDE = langMode === 'german';
+  const modules = getNavigationModules();
 
-    <NavLink
-      to="/numbers"
-      className={({ isActive }) =>
-        `px-4 py-2 rounded mr-2 text-sm font-medium ${
-          isActive ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800'
-        } transition-colors`
-      }
+  return (
+    <nav
+      aria-label="Module navigation"
+      className="overflow-x-auto whitespace-nowrap py-2"
     >
-      Numbers
-    </NavLink>
-
-    <NavLink
-      to="/calendar"
-      className={({ isActive }) =>
-        `px-4 py-2 rounded mr-2 text-sm font-medium ${
-          isActive ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800'
-        } transition-colors`
-      }
-    >
-      Calendar
-    </NavLink>
-
-    <NavLink
-      to="/articles"
-      className={({ isActive }) =>
-        `px-4 py-2 rounded mr-2 text-sm font-medium ${
-          isActive ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800'
-        } transition-colors`
-      }
-    >
-      Articles
-    </NavLink>
-
-    <NavLink
-      to="/greetings"
-      className={({ isActive }) =>
-        `px-4 py-2 rounded mr-2 text-sm font-medium ${
-          isActive ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800'
-        } transition-colors`
-      }
-    >
-      Greetings
-    </NavLink>
-
-    <NavLink
-      to="/learn"
-      className={({ isActive }) =>
-        `px-4 py-2 rounded mr-2 text-sm font-medium ${
-          isActive ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800'
-        } transition-colors`
-      }
-    >
-      Learn
-    </NavLink>
-  </nav>
-);
-
-export { ModuleSwitcher };
+      {modules.map((module) => (
+        <NavLink
+          key={module.id}
+          to={module.path}
+          className={({ isActive }) =>
+            isActive
+              ? `${theme.button.toggleActive} mr-2 inline-block`
+              : `${theme.button.toggleInactive} mr-2 inline-block`
+          }
+        >
+          {isDE ? module.labelDE : module.label}
+        </NavLink>
+      ))}
+    </nav>
+  );
+}

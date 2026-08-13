@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { SkeletonLoader } from './components/SkeletonLoader';
 
 // Core pages - eagerly loaded for instant navigation
 import { HomePage } from './pages/HomePage';
@@ -24,13 +25,18 @@ const PracticeHubPage = lazy(() => import('./pages/PracticeHubPage').then(m => (
 const StoriesPage = lazy(() => import('./pages/StoriesPage').then(m => ({ default: m.StoriesPage })));
 const AnalyticsPage = lazy(() => import('./pages/Analytics').then(m => ({ default: m.AnalyticsPage })));
 const ImportDeckPage = lazy(() => import('./pages/ImportDeck').then(m => ({ default: m.ImportDeckPage })));
+const SettingsPage = lazy(() => import('./pages/SettingsPage').then(m => ({ default: m.SettingsPage })));
+const PrivacyPage = lazy(() => import('./pages/PrivacyPage').then(m => ({ default: m.PrivacyPage })));
+const TermsPage = lazy(() => import('./pages/TermsPage').then(m => ({ default: m.TermsPage })));
+const HelpPage = lazy(() => import('./pages/HelpPage').then(m => ({ default: m.HelpPage })));
+const FeedbackPage = lazy(() => import('./pages/FeedbackPage').then(m => ({ default: m.FeedbackPage })));
 
 /** Routes only — do not put feature logic here */
 export default function App() {
   return (
     <ErrorBoundary>
       <BrowserRouter>
-        <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="text-lg">Loading...</div></div>}>
+        <Suspense fallback={<SkeletonLoader />}>
           <Routes>
             <Route element={<Layout />}>
               <Route index element={<HomePage />} />
@@ -51,6 +57,11 @@ export default function App() {
               <Route path="stories" element={<StoriesPage />} />
               <Route path="analytics" element={<AnalyticsPage />} />
               <Route path="import" element={<ImportDeckPage />} />
+              <Route path="settings" element={<SettingsPage />} />
+              <Route path="privacy" element={<PrivacyPage />} />
+              <Route path="terms" element={<TermsPage />} />
+              <Route path="help" element={<HelpPage />} />
+              <Route path="feedback" element={<FeedbackPage />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Route>
           </Routes>

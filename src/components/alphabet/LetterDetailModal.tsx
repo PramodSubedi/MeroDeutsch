@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import type { AlphabetItem, LangMode } from '../../types';
 import { speakLetter, speakWord } from '../../hooks/useSpeech';
 import { pronunciationTips } from '../../data/pronunciationTips';
@@ -10,21 +11,44 @@ interface Props {
 }
 
 export function LetterDetailModal({ item, langMode, onClose }: Props) {
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Handle Escape key to close modal
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [onClose]);
+
+  // Focus management: focus close button when modal opens
+  useEffect(() => {
+    if (item && closeButtonRef.current) {
+      closeButtonRef.current.focus();
+    }
+  }, [item]);
+
   if (!item) return null;
   const isDE = langMode === 'german';
 
   return (
-    <div className={theme.modal.overlay} onClick={onClose}>
-      <div className={theme.modal.dialog} onClick={(e) => e.stopPropagation()}>
+    <div className={theme.modal.overlay} onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div ref={dialogRef} className={theme.modal.dialog} onClick={(e) => e.stopPropagation()}>
         <button
+          ref={closeButtonRef}
           type="button"
           className={theme.modal.close}
           onClick={onClose}
+          aria-label={isDE ? 'Schließen' : 'Close dialog'}
         >
           ×
         </button>
         <div className="text-center">
-          <div className="text-5xl font-bold text-blue-600 dark:text-blue-400">{item.letter}</div>
+          <div id="modal-title" className="text-5xl font-bold text-blue-600 dark:text-blue-400">{item.letter}</div>
           <div className="mb-3 text-xl font-semibold">{item.gerPhonetic}</div>
           {!isDE && (
             <div className="mb-3 rounded-lg bg-slate-100 p-3 text-left text-sm dark:bg-slate-700">

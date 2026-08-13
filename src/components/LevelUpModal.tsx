@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import confetti from 'canvas-confetti';
 import { theme } from '../config/theme';
 import { useLang } from '../hooks/useLang';
@@ -16,6 +16,27 @@ interface LevelUpModalProps {
 export function LevelUpModal({ isOpen, level, rank, onClose }: LevelUpModalProps) {
   const { langMode } = useLang();
   const isDE = langMode === 'german';
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Handle Escape key to close modal
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [isOpen, onClose]);
+
+  // Focus management: focus close button when modal opens
+  useEffect(() => {
+    if (isOpen && closeButtonRef.current) {
+      closeButtonRef.current.focus();
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -72,6 +93,7 @@ export function LevelUpModal({ isOpen, level, rank, onClose }: LevelUpModalProps
         onClick={(e) => e.stopPropagation()}
       >
         <button
+          ref={closeButtonRef}
           type="button"
           onClick={onClose}
           className={theme.modal.close}

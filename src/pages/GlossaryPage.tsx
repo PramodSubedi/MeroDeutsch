@@ -7,6 +7,7 @@ import { speakWord } from '../hooks/useSpeech';
 import { useLang } from '../hooks/useLang';
 import { triggerHaptic } from '../utils/haptic';
 import { theme } from '../config/theme';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 interface GlossaryEntry {
   de: string;
@@ -16,6 +17,7 @@ interface GlossaryEntry {
 }
 
 export function GlossaryPage() {
+  usePageTitle('Glossary');
   const { langMode } = useLang();
   const isDE = langMode === 'german';
   const [query, setQuery] = useState('');

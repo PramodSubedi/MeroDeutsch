@@ -2,6 +2,9 @@ import { useState } from 'react';
 import { alphabetData } from '../../data/sharedContent';
 import { speakLetter } from '../../hooks/useSpeech';
 import { useProgress } from '../../hooks/useProgress';
+import { useReviewQueue } from '../../hooks/useReviewQueue';
+import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts';
+import { useXp } from '../../hooks/useXp';
 import type { AlphabetItem, LangMode } from '../../types';
 
 function pickOptions(correct: AlphabetItem): AlphabetItem[] {
@@ -15,6 +18,8 @@ function pickOptions(correct: AlphabetItem): AlphabetItem[] {
 
 export function AlphabetQuiz({ langMode }: { langMode: LangMode }) {
   const { progress, save, markPracticed } = useProgress();
+  const { addWrongAnswer } = useReviewQueue();
+  const { reportAnswer } = useXp();
   const [item, setItem] = useState(() => alphabetData[Math.floor(Math.random() * alphabetData.length)]);
   const [options, setOptions] = useState(() => pickOptions(item));
   const [sessionScore, setSessionScore] = useState(0);
@@ -43,13 +48,34 @@ export function AlphabetQuiz({ langMode }: { langMode: LangMode }) {
       p.quizCorrect = (p.quizCorrect || 0) + 1;
       markPracticed(item.id);
       setFeedback('🎉 Richtig!');
+      // +10 XP for a correct quiz answer (centralized award)
+      reportAnswer({ correct: true, module: 'alphabet' });
     } else {
       setWrongId(id);
       setFeedback(`❌ ${item.gerPhonetic}`);
+      // Add to review queue for wrong answers
+      const wrongOption = options.find((o) => o.id === id);
+      addWrongAnswer({
+        moduleType: 'alphabet',
+        itemKey: item.id,
+        userAnswer: wrongOption?.gerPhonetic || id,
+        correctAnswer: item.gerPhonetic,
+      });
     }
     save(p);
     speakLetter(item.speak);
   };
+
+  // Desktop keyboard shortcuts: Space = hear letter, 1-4 = pick option, Enter = next.
+  useKeyboardShortcuts({
+    onAudioPlay: () => speakLetter(item.speak),
+    onSelectOption: (index) => {
+      if (!locked && options[index]) check(options[index].id);
+    },
+    onNext: () => {
+      if (locked) next();
+    },
+  });
 
   const pct = sessionTotal ? Math.round((sessionScore / sessionTotal) * 100) : 0;
 

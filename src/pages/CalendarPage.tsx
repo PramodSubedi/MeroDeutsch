@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { sharedTextDatabase } from '../data/sharedContent';
 import { useLang } from '../hooks/useLang';
+import { usePageTitle } from '../hooks/usePageTitle';
 import { useReviewQueue } from '../hooks/useReviewQueue';
+import { useXp } from '../hooks/useXp';
 import { speakWord } from '../hooks/useSpeech';
 import { StandardStudyCard } from '../components/StandardStudyCard';
 import { SectionGrid } from '../components/SectionGrid';
@@ -14,9 +16,11 @@ function normalize(input: string): string {
 }
 
 export function CalendarPage() {
+  usePageTitle('Calendar');
   const { langMode } = useLang();
   const isDE = langMode === 'german';
   const { addWrongAnswer } = useReviewQueue();
+  const { reportAnswer } = useXp();
   const [tab, setTab] = useState<'days' | 'months'>('days');
   const [mode, setMode] = useState<'learn' | 'quiz'>('learn');
   const [calendar, setCalendar] = useState<CalendarItem[]>([]);
@@ -61,6 +65,8 @@ export function CalendarPage() {
     if (correct) {
       setQuizStatus('correct');
       setQuizScore((s) => s + 1);
+      // +10 XP for a correct quiz answer
+      reportAnswer({ correct: true, module: 'calendar' });
     } else {
       setQuizStatus('wrong');
       addWrongAnswer({
