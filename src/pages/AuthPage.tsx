@@ -9,8 +9,10 @@ export function AuthPage() {
   const navigate = useNavigate();
   const { register, login } = useAuth();
   const [mode, setMode] = useState<'login' | 'register'>('register');
+    const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+
   const [confirmPassword, setConfirmPassword] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -20,8 +22,8 @@ export function AuthPage() {
     setError('');
     setMessage('');
 
-    if (!username.trim() || !password) {
-      setError('Both username and password are required.');
+        if (!email.trim() || !password) {
+      setError('Both email and password are required.');
       return;
     }
 
@@ -31,9 +33,8 @@ export function AuthPage() {
         return;
       }
       try {
-        await register(username, password);
-        setMessage('Your account is ready! Redirecting to dashboard...');
-        window.setTimeout(() => navigate('/dashboard'), 600);
+        await register(email, password, username);
+        setMessage('Check your email for a confirmation link!');
       } catch (registerError: unknown) {
         setError(registerError instanceof Error ? registerError.message : 'Registration failed.');
       }
@@ -41,12 +42,13 @@ export function AuthPage() {
     }
 
     try {
-      await login(username, password);
+      await login(email, password);
       setMessage('Welcome back! Redirecting to dashboard...');
       window.setTimeout(() => navigate('/dashboard'), 600);
     } catch (loginError: unknown) {
       setError(loginError instanceof Error ? loginError.message : 'Login failed.');
     }
+
   };
 
   return (
@@ -81,17 +83,31 @@ export function AuthPage() {
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="grid gap-4">
+                <form onSubmit={handleSubmit} className="grid gap-4">
           <label className="space-y-2 text-sm font-medium text-slate-700 dark:text-slate-200">
-            Username
+            Email
             <input
-              type="text"
-              value={username}
-              onChange={(event) => setUsername(event.target.value)}
+              type="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
               className={theme.input}
-              placeholder="e.g. learner123"
+              placeholder="e.g. learner@example.com"
             />
           </label>
+
+          {mode === 'register' && (
+            <label className="space-y-2 text-sm font-medium text-slate-700 dark:text-slate-200">
+              Username
+              <input
+                type="text"
+                value={username}
+                onChange={(event) => setUsername(event.target.value)}
+                className={theme.input}
+                placeholder="e.g. learner123"
+              />
+            </label>
+          )}
+
 
           <label className="space-y-2 text-sm font-medium text-slate-700 dark:text-slate-200">
             Password

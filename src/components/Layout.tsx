@@ -10,6 +10,7 @@ import { useOnlineStatus } from '../hooks/useOnlineStatus';
 import { useLastModule } from '../hooks/useLastModule';
 import { BrandMark } from './BrandMark';
 import { Footer } from './Footer';
+import { ModuleChrome } from './learning/ModuleChrome';
 
 /** Top nav + shell — branding/layout only; features live in pages/ */
 export function Layout() {
@@ -22,6 +23,10 @@ export function Layout() {
   const { rememberModule } = useLastModule();
   const navigate = useNavigate();
   const [profileOpen, setProfileOpen] = useState(false);
+
+  // Module routes that should show the chrome navigation bar
+  const moduleRoutes = ['/alphabet', '/numbers', '/calendar', '/articles', '/greetings'];
+  const isModuleRoute = moduleRoutes.includes(pathname);
 
   // Track last opened module for "Continue learning" on Home.
   useEffect(() => {
@@ -48,7 +53,7 @@ export function Layout() {
       <header className={`${theme.layout.header} z-50`}>
         <div className={theme.layout.headerInner}>
           {/* Logo is a link → Home */}
-          <BrandMark linked className="text-lg" />
+          <BrandMark linked light className="text-lg" />
           <nav className={theme.layout.nav}>
             {link('/', 'Home')}
             {user ? link('/dashboard', 'Dashboard') : link('/auth', 'Sign in')}
@@ -101,7 +106,11 @@ export function Layout() {
             : 'You are offline — cached lessons still work.'}
         </div>
       )}
-      <main className={theme.layout.main}>
+      <main
+        className={theme.layout.main}
+        style={isModuleRoute ? { paddingTop: '2rem' } : undefined}
+      >
+        {isModuleRoute && <ModuleChrome />}
         <Outlet />
       </main>
       <Footer />

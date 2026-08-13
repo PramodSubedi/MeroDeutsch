@@ -1,11 +1,14 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { getItem, setItem } from '../utils/safeStorage';
+import { scopedKey } from '../utils/userStorage';
+import { useAuth } from './useAuth';
+import { supabase } from '../lib/supabase';
+import type { Badge, Progress, UnlockedBadge, UserAchievements } from '../types';
 
 const DEBOUNCE_MS = 300;
 let saveTimeout: ReturnType<typeof setTimeout> | null = null;
-import type { Badge, Progress, UserAchievements } from '../types';
 
-const KEY = 'meroDeutschAchievements';
+const BASE_KEY = 'meroDeutschAchievements';
 
 export const ALL_BADGES: Badge[] = [
   {
@@ -66,18 +69,20 @@ export const ALL_BADGES: Badge[] = [
   },
 ];
 
-function loadAchievements(): UserAchievements {
+const EMPTY: UserAchievements = { badges: [] };
+
+function loadAchievements(key: string): UserAchievements {
   try {
-    const raw = getItem(KEY);
-    if (!raw) return { badges: [] };
+    const raw = getItem(key);
+    if (!raw) return EMPTY;
     return JSON.parse(raw) as UserAchievements;
   } catch {
-    return { badges: [] };
+    return EMPTY;
   }
 }
 
-function saveAchievements(data: UserAchievements) {
-  setItem(KEY, JSON.stringify(data));
+function saveAchievements(key: string, data: UserAchievements) {
+  setItem(key, JSON.stringify(data));
 }
 
 /** Evaluate badge rules against current progress. Returns newly-unlocked badge ids. */
@@ -102,23 +107,68 @@ function evaluateRules(progress: Progress): string[] {
 }
 
 export function useAchievements() {
-  const [achievements, setAchievements] = useState<UserAchievements>(loadAchievements);
+  const { user, isAuthenticated } = useAuth();
+  const userId = user?.userId ?? null;
+  const key = scopedKey(BASE_KEY, userId);
+  const [achievements, setAchievements] = useState<UserAchievements>(() => loadAchievements(key));
 
-  const unlockBadge = useCallback((badgeId: string) => {
-    setAchievements((prev) => {
-      if (prev.badges.some((b) => b.id === badgeId)) return prev;
-      const next: UserAchievements = {
-        badges: [...prev.badges, { id: badgeId, unlockedAt: new Date().toISOString() }],
+  // Reset in-memory state when the user changes (login/logout/switch).
+  useEffect(() => {
+    setAchievements(loadAchievements(key));
+  }, [key]);
+
+  // Fetch achievements from Supabase on login.
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      const fetchRemoteAchievements = async () => {
+        const { data, error } = await supabase
+          .from('user_achievements')
+          .select('badge_id, unlocked_at')
+          .eq('user_id', user.userId);
+
+        if (!error && data) {
+          const remote: UnlockedBadge[] = (data as { badge_id: string; unlocked_at: string }[]).map(
+            (row) => ({ id: row.badge_id, unlockedAt: row.unlocked_at })
+          );
+          const local = loadAchievements(key);
+          const mergedMap = new Map<string, UnlockedBadge>();
+          [...local.badges, ...remote].forEach((b) => {
+            if (b.id) mergedMap.set(b.id, b);
+          });
+          const merged: UserAchievements = { badges: Array.from(mergedMap.values()) };
+          setAchievements(merged);
+          saveAchievements(key, merged);
+        }
       };
-      if (saveTimeout) {
-        clearTimeout(saveTimeout);
-      }
-      saveTimeout = setTimeout(() => {
-        saveAchievements(next);
-      }, DEBOUNCE_MS);
-      return next;
-    });
-  }, []);
+      fetchRemoteAchievements();
+    }
+  }, [isAuthenticated, user, key]);
+
+  const unlockBadge = useCallback(
+    (badgeId: string) => {
+      setAchievements((prev) => {
+        if (prev.badges.some((b) => b.id === badgeId)) return prev;
+        const next: UserAchievements = {
+          badges: [...prev.badges, { id: badgeId, unlockedAt: new Date().toISOString() }],
+        };
+        if (saveTimeout) {
+          clearTimeout(saveTimeout);
+        }
+        saveTimeout = setTimeout(() => {
+          saveAchievements(key, next);
+          if (isAuthenticated && user) {
+            void supabase.from('user_achievements').upsert({
+              user_id: user.userId,
+              badge_id: badgeId,
+              unlocked_at: new Date().toISOString(),
+            });
+          }
+        }, DEBOUNCE_MS);
+        return next;
+      });
+    },
+    [key, isAuthenticated, user]
+  );
 
   /** Check all rules against progress and unlock any newly-earned badges. */
   const checkAndUnlock = useCallback(

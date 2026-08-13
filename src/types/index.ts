@@ -68,6 +68,7 @@ export interface Progress {
 export interface AuthUser {
   userId: string;
   username: string;
+  avatarUrl?: string;
 }
 
 export interface WrongAnswerItem {
