@@ -10,9 +10,6 @@ let saveTimeout: ReturnType<typeof setTimeout> | null = null;
 
 const BASE_KEY = 'meroDeutschWrongAnswers';
 
-/** SM-2–style interval ladder for v1 (days). */
-const INTERVAL_LADDER = [1, 3, 7];
-
 /** Leitner 5-Box System: Review intervals in days for each box level */
 const LEITNER_INTERVALS = [1, 3, 7, 14, 30]; // Box 1-5 intervals
 

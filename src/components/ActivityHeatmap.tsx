@@ -86,7 +86,7 @@ export function ActivityHeatmap({ activities = [], days = 30 }: ActivityHeatmapP
 
       {/* Heatmap Grid */}
       <div className="grid grid-cols-10 gap-1.5 sm:grid-cols-15 md:grid-cols-30">
-        {heatmapData.map((day, index) => (
+        {heatmapData.map((day, _index) => (
           <div
             key={day.date}
             className={`group relative aspect-square rounded transition-all duration-200 hover:scale-110 hover:shadow-lg ${getColorClass(day.count)}`}

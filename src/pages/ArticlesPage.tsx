@@ -7,7 +7,7 @@ import { useReviewQueue } from '../hooks/useReviewQueue';
 import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
 import { theme } from '../config/theme';
 import { curriculumService } from '../services';
-import type { ArticleItem } from '../types/curriculum';
+import type { ArticleItem } from '../types';
 
 function randomArticleItem(pool: ArticleItem[], previous: string | null) {
   const filtered = pool.filter((item) => item.noun !== previous);
@@ -132,7 +132,7 @@ export function ArticlesPage() {
         }
       }
     },
-    [audioSupported, isDE, sharedTranslations, stop, supported]
+    [audioSupported, isDE, stop, supported]
   );
 
   useEffect(() => {
@@ -308,7 +308,7 @@ export function ArticlesPage() {
       if (stream) {
         startVisualizer(stream);
       }
-    } catch (error) {
+    } catch {
       setSpeechMessage(
         isDE
           ? 'Mikrofonberechtigung verweigert oder ein Fehler ist aufgetreten.'

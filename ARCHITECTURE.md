@@ -231,21 +231,16 @@ src/
     alphabet.ts        # Canonical alphabet data (30 letters) — consumed by
                        # LocalCurriculumService.getAlphabet(); AlphabetPage migrated to service
     articles.ts        # Canonical article data (der/die/das nouns)
-    calendar.ts        # daysData + monthsData — ORPHANED (not imported anywhere;
-                       # calendarData in sharedContent.ts is the active source)
     dictation.ts       # Canonical dictation words (DictationWord[]) — consumed by
                        # LocalCurriculumService.getDictationWords(); DictationPage migrated to service
     grammar.ts         # CONJUGATIONS, CASES, DRILLS — canonical grammar data
-    greetings.ts       # greetingsData — ORPHANED (not imported anywhere;
-                       # greetingsData in sharedContent.ts is the active source)
     numbers.ts         # Canonical numbers data (Record<NumberRange, NumberItem[]>) + numberRules
     pronunciationTips.ts # Pronunciation tips keyed by alphabet item id
     roleplay.ts        # Canonical SCENARIOS (RoleplayScenario[]) — consumed by
                        # LocalCurriculumService.getRoleplayScenarios(); RoleplayPage migrated to service
     sharedContent.ts   # Aggregates re-exports + sharedTextDatabase + sharedTranslations.
-                       # numbersData is now sourced from numbers.ts (flattened).
-                       # greetingsData and calendarData are still defined inline
-                       # (duplicates of greetings.ts / calendar.ts).
+                       # numbersData sourced from numbers.ts (flattened).
+                       # greetingsData and calendarData defined inline (canonical source).
     spelling.ts        # spellingWords (easy + medium)
     loadVocabulary.ts  # Loads + dedupes vocabulary from JSON files
     vocab/
@@ -331,10 +326,9 @@ public/
 
 | Feature | Issue | Impact |
 |---------|-------|--------|
-| Greetings | `src/data/greetings.ts` exists with `greetingsData` but is **orphaned** (not imported anywhere). The active `greetingsData` lives in `sharedContent.ts`. | Low — data is identical, just an unused file. |
-| Calendar | `src/data/calendar.ts` exists with `daysData` + `monthsData` but is **orphaned** (not imported anywhere). The active `calendarData` lives in `sharedContent.ts`. | Low — data is identical, just an unused file. |
 | Numbers | `sharedContent.ts` previously had an inline flat `numbersData` duplicate of `numbers.ts`. **Fixed in this baseline** — `sharedContent.ts` now sources from `numbers.ts` via `Object.values(numbersByRange).flat()`. | Resolved. |
-| Calendar data | `data/calendar.ts` uses different phonetic values from `sharedContent.ts`'s `calendarData`. If `data/calendar.ts` were ever imported, it would conflict. | Low — orphaned, not imported. |
+| Greetings | Orphaned `src/data/greetings.ts` file **removed (2026-08-13)** — `sharedContent.ts` is the canonical source. | Resolved. |
+| Calendar | Orphaned `src/data/calendar.ts` file **removed (2026-08-13)** — `sharedContent.ts` is the canonical source. | Resolved. |
 | Roleplay | `RoleplayPage.tsx` defined its own local `SCENARIES`; `data/roleplay.ts` had the same data. **Resolved in Phase 1** — page now uses `curriculumService.getRoleplayScenarios()`. | Resolved. |
 | Dictation | `DictationPage.tsx` defined its own local `DICTATION_WORDS`; `data/dictation.ts` had the same data. **Resolved in Phase 1** — page now uses `curriculumService.getDictationWords()`. | Resolved. |
 | Numbers | `NumbersPage.tsx` has component-level `getItemsByRange` that filters flat array data from the service by `item.n`. The `numberRules` constant is also defined locally in the page. | Low — functional, just duplicated definitions. |

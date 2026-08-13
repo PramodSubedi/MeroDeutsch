@@ -62,9 +62,14 @@ export function useXp() {
   const [totalXp, setTotalXp] = useState<number>(loadLocalXp);
   const [levelUpCallback, setLevelUpCallback] = useState<((newLevel: number) => void) | null>(null);
 
+  const levelInfo = calculateLevel(totalXp);
+  const xpProgress = totalXp > 0 ? Math.round((totalXp % 250) / 250 * 100) : 0;
+
   const userXp: UserXP = {
     totalXp,
-    ...calculateLevel(totalXp),
+    ...levelInfo,
+    xpForNextLevel: levelInfo.xpToNextLevel,
+    xpProgress,
   };
 
   // Fetch XP from Supabase on mount (if authenticated)
@@ -103,7 +108,7 @@ export function useXp() {
    * Automatically syncs to Supabase if authenticated
    */
   const awardXp = useCallback(
-    async (amount: number, source: string = 'activity') => {
+    async (amount: number, _source: string = 'activity') => {
       const oldLevel = calculateLevel(totalXp).level;
       const newTotalXp = totalXp + amount;
       const newLevel = calculateLevel(newTotalXp).level;

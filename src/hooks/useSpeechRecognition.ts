@@ -100,7 +100,7 @@ export function useSpeechRecognition({ lang = 'de-DE', onResult, onError }: UseS
 
     try {
       recognition.start();
-    } catch (error) {
+    } catch {
       setStatus('Could not start speech recognition.');
       setListening(false);
       onError?.('Could not start speech recognition.');

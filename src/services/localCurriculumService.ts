@@ -5,12 +5,9 @@ import type {
   GreetingItem, 
   ArticleItem, 
   SpellingWord,
-  CurriculumService,
-  GrammarDrill,
-  GrammarItem,
-  RoleplayScenario,
-  DictationWord
-} from '../types/curriculum';
+  VocabEntry
+} from '../types';
+import type { CurriculumService, GrammarDrill, GrammarItem, RoleplayScenario, DictationWord } from '../types/curriculum';
 import { alphabetData, numbersData, calendarData, greetingsData, articlesData } from '../data/sharedContent';
 import { spellingWords } from '../data/spelling';
 import { vocabularyData } from '../data/loadVocabulary';
@@ -43,7 +40,7 @@ export class LocalCurriculumService implements CurriculumService {
     return Object.values(spellingWords).flat();
   }
 
-  async getVocabulary(): Promise<any[]> {
+  async getVocabulary(): Promise<VocabEntry[]> {
     return vocabularyData;
   }
 

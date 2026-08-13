@@ -16,7 +16,7 @@ export function DictationPage() {
   const { langMode } = useLang();
   const isDE = langMode === 'german';
   const { addWrongAnswer } = useReviewQueue();
-  const { level, rank, awardXp, onLevelUp } = useXp();
+  const { level: _level, rank, awardXp, onLevelUp } = useXp();
   const [word, setWord] = useState<DictationWord | null>(null);
   const [dictationWords, setDictationWords] = useState<DictationWord[]>([]);
   const [attempt, setAttempt] = useState('');

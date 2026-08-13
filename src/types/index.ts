@@ -112,10 +112,23 @@ export interface UserXP {
   level: number;
   rank: string;
   xpToNextLevel: number;
+  xpForNextLevel: number;
+  xpProgress: number;
 }
 
 export interface XPReward {
   amount: number;
   source: string;
   timestamp: string;
+}
+
+export interface VocabEntry {
+  id: string;
+  de: string;
+  en: string;
+  ne: string;
+  tags: string[];
+  level: 'A1';
+  exampleDe?: string;
+  audioId?: string;
 }

@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect } from 'react';
-import { vocabularyData } from '../data/loadVocabulary';
-import { alphabetData, numbersData } from '../data/sharedContent';
+import { curriculumService } from '../services';
+import type { VocabEntry, AlphabetItem, NumberItem } from '../types';
 import { speakWord } from '../hooks/useSpeech';
 import { useLang } from '../hooks/useLang';
 import { useAchievements } from '../hooks/useAchievements';
@@ -56,7 +56,12 @@ const daySeed = () => {
 };
 const pick = <T,>(arr: T[], seed: number): T => arr[seed % arr.length];
 
-function buildQuestions(seed: number): QA[] {
+function buildQuestions(
+  seed: number,
+  vocabularyData: VocabEntry[],
+  alphabetData: AlphabetItem[],
+  numbersData: NumberItem[]
+): QA[] {
   const out: QA[] = [];
   const vw = pick(vocabularyData, seed);
   out.push({
@@ -84,8 +89,33 @@ export function DailyChallenge() {
   const isDE = langMode === 'german';
   const { unlockBadge } = useAchievements();
   const seed = useMemo(daySeed, []);
-  const wordOfDay = useMemo(() => pick(vocabularyData, seed), [seed]);
-  const questions = useMemo(() => buildQuestions(seed), [seed]);
+  
+  // State for data from curriculumService
+  const [vocabularyData, setVocabularyData] = useState<VocabEntry[]>([]);
+  const [alphabetData, setAlphabetData] = useState<AlphabetItem[]>([]);
+  const [numbersData, setNumbersData] = useState<NumberItem[]>([]);
+  const [dataLoaded, setDataLoaded] = useState(false);
+  
+  // Fetch data from curriculumService
+  useEffect(() => {
+    const loadData = async () => {
+      const [vocab, alpha, nums] = await Promise.all([
+        curriculumService.getVocabulary(),
+        curriculumService.getAlphabet(),
+        curriculumService.getNumbers(),
+      ]);
+      setVocabularyData(vocab);
+      setAlphabetData(alpha);
+      setNumbersData(nums);
+      setDataLoaded(true);
+    };
+    loadData();
+  }, []);
+  
+  const wordOfDay = useMemo(() => dataLoaded ? pick(vocabularyData, seed) : null, [vocabularyData, seed, dataLoaded]);
+  const questions = useMemo(() => dataLoaded ? buildQuestions(seed, vocabularyData, alphabetData, numbersData) : [], 
+    [seed, vocabularyData, alphabetData, numbersData, dataLoaded]);
+  
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [started, setStarted] = useState(false);
   const done = getItem(KEY) === new Date().toDateString();
@@ -114,6 +144,10 @@ export function DailyChallenge() {
       }
     }
   };
+
+  if (!dataLoaded || !wordOfDay) {
+    return <div className={`${theme.panel.surface} mb-6`}>Loading...</div>;
+  }
 
   return (
     <div className={`${theme.panel.surface} mb-6`}>

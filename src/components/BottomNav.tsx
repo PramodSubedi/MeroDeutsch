@@ -44,6 +44,18 @@ export function BottomNav() {
               pathname.startsWith('/roleplay'),
     },
     {
+      to: '/analytics',
+      icon: '📊',
+      label: isDE ? 'Analytik' : 'Analytics',
+      active: pathname.startsWith('/analytics'),
+    },
+    {
+      to: '/import',
+      icon: '📥',
+      label: isDE ? 'Import' : 'Import',
+      active: pathname.startsWith('/import'),
+    },
+    {
       to: user ? '/dashboard' : '/auth',
       icon: user ? '📊' : '👤',
       label: user ? (isDE ? 'Dashboard' : 'Dashboard') : (isDE ? 'Anmelden' : 'Sign in'),

@@ -7,7 +7,7 @@ import { StandardStudyCard } from '../components/StandardStudyCard';
 import { SectionGrid } from '../components/SectionGrid';
 import { theme } from '../config/theme';
 import { curriculumService } from '../services';
-import type { GreetingItem } from '../types/curriculum';
+import type { GreetingItem } from '../types';
 
 function normalize(input: string): string {
   return input.trim().toLowerCase().replace(/\s+/g, ' ');

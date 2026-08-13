@@ -63,7 +63,10 @@ export function Layout() {
           <BrandMark linked light className="text-lg" />
           <nav className={`${theme.layout.nav} hidden md:flex`}>
             {link('/', 'Home')}
-            {user ? link('/dashboard', 'Dashboard') : link('/auth', 'Sign in')}
+            {user && link('/dashboard', 'Dashboard')}
+            {user && link('/analytics', 'Analytics')}
+            {user && link('/import', 'Import')}
+            {user ? link('/learn', 'Learn') : link('/auth', 'Sign in')}
             <button type="button" onClick={toggleLang} className={theme.layout.toggleButton}>
               {langMode === 'normal'
                 ? t(sharedTranslations.navigation.toggleGerman)
@@ -90,6 +93,20 @@ export function Layout() {
                       onClick={() => setProfileOpen(false)}
                     >
                       Dashboard
+                    </Link>
+                    <Link
+                      to="/analytics"
+                      className="block rounded-xl px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
+                      onClick={() => setProfileOpen(false)}
+                    >
+                      Analytics
+                    </Link>
+                    <Link
+                      to="/import"
+                      className="block rounded-xl px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
+                      onClick={() => setProfileOpen(false)}
+                    >
+                      Import
                     </Link>
                     <button
                       type="button"

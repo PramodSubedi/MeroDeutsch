@@ -78,7 +78,7 @@ export function NumbersPage() {
     ? 'Lerne auf Deutsch zu zählen'
     : sharedTextDatabase.numbers.description;
 
-  const nextQuiz = () => {
+  const nextQuiz = useCallback(() => {
     if (numbersData.length === 0) return;
     const pool = numbersData;
     const q = pool[Math.floor(Math.random() * pool.length)];
@@ -90,11 +90,11 @@ export function NumbersPage() {
     setQuiz(q);
     setOpts(o.sort(() => Math.random() - 0.5));
     setFb('');
-  };
+  }, [numbersData]);
 
   const nextQuizCallback = useCallback(() => {
     if (numbersData.length > 0) nextQuiz();
-  }, [numbersData]);
+  }, [numbersData, nextQuiz]);
 
   useEffect(() => {
     nextQuizCallback();

@@ -10,6 +10,7 @@ import { theme } from '../config/theme';
 import { BrandMark } from '../components/BrandMark';
 import { EmptyState } from '../components/EmptyState';
 import { ActivityHeatmap } from '../components/ActivityHeatmap';
+import { ReviewSessionManager } from '../components/ReviewSessionManager';
 import { triggerConfetti } from '../utils/confetti';
 import type { WrongAnswerItem } from '../types';
 
@@ -54,10 +55,7 @@ export function DashboardPage() {
   const reviewTitle = isDE ? 'Review-Warteschlange' : 'Review queue';
   const reviewSubtitle = isDE ? 'Konzentriere dich auf deine häufigsten Fehler.' : 'Focus on your most frequent mistakes.';
   const clearAllLabel = isDE ? 'Alle löschen' : 'Clear all';
-  const resolvedLabel = isDE ? 'Erledigt' : 'Resolved';
-  const emptyQueue = isDE
-    ? 'Noch keine Review-Einträge. Übe einige Module, um deine Warteschlange aufzubauen.'
-    : 'No review items yet. Practice some modules to build your queue.';
+const resolvedLabel = isDE ? 'Erledigt' : 'Resolved';
   const overallScore = isDE ? 'Gesamtpunktzahl' : 'Overall score';
   const quizAccuracy = isDE ? 'Quiz-Genauigkeit beim Alphabet-Training.' : 'Quiz accuracy across alphabet practice.';
   const streakLabel = isDE ? 'Serie' : 'Streak';
@@ -189,6 +187,15 @@ export function DashboardPage() {
             </button>
           )}
         </div>
+
+        {/* SRS Review Session Manager (filter tabs + flashcard player + summary) */}
+        <div className="mb-6">
+          <ReviewSessionManager
+            queue={queue}
+            onMarkCorrect={markCorrect}
+          />
+        </div>
+
         {queue.length === 0 ? (
           <EmptyState
             icon="🎯"

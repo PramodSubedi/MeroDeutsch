@@ -9,7 +9,6 @@
 
 - **Phase 2** — Standardize content types and stable IDs across all data files. Replace array-index-based keys with stable string IDs (e.g., `"a1-articles-tisch"`).
 - **Phase 3** — Introduce curriculum metadata hierarchy (Level → Module → Lesson → Content).
-- **Orphaned data files** — Remove `src/data/calendar.ts` and `src/data/greetings.ts` OR wire them in. `sharedContent.ts` currently defines inline duplicates of both.
 - **Unused service methods** — `getSpellingWords()` and `getGrammarConjugations()` are defined but never called. Wire them to pages or remove if unnecessary.
 - **Type cleanup** — `getVocabulary()` returns `Promise<any[]>`; define a proper `VocabularyItem` type. `DictationWord` interface duplicated in `data/dictation.ts` and `types/curriculum.ts`.
 
@@ -22,6 +21,12 @@
 - **ContinueLearningPage enhancements** — Add progress summary + quick-access links to recent modules inside `/learn` (Phase B). The basic `/learn` route is already live.
 
 ## COMPLETED
+
+### Data Cleanup — Orphaned Files Removal (2026-08-13)
+
+- ✅ **Removed orphaned data files** — Deleted `src/data/calendar.ts` and `src/data/greetings.ts` (duplicates of data in `sharedContent.ts`)
+- ✅ **Updated ARCHITECTURE.md** — Documented removal in "Known Duplications & Issues" and "Data Location" sections
+- ✅ Verification: Files confirmed unused (0 imports), build still passes
 
 ### Per-User Progress Isolation + Guest UX Cleanup (2026-08-13)
 

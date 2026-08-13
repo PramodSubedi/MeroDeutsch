@@ -79,11 +79,30 @@ export function useKeyboardShortcuts({
  * Shows subtle hints like [1], [2], [Space], [Enter] next to interactive elements.
  */
 export function KeyboardHint({ shortcut, className = '' }: { shortcut: string; className?: string }) {
+  const classes = [
+    'hidden',
+    'md:inline-flex',
+    'items-center',
+    'justify-center',
+    'min-w-[20px]',
+    'h-5',
+    'px-1.5',
+    'text-[10px]',
+    'font-medium',
+    'text-slate-500',
+    'bg-slate-100',
+    'border',
+    'border-slate-300',
+    'rounded',
+    'shadow-sm',
+    'dark:text-slate-400',
+    'dark:bg-slate-800',
+    'dark:border-slate-600',
+    className
+  ].filter(Boolean).join(' ');
+
   return (
-    <span
-      className={`hidden md:inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[10px] font-medium text-slate-500 bg-slate-100 border border-slate-300 rounded shadow-sm dark:text-slate-400 dark:bg-slate-800 dark:border-slate-600 ${className}`}
-      aria-hidden="true"
-    >
+    <span className={classes} aria-hidden="true">
       {shortcut}
     </span>
   );
