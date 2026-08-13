@@ -25,36 +25,20 @@ export function LearningPath() {
 
   return (
     <section className="mb-8" id="learning-path">
-      <div className="flex items-center gap-4 mb-4">
-        <h2 className="text-2xl font-bold">{isDE ? 'Lernpfad A1' : 'A1 Learning Path'}</h2>
-        <div className="h-px flex-1 bg-slate-200 dark:bg-slate-700"></div>
-      </div>
-
-      <div className="mb-6 flex gap-2 overflow-x-auto pb-2 scrollbar-thin">
-        {sections.map((sec) => (
-          <Link
-            key={sec.key + '-quick'}
-            to={sec.path}
-            className="flex-shrink-0 rounded-full border border-slate-200 bg-white px-4 py-1.5 text-xs font-semibold text-slate-700 hover:border-blue-300 hover:text-blue-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300"
-          >
-            {sec.icon} {sec.label}
-          </Link>
-        ))}
-      </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         {sections.map((section) => (
           <Link
             key={section.key}
             to={section.path}
-            className="group overflow-hidden rounded-[28px] border border-slate-200 bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-blue-300 hover:bg-slate-50 hover:shadow-xl dark:border-slate-700 dark:bg-slate-950 dark:hover:border-blue-500 dark:hover:bg-slate-900"
+            className="group flex h-full flex-col overflow-hidden rounded-[28px] border border-slate-200 bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-blue-300 hover:bg-slate-50 hover:shadow-xl dark:border-slate-700 dark:bg-slate-950 dark:hover:border-blue-500 dark:hover:bg-slate-900"
             aria-label={`${section.label} module`}
           >
             <div className="mb-5 text-4xl" aria-hidden="true">
               {section.icon}
             </div>
             <h3 className="text-xl font-semibold tracking-tight text-slate-950 dark:text-white">{section.label}</h3>
-            <p className="mt-3 text-sm leading-7 text-slate-600 dark:text-slate-400">
+            <p className="mt-3 flex-1 text-sm leading-7 text-slate-600 dark:text-slate-400">
               {sharedTextDatabase[section.key]?.description || ''}
             </p>
             <div className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-blue-600 transition group-hover:text-blue-800 dark:text-blue-300 dark:group-hover:text-blue-200">
