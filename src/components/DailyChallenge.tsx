@@ -7,6 +7,44 @@ import { useAchievements } from '../hooks/useAchievements';
 import { getItem, setItem } from '../utils/safeStorage';
 import { theme } from '../config/theme';
 
+// Article mapping for common German nouns
+const articleMap: Record<string, string> = {
+  'Mutter': 'die',
+  'Vater': 'der',
+  'Bruder': 'der',
+  'Schwester': 'die',
+  'Kind': 'das',
+  'Familie': 'die',
+  'Freund': 'der',
+  'Freundin': 'die',
+  'Tag': 'der',
+  'Woche': 'die',
+  'Monat': 'der',
+  'Jahr': 'das',
+  'Haus': 'das',
+  'Auto': 'das',
+  'Buch': 'das',
+  'Tisch': 'der',
+  'Stuhl': 'der',
+  'Brot': 'das',
+  'Wasser': 'das',
+  'Kaffee': 'der',
+  'Tee': 'der',
+  'Milch': 'die',
+  'Apfel': 'der',
+  'Banane': 'die',
+  'Stadt': 'die',
+  'Land': 'das',
+  'Mensch': 'der',
+  'Mann': 'der',
+  'Frau': 'die',
+};
+
+function getGermanWithArticle(word: string): string {
+  const article = articleMap[word];
+  return article ? `${article} ${word}` : word;
+}
+
 const KEY = 'meroDeutschLastDailyChallenge';
 type QA = { prompt: string; options: string[]; correct: string };
 const daySeed = () => {
@@ -79,45 +117,34 @@ export function DailyChallenge() {
 
   return (
     <div className={`${theme.panel.surface} mb-6`}>
-      <div className="mb-4 flex items-center gap-3">
-        <div>
-          <h2 className="text-lg font-semibold text-slate-950 dark:text-white">
+      <div className="mb-4 flex flex-wrap items-start gap-4">
+        <div className="flex-1">
+          <h2 className="text-lg font-semibold text-slate-950 dark:text-white mb-2">
             {isDE ? 'Wort des Tages' : 'Word of the Day'} 🗓️
           </h2>
+          {/* German word prominently displayed with article if noun */}
+          <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-1">
+            {getGermanWithArticle(wordOfDay.de)}
+          </div>
+          <div className="text-sm text-slate-600 dark:text-slate-400">
+            {wordOfDay.en} • {wordOfDay.ne}
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <button type="button" onClick={() => speakWord(wordOfDay.de)} className={theme.button.icon} aria-label="Speak word">
+            🔊
+          </button>
           <button
             type="button"
             onClick={() => setIsExpanded((v) => !v)}
-            className={isExpanded ? 'hover:opacity-80' : 'hover:opacity-80'}
+            className="text-xs text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
             aria-controls="wotd-content"
             aria-expanded={isExpanded}
           >
-            {isDE ? 'Wort zusammenklappen' : 'Collapse word'}
+            {isExpanded ? (isDE ? 'Ausblenden' : 'Hide') : (isDE ? 'Einblenden' : 'Show')}
           </button>
         </div>
-        {!isDE && (
-          <div className="mb-4 rounded-xl bg-slate-50 p-3 text-sm dark:bg-slate-900">
-            <div className="text-slate-700 dark:text-slate-200">{wordOfDay.en}</div>
-            <div className="text-slate-500 dark:text-slate-400">{wordOfDay.ne}</div>
-          </div>
-        )}
-        <button type="button" onClick={() => speakWord(wordOfDay.de)} className={theme.button.icon}>🔊</button>
       </div>
-
-      {/* Expanded content when not completed */}
-      {isExpanded && !done && (
-        <div className="mb-4 p-4 rounded-bg border-l-4 border-blue-500">
-          <div className="text-sm text-slate-700 dark:text-slate-300">
-            {isDE ? 'Tägliches Wort' : 'Daily Word'}
-            <br />
-            {wordOfDay.de}
-          </div>
-          {!isDE && (
-            <div className="mt-2 text-sm text-slate-600 dark:text-slate-400">
-              {wordOfDay.en}
-            </div>
-          )}
-        </div>
-      )}
 
       {!isExpanded || done ? (
         <div className="mb-3 text-sm font-semibold text-slate-700 dark:text-slate-200">

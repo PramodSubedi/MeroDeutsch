@@ -1,10 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-sans: 'Inter', 'Noto Sans Devanagari', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --color-brand: #2563eb;
   --color-mero-red: #dc2626;
   --color-accent-gold: #f59e0b;
@@ -19,6 +19,18 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+}
+
+/* Mixed-script typography: Devanagari vertical spacing fix */
+.nepali-text,
+[lang="ne"],
+*:has(.nepali-text) {
+  line-height: 1.6;
+}
+
+/* Ensure Nepali content has relaxed line-height to prevent clipping */
+.leading-nepali {
+  line-height: 1.6;
 }
 
 /* Scrollbar styles */
@@ -55,4 +67,82 @@ html.dark {
 
 .dark ::-webkit-scrollbar-thumb:hover {
   background-color: #64748b;
+}
+
+/* Keyboard Navigation & Accessibility */
+/* Global focus-visible styles for consistent keyboard navigation */
+a:focus-visible,
+button:focus-visible,
+[role="button"]:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+  border-radius: 0.25rem;
+}
+
+.dark a:focus-visible,
+.dark button:focus-visible,
+.dark [role="button"]:focus-visible,
+.dark input:focus-visible,
+.dark textarea:focus-visible,
+.dark select:focus-visible {
+  outline-color: #60a5fa;
+}
+
+/* Remove default focus outline only when focus-visible is supported */
+a:focus:not(:focus-visible),
+button:focus:not(:focus-visible),
+[role="button"]:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Ensure interactive elements have proper cursor */
+button,
+[role="button"],
+a,
+input[type="submit"],
+input[type="button"] {
+  cursor: pointer;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  a:focus-visible,
+  button:focus-visible,
+  [role="button"]:focus-visible {
+    outline-width: 3px;
+    outline-offset: 3px;
+  }
+}
+
+/* Screen reader only content */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Skip to main content link for keyboard users */
+.skip-to-main {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #2563eb;
+  color: white;
+  padding: 8px 16px;
+  text-decoration: none;
+  z-index: 100;
+  border-radius: 0 0 4px 0;
+}
+
+.skip-to-main:focus {
+  top: 0;
 }

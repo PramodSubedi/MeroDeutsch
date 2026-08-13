@@ -14,7 +14,7 @@ export const theme = {
   },
   layout: {
     app: 'min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100',
-    header: 'bg-blue-600 text-white shadow sticky top-0 z-40',
+    header: 'bg-blue-600 text-white shadow-md backdrop-blur-sm sticky top-0 z-50',
     headerInner: 'max-w-6xl mx-auto px-3 py-2.5 flex flex-col sm:flex-row justify-between items-center gap-2',
     brand: 'text-lg font-bold flex items-center gap-1',
     nav: 'flex flex-wrap justify-center gap-1.5',
@@ -45,7 +45,7 @@ export const theme = {
   },
   card: {
     surface: 'rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-blue-300 dark:border-slate-700 dark:bg-slate-800',
-    badge: 'w-10 text-center text-2xl font-bold text-blue-600 dark:text-blue-400',
+    badge: 'w-10 text-center text-xl sm:text-2xl font-bold text-blue-600 dark:text-blue-400',
     title: 'text-lg font-bold text-slate-900 dark:text-slate-100',
     line: 'mt-1 text-sm text-slate-500 dark:text-slate-400',
     footer: 'mt-1 text-[11px] text-slate-400 dark:text-slate-400',

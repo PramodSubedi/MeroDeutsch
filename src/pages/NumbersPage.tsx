@@ -270,7 +270,15 @@ export function NumbersPage() {
                 onClick={() => {
                   if (o.de === quiz.de) {
                     setFb('🎉 Richtig!');
-                  } else setFb(`❌ ${quiz.de}`);
+                  } else {
+                    setFb(`❌ ${quiz.de}`);
+                    addWrongAnswer({
+                      moduleType: 'numbers',
+                      itemKey: quiz.de,
+                      userAnswer: o.de,
+                      correctAnswer: quiz.de,
+                    });
+                  }
                   speakWord(quiz.de);
                 }}
               >

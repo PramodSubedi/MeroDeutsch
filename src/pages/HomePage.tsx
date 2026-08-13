@@ -6,6 +6,7 @@ import { BrandMark } from '../components/BrandMark';
 import { DailyChallenge } from '../components/DailyChallenge';
 import { LearningPath } from '../components/learning/LearningPath';
 import { PracticeToolsGrid } from '../components/PracticeToolsGrid';
+import { XpWidget } from '../components/XpWidget';
 import { useProgress } from '../hooks/useProgress';
 import { useReviewQueue } from '../hooks/useReviewQueue';
 import { useLang } from '../hooks/useLang';
@@ -46,7 +47,7 @@ export function HomePage() {
     <div className="text-center py-6 lg:py-10">
       <div className="inline-flex items-center gap-3 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-xs uppercase tracking-[0.35em] text-slate-500 shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
         <BrandMark className="text-sm" />
-        {streakCount > 0 && (
+        {isAuthenticated && streakCount > 0 && (
           <div className="inline-flex items-center gap-2 rounded-full bg-blue-500/10 px-3 py-1 text-xs font-semibold text-blue-700 dark:bg-blue-400/15 dark:text-blue-300">
             <span>🔥</span> <span>{streakCount} day streak</span>
           </div>
@@ -74,7 +75,7 @@ export function HomePage() {
           <button
             type="button"
             onClick={promptInstall}
-            className="rounded-full bg-blue-600 px-3 py-1 text-xs font-semibold text-white transition hover:bg-blue-700"
+            className="min-h-[44px] rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700"
           >
             {isDE ? 'Installieren' : 'Install'}
           </button>
@@ -121,7 +122,7 @@ export function HomePage() {
 
   // Region: At-a-glance stats component
   const atAGlance = (
-    <div className="grid gap-4 md:grid-cols-3 mb-8">
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
       <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm transition duration-300 hover:shadow-xl dark:border-slate-700 dark:bg-slate-950">
         <div className="text-sm uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">{isDE ? 'Fortschritt' : 'Progress'}</div>
         <div className="mt-4">
@@ -146,11 +147,11 @@ export function HomePage() {
         </div>
       </div>
 
-      <div className="rounded-[28px] border-l-4 border-blue-600 bg-white p-6 shadow-sm transition duration-300 hover:shadow-xl dark:border-blue-500 dark:bg-slate-950">
+      <div className={`rounded-[28px] ${reviewCount > 0 ? 'border-l-4 border-blue-600 dark:border-blue-500' : 'border border-slate-300 dark:border-slate-700'} bg-white p-6 shadow-sm transition duration-300 hover:shadow-xl dark:bg-slate-950`}>
         <div className="text-sm uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">{isDE ? 'Review' : 'Review Queue'}</div>
         <div className="mt-4 flex items-center justify-between">
           <div>
-            <div className="text-4xl font-semibold text-blue-600 dark:text-blue-600">{reviewCount}</div>
+            <div className={`text-4xl font-semibold ${reviewCount > 0 ? 'text-blue-600 dark:text-blue-600' : 'text-slate-400 dark:text-slate-500'}`}>{reviewCount}</div>
             <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{isDE ? 'Fehlerhafte Antworten' : 'Wrong answers queued'}</p>
           </div>
           <Link to="/dashboard" className={`${theme.button.secondary} px-4 py-2 text-sm`}>
@@ -158,6 +159,9 @@ export function HomePage() {
           </Link>
         </div>
       </div>
+
+      {/* XP Widget */}
+      <XpWidget />
     </div>
   );
 
@@ -241,16 +245,6 @@ export function HomePage() {
   // Guests keep access to WOTD + A1 Learning Path on the homepage.
   const guestLayout = (
     <>
-      {/* Guest greeting */}
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-lg font-semibold tracking-tight text-slate-950 dark:text-white">
-          {isDE ? 'Hallo, Lernender' : 'Hello, Learner'} 👋
-        </h2>
-        <Link to="/auth" className={theme.button.primary}>
-          {isDE ? 'Anmelden / Registrieren' : 'Sign in / Register'}
-        </Link>
-      </div>
-
       {/* Hero section */}
       {hero}
 

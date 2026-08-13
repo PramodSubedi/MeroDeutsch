@@ -11,6 +11,8 @@ import { useLastModule } from '../hooks/useLastModule';
 import { BrandMark } from './BrandMark';
 import { Footer } from './Footer';
 import { ModuleChrome } from './learning/ModuleChrome';
+import { BottomNav } from './BottomNav';
+import { Breadcrumb } from './Breadcrumb';
 
 /** Top nav + shell — branding/layout only; features live in pages/ */
 export function Layout() {
@@ -40,7 +42,7 @@ export function Layout() {
   };
 
   const link = (to: string, label: string) => {
-    const active = pathname === to || (to !== '/' && pathname.startsWith(to));
+    const active = to === '/' ? pathname === '/' : pathname.startsWith(to);
     return (
       <Link to={to} className={active ? theme.layout.navLinkActive : theme.layout.navLink}>
         {label}
@@ -50,11 +52,16 @@ export function Layout() {
 
   return (
     <div className={theme.layout.app}>
-      <header className={`${theme.layout.header} z-50`}>
+      {/* Skip to main content link for keyboard navigation */}
+      <a href="#main-content" className="skip-to-main">
+        {langMode === 'german' ? 'Zum Hauptinhalt springen' : 'Skip to main content'}
+      </a>
+      
+      <header className={`${theme.layout.header} z-50`} role="banner">
         <div className={theme.layout.headerInner}>
           {/* Logo is a link → Home */}
           <BrandMark linked light className="text-lg" />
-          <nav className={theme.layout.nav}>
+          <nav className={`${theme.layout.nav} hidden md:flex`}>
             {link('/', 'Home')}
             {user ? link('/dashboard', 'Dashboard') : link('/auth', 'Sign in')}
             <button type="button" onClick={toggleLang} className={theme.layout.toggleButton}>
@@ -107,13 +114,17 @@ export function Layout() {
         </div>
       )}
       <main
-        className={theme.layout.main}
+        id="main-content"
+        role="main"
+        className={`${theme.layout.main} pb-20 md:pb-8`}
         style={isModuleRoute ? { paddingTop: '2rem' } : undefined}
       >
+        <Breadcrumb />
         {isModuleRoute && <ModuleChrome />}
         <Outlet />
       </main>
       <Footer />
+      <BottomNav />
     </div>
   );
 }

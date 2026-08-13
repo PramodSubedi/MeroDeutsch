@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { alphabetData, numbersData, calendarData, greetingsData, articlesData } from '../data/sharedContent';
 import { vocabularyData } from '../data/loadVocabulary';
+import { microStories } from '../data/stories';
 import { speakWord } from '../hooks/useSpeech';
 import { useLang } from '../hooks/useLang';
 import { theme } from '../config/theme';
@@ -51,6 +52,26 @@ function buildGlossary(): GlossaryEntry[] {
   // Curated A1 vocabulary
   vocabularyData.forEach((item) => {
     entries.push({ de: item.de, en: item.en, ne: item.ne, source: item.tags[0] ?? 'Vocabulary' });
+  });
+
+  // Stories - flatten all words from all stories
+  microStories.forEach((story) => {
+    story.sentences.forEach((sentence) => {
+      sentence.words.forEach((word) => {
+        // Avoid duplicates by checking if word already exists
+        const exists = entries.some(
+          (e) => e.de.toLowerCase() === word.de.toLowerCase() && e.source === 'Stories'
+        );
+        if (!exists && word.de.trim()) {
+          entries.push({
+            de: word.de,
+            en: word.en,
+            ne: word.ne,
+            source: 'Stories',
+          });
+        }
+      });
+    });
   });
 
   return entries;

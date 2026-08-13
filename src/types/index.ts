@@ -85,6 +85,8 @@ export interface WrongAnswerItem {
   repetitions?: number;
   dueAt?: string;
   lastResult?: 'correct' | 'wrong';
+  /** Leitner 5-Box SRS System */
+  boxLevel?: number; // 1-5, representing mastery level
 }
 
 export interface Badge {
@@ -103,4 +105,17 @@ export interface UnlockedBadge {
 
 export interface UserAchievements {
   badges: UnlockedBadge[]; // unlocked badge records with timestamps
+}
+
+export interface UserXP {
+  totalXp: number;
+  level: number;
+  rank: string;
+  xpToNextLevel: number;
+}
+
+export interface XPReward {
+  amount: number;
+  source: string;
+  timestamp: string;
 }

@@ -1,4 +1,5 @@
 import type React from 'react';
+import { Link } from 'react-router-dom';
 
 interface ToolItem {
   title: string;
@@ -42,35 +43,35 @@ const tools: ToolItem[] = [
     description: "Search German words and meanings",
     icon: icons.glossary,
     href: "/glossary",
-    buttonText: "To Glossary",
+    buttonText: "Open Glossary →",
   },
   {
     title: "Dictation",
     description: "Listen and type words accurately",
     icon: icons.dictation,
     href: "/dictation",
-    buttonText: "To Dictation",
+    buttonText: "Open Dictation →",
   },
   {
     title: "Grammar",
     description: "Master essential grammar rules",
     icon: icons.grammar,
     href: "/grammar",
-    buttonText: "To Grammar",
+    buttonText: "Open Grammar →",
   },
   {
     title: "Role-play",
     description: "Practice real-world conversations",
     icon: icons.roleplay,
     href: "/roleplay",
-    buttonText: "To Role-play",
+    buttonText: "Open Role-play →",
   },
   {
     title: "Pronunciation",
     description: "Improve speech and accent training",
     icon: icons.pronunciation,
     href: "/pronunciation",
-    buttonText: "To Pronunciation",
+    buttonText: "Open Pronunciation →",
   },
 ];
 
@@ -78,9 +79,10 @@ export function PracticeToolsGrid() {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10">
       {tools.map((tool, index) => (
-        <div
+        <Link
           key={index}
-          className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between group"
+          to={tool.href}
+          className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between group cursor-pointer"
         >
           <div>
             <div className="w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-100 dark:border-slate-700 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
@@ -91,15 +93,12 @@ export function PracticeToolsGrid() {
           </div>
 
           <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800/60 flex items-center justify-between">
-            <a
-              href={tool.href}
-              className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors inline-flex items-center gap-1.5"
-            >
+            <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 group-hover:text-blue-700 dark:group-hover:text-blue-300 transition-colors inline-flex items-center gap-1.5">
               <span>{tool.buttonText}</span>
               <span className="transform group-hover:translate-x-1 transition-transform">→</span>
-            </a>
+            </span>
           </div>
-        </div>
+        </Link>
       ))}
     </div>
   );

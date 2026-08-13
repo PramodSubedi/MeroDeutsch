@@ -8,6 +8,9 @@ import { useStreak } from '../hooks/useStreak';
 import { useMilestoneToast } from '../hooks/useMilestoneToast';
 import { theme } from '../config/theme';
 import { BrandMark } from '../components/BrandMark';
+import { EmptyState } from '../components/EmptyState';
+import { ActivityHeatmap } from '../components/ActivityHeatmap';
+import { triggerConfetti } from '../utils/confetti';
 import type { WrongAnswerItem } from '../types';
 
 /** Locale-aware number formatter shared by dashboard stats + review queue counts. */
@@ -157,20 +160,45 @@ export function DashboardPage() {
         </div>
       </div>
 
+      {/* Activity Heatmap */}
+      <div className="mt-4">
+        <ActivityHeatmap />
+      </div>
+
+      {/* Test Confetti Button */}
+      <div className="mt-4 flex justify-center">
+        <button
+          type="button"
+          onClick={triggerConfetti}
+          className="rounded-2xl border border-blue-200 bg-blue-600 px-6 py-3 font-semibold text-white shadow-sm transition duration-300 hover:-translate-y-1 hover:bg-blue-700 hover:shadow-xl dark:border-blue-500 dark:bg-blue-700 dark:hover:bg-blue-600"
+          aria-label={isDE ? 'Konfetti testen' : 'Test confetti'}
+        >
+          🎉 {isDE ? 'Konfetti testen' : 'Test Confetti'}
+        </button>
+      </div>
+
       <div className="mt-4 rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm transition duration-300 hover:border-blue-300 hover:shadow-xl dark:border-slate-700 dark:bg-slate-950 dark:hover:border-blue-500">
         <div className="mb-4 flex items-center justify-between gap-3">
           <div>
             <h2 className="text-xl font-semibold tracking-tight text-slate-950 dark:text-white">{reviewTitle}</h2>
             <p className="text-sm text-slate-500 dark:text-slate-400">{reviewSubtitle}</p>
           </div>
-          <button type="button" onClick={clearQueue} className={theme.button.secondary}>
-            {clearAllLabel}
-          </button>
+          {queue.length > 0 && (
+            <button type="button" onClick={clearQueue} className={theme.button.secondary}>
+              {clearAllLabel}
+            </button>
+          )}
         </div>
         {queue.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center text-sm text-slate-500 dark:border-slate-700 dark:bg-slate-900">
-            {emptyQueue}
-          </div>
+          <EmptyState
+            icon="🎯"
+            title={isDE ? 'Keine Review-Einträge' : 'No Review Items'}
+            description={isDE ? 'Super! Du hast keine ausstehenden Reviews. Übe weiter, um dein Wissen zu festigen.' : 'Great! You have no pending reviews. Keep practicing to build your knowledge.'}
+            actionLabel={isDE ? 'Zum Alphabet' : 'Go to Alphabet'}
+            actionTo="/alphabet"
+            secondaryActionLabel={isDE ? 'Zahlen üben' : 'Practice Numbers'}
+            secondaryActionTo="/numbers"
+          />
         ) : (
           <div className="space-y-3">
             {queue.map((item) => (
@@ -178,7 +206,21 @@ export function DashboardPage() {
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="font-semibold text-slate-900 dark:text-slate-100">{item.moduleType}</span>
+                      <span
+                        className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
+                          item.moduleType === 'alphabet' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300' :
+                          item.moduleType === 'numbers' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300' :
+                          item.moduleType === 'calendar' ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300' :
+                          item.moduleType === 'articles' ? 'bg-pink-100 text-pink-700 dark:bg-pink-900/40 dark:text-pink-300' :
+                          item.moduleType === 'greetings' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300' :
+                          item.moduleType === 'grammar' ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300' :
+                          item.moduleType === 'pronunciation' ? 'bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300' :
+                          item.moduleType === 'dictation' ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300' :
+                          'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300'
+                        }`}
+                      >
+                        {item.moduleType}
+                      </span>
                       <span
                         className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold ${
                           isDue(item)

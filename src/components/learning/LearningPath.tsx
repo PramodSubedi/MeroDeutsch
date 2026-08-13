@@ -21,6 +21,7 @@ export function LearningPath() {
     { key: 'calendar', label: isDE ? 'Kalender' : 'Calendar', path: '/calendar', icon: '📅' },
     { key: 'articles', label: isDE ? 'Artikel' : 'Articles', path: '/articles', icon: '📖' },
     { key: 'greetings', label: isDE ? 'Grüße' : 'Greetings', path: '/greetings', icon: '👋' },
+    { key: 'stories', label: isDE ? 'Geschichten' : 'Stories', path: '/stories', icon: '📚' },
   ] as const;
 
   return (
@@ -31,7 +32,7 @@ export function LearningPath() {
           <Link
             key={section.key}
             to={section.path}
-            className="group flex h-full flex-col overflow-hidden rounded-[28px] border border-slate-200 bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-blue-300 hover:bg-slate-50 hover:shadow-xl dark:border-slate-700 dark:bg-slate-950 dark:hover:border-blue-500 dark:hover:bg-slate-900"
+            className="group flex h-full flex-col overflow-hidden rounded-[28px] border border-slate-200 bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-blue-300 hover:bg-slate-50 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:border-slate-700 dark:bg-slate-950 dark:hover:border-blue-500 dark:hover:bg-slate-900 dark:focus-visible:ring-offset-slate-950"
             aria-label={`${section.label} module`}
           >
             <div className="mb-5 text-4xl" aria-hidden="true">

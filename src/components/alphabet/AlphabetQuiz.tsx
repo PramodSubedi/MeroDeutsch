@@ -79,7 +79,7 @@ export function AlphabetQuiz({ langMode }: { langMode: LangMode }) {
             key={o.id}
             type="button"
             onClick={() => check(o.id)}
-            className={`rounded-xl border-2 p-2.5 text-sm font-medium transition ${
+            className={`min-h-[44px] rounded-xl border-2 px-4 py-3 text-sm font-medium transition ${
               locked && o.id === item.id
                 ? 'border-green-500 bg-green-100'
                 : locked && o.id === wrongId

@@ -23,6 +23,16 @@
 
 ## COMPLETED
 
+### Per-User Progress Isolation + Guest UX Cleanup (2026-08-13)
+
+- ✅ **Per-user localStorage scoping** — Created `src/utils/userStorage.ts` with `scopedKey(base, userId)` helper; modified `useProgress.ts`, `useReviewQueue.ts`, `useStreak.ts`, `useAchievements.ts` to scope all localStorage keys by user ID (`:userId` for auth, `:guest` for guests)
+- ✅ **Supabase sync for user data** — Added cloud sync to 4 hooks: `user_progress`, `review_queue`, `user_streaks`, `user_achievements` tables; merge strategy (union for arrays, max for counters); authenticated users only
+- ✅ **State reset on user change** — Added `useEffect` with scoped key dependency to reset state when user logs in/out/switches accounts
+- ✅ **Guest homepage UX cleanup** — Removed floating Sign in button (max 2 entry points); hid streak chip for guests (`isAuthenticated && streakCount > 0` condition)
+- ✅ **WOTD improvements** — Redesigned DailyChallenge header with prominent German word (`text-2xl font-bold`); improved collapse button text ("Hide/Show Word of the Day")
+- ✅ **Accessibility compliance** — Added keyboard focus indicators to LearningPath module cards (`focus-visible:ring-2 focus-visible:ring-blue-500`) for WCAG 2.1 Level AA
+- ✅ Verification: tsc PASS, build PASS (87 modules), lint 0 errors (7 pre-existing warnings), user isolation working correctly
+
 ### Phase A — Homepage + Learning Hub (2026-08-12)
 
 - ✅ **LearningPath component** — Extracted A1 Learning Path from `HomePage.tsx` into `src/components/learning/LearningPath.tsx` (reusable, uses `useLang` + `sharedTextDatabase`)

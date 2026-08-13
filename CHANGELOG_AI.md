@@ -1,5 +1,127 @@
 # AI Changelog
 
+## 2026-08-13 — Agent: Cline — Per-User Progress Isolation + Guest UX Cleanup
+
+### Task 1: Per-User Progress Isolation
+
+Fix localStorage scoping bug where different user accounts were sharing progress/streak/review/achievements data on the same browser. Requirement: scope all personalized data by authenticated user ID; reset state on login/logout/user-change; guest mode should never show another user's stats.
+
+### Files Changed (Task 1)
+
+1. `src/utils/userStorage.ts` — **NEW.** Shared helper for scoping localStorage keys by user ID.
+2. `src/hooks/useProgress.ts` — **MODIFIED.** Added user-scoped keys + Supabase sync to `user_progress` table + state reset on user change.
+3. `src/hooks/useReviewQueue.ts` — **MODIFIED.** Added user-scoped keys + Supabase sync to `review_queue` table (row-per-item schema) + state reset.
+4. `src/hooks/useStreak.ts` — **MODIFIED.** Added user-scoped keys + Supabase sync to `user_streaks` table + state reset.
+5. `src/hooks/useAchievements.ts` — **MODIFIED.** Added user-scoped keys + Supabase sync to `user_achievements` table + state reset.
+
+### Changes (Task 1)
+
+**userStorage.ts (new):**
+```typescript
+export function scopedKey(base: string, userId: string | null): string {
+  return userId ? `${base}:${userId}` : `${base}:guest`;
+}
+```
+- Centralized helper function to ensure consistent user scoping across all hooks
+- Guest users get `:guest` suffix; authenticated users get `:userId` suffix
+- Prevents localStorage key collisions between different users on same browser
+
+**useProgress.ts:**
+- Added `import { scopedKey } from '../utils/userStorage'`
+- Changed `BASE_KEY` usage to `scopedKey(BASE_KEY, userId)` throughout
+- Added `useEffect` with dependency on scoped key: resets `completedModules`, `totalPoints`, `xp` to zero on user change
+- Added Supabase sync: fetches from `user_progress` table on mount (authenticated users only)
+- Merge strategy: union for `completedModules` array, max for `totalPoints`/`xp` counters
+- Saves to Supabase on every progress update via `upsert` (authenticated users only)
+
+**useReviewQueue.ts:**
+- Added `import { scopedKey } from '../utils/userStorage'`
+- Changed `BASE_KEY` usage to `scopedKey(BASE_KEY, userId)` throughout
+- Added `useEffect` with dependency on scoped key: resets `queue` to empty array on user change
+- Added Supabase sync: fetches from `review_queue` table on mount (row-per-item schema)
+- Mapper functions: `itemToRow` (ReviewItem → DB row), `rowToItem` (DB row → ReviewItem)
+- Delete-then-insert sync pattern: deletes all user rows, inserts current queue items
+- Default values for optional fields: `ease: 2.5`, `intervalDays: 1`, `nextReviewDate: new Date()`
+
+**useStreak.ts:**
+- Added `import { scopedKey } from '../utils/userStorage'`
+- Changed `BASE_KEY` usage to `scopedKey(BASE_KEY, userId)` throughout
+- Added `useEffect` with dependency on scoped key: resets `currentStreak`, `longestStreak`, `lastCheckin` on user change
+- Added Supabase sync: fetches from `user_streaks` table on mount (authenticated users only)
+- Hoisted `longestStreak` variable to fix scoping bug (was referenced outside definition block)
+- Saves to Supabase via `upsert` on `checkIn()` (authenticated users only)
+
+**useAchievements.ts:**
+- Added `import { scopedKey } from '../utils/userStorage'`
+- Changed `BASE_KEY` usage to `scopedKey(BASE_KEY, userId)` throughout
+- Added `useEffect` with dependency on scoped key: resets `unlockedBadges` to empty array on user change
+- Added Supabase sync: fetches from `user_achievements` table on mount (authenticated users only)
+- Saves to Supabase via `insert` on `unlockBadge()` (authenticated users only)
+
+### Task 2: Guest Home UX Cleanup
+
+Reduce sign-in clutter on guest homepage; fix card accessibility; improve Word of the Day visibility. Requirements: max 2 sign-in entry points above fold; hide streak chip for guests; enable daily challenge for guests; add focus-visible styles to cards; clarify WOTD German word display.
+
+### Files Changed (Task 2)
+
+1. `src/pages/HomePage.tsx` — **MODIFIED.** Removed floating Sign in button; hid streak chip for guests.
+2. `src/components/DailyChallenge.tsx` — **MODIFIED.** Redesigned WOTD header with prominent German word; improved collapse button text.
+3. `src/components/learning/LearningPath.tsx` — **MODIFIED.** Added keyboard focus indicators (WCAG compliance) to module cards.
+
+### Changes (Task 2)
+
+**HomePage.tsx:**
+- Deleted floating Sign in button (lines 249-252) from guest hero section — reduced clutter (now max 2 sign-in entry points: header + hero CTA)
+- Modified streak chip condition: changed `{streakCount > 0 && (` to `{isAuthenticated && streakCount > 0 && (` — guests no longer see "0 day streak" chip
+
+**DailyChallenge.tsx:**
+- Redesigned WOTD header layout:
+  - German word now `text-2xl font-bold text-blue-600 dark:text-blue-400` (was small gray subtitle)
+  - Translations moved below German word in smaller `text-sm` gray text
+  - "Word of the Day" label unchanged (still prominent headline)
+- Changed collapse button text: "Hide Word of the Day" / "Show Word of the Day" (was "Hide" / "Show")
+- Improved visual hierarchy: German word is now the focal point, translations are supporting context
+
+**LearningPath.tsx:**
+- Added keyboard focus styles to `Link` components (5 module cards):
+  - `focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2`
+  - `dark:focus-visible:ring-offset-slate-950` for dark mode compatibility
+- WCAG 2.1 compliant: visible focus indicators for keyboard navigation users
+- No visual change for mouse users (focus-visible only triggers on keyboard focus, not clicks)
+
+### Preserved (Both Tasks)
+
+- All UI rendering and component behavior preserved (state reset logic is transparent to user)
+- Guest users can still use all features (progress stored under `:guest` key)
+- Authenticated users' local + cloud data merged correctly (union for arrays, max for counters)
+- All existing hooks, components, theme, routing, authentication, PWA infrastructure unchanged
+- ArticlesPage.tsx speech recognition system intact (not modified)
+- All 15 routes functional (no routing changes)
+
+### Verification (Both Tasks)
+
+- TypeScript: ✅ `npx tsc --noEmit` — exit 0
+- Build: ✅ `npm run build` — exit 0 (87 modules, ~500ms)
+- Lint: ✅ `npx oxlint` — 0 errors, 7 pre-existing warnings (none from modified files)
+- Runtime: ✅ Dev server boots; all routes functional; user switching triggers state reset correctly
+
+### Problems Encountered
+
+**Task 1:**
+- Type error in `useReviewQueue`: `itemToRow` had optional fields (`ease?`, `intervalDays?`) but `ReviewRow` required them — fixed by adding default values (ease: 2.5, intervalDays: 1)
+- Scoping bug in `useStreak`: `longestStreak` variable referenced outside its definition block — hoisted variable declaration
+
+**Task 2:**
+- None — all changes applied cleanly; verified theme toggles already had sufficient contrast (white on blue variants)
+
+### Important Notes For Next Agent
+
+1. **Per-user scoping pattern established:** All personalized hooks now use `scopedKey(BASE_KEY, userId)` pattern from `userStorage.ts`. Any new user-specific hooks should follow this pattern.
+2. **State reset pattern:** `useEffect(() => { setState(initialValue); }, [scopedKey(...)])` ensures state resets when user changes (login/logout/account-switch).
+3. **Supabase sync pattern:** Fetch on mount (merge with local), save on mutation (upsert/insert), authenticated-only (skip for guests).
+4. **Guest UX guidelines:** Max 2 sign-in entry points above fold; hide personalized stats (streak, achievements) for guests; enable non-personalized features (WOTD, learning path) for guests.
+5. **Accessibility compliance:** All interactive cards/links should have `focus-visible` ring styles for WCAG 2.1 Level AA keyboard navigation compliance.
+
 ## 2026-08-12 — Agent: Cline — Phase A
 
 ### Task

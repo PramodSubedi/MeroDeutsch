@@ -1,9 +1,9 @@
 # CURRENT AI HANDOFF
 
-Date: 2026-08-12
+Date: 2026-08-13
 Last Agent: Cline
-Current Phase: Phase 1 + Phase A Complete — awaiting Phase 2
-Current Task: Phase A — Homepage + Learning Hub (/learn route)
+Current Phase: Per-User Progress Isolation + Guest UX Cleanup — COMPLETE
+Current Task: Documentation update complete
 
 ## Current Status
 
@@ -11,6 +11,7 @@ Build: ✅ PASS — `tsc -b && vite build` exit 0 (87 modules, ~500ms)
 TypeScript: ✅ PASS — `npx tsc --noEmit` exit 0
 Lint: ✅ PASS — `npx oxlint` 0 errors, 7 pre-existing warnings (none from modified files)
 Runtime: ✅ PASS — all 15 routes return HTTP 200 on dev server (incl. /learn)
+User Isolation: ✅ PASS — per-user localStorage scoping + Supabase sync working correctly
 
 ## Phase 1 — COMPLETE
 
@@ -44,6 +45,25 @@ through the service layer:
 
 
 ## Recently Completed
+
+### 2026-08-13 Session: Per-User Progress Isolation + Guest UX Cleanup
+
+8. **Per-User Progress Isolation (Task 1)** — Fixed localStorage scoping bug where different accounts shared data:
+   - Created `src/utils/userStorage.ts` with `scopedKey(base, userId)` helper
+   - Modified 4 hooks: `useProgress.ts`, `useReviewQueue.ts`, `useStreak.ts`, `useAchievements.ts`
+   - Added user-scoped localStorage keys (`:userId` suffix for auth users, `:guest` for guests)
+   - Added Supabase sync to 4 tables: `user_progress`, `review_queue`, `user_streaks`, `user_achievements`
+   - Added state reset on user change via `useEffect` keyed on scoped key
+   - Merge strategy: union for arrays, max for counters (local + cloud data)
+   - Fixed type errors in `useReviewQueue` (default values for optional fields)
+   - Fixed scoping bug in `useStreak` (hoisted `longestStreak` variable)
+
+9. **Guest Home UX Cleanup (Task 2)** — Reduced sign-in clutter + improved accessibility:
+   - `HomePage.tsx`: Removed floating Sign in button (max 2 entry points now); hid streak chip for guests
+   - `DailyChallenge.tsx`: Redesigned WOTD header with prominent German word (`text-2xl font-bold text-blue-600`); improved collapse button text ("Hide Word of the Day" / "Show Word of the Day")
+   - `LearningPath.tsx`: Added keyboard focus indicators to module cards (`focus-visible:ring-2 focus-visible:ring-blue-500`) for WCAG 2.1 Level AA compliance
+
+### Previous Sessions
 
 5. **CalendarPage.tsx** — Migrated from direct `calendarData` import to `curriculumService.getCalendar()`:
    - Replaced `import { calendarData, sharedTextDatabase }` with `import { sharedTextDatabase }` + `import { curriculumService }` + `import type { CalendarItem }`

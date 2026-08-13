@@ -13,6 +13,9 @@ const BASE_KEY = 'meroDeutschWrongAnswers';
 /** SM-2–style interval ladder for v1 (days). */
 const INTERVAL_LADDER = [1, 3, 7];
 
+/** Leitner 5-Box System: Review intervals in days for each box level */
+const LEITNER_INTERVALS = [1, 3, 7, 14, 30]; // Box 1-5 intervals
+
 interface ReviewRow {
   id: string;
   module_type: string;
@@ -143,17 +146,18 @@ export function useReviewQueue() {
     setQueue((current) => {
       const existing = current.find((entry) => entry.moduleType === item.moduleType && entry.itemKey === item.itemKey);
       if (existing) {
-        // Wrong again → reset to a short interval, due very soon.
+        // Wrong again → demote back to Box 1 (Leitner System)
         const updated: WrongAnswerItem = {
           ...existing,
           errorCount: existing.errorCount + 1,
           userAnswer: item.userAnswer,
           correctAnswer: item.correctAnswer,
           timestamp: new Date().toISOString(),
+          boxLevel: 1, // Reset to Box 1 on mistake
           ease: 2.5,
-          intervalDays: 1,
+          intervalDays: LEITNER_INTERVALS[0],
           repetitions: 0,
-          dueAt: daysFromNow(0), // due today for practice
+          dueAt: daysFromNow(0), // due immediately for practice
           lastResult: 'wrong',
         };
         return current.map((entry) => (entry.id === existing.id ? updated : entry));
@@ -168,8 +172,9 @@ export function useReviewQueue() {
           correctAnswer: item.correctAnswer,
           errorCount: 1,
           timestamp: new Date().toISOString(),
+          boxLevel: 1, // Start at Box 1
           ease: 2.5,
-          intervalDays: 1,
+          intervalDays: LEITNER_INTERVALS[0],
           repetitions: 0,
           dueAt: daysFromNow(0),
           lastResult: 'wrong',
@@ -178,18 +183,21 @@ export function useReviewQueue() {
     });
   }, []);
 
-  /** Mark an item as correctly recalled → push the interval out (SM-2 ladder). */
+  /** Mark an item as correctly recalled → promote to next Leitner box (1-5). */
   const markCorrect = useCallback((id: string) => {
     setQueue((current) =>
       current.map((entry) => {
         if (entry.id !== id) return entry;
+        const currentBox = entry.boxLevel ?? 1;
+        const nextBox = Math.min(currentBox + 1, 5); // Max box is 5
         const reps = (entry.repetitions ?? 0) + 1;
-        const intervalIndex = Math.min(reps - 1, INTERVAL_LADDER.length - 1);
+        const newInterval = LEITNER_INTERVALS[nextBox - 1]; // Box 1-5 maps to index 0-4
         return {
           ...entry,
+          boxLevel: nextBox,
           repetitions: reps,
-          intervalDays: INTERVAL_LADDER[intervalIndex],
-          dueAt: daysFromNow(INTERVAL_LADDER[intervalIndex]),
+          intervalDays: newInterval,
+          dueAt: daysFromNow(newInterval),
           lastResult: 'correct',
         };
       })

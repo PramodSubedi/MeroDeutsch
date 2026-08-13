@@ -27,6 +27,10 @@ export const sharedTextDatabase = {
     title: 'Essential Greetings',
     description: 'Common German greetings and phrases.',
   },
+  stories: {
+    title: 'Micro-Stories',
+    description: 'A1-level stories with interactive word translations',
+  },
 } as const;
 
 export type LocalizedString = {
