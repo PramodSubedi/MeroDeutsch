@@ -13,6 +13,7 @@ import { useProgress } from '../hooks/useProgress';
 import { theme } from '../config/theme';
 import { curriculumService } from '../services';
 import { type AlphabetItem } from '../types';
+import { SEO } from '../components/common/SEO';
 
 type Filter = 'all' | 'vowel' | 'consonant';
 type Sub = 'learn' | 'quiz' | 'spelling';
@@ -72,6 +73,10 @@ export function AlphabetPage() {
 
   return (
     <div className={theme.page.container}>
+      <SEO
+        title="German Alphabet | MeroDeutsch"
+        description="Learn the German alphabet with interactive letter cards, pronunciation audio, and quizzes for Nepali and English speakers."
+      />
       <div className={theme.section.surface}>
         <h1 className={theme.section.title}>{pageTitle}</h1>
         <p className={theme.section.description}>{pageDescription}</p>

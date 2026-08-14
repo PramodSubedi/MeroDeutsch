@@ -15,6 +15,7 @@ import { useInstallPrompt } from '../hooks/useInstallPrompt';
 import { useAuth } from '../hooks/useAuth';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { Logo } from '../components/common/Logo';
+import { SEO } from '../components/common/SEO';
 
 // Main page component for MeroDeutsch German learning app
 export function HomePage() {
@@ -268,6 +269,10 @@ export function HomePage() {
   return (
     <AuthGate>
       <div className={theme.page.container}>
+        <SEO
+          title="Master A1 German | MeroDeutsch"
+          description="Start with A1 essentials: alphabet, numbers, articles, and greetings — then unlock review practice that adapts to your mistakes."
+        />
         {isAuthenticated ? authenticatedLayout : guestLayout}
       </div>
     </AuthGate>

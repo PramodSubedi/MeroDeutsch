@@ -8,6 +8,7 @@ import { useLang } from '../hooks/useLang';
 import { triggerHaptic } from '../utils/haptic';
 import { theme } from '../config/theme';
 import { usePageTitle } from '../hooks/usePageTitle';
+import { SEO } from '../components/common/SEO';
 
 interface GlossaryEntry {
   de: string;
@@ -163,6 +164,10 @@ export function GlossaryPage() {
 
   return (
     <div className={theme.page.container}>
+      <SEO
+        title="German Glossary | MeroDeutsch"
+        description="Search all A1 German vocabulary including alphabet, numbers, calendar, greetings, articles, and curated word lists."
+      />
       <h1 className="text-2xl font-semibold tracking-tight text-slate-950 dark:text-white">{title}</h1>
       <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{description}</p>
 

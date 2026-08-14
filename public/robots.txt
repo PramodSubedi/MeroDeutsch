@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://merodeutsch.pramods.com.np/sitemap.xml

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <!-- Outer Squircle Badge Background (Royal Blue) -->
+  <rect x="32" y="32" width="448" height="448" rx="112" fill="#2563EB"/>
+  
+  <!-- German Flag Vertical Micro-Badge Accent (Left Side) -->
+  <path d="M104 150 C104 136.745 114.745 126 128 126 H144 V386 H128 C114.745 386 104 375.255 104 362 V150 Z" fill="#0F172A"/>
+  <rect x="144" y="126" width="16" height="260" fill="#EF4444"/>
+  <rect x="160" y="126" width="16" height="260" fill="#F59E0B"/>
+
+  <!-- Clean Stylized "M" + "D" Overlapping Path -->
+  <path d="M216 360 V220 L272 312 L328 220 V360" stroke="#FFFFFF" stroke-width="36" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M280 146 H336 C374.66 146 406 177.34 406 216 V226 C406 264.66 374.66 296 336 296 H280" stroke="#93C5FD" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Nepali Crimson Spark Accent -->
+  <circle cx="388" cy="126" r="24" fill="#DC2626"/>
+  <circle cx="388" cy="126" r="10" fill="#FFFFFF"/>
+</svg>

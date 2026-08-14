@@ -11,6 +11,7 @@ import { usePageTitle } from '../hooks/usePageTitle';
 import { theme } from '../config/theme';
 import { BrandMark } from '../components/BrandMark';
 import { EmptyState } from '../components/EmptyState';
+import { SEO } from '../components/common/SEO';
 import { ActivityHeatmap } from '../components/ActivityHeatmap';
 import { ReviewSessionManager } from '../components/ReviewSessionManager';
 import { MasteryIndicator } from '../components/MasteryIndicator';
@@ -82,6 +83,10 @@ export function DashboardPage() {
 
   return (
     <div className={theme.page.container}>
+      <SEO
+        title="Dashboard | MeroDeutsch"
+        description="Track your German learning progress, review queue, streaks, and achievements on MeroDeutsch."
+      />
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>
           <BrandMark className="text-xl" />
