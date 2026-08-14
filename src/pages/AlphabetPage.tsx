@@ -89,10 +89,11 @@ export function AlphabetPage() {
                 {!isDE && <div className="text-sm opacity-90">{lotd.nepPhonetic}</div>}
                 <button
                   type="button"
-                  className="mt-1 rounded bg-white/20 px-2 py-0.5 text-[11px] hover:bg-white/30"
+                  className="mt-1.5 inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1 text-xs font-semibold text-white shadow-sm transition hover:bg-white/30"
                   onClick={() => speakLetter(lotd.speak)}
                 >
-                  🔊 {isDE ? 'Buchstabe' : 'Letter'}
+                  <span aria-hidden="true">🔊</span>
+                  {isDE ? 'Buchstabe' : 'Letter'}
                 </button>
               </div>
             </div>
@@ -105,10 +106,11 @@ export function AlphabetPage() {
               {!isDE && <div className="truncate text-xs opacity-80">{meaning}</div>}
               <button
                 type="button"
-                className="mt-1 w-fit rounded bg-white/20 px-2 py-0.5 text-[11px] hover:bg-white/30"
+                className="mt-1.5 inline-flex w-fit items-center gap-1.5 rounded-full bg-white/20 px-3 py-1 text-xs font-semibold text-white shadow-sm transition hover:bg-white/30"
                 onClick={() => speakWord(lotd.speakWord)}
               >
-                🔊 {isDE ? 'Wort' : 'Word'}
+                <span aria-hidden="true">🔊</span>
+                {isDE ? 'Wort' : 'Word'}
               </button>
             </div>
           </div>

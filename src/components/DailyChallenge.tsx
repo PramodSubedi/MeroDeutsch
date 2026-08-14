@@ -166,17 +166,24 @@ export function DailyChallenge() {
             {wordOfDay.en} • {wordOfDay.ne}
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <button type="button" onClick={() => speakWord(wordOfDay.de)} className={theme.button.icon} aria-label="Speak word">
-            🔊
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={() => speakWord(wordOfDay.de)}
+            className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-blue-300 hover:text-blue-600 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-blue-500 dark:hover:text-blue-300"
+            aria-label={isDE ? 'Wort anhören' : 'Listen to word'}
+          >
+            <span aria-hidden="true">🔊</span>
+            {isDE ? 'Anhören' : 'Listen'}
           </button>
           <button
             type="button"
             onClick={() => setIsExpanded((v) => !v)}
-            className="text-xs text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+            className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-blue-300 hover:text-blue-600 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-blue-500 dark:hover:text-blue-300"
             aria-controls="wotd-content"
             aria-expanded={isExpanded}
           >
+            <span aria-hidden="true">{isExpanded ? '👁️' : '👁️'}</span>
             {isExpanded ? (isDE ? 'Ausblenden' : 'Hide') : (isDE ? 'Einblenden' : 'Show')}
           </button>
         </div>

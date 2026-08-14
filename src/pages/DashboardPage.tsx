@@ -112,60 +112,63 @@ export function DashboardPage() {
         </div>
       )}
 
-      <div className="mb-4 grid gap-4 lg:grid-cols-3">
-        <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-950">
-          <div className="text-sm uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">{isDE ? 'Alphabet' : 'Alphabet'}</div>
-          <div className="mt-3 flex items-end justify-between">
-            <div className="text-3xl font-bold text-slate-950 dark:text-white">{lettersPct}%</div>
-            <div className="text-sm text-slate-500">{progress.practiced.length}/26</div>
+      {/* Compact stats grid — 2 columns on mobile, 4 on desktop */}
+      <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-950">
+          <div className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">{isDE ? 'Alphabet' : 'Alphabet'}</div>
+          <div className="mt-2 flex items-end justify-between">
+            <div className="text-2xl font-bold text-slate-950 dark:text-white">{lettersPct}%</div>
+            <div className="text-xs text-slate-500">{progress.practiced.length}/26</div>
           </div>
-          <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
+          <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
             <div className="h-full rounded-full bg-blue-600 transition-all duration-500" style={{ width: `${lettersPct}%` }} />
           </div>
         </div>
-        <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-950">
-          <div className="text-sm uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">{isDE ? 'Quiz' : 'Quiz'}</div>
-          <div className="mt-3 flex items-end justify-between">
-            <div className="text-3xl font-bold text-slate-950 dark:text-white">{quizPctBar}%</div>
-            <div className="text-sm text-slate-500">{progress.quizCorrect}/{progress.quizTotal}</div>
+        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-950">
+          <div className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">{isDE ? 'Quiz' : 'Quiz'}</div>
+          <div className="mt-2 flex items-end justify-between">
+            <div className="text-2xl font-bold text-slate-950 dark:text-white">{quizPctBar}%</div>
+            <div className="text-xs text-slate-500">{progress.quizCorrect}/{progress.quizTotal}</div>
           </div>
-          <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
+          <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
             <div className="h-full rounded-full bg-emerald-500 transition-all duration-500" style={{ width: `${quizPctBar}%` }} />
           </div>
         </div>
-        <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-950">
-          <div className="text-sm uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">{isDE ? 'Rechtschreibung' : 'Spelling'}</div>
-          <div className="mt-3 flex items-end justify-between">
-            <div className="text-3xl font-bold text-slate-950 dark:text-white">{spellingPct}%</div>
-            <div className="text-sm text-slate-500">{progress.spellCompleted}/10</div>
+        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-950">
+          <div className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">{isDE ? 'Rechtschreibung' : 'Spelling'}</div>
+          <div className="mt-2 flex items-end justify-between">
+            <div className="text-2xl font-bold text-slate-950 dark:text-white">{spellingPct}%</div>
+            <div className="text-xs text-slate-500">{progress.spellCompleted}/10</div>
           </div>
-          <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
+          <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
             <div className="h-full rounded-full bg-amber-500 transition-all duration-500" style={{ width: `${spellingPct}%` }} />
           </div>
         </div>
+        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-950">
+          <div className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">{overallScore}</div>
+          <div className="mt-2 flex items-end justify-between">
+            <div className="text-2xl font-bold text-blue-600">{formatCount.format(quizPct)}%</div>
+          </div>
+          <div className="mt-2 text-xs text-slate-500 dark:text-slate-400">{quizAccuracy}</div>
+        </div>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-3">
-        <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-blue-300 hover:shadow-xl dark:border-slate-700 dark:bg-slate-950 dark:hover:border-blue-500">
-          <div className="text-sm uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">{overallScore}</div>
-          <div className="mt-3 text-4xl font-bold text-blue-600">{formatCount.format(quizPct)}%</div>
-          <div className="mt-2 text-sm text-slate-600 dark:text-slate-300">{quizAccuracy}</div>
-        </div>
-
-        <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-emerald-300 hover:shadow-xl dark:border-slate-700 dark:bg-slate-950 dark:hover:border-emerald-500">
-          <div className="text-sm uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">{streakLabel}</div>
-          <div className="mt-3 flex items-baseline gap-3">
-            <div className="text-4xl font-bold text-emerald-600">{formatCount.format(streakCount)}</div>
+      {/* Streak + Progress details — wider cards */}
+      <div className="mb-4 grid gap-4 lg:grid-cols-2">
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-950">
+          <div className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">{streakLabel}</div>
+          <div className="mt-2 flex items-baseline gap-3">
+            <div className="text-3xl font-bold text-emerald-600">{formatCount.format(streakCount)}</div>
             <div className="text-sm text-slate-500 dark:text-slate-400">
               {isDE ? 'Längste' : 'Longest'}: {formatCount.format(longestStreak)}
             </div>
           </div>
-          <div className="mt-2 text-sm text-slate-600 dark:text-slate-300">{streakSubtitle}</div>
+          <div className="mt-1 text-sm text-slate-600 dark:text-slate-300">{streakSubtitle}</div>
         </div>
 
-        <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-blue-300 hover:shadow-xl dark:border-slate-700 dark:bg-slate-950 dark:hover:border-blue-500">
-          <div className="text-sm uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">{progressLabel}</div>
-          <div className="mt-3 space-y-2 text-sm text-slate-600 dark:text-slate-300">
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-950">
+          <div className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">{progressLabel}</div>
+          <div className="mt-2 space-y-1.5 text-sm text-slate-600 dark:text-slate-300">
             <div>{lettersPracticed}: {formatCount.format(progress.practiced.length)}/26</div>
             <div>{spellingRounds}: {formatCount.format(progress.spellCompleted)}</div>
             <div>{quizAttempts}: {formatCount.format(progress.quizTotal)}</div>
@@ -191,13 +194,12 @@ export function DashboardPage() {
           )}
         </div>
 
-        {/* SRS Review Session Manager (filter tabs + flashcard player + summary) */}
-        <div className="mb-6">
-          <ReviewSessionManager
-            queue={queue}
-            onMarkCorrect={markCorrect}
-          />
-        </div>
+        {/* SRS Review Session Manager (filter tabs + flashcard player + summary) — embedded, no nested card */}
+        <ReviewSessionManager
+          queue={queue}
+          onMarkCorrect={markCorrect}
+          embedded
+        />
 
         {queue.length === 0 ? (
           <EmptyState

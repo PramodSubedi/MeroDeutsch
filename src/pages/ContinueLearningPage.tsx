@@ -57,8 +57,8 @@ export function ContinueLearningPage() {
       {/* C. A1 Learning Path — reuses extracted component */}
       <LearningPath />
 
-      {/* D. Learning tools — reuses existing PracticeToolsGrid */}
-      <section className="mb-8">
+      {/* D. Learning tools — reuses existing PracticeToolsGrid, wrapped in the same card shell as other Learn sections */}
+      <section className={`${theme.panel.surface} mb-8`}>
         <h2 className="mb-4 text-xl font-bold text-slate-950 dark:text-white">
           {isDE ? 'Lern-Übungs-Tools' : 'Practice Tools'}
         </h2>

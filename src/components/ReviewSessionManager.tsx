@@ -10,6 +10,8 @@ interface ReviewSessionManagerProps {
   queue: WrongAnswerItem[];
   onMarkCorrect: (id: string) => void;
   onCompleteSession?: () => void;
+  /** When true, renders without its own card shell (for embedding inside a parent card). */
+  embedded?: boolean;
 }
 
 type FilterId = 'all' | 'focus' | 'mastery' | string;
@@ -27,6 +29,7 @@ export function ReviewSessionManager({
   queue,
   onMarkCorrect,
   onCompleteSession,
+  embedded = false,
 }: ReviewSessionManagerProps) {
   const { langMode } = useLang();
   const { reportAnswer } = useXp();
@@ -207,10 +210,11 @@ export function ReviewSessionManager({
   }
 
   // ── Pre-session filter view ───────────────────────────────────
+  // Badges always show the count (including 0) for consistent review-queue feedback.
   const filterTabs: Tab<FilterId>[] = [
-    { id: 'all', label: isDE ? 'Alle fällig' : 'All Due', icon: Filter },
-    { id: 'focus', label: isDE ? 'Box 1-2 (Fokus)' : 'Box 1-2 (Focus)', icon: Target, badge: filteredQueue.filter(item => (item.boxLevel ?? 1) <= 2).length || undefined },
-    { id: 'mastery', label: isDE ? 'Box 3-5 (Meisterschaft)' : 'Box 3-5 (Mastery)', icon: Award, badge: filteredQueue.filter(item => (item.boxLevel ?? 1) >= 3).length || undefined },
+    { id: 'all', label: isDE ? 'Alle fällig' : 'All Due', icon: Filter, badge: queue.length },
+    { id: 'focus', label: isDE ? 'Box 1-2 (Fokus)' : 'Box 1-2 (Focus)', icon: Target, badge: filteredQueue.filter(item => (item.boxLevel ?? 1) <= 2).length },
+    { id: 'mastery', label: isDE ? 'Box 3-5 (Meisterschaft)' : 'Box 3-5 (Mastery)', icon: Award, badge: filteredQueue.filter(item => (item.boxLevel ?? 1) >= 3).length },
     ...moduleTypes.map((moduleType) => ({
       id: moduleType as FilterId,
       label: moduleType.charAt(0).toUpperCase() + moduleType.slice(1),
@@ -219,8 +223,9 @@ export function ReviewSessionManager({
   ];
 
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-6 shadow-sm space-y-4">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
+    <div className={embedded ? 'space-y-4' : 'bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-6 shadow-sm space-y-4'}>
+      {embedded && <div className="h-px bg-slate-200 dark:bg-slate-700" aria-hidden="true" />}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
           <h3 className="text-base font-bold text-slate-800 dark:text-slate-100">
             {isDE ? 'SRS Review-Warteschlange' : 'SRS Review Queue'}
