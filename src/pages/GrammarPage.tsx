@@ -44,7 +44,6 @@ export function GrammarPage() {
     }
   };
 
-
   return (
     <div className={theme.page.container}>
       <h1 className="text-2xl font-semibold tracking-tight text-slate-950 dark:text-white">{isDE ? 'Grammatik' : 'Grammar'}</h1>
@@ -60,7 +59,7 @@ export function GrammarPage() {
           { id: 'cases', label: isDE ? 'Fälle' : 'Cases', icon: Layout },
         ]}
         activeTab={tab}
-        onChange={(newTab) => { setTab(newTab); setAnswers({}); }}
+        onTabChange={(newTab) => { setTab(newTab as 'sein' | 'haben' | 'weakVerb' | 'cases'); setAnswers({}); }}
       />
 
       <div className={`${theme.panel.surface} mb-6`}>

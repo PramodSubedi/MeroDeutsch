@@ -8,7 +8,7 @@ import { useXp } from '../hooks/useXp';
 import { speakWord } from '../hooks/useSpeech';
 import { StandardStudyCard } from '../components/StandardStudyCard';
 import { SectionGrid } from '../components/SectionGrid';
-import { TabGroup, type Tab } from '../components/TabGroup';
+import { TabGroup } from '../components/TabGroup';
 import { theme } from '../config/theme';
 import { curriculumService } from '../services';
 import type { CalendarItem } from '../types';
@@ -95,7 +95,7 @@ export function CalendarPage() {
           { id: 'quiz', label: isDE ? 'Hören & Tippen' : 'Listen & Type', icon: Sparkles },
         ]}
         activeTab={mode}
-        onChange={setMode}
+        onTabChange={setMode}
       />
 
       {mode === 'learn' && (
@@ -109,7 +109,7 @@ export function CalendarPage() {
                 { id: 'months', label: isDE ? 'Monate' : 'Months', icon: CalendarDays },
               ]}
               activeTab={tab}
-              onChange={setTab}
+              onTabChange={setTab}
             />
           }
         >

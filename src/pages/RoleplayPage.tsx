@@ -36,8 +36,6 @@ export function RoleplayPage() {
 
   const scenario = scenarios[scenarioIdx];
   if (!scenario) return null;
-  
-  const ScenarioIcon = SCENARIO_ICON_MAP[scenario.emoji] || ShoppingCart;
 
   const step = scenario.steps[stepIdx];
   const isLastStep = stepIdx === scenario.steps.length - 1;

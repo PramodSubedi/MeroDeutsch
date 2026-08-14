@@ -18,7 +18,7 @@ export function LearningPath() {
   const { langMode } = useLang();
   const isDE = langMode === 'german';
 
-  const sections: Array<{ key: string; label: string; path: string; icon: LucideIcon }> = [
+  const sections: Array<{ key: keyof typeof sharedTextDatabase; label: string; path: string; icon: LucideIcon }> = [
     { key: 'alphabet', label: 'Alphabet', path: '/alphabet', icon: BookA },
     { key: 'numbers', label: isDE ? 'Zahlen' : 'Numbers', path: '/numbers', icon: Hash },
     { key: 'calendar', label: isDE ? 'Kalender' : 'Calendar', path: '/calendar', icon: Calendar },

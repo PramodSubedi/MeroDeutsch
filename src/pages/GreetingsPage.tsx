@@ -92,7 +92,7 @@ export function GreetingsPage() {
           { id: 'quiz', label: isDE ? 'Hören & Tippen' : 'Listen & Type', icon: Sparkles },
         ]}
         activeTab={mode}
-        onChange={setMode}
+        onTabChange={setMode}
       />
 
       {mode === 'learn' && (
