@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import { Layout } from './components/Layout';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { SkeletonLoader } from './components/SkeletonLoader';
@@ -67,6 +68,7 @@ export default function App() {
           </Routes>
         </Suspense>
       </BrowserRouter>
+      <SpeedInsights />
     </ErrorBoundary>
   );
 }
