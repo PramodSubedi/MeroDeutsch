@@ -12,7 +12,7 @@ import { usePageTitle } from '../hooks/usePageTitle';
 import { useProgress } from '../hooks/useProgress';
 import { theme } from '../config/theme';
 import { curriculumService } from '../services';
-import type { AlphabetItem } from '../types';
+import { type AlphabetItem } from '../types';
 
 type Filter = 'all' | 'vowel' | 'consonant';
 type Sub = 'learn' | 'quiz' | 'spelling';
@@ -77,7 +77,7 @@ export function AlphabetPage() {
         <p className={theme.section.description}>{pageDescription}</p>
       </div>
       {sub === 'learn' && lotd && (
-        <div className="mb-5 grid gap-3 md:grid-cols-2">
+        <div className="my-2 grid gap-3 md:grid-cols-2">
           <div className="flex items-stretch gap-3 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 p-3 text-white shadow">
             <div className="flex flex-1 items-center gap-3 min-w-0">
               <div className="text-4xl font-bold leading-none">{lotd.letter.split(' ')[0]}</div>
@@ -146,6 +146,7 @@ export function AlphabetPage() {
       )}
 
       <TabGroup
+        variant="compact"
         tabs={tabs}
         activeTab={sub}
         onTabChange={setSub}
@@ -163,7 +164,7 @@ export function AlphabetPage() {
 
       {sub === 'learn' && (
         <>
-          <div className="mb-4 flex flex-col gap-3 md:flex-row md:justify-between">
+          <div className="my-2 flex flex-col gap-3 md:flex-row md:justify-between">
             <input
               type="search"
               placeholder={isDE ? 'Buchstabe suchen…' : 'Search a letter…'}
@@ -185,7 +186,7 @@ export function AlphabetPage() {
             </div>
           </div>
           {standard.length > 0 && (
-            <section className="mb-8">
+            <section className="my-2">
               <h2 className="mb-3 inline-block border-b-2 border-blue-500 pb-1 text-lg font-bold">
                 {isDE ? 'Standard 26 Buchstaben' : 'Standard 26 Letters'}
               </h2>
@@ -204,7 +205,7 @@ export function AlphabetPage() {
             </section>
           )}
           {special.length > 0 && (
-            <section className="mb-8">
+            <section className="my-2">
               <h2 className="mb-3 inline-block border-b-2 border-amber-500 pb-1 text-lg font-bold">
                 {isDE ? 'Sonderzeichen' : 'Special Characters'}
               </h2>

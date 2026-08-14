@@ -2,7 +2,6 @@ import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { theme } from '../config/theme';
 import { AuthGate } from '../components/AuthGate';
-import { BrandMark } from '../components/BrandMark';
 import { DailyChallenge } from '../components/DailyChallenge';
 import { LearningPath } from '../components/learning/LearningPath';
 import { PracticeToolsGrid } from '../components/PracticeToolsGrid';
@@ -15,6 +14,7 @@ import { useAchievements } from '../hooks/useAchievements';
 import { useInstallPrompt } from '../hooks/useInstallPrompt';
 import { useAuth } from '../hooks/useAuth';
 import { usePageTitle } from '../hooks/usePageTitle';
+import { Logo } from '../components/common/Logo';
 
 // Main page component for MeroDeutsch German learning app
 export function HomePage() {
@@ -47,16 +47,17 @@ export function HomePage() {
   // Region: Hero component with streak and CTAs
   const hero = (
     <div className="text-center py-6 lg:py-10">
-      <div className="inline-flex min-h-[36px] items-center gap-3 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-xs uppercase tracking-[0.35em] text-slate-500 shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
-        <BrandMark className="text-sm" />
-        {isAuthenticated && streakCount > 0 && (
-          <div className="inline-flex items-center gap-2 rounded-full bg-blue-500/10 px-3 py-1 text-xs font-semibold text-blue-700 dark:bg-blue-400/15 dark:text-blue-300">
-            <span>🔥</span> <span>{streakCount} day streak</span>
-          </div>
-        )}
+      {isAuthenticated && streakCount > 0 && (
+        <div className="inline-flex items-center gap-2 rounded-full border border-blue-200/70 bg-blue-50/80 px-4 py-2 text-xs font-semibold text-blue-700 shadow-sm dark:border-blue-800/50 dark:bg-blue-950/40 dark:text-blue-300">
+          <span>🔥</span> <span>{streakCount} day streak</span>
+        </div>
+      )}
+
+      <div className="mt-4 flex justify-center">
+        <Logo size="lg" variant="on-light" />
       </div>
 
-      <h1 className="mx-auto mt-6 max-w-4xl text-5xl font-semibold tracking-[-0.03em] text-slate-950 dark:text-white sm:text-6xl">
+      <h1 className="mx-auto mt-2 max-w-4xl text-5xl font-semibold tracking-[-0.03em] text-slate-950 dark:text-white sm:text-6xl">
         {isDE ? 'Deutsch lernen' : 'Master German'}
       </h1>
 
@@ -89,14 +90,14 @@ export function HomePage() {
           <>
             <Link
               to="/learn"
-              className={`${theme.button.primary} min-w-[180px] px-8 py-4 text-base font-semibold transition duration-300 hover:-translate-y-0.5 hover:shadow-lg`}
+              className="bg-blue-600 text-white hover:bg-blue-700 shadow-sm min-w-[180px] px-8 py-4 text-base font-semibold rounded-lg transition duration-300 hover:-translate-y-0.5 hover:shadow-lg whitespace-nowrap"
             >
               {isDE ? 'Weiterlernen' : 'Continue Learning'}
             </Link>
             {reviewCount > 0 && (
               <Link
                 to="/dashboard"
-                className={`${theme.button.secondary} min-w-[180px] px-8 py-4 text-base font-semibold transition duration-300 hover:-translate-y-0.5 hover:shadow-lg`}
+                className="border border-blue-600 text-blue-600 hover:bg-blue-50 font-medium min-w-[180px] px-5 py-2.5 rounded-lg transition whitespace-nowrap"
               >
                 {isDE ? 'Review starten' : 'Review Now'}
               </Link>
@@ -137,7 +138,7 @@ export function HomePage() {
           </div>
           <Link
             to="/alphabet"
-            className={`${theme.button.secondary} mt-4 w-full text-center`}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 mt-4 w-full justify-center text-xs font-semibold rounded-lg border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 hover:border-slate-300 transition-colors whitespace-nowrap"
           >
             {isDE ? 'Weiter lernen' : 'Resume Lesson'} →
           </Link>
@@ -155,18 +156,19 @@ export function HomePage() {
         </div>
       </div>
 
-      <div className={`rounded-[28px] ${reviewCount > 0 ? 'border-l-4 border-blue-600 dark:border-blue-500' : 'border border-slate-300 dark:border-slate-700'} bg-white p-6 shadow-sm transition-[transform,box-shadow] duration-300 hover:shadow-xl dark:bg-slate-950`}>
-        <div className="text-sm uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">{isDE ? 'Review' : 'Review Queue'}</div>
-        <div className="mt-4 flex items-center justify-between">
+      <Link
+        to="/dashboard"
+        className={`block rounded-[28px] border ${reviewCount > 0 ? 'border-blue-600 dark:border-blue-500' : 'border-slate-300 dark:border-slate-700'} bg-white p-6 shadow-sm transition-[transform,box-shadow,border-color] duration-300 hover:shadow-xl hover:border-blue-500 dark:bg-slate-950 group cursor-pointer`}
+      >
+        <div className="flex items-center justify-between">
           <div>
-            <div className={`text-4xl font-semibold ${reviewCount > 0 ? 'text-blue-600 dark:text-blue-600' : 'text-slate-400 dark:text-slate-500'}`}>{reviewCount}</div>
+            <div className="text-sm uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">{isDE ? 'Review' : 'Review Queue'}</div>
+            <div className={`mt-4 text-4xl font-semibold ${reviewCount > 0 ? 'text-blue-600' : 'text-slate-400 dark:text-slate-500'}`}>{reviewCount}</div>
             <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{isDE ? 'Fehlerhafte Antworten' : 'Wrong answers queued'}</p>
           </div>
-          <Link to="/dashboard" className={`${theme.button.secondary} px-4 py-2 text-sm`}>
-            {isDE ? 'Review' : 'Review Now'}
-          </Link>
+          <span className="text-2xl text-slate-400 group-hover:text-blue-600 transition-colors whitespace-nowrap">→</span>
         </div>
-      </div>
+      </Link>
 
       {/* XP Widget */}
       <XpWidget />

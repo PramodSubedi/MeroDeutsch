@@ -10,7 +10,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useOnlineStatus } from '../hooks/useOnlineStatus';
 import { useLastModule } from '../hooks/useLastModule';
 import { useXp } from '../hooks/useXp';
-import { BrandMark } from './BrandMark';
+import { Logo } from './common/Logo';
 import { Footer } from './Footer';
 import { ModuleChrome } from './learning/ModuleChrome';
 import { BottomNav } from './BottomNav';
@@ -74,7 +74,9 @@ export function Layout() {
       <header className={theme.layout.header} role="banner">
         <div className={theme.layout.headerInner}>
           {/* Logo is a link → Home */}
-          <BrandMark linked light className="text-lg" />
+          <Link to="/" aria-label="MeroDeutsch – Home" className="inline-flex min-h-[44px] items-center transition duration-200 hover:opacity-90 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none focus-visible:ring-offset-2 rounded">
+            <Logo size="sm" variant="navbar" />
+          </Link>
           <nav className={`${theme.layout.nav} hidden md:flex`}>
             {link('/', 'Home')}
             {user && link('/dashboard', 'Dashboard')}

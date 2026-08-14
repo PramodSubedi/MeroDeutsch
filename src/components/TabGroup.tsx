@@ -5,8 +5,12 @@ import { theme } from '../config/theme';
 /**
  * Unified TabGroup component for consistent tab navigation across the app.
  * Supports both local state and visual-only tabs with optional icons and badges.
+ *
+ * `variant="compact"` (used by module study pages) lays the tab buttons out as a
+ * 2-column grid on mobile (so "Learn Cards" / "Quiz" / "Spelling" stay in a
+ * single compact row above the fold) and switches to a normal flex row on `md`+`.
+ * Touch targets are enforced at >= 44x44px.
  */
-
 export interface Tab<T extends string = string> {
   id: T;
   label: string;
@@ -36,21 +40,26 @@ export function TabGroup<T extends string = string>({
   return (
     <div className={`flex flex-wrap items-center gap-3 ${className}`}>
       {/* Tab buttons */}
-      <div className="flex flex-wrap gap-2">
+      <div
+        className={
+          isCompact
+            ? 'grid grid-cols-2 gap-2 w-full md:flex md:w-auto'
+            : 'flex flex-wrap gap-2'
+        }
+      >
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
           const Icon = tab.icon;
+          const buttonClass =
+            (isActive ? theme.button.toggleActive : theme.button.toggleInactive) +
+            (isCompact ? ' min-h-[44px] min-w-[44px] w-full md:w-auto' : '');
 
           return (
             <button
               key={tab.id}
               type="button"
               onClick={() => onTabChange(tab.id)}
-              className={
-                isActive
-                  ? theme.button.toggleActive
-                  : theme.button.toggleInactive
-              }
+              className={buttonClass}
               aria-current={isActive ? 'page' : undefined}
             >
               <span className="flex items-center gap-1.5">
@@ -78,11 +87,13 @@ export function TabGroup<T extends string = string>({
         })}
       </div>
 
-      {/* Optional divider and right controls */}
+      {/* Optional divider and right controls.
+          In compact mode the divider hides on mobile (rightControls wrap below the
+          2-col grid) and reappears on sm+ where the tabs sit in a flex row. */}
       {rightControls && (
         <>
           <div
-            className="h-8 w-px bg-slate-200 dark:bg-slate-700"
+            className={`h-8 w-px bg-slate-200 dark:bg-slate-700 ${isCompact ? 'hidden sm:block' : ''}`}
             aria-hidden="true"
           />
           {rightControls}

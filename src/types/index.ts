@@ -132,3 +132,55 @@ export interface VocabEntry {
   exampleDe?: string;
   audioId?: string;
 }
+
+/**
+ * Enriched, type-safe German vocabulary card (Phase 1 schema).
+ * Lives in IndexedDB `vocab` table and is shared with scripts/enrich-cards.ts.
+ * `lemma`/article/plural enrich the legacy `VocabEntry` so old UI keeps working.
+ */
+export interface VocabCard {
+  id: string;
+  lemma: string;
+  article: 'der' | 'die' | 'das' | null;
+  plural: string | null;
+  partOfSpeech: 'noun' | 'verb' | 'adjective' | 'adverb' | 'preposition' | 'phrase' | string;
+  cefrLevel: 'A1' | 'A2' | 'B1';
+  translation: { en: string; np: string };
+  phonetics: { ipa: string; devanagari: string };
+  tags: string[];
+  examples: { de: string; en: string; np: string }[];
+}
+
+/**
+ * Per-user spaced-repetition state stored in IndexedDB `userProgress` table.
+ * Replaces the legacy `WrongAnswerItem` review queue with a Leitner 5-Box model.
+ */
+export interface UserProgress {
+  /** Unique row id: `${userId}:${originalId|itemKey}` (deterministic so re-runs upsert, not duplicate). */
+  id: string;
+  /** Owning user id (or 'guest') so the table is multi-user safe. */
+  userId: string;
+  /** References `VocabCard.id` (or a module item key for legacy rows). */
+  cardId: string;
+  moduleType: string;
+  /** Leitner box 1–5 (5 = mastered). */
+  box: number;
+  dueAt: string;
+  intervalDays: number;
+  lapses: number;
+  lastReviewedAt: string;
+  ease?: number;
+  repetitions?: number;
+  lastResult?: 'correct' | 'wrong';
+  userAnswer?: string;
+  correctAnswer?: string;
+  updatedAt?: string;
+}
+
+/** Result returned by {@link migrateLocalStorageToDexie}. */
+export interface MigrationResult {
+  migrated: number;
+  skipped: number;
+  alreadyMigrated: boolean;
+  message?: string;
+}

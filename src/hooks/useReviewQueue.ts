@@ -1,48 +1,11 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import type { WrongAnswerItem } from '../types';
-import { getItem, removeItem, setItem } from '../utils/safeStorage';
-import { scopedKey } from '../utils/userStorage';
 import { useAuth } from './useAuth';
 import { supabase } from '../lib/supabase';
 import { useActivityLog } from './useActivityLog';
-
-const DEBOUNCE_MS = 300;
-let saveTimeout: ReturnType<typeof setTimeout> | null = null;
-
-const BASE_KEY = 'meroDeutschWrongAnswers';
-
-/** Leitner 5-Box System: Review intervals in days for each box level */
-const LEITNER_INTERVALS = [1, 3, 7, 14, 30]; // Box 1-5 intervals
-
-interface ReviewRow {
-  id: string;
-  module_type: string;
-  item_key: string;
-  user_answer?: string;
-  correct_answer?: string;
-  error_count: number;
-  ease: number;
-  interval_days: number;
-  repetitions: number;
-  due_at: string;
-  updated_at: string;
-  last_result?: 'correct' | 'wrong';
-  box_level?: number;
-}
-
-function loadQueue(key: string): WrongAnswerItem[] {
-  try {
-    const raw = getItem(key);
-    if (!raw) return [];
-    return JSON.parse(raw) as WrongAnswerItem[];
-  } catch {
-    return [];
-  }
-}
-
-function saveQueue(key: string, items: WrongAnswerItem[]) {
-  setItem(key, JSON.stringify(items));
-}
+import { db } from '../lib/db';
+import { useLiveQuery } from 'dexie-react-hooks';
+import { LEITNER_INTERVALS } from '../lib/db';
 
 function daysFromNow(days: number): string {
   const date = new Date();
@@ -50,25 +13,25 @@ function daysFromNow(days: number): string {
   return date.toISOString();
 }
 
-function rowToItem(row: ReviewRow): WrongAnswerItem {
+function rowToItem(row: any): WrongAnswerItem {
   return {
     id: row.id,
-    moduleType: row.module_type,
-    itemKey: row.item_key,
-    userAnswer: row.user_answer ?? '',
-    correctAnswer: row.correct_answer ?? '',
-    errorCount: row.error_count,
-    timestamp: row.updated_at,
+    moduleType: row.moduleType,
+    itemKey: row.cardId,
+    userAnswer: row.userAnswer ?? '',
+    correctAnswer: row.correctAnswer ?? '',
+    errorCount: row.lapses ?? 0,
+    timestamp: row.updatedAt,
     ease: row.ease,
-    intervalDays: row.interval_days,
-    repetitions: row.repetitions,
-    dueAt: row.due_at,
-    lastResult: row.last_result,
-    boxLevel: row.box_level,
+    intervalDays: row.intervalDays ?? 1,
+    repetitions: row.repetitions ?? 0,
+    dueAt: row.dueAt,
+    lastResult: row.lastResult,
+    boxLevel: row.box,
   };
 }
 
-function itemToRow(item: WrongAnswerItem): Omit<ReviewRow, 'updated_at'> {
+function itemToRow(item: WrongAnswerItem): any {
   return {
     id: item.id,
     module_type: item.moduleType,
@@ -88,145 +51,166 @@ function itemToRow(item: WrongAnswerItem): Omit<ReviewRow, 'updated_at'> {
 export function useReviewQueue() {
   const { user, isAuthenticated } = useAuth();
   const userId = user?.userId ?? null;
-  const key = scopedKey(BASE_KEY, userId);
-  const [queue, setQueue] = useState<WrongAnswerItem[]>(() => loadQueue(key));
   const { recordActivity } = useActivityLog();
 
-  // Reset in-memory state when the user changes (login/logout/switch).
-  useEffect(() => {
-    setQueue(loadQueue(key));
-  }, [key]);
+  // Live query for all userProgress rows for this user, with safe fallback to empty array
+  const rows = useLiveQuery(() => {
+    if (!db) return [];
+    return db.userProgress.where('userId').equals(userId ?? '').toArray();
+  }, [userId]) ?? [];
 
-  // Fetch queue from Supabase on login.
-  useEffect(() => {
-    if (isAuthenticated && user) {
-      const fetchRemoteQueue = async () => {
-        const { data, error } = await supabase
-          .from('review_queue')
-          .select('id, module_type, item_key, user_answer, correct_answer, error_count, ease, interval_days, repetitions, due_at, updated_at, last_result, box_level')
-          .eq('user_id', user.userId);
+  const queue = useMemo(() => rows.map(rowToItem), [rows]);
 
-        if (!error && data) {
-          const remote = (data as ReviewRow[]).map(rowToItem);
-          const local = loadQueue(key);
-          const mergedMap = new Map<string, WrongAnswerItem>();
-          [...local, ...remote].forEach((item) => {
-            if (item.id) mergedMap.set(item.id, item);
-          });
-          const merged = Array.from(mergedMap.values());
-          setQueue(merged);
-          saveQueue(key, merged);
-        }
-      };
-      fetchRemoteQueue();
-    }
-  }, [isAuthenticated, user, key]);
+  const DEBOUNCE_MS = 300;
+  const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Debounced local save + full sync to Supabase (delete + re-insert).
+  // Sync from Supabase on login (once)
   useEffect(() => {
-    if (saveTimeout) {
-      clearTimeout(saveTimeout);
-    }
-    saveTimeout = setTimeout(() => {
-      saveQueue(key, queue);
-      if (isAuthenticated && user) {
-        void (async () => {
-          const userIdValue = user.userId;
-          await supabase.from('review_queue').delete().eq('user_id', userIdValue);
-          if (queue.length > 0) {
-            await supabase.from('review_queue').insert(
-              queue.map((item) => ({
-                user_id: userIdValue,
-                ...itemToRow(item),
-                updated_at: new Date().toISOString(),
+    if (isAuthenticated && user && userId) {
+      supabase
+        .from('review_queue')
+        .select('id, module_type, item_key, user_answer, correct_answer, error_count, ease, interval_days, repetitions, due_at, updated_at, last_result, box_level')
+        .eq('user_id', user.userId)
+        .then(({ data, error }) => {
+          if (!error && data && db) {
+            const remote = data.map((row: any) => rowToItem({
+              id: row.id,
+              moduleType: row.module_type,
+              cardId: row.item_key,
+              userAnswer: row.user_answer,
+              correctAnswer: row.correct_answer,
+              lapses: row.error_count,
+              updatedAt: row.updated_at,
+              ease: row.ease,
+              intervalDays: row.interval_days,
+              repetitions: row.repetitions,
+              dueAt: row.due_at,
+              lastResult: row.last_result,
+              box: row.box_level,
+            }));
+
+            const mergedMap = new Map<string, WrongAnswerItem>();
+            [...queue, ...remote].forEach(item => {
+              if (item.id) mergedMap.set(item.id, item);
+            });
+            const merged = Array.from(mergedMap.values());
+
+            db.userProgress.bulkPut(
+              merged.map(item => ({
+                id: item.id,
+                userId: userId,
+                cardId: item.itemKey,
+                moduleType: item.moduleType,
+                box: item.boxLevel ?? 1,
+                dueAt: item.dueAt ?? new Date().toISOString(),
+                intervalDays: item.intervalDays ?? 1,
+                lapses: item.errorCount,
+                lastReviewedAt: item.timestamp ?? new Date().toISOString(),
+                ease: item.ease ?? 2.5,
+                repetitions: item.repetitions ?? 0,
+                lastResult: item.lastResult,
+                userAnswer: item.userAnswer,
+                correctAnswer: item.correctAnswer,
+                updatedAt: new Date().toISOString(),
               }))
             );
           }
-        })();
+        });
+    }
+  }, [isAuthenticated, userId]); // Note: removing queue from deps list to prevent loops
+
+  // Debounced persist to remote Supabase (only when queue changes)
+  useEffect(() => {
+    if (!isAuthenticated || !userId) return;
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+    saveTimeoutRef.current = setTimeout(async () => {
+      // Full sync (delete + insert)
+      await supabase.from('review_queue').delete().eq('user_id', userId);
+      if (queue.length > 0) {
+        await supabase.from('review_queue').insert(
+          queue.map(item => ({
+            user_id: userId,
+            ...itemToRow(item),
+            updated_at: new Date().toISOString(),
+          }))
+        );
       }
     }, DEBOUNCE_MS);
-  }, [queue, key, isAuthenticated, user]);
+
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+    };
+  }, [queue, userId, isAuthenticated]);
 
   const addWrongAnswer = useCallback((item: Omit<WrongAnswerItem, 'id' | 'timestamp' | 'errorCount'>) => {
-    setQueue((current) => {
-      const existing = current.find((entry) => entry.moduleType === item.moduleType && entry.itemKey === item.itemKey);
-      if (existing) {
-        // Wrong again → demote back to Box 1 (Leitner System)
-        const updated: WrongAnswerItem = {
-          ...existing,
-          errorCount: existing.errorCount + 1,
-          userAnswer: item.userAnswer,
-          correctAnswer: item.correctAnswer,
-          timestamp: new Date().toISOString(),
-          boxLevel: 1, // Reset to Box 1 on mistake
-          ease: 2.5,
-          intervalDays: LEITNER_INTERVALS[0],
-          repetitions: 0,
-          dueAt: daysFromNow(0), // due immediately for practice
-          lastResult: 'wrong',
-        };
-        return current.map((entry) => (entry.id === existing.id ? updated : entry));
-      }
-      return [
-        ...current,
-        {
-          id: typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : `wrong-${Date.now()}`,
-          moduleType: item.moduleType,
-          itemKey: item.itemKey,
-          userAnswer: item.userAnswer,
-          correctAnswer: item.correctAnswer,
-          errorCount: 1,
-          timestamp: new Date().toISOString(),
-          boxLevel: 1, // Start at Box 1
-          ease: 2.5,
-          intervalDays: LEITNER_INTERVALS[0],
-          repetitions: 0,
-          dueAt: daysFromNow(0),
-          lastResult: 'wrong',
-        },
-      ];
-    });
-    // Record activity for wrong answers (engagement)
-    void recordActivity(1);
-  }, [recordActivity]);
+    if (!db || !userId) return;
 
-  /** Mark an item as correctly recalled → promote to next Leitner box (1-5). */
+    const existing = queue.find((entry) => entry.moduleType === item.moduleType && entry.itemKey === item.itemKey);
+    const id = existing?.id ?? (typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : `wrong-${Date.now()}`);
+    const errorCount = (existing?.errorCount ?? 0) + 1;
+
+    db.userProgress.put({
+      id,
+      userId,
+      cardId: item.itemKey,
+      moduleType: item.moduleType,
+      box: 1, // Start/reset to box 1 on wrong answer
+      dueAt: daysFromNow(0),
+      intervalDays: LEITNER_INTERVALS[0],
+      lapses: errorCount,
+      lastReviewedAt: new Date().toISOString(),
+      ease: 2.5,
+      repetitions: 0,
+      lastResult: 'wrong',
+      userAnswer: item.userAnswer,
+      correctAnswer: item.correctAnswer,
+      updatedAt: new Date().toISOString(),
+    });
+
+    void recordActivity(1);
+  }, [userId, queue, recordActivity]);
+
   const markCorrect = useCallback((id: string) => {
-    setQueue((current) =>
-      current.map((entry) => {
-        if (entry.id !== id) return entry;
-        const currentBox = entry.boxLevel ?? 1;
-        const nextBox = Math.min(currentBox + 1, 5); // Max box is 5
-        const reps = (entry.repetitions ?? 0) + 1;
-        const newInterval = LEITNER_INTERVALS[nextBox - 1]; // Box 1-5 maps to index 0-4
-        return {
-          ...entry,
-          boxLevel: nextBox,
-          repetitions: reps,
-          intervalDays: newInterval,
-          dueAt: daysFromNow(newInterval),
-          lastResult: 'correct',
-        };
-      })
-    );
-    // Record activity for correct review answers (engagement)
+    const localDb = db;
+    if (!localDb) return;
+
+    localDb.userProgress.get(id).then((row) => {
+      if (!row) return;
+      const nextBox = Math.min((row.box ?? 1) + 1, 5);
+      const reps = (row.repetitions ?? 0) + 1;
+      const interval = LEITNER_INTERVALS[nextBox - 1];
+
+      localDb.userProgress.put({
+        ...row,
+        box: nextBox,
+        repetitions: reps,
+        intervalDays: interval,
+        dueAt: daysFromNow(interval),
+        lastResult: 'correct',
+        updatedAt: new Date().toISOString(),
+      });
+    });
+
     void recordActivity(1);
   }, [recordActivity]);
 
   const markResolved = useCallback((id: string) => {
-    setQueue((current) => current.filter((item) => item.id !== id));
+    if (!db) return;
+    db.userProgress.delete(id);
   }, []);
 
   const clearQueue = useCallback(() => {
-    removeItem(key);
-    setQueue([]);
-
-    if (isAuthenticated && user) {
-      void supabase.from('review_queue').delete().eq('user_id', user.userId);
+    if (!db || !userId) return;
+    db.userProgress.where('userId').equals(userId).delete();
+    if (isAuthenticated) {
+      void supabase.from('review_queue').delete().eq('user_id', userId);
     }
-  }, [key, isAuthenticated, user]);
+  }, [userId, isAuthenticated]);
 
-  // Due items first (dueAt <= now), then by error count desc, then by timestamp.
   const sortedQueue = useMemo(() => {
     const now = new Date().toISOString();
     return [...queue].sort((a, b) => {

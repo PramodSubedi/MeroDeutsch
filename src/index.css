@@ -60,6 +60,18 @@ body {
   scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
 }
 
+/* Hide scrollbar for custom horizontal-scroll containers (Tailwind v4 utility).
+   The global rules above keep a thin scrollbar everywhere else. */
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    scrollbar-width: none;
+    scrollbar-color: transparent transparent;
+  }
+}
+
 /* Keyboard Navigation & Accessibility */
 /* Global focus-visible styles for consistent keyboard navigation */
 a:focus-visible,

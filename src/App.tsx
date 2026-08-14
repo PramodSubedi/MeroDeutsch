@@ -3,6 +3,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { SkeletonLoader } from './components/SkeletonLoader';
+import { useDexieInit } from './hooks/useDexieInit';
 
 // Core pages - eagerly loaded for instant navigation
 import { HomePage } from './pages/HomePage';
@@ -33,6 +34,8 @@ const FeedbackPage = lazy(() => import('./pages/FeedbackPage').then(m => ({ defa
 
 /** Routes only — do not put feature logic here */
 export default function App() {
+  // Bootstrap the Dexie data layer (seeds db.vocab on first load if empty)
+  useDexieInit();
   return (
     <ErrorBoundary>
       <BrowserRouter>

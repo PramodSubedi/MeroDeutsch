@@ -1,19 +1,15 @@
 import { Link } from 'react-router-dom';
+import { Logo } from './common/Logo';
 
 export function Footer() {
   return (
     <footer className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-12 mt-24 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 bg-slate-50 dark:bg-slate-950/50 border border-slate-100 dark:border-slate-800/80 rounded-3xl p-8 shadow-xs">
-          
+
           {/* Brand Column */}
           <div className="space-y-3 md:col-span-2">
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              Mero Deutsch 
-              <span className="text-xs bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300 px-2.5 py-0.5 rounded-full font-semibold">
-                A1 Core
-              </span>
-            </h3>
+            <Logo size="md" variant="on-light" />
             <p className="text-sm text-slate-600 dark:text-slate-400 max-w-sm leading-relaxed">
               Tailored German language training for Nepali and English speakers, featuring interactive speech recognition and smart daily challenges.
             </p>
