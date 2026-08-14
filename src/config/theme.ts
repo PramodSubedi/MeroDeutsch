@@ -8,7 +8,7 @@ export const theme = {
     tagline: 'Learn German from zero — with Nepali support',
   },
   page: {
-    container: 'p-4',
+    container: 'py-4',
     heading: 'text-xl font-bold',
     description: 'mb-4 text-sm text-slate-500 dark:text-slate-400',
   },
@@ -20,9 +20,9 @@ export const theme = {
     nav: 'flex flex-wrap justify-center gap-1.5',
     navLinkActive: 'px-3 py-1.5 rounded-lg text-sm font-semibold bg-white text-blue-600 shadow',
     navLink: 'px-3 py-1.5 rounded-lg text-sm font-semibold bg-blue-700 text-white border border-blue-500 hover:bg-blue-800',
-    toggleButton: 'min-h-[44px] min-w-[44px] inline-flex items-center justify-center px-3 py-2 rounded-lg text-xs font-semibold bg-indigo-600 border border-indigo-400 transition hover:bg-indigo-700',
-    themeButton: 'min-h-[44px] min-w-[44px] inline-flex items-center justify-center px-3 py-2 rounded-lg text-sm bg-blue-700 border border-blue-500 transition hover:bg-blue-800',
-    main: 'max-w-6xl mx-auto px-4 pb-8',
+    toggleButton: 'min-h-[44px] min-w-[44px] inline-flex items-center justify-center px-3 py-2 rounded-lg text-xs font-semibold bg-indigo-600 border border-indigo-400 transition hover:bg-indigo-700 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none focus-visible:ring-offset-2',
+    themeButton: 'min-h-[44px] min-w-[44px] inline-flex items-center justify-center px-3 py-2 rounded-lg text-sm bg-blue-700 border border-blue-500 transition hover:bg-blue-800 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none focus-visible:ring-offset-2',
+    main: 'max-w-6xl mx-auto',
   },
   section: {
     surface: 'mb-4 rounded-xl border border-slate-200 bg-white p-6 shadow dark:border-slate-700 dark:bg-slate-800',
@@ -41,7 +41,7 @@ export const theme = {
   modal: {
     overlay: 'fixed inset-0 z-50 flex items-start justify-center bg-black/50 p-4 backdrop-blur-sm',
     dialog: 'relative mt-[5%] w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl dark:bg-slate-800 dark:text-slate-100',
-    close: 'absolute right-4 top-3 text-2xl text-slate-400 hover:text-slate-800 dark:hover:text-white',
+    close: 'absolute right-4 top-3 flex min-h-[44px] min-w-[44px] items-center justify-center text-2xl text-slate-400 hover:text-slate-800 dark:hover:text-white',
   },
   card: {
     surface: 'rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-blue-300 dark:border-slate-700 dark:bg-slate-800',
@@ -56,7 +56,7 @@ export const theme = {
     primary: 'rounded-lg bg-blue-600 px-4 py-3 text-base font-semibold text-white shadow-sm transition hover:bg-blue-700 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50',
     secondary: 'rounded-lg bg-slate-200 px-4 py-3 text-base font-semibold text-slate-900 shadow-sm transition hover:bg-slate-300 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 dark:bg-slate-700 dark:text-slate-100 dark:hover:bg-slate-600',
     danger: 'rounded-lg bg-red-600 px-4 py-3 text-base font-semibold text-white shadow-sm transition hover:bg-red-700 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50',
-    icon: 'rounded-lg bg-blue-50 px-3 py-2 text-base text-blue-600 transition hover:bg-blue-100 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 dark:bg-blue-900/50 dark:text-blue-300 dark:hover:bg-blue-800',
+    icon: 'min-h-[44px] min-w-[44px] rounded-lg bg-blue-50 px-3 py-2 text-base text-blue-600 transition hover:bg-blue-100 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 dark:bg-blue-900/50 dark:text-blue-300 dark:hover:bg-blue-800',
     pill: 'rounded-xl border-2 border-slate-200 px-4 py-3 text-base font-semibold transition hover:border-blue-500 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-600',
     toggleActive: 'rounded-lg bg-white px-4 py-3 text-base font-semibold text-blue-600 shadow dark:bg-slate-700 dark:text-blue-300',
     toggleInactive: 'rounded-lg bg-slate-200 px-4 py-3 text-base font-semibold text-slate-700 transition hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600',

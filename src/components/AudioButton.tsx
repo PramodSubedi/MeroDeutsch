@@ -62,7 +62,7 @@ export function AudioButton({ word, className = '', lang = 'de', showSpeedToggle
             e.stopPropagation();
             toggleSpeed();
           }}
-          className="text-[10px] font-medium text-slate-600 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 transition-colors"
+          className="flex min-h-[44px] min-w-[44px] items-center justify-center text-[10px] font-medium text-slate-600 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 transition-colors"
           aria-label={`Toggle playback speed. Current: ${speed === 1.0 ? 'Normal' : 'Slow'}`}
         >
           {speed === 1.0 ? '1.0x' : '0.75x'}

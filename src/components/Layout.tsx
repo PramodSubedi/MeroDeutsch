@@ -99,10 +99,30 @@ export function Layout() {
             </button>
             {user && <UserMenu user={user} />}
           </nav>
+          {/* Mobile-only controls — nav is hidden below md */}
+          <div className="flex items-center gap-2 md:hidden">
+            <button
+              type="button"
+              onClick={toggleLang}
+              className={theme.layout.toggleButton}
+              aria-label={langMode === 'normal' ? 'Switch to German (DE)' : 'Switch to English (EN)'}
+            >
+              {langMode === 'normal' ? 'DE' : 'EN'}
+            </button>
+            <button
+              type="button"
+              onClick={toggleDark}
+              className={theme.layout.themeButton}
+              aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'}
+            >
+              {dark ? '☀️' : '🌙'}
+            </button>
+            {user && <UserMenu user={user} />}
+          </div>
         </div>
       </header>
       {!isOnline && (
-        <div className="sticky top-0 z-40 border-b border-amber-200 bg-amber-50 px-4 py-2 text-center text-sm font-medium text-amber-800 dark:border-amber-800/50 dark:bg-amber-900/40 dark:text-amber-200">
+        <div className="border-b border-amber-200 bg-amber-50 px-4 py-2 text-center text-sm font-medium text-amber-800 dark:border-amber-800/50 dark:bg-amber-900/40 dark:text-amber-200">
           <span aria-hidden="true">📡</span>{' '}
           {langMode === 'german'
             ? 'Du bist offline — gecachte Lektionen funktionieren weiter.'
@@ -112,7 +132,7 @@ export function Layout() {
       <main
         id="main-content"
         role="main"
-        className={`${theme.layout.main} scroll-mt-24 pb-20 md:pb-8`}
+        className={`${theme.layout.main} px-4 scroll-mt-24 pb-20 md:pb-8`}
         style={isModuleRoute ? { paddingTop: '2rem' } : undefined}
       >
         <Breadcrumb />

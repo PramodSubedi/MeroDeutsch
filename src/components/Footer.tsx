@@ -21,24 +21,24 @@ export function Footer() {
 
           {/* Quick Navigation */}
           <div>
-            <h4 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-3">
+            <h4 className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-3">
               Explore
             </h4>
-            <ul className="space-y-2.5 text-sm text-slate-600 dark:text-slate-400 font-medium">
-              <li><Link to="/" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Dashboard</Link></li>
-              <li><Link to="/alphabet" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Alphabet & Sounds</Link></li>
-              <li><Link to="/articles" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Article Trainer</Link></li>
-              <li><Link to="/glossary" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Glossary & Words</Link></li>
+            <ul className="space-y-1 text-sm text-slate-600 dark:text-slate-400 font-medium">
+              <li><Link to="/" className="inline-flex min-h-[44px] items-center hover:text-blue-600 dark:hover:text-blue-400 transition-colors focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:outline-none focus-visible:ring-offset-2 rounded">Dashboard</Link></li>
+              <li><Link to="/alphabet" className="inline-flex min-h-[44px] items-center hover:text-blue-600 dark:hover:text-blue-400 transition-colors focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:outline-none focus-visible:ring-offset-2 rounded">Alphabet & Sounds</Link></li>
+              <li><Link to="/articles" className="inline-flex min-h-[44px] items-center hover:text-blue-600 dark:hover:text-blue-400 transition-colors focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:outline-none focus-visible:ring-offset-2 rounded">Article Trainer</Link></li>
+              <li><Link to="/glossary" className="inline-flex min-h-[44px] items-center hover:text-blue-600 dark:hover:text-blue-400 transition-colors focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:outline-none focus-visible:ring-offset-2 rounded">Glossary & Words</Link></li>
             </ul>
           </div>
 
           {/* System status */}
           <div>
-            <h4 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-3">
+            <h4 className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-3">
               System
             </h4>
             <div className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
-              <p className="text-xs text-slate-500">Production v1.2.0</p>
+              <p className="text-xs text-slate-600 dark:text-slate-400">Production v1.2.0</p>
             </div>
           </div>
 

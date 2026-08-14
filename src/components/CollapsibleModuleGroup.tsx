@@ -54,7 +54,7 @@ export function CollapsibleModuleGroup({
       <button
         type="button"
         onClick={toggleExpanded}
-        className="mb-2 inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+        className="mb-2 inline-flex min-h-[44px] items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
         aria-expanded={isExpanded}
         aria-controls={`${storageKey}-content`}
       >
@@ -71,7 +71,7 @@ export function CollapsibleModuleGroup({
         id={`${storageKey}-content`}
         className="overflow-hidden transition-all duration-300 ease-in-out"
         style={{
-          maxHeight: isExpanded ? `${modules.length * 48}px` : '0px',
+          maxHeight: isExpanded ? `${modules.length * 64}px` : '0px',
           opacity: isExpanded ? 1 : 0,
         }}
       >
@@ -92,7 +92,7 @@ export function CollapsibleModuleGroup({
                 title={label}
               >
                 <Icon className="h-4 w-4 shrink-0" strokeWidth={2} aria-hidden="true" />
-                <span className="hidden sm:inline">{label}</span>
+                <span className="text-xs sm:text-sm">{label}</span>
               </NavLink>
             );
           })}

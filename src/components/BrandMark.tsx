@@ -35,7 +35,11 @@ export function BrandMark({ linked = false, light = false, className = '' }: Bra
   if (!linked) return mark;
 
   return (
-    <Link to="/" aria-label="MeroDeutsch – Home" className="transition duration-200 hover:opacity-90">
+    <Link
+      to="/"
+      aria-label="MeroDeutsch – Home"
+      className="inline-flex min-h-[44px] items-center transition duration-200 hover:opacity-90 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none focus-visible:ring-offset-2 rounded"
+    >
       {mark}
     </Link>
   );

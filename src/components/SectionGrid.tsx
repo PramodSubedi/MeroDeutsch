@@ -10,7 +10,7 @@ interface SectionGridProps {
 
 export function SectionGrid({ title, description, controls, children }: SectionGridProps) {
   return (
-    <div className={theme.page.container}>
+    <div>
       <div className={theme.section.surface}>
         <h1 className={theme.section.title}>{title}</h1>
         <p className={theme.section.description}>{description}</p>

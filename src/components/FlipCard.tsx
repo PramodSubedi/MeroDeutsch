@@ -54,7 +54,7 @@ export function FlipCard({ front, back, badge, langMode }: FlipCardProps) {
       <button
         type="button"
         onClick={() => speakWord(front)}
-        className="absolute bottom-2 right-2 z-10 rounded-full bg-blue-600 px-2.5 py-1.5 text-xs font-semibold text-white shadow transition hover:bg-blue-700"
+        className="absolute bottom-2 right-2 z-10 flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full bg-blue-600 px-2.5 py-1.5 text-xs font-semibold text-white shadow transition hover:bg-blue-700"
         aria-label={`Speak ${front}`}
       >
         🔊

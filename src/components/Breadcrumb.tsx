@@ -83,7 +83,7 @@ export function Breadcrumb() {
               ) : (
                 <Link
                   to={crumb.path}
-                  className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:outline-none focus-visible:ring-offset-2 rounded px-1"
+                  className="inline-flex min-h-[44px] items-center hover:text-blue-600 dark:hover:text-blue-400 transition-colors focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:outline-none focus-visible:ring-offset-2 rounded px-1"
                 >
                   {crumb.label}
                 </Link>

@@ -47,7 +47,7 @@ export function HomePage() {
   // Region: Hero component with streak and CTAs
   const hero = (
     <div className="text-center py-6 lg:py-10">
-      <div className="inline-flex items-center gap-3 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-xs uppercase tracking-[0.35em] text-slate-500 shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
+      <div className="inline-flex min-h-[36px] items-center gap-3 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-xs uppercase tracking-[0.35em] text-slate-500 shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
         <BrandMark className="text-sm" />
         {isAuthenticated && streakCount > 0 && (
           <div className="inline-flex items-center gap-2 rounded-full bg-blue-500/10 px-3 py-1 text-xs font-semibold text-blue-700 dark:bg-blue-400/15 dark:text-blue-300">
@@ -197,8 +197,8 @@ export function HomePage() {
               <div key={badge.id} className="flex min-w-[240px] items-start gap-4 rounded-[24px] border border-dashed border-slate-200 bg-slate-50 p-5 opacity-70 dark:border-slate-700 dark:bg-slate-900">
                 <span className="text-3xl grayscale" aria-hidden="true">🔒</span>
                 <div>
-                  <div className="text-sm font-semibold text-slate-400 dark:text-slate-500">{badge.label}</div>
-                  <div className="mt-1 text-xs text-slate-500 dark:text-slate-400">{badge.requirement}</div>
+                  <div className="text-sm font-semibold text-slate-600 dark:text-slate-400">{badge.label}</div>
+                  <div className="mt-1 text-xs text-slate-600 dark:text-slate-400">{badge.requirement}</div>
                 </div>
               </div>
             ))}

@@ -85,7 +85,7 @@ export function ActivityHeatmap({ activities = [], days = 30 }: ActivityHeatmapP
       </div>
 
       {/* Heatmap Grid */}
-      <div className="grid grid-cols-10 gap-1.5 sm:grid-cols-15 md:grid-cols-30">
+      <div className="grid grid-cols-10 gap-1.5 sm:grid-cols-[repeat(15,minmax(0,1fr))] md:grid-cols-[repeat(30,minmax(0,1fr))]">
         {heatmapData.map((day, _index) => (
           <div
             key={day.date}

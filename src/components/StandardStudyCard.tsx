@@ -77,7 +77,7 @@ export function StandardStudyCard({
         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-sm font-bold text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
           {badge}
         </div>
-        <AudioButton word={german} className="absolute top-3 right-3" />
+        <AudioButton word={german} />
       </div>
 
       {/* Vertical content stack */}

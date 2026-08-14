@@ -44,6 +44,7 @@ export function Card({ badge, title, lines, footer, note, onClick, onSpeak }: Ca
             onSpeak();
           }}
           className={theme.button.icon}
+          aria-label={`Play audio for ${title}`}
         >
           🔊
         </button>
