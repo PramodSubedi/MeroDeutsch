@@ -172,6 +172,64 @@ export const userDataService = {
     if (error) throw error;
   },
 
+  // --- Activity ---
+  async getActivityDays(userId: string, daysBack: number = 90): Promise<{ date: string; count: number }[]> {
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - daysBack);
+    const cutoffStr = cutoff.toISOString().split('T')[0];
+
+    const { data, error } = await supabase
+      .from('user_activity_days')
+      .select('activity_date, event_count')
+      .eq('user_id', userId)
+      .gte('activity_date', cutoffStr);
+
+    if (error || !data) return [];
+
+    return (data as { activity_date: string; event_count: number }[]).map((d) => ({
+      date: d.activity_date,
+      count: d.event_count,
+    }));
+  },
+
+  /**
+   * Upsert today's activity row. The `delta` is added to the existing
+   * event_count (or starts at `delta` if no row exists yet). For
+   * authenticated users only — guests never touch Supabase.
+   */
+  async upsertActivityDay(userId: string, dateStr: string, delta: number = 1): Promise<void> {
+    // Try UPDATE first (increment), fall back to INSERT.
+    const { data: existing, error: selectError } = await supabase
+      .from('user_activity_days')
+      .select('event_count')
+      .eq('user_id', userId)
+      .eq('activity_date', dateStr)
+      .maybeSingle();
+
+    if (selectError) {
+      console.warn('Failed to check existing activity row:', selectError);
+    }
+
+    if (existing) {
+      const { error: updateError } = await supabase
+        .from('user_activity_days')
+        .update({ event_count: existing.event_count + delta, updated_at: new Date().toISOString() })
+        .eq('user_id', userId)
+        .eq('activity_date', dateStr);
+      if (updateError) throw updateError;
+    } else {
+      const { error: insertError } = await supabase
+        .from('user_activity_days')
+        .insert({
+          user_id: userId,
+          activity_date: dateStr,
+          event_count: delta,
+          updated_at: new Date().toISOString(),
+        });
+      if (insertError) throw insertError;
+    }
+  },
+
   // --- Migration Helpers ---
   async migrateLocalToCloud(userId: string): Promise<void> {
     // This would be called once after first login to migrate localStorage data

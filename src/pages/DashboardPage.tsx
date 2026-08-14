@@ -5,6 +5,7 @@ import { useReviewQueue } from '../hooks/useReviewQueue';
 import { useProgress } from '../hooks/useProgress';
 import { useLang } from '../hooks/useLang';
 import { useStreak } from '../hooks/useStreak';
+import { useActivityLog } from '../hooks/useActivityLog';
 import { useMilestoneToast } from '../hooks/useMilestoneToast';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { theme } from '../config/theme';
@@ -26,7 +27,8 @@ export function DashboardPage() {
   const { queue, markCorrect, markResolved, clearQueue } = useReviewQueue();
   const { progress } = useProgress();
   const { langMode } = useLang();
-  const { streakCount } = useStreak();
+  const { streakCount, longestStreak } = useStreak();
+  const { activities } = useActivityLog();
   const { toast, showToast, dismissToast } = useMilestoneToast();
   const isDE = langMode === 'german';
   const locale = isDE ? 'de-DE' : 'en-US';
@@ -63,7 +65,7 @@ const resolvedLabel = isDE ? 'Erledigt' : 'Resolved';
   const overallScore = isDE ? 'Gesamtpunktzahl' : 'Overall score';
   const quizAccuracy = isDE ? 'Quiz-Genauigkeit beim Alphabet-Training.' : 'Quiz accuracy across alphabet practice.';
   const streakLabel = isDE ? 'Serie' : 'Streak';
-  const streakSoon = isDE ? 'Serien-Support folgt bald.' : 'Streak support is coming soon.';
+  const streakSubtitle = isDE ? 'Aktuelle Serie und längste Rekord-Serie' : 'Current and longest streak';
   const progressLabel = isDE ? 'Fortschritt' : 'Progress';
   const lettersPracticed = isDE ? 'Alphabet-Buchstaben geübt' : 'Alphabet letters practiced';
   const spellingRounds = isDE ? 'Abgeschlossene Rechtschreibrunden' : 'Spelling rounds completed';
@@ -153,8 +155,13 @@ const resolvedLabel = isDE ? 'Erledigt' : 'Resolved';
 
         <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-emerald-300 hover:shadow-xl dark:border-slate-700 dark:bg-slate-950 dark:hover:border-emerald-500">
           <div className="text-sm uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">{streakLabel}</div>
-          <div className="mt-3 text-4xl font-bold text-emerald-600">—</div>
-          <div className="mt-2 text-sm text-slate-600 dark:text-slate-300">{streakSoon}</div>
+          <div className="mt-3 flex items-baseline gap-3">
+            <div className="text-4xl font-bold text-emerald-600">{formatCount.format(streakCount)}</div>
+            <div className="text-sm text-slate-500 dark:text-slate-400">
+              {isDE ? 'Längste' : 'Longest'}: {formatCount.format(longestStreak)}
+            </div>
+          </div>
+          <div className="mt-2 text-sm text-slate-600 dark:text-slate-300">{streakSubtitle}</div>
         </div>
 
         <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-blue-300 hover:shadow-xl dark:border-slate-700 dark:bg-slate-950 dark:hover:border-blue-500">
@@ -169,19 +176,7 @@ const resolvedLabel = isDE ? 'Erledigt' : 'Resolved';
 
       {/* Activity Heatmap */}
       <div className="mt-4">
-        <ActivityHeatmap />
-      </div>
-
-      {/* Test Confetti Button */}
-      <div className="mt-4 flex justify-center">
-        <button
-          type="button"
-          onClick={triggerConfetti}
-          className="rounded-2xl border border-blue-200 bg-blue-600 px-6 py-3 font-semibold text-white shadow-sm transition duration-300 hover:-translate-y-1 hover:bg-blue-700 hover:shadow-xl dark:border-blue-500 dark:bg-blue-700 dark:hover:bg-blue-600"
-          aria-label={isDE ? 'Konfetti testen' : 'Test confetti'}
-        >
-          🎉 {isDE ? 'Konfetti testen' : 'Test Confetti'}
-        </button>
+        <ActivityHeatmap activities={activities} />
       </div>
 
       <div className="mt-4 rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm transition duration-300 hover:border-blue-300 hover:shadow-xl dark:border-slate-700 dark:bg-slate-950 dark:hover:border-blue-500">

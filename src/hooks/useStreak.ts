@@ -8,16 +8,17 @@ const BASE_KEY = 'germanDailyStreak';
 
 interface StreakData {
   streakCount: number;
+  longestStreak: number;
   lastVisit?: string;
 }
 
 function loadStreak(key: string): StreakData {
   try {
     const raw = getItem(key);
-    if (!raw) return { streakCount: 0 };
+    if (!raw) return { streakCount: 0, longestStreak: 0 };
     return JSON.parse(raw) as StreakData;
   } catch {
-    return { streakCount: 0 };
+    return { streakCount: 0, longestStreak: 0 };
   }
 }
 
@@ -42,7 +43,11 @@ function computeStreak(previous: StreakData): StreakData {
     }
   }
 
-  return { streakCount: nextStreak, lastVisit: today };
+  return {
+    streakCount: nextStreak,
+    longestStreak: Math.max(nextStreak, previous.longestStreak || 0),
+    lastVisit: today,
+  };
 }
 
 export function useStreak() {
@@ -50,10 +55,13 @@ export function useStreak() {
   const userId = user?.userId ?? null;
   const key = scopedKey(BASE_KEY, userId);
   const [streakCount, setStreakCount] = useState<number>(0);
+  const [longestStreak, setLongestStreak] = useState<number>(0);
 
   // Reset in-memory state when the user changes (login/logout/switch).
   useEffect(() => {
-    setStreakCount(loadStreak(key).streakCount);
+    const local = loadStreak(key);
+    setStreakCount(local.streakCount);
+    setLongestStreak(local.longestStreak || 0);
   }, [key]);
 
   useEffect(() => {
@@ -61,7 +69,7 @@ export function useStreak() {
 
     const run = async () => {
       let previous = loadStreak(key);
-      let longestStreak = 0;
+      let cloudLongest = 0;
 
       // For authenticated users, use the cloud baseline (if any) as the starting point.
       if (isAuthenticated && user) {
@@ -74,9 +82,10 @@ export function useStreak() {
         if (!error && data) {
           previous = {
             streakCount: data.current_streak ?? 0,
+            longestStreak: data.longest_streak ?? 0,
             lastVisit: data.last_activity_date ?? undefined,
           };
-          longestStreak = data.longest_streak ?? 0;
+          cloudLongest = data.longest_streak ?? 0;
         }
       }
 
@@ -85,13 +94,14 @@ export function useStreak() {
 
       saveStreak(key, next);
       setStreakCount(next.streakCount);
+      setLongestStreak(next.longestStreak);
 
       // Push to Supabase for authenticated users.
       if (isAuthenticated && user) {
         void supabase.from('user_streaks').upsert({
           user_id: user.userId,
           current_streak: next.streakCount,
-          longest_streak: Math.max(next.streakCount, longestStreak),
+          longest_streak: Math.max(next.streakCount, cloudLongest),
           last_activity_date: new Date().toDateString(),
           updated_at: new Date().toISOString(),
         });
@@ -105,5 +115,5 @@ export function useStreak() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, user, key]);
 
-  return { streakCount };
+  return { streakCount, longestStreak };
 }

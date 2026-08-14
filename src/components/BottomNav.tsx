@@ -57,7 +57,7 @@ export function BottomNav() {
     },
     {
       to: user ? '/dashboard' : '/auth',
-      icon: user ? '📊' : '👤',
+      icon: user ? '📈' : '👤',
       label: user ? (isDE ? 'Dashboard' : 'Dashboard') : (isDE ? 'Anmelden' : 'Sign in'),
       active: user ? pathname.startsWith('/dashboard') : pathname.startsWith('/auth'),
     },

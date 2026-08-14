@@ -141,7 +141,6 @@ export function AnalyticsPage() {
                   <Tooltip
                     labelFormatter={(d) => shortDate(d as string, isDE)}
                     formatter={(value) => [value, isDE ? 'Aktivitäten' : 'activities']}
-
                   />
                   <Line
                     type="monotone"
@@ -171,8 +170,7 @@ export function AnalyticsPage() {
                   <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.1} />
                   <XAxis dataKey="name" stroke="#64748b" />
                   <YAxis domain={[0, 100]} stroke="#64748b" />
-                    <Tooltip formatter={(value) => [`${value ?? 0}%`, isDE ? 'Genauigkeit' : 'Accuracy']} />
-
+                  <Tooltip formatter={(value) => [`${value ?? 0}%`, isDE ? 'Genauigkeit' : 'Accuracy']} />
                   <Bar dataKey="value" fill="#3b82f6" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
@@ -194,8 +192,7 @@ export function AnalyticsPage() {
                   <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.1} />
                   <XAxis dataKey="module" stroke="#64748b" />
                   <YAxis stroke="#64748b" />
-                    <Tooltip formatter={(value) => [value, isDE ? 'Fehler' : 'errors']} />
-
+                  <Tooltip formatter={(value) => [value, isDE ? 'Fehler' : 'errors']} />
                   <Bar dataKey="count" fill={chartColors[0]} radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>

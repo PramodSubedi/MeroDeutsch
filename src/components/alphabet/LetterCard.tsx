@@ -122,21 +122,21 @@ export function LetterCard({ item, practiced, langMode, onPracticed, onOpenDetai
           <div className="mt-1.5 flex w-full gap-1" onClick={(e) => e.stopPropagation()}>
             <button
               type="button"
-              className="flex-1 rounded bg-white/25 py-1.5 text-[11px] font-medium hover:bg-white/40"
+              className="flex-1 rounded bg-white/25 py-2.5 min-h-[44px] text-xs font-medium hover:bg-white/40"
               onClick={() => speakLetter(item.speak)}
             >
               🔊 {isDE ? 'Buchstabe' : 'Letter'}
             </button>
             <button
               type="button"
-              className="flex-1 rounded bg-white/25 py-1.5 text-[11px] font-medium hover:bg-white/40"
+              className="flex-1 rounded bg-white/25 py-2.5 min-h-[44px] text-xs font-medium hover:bg-white/40"
               onClick={() => speakWord(item.speakWord)}
             >
               🔊 {isDE ? 'Wort' : 'Word'}
             </button>
             <button
               type="button"
-              className="flex-1 rounded bg-white/25 py-1.5 text-[11px] font-medium hover:bg-white/40"
+              className="flex-1 rounded bg-white/25 py-2.5 min-h-[44px] text-xs font-medium hover:bg-white/40"
               onClick={() => onOpenDetail(item)}
             >
               {isDE ? 'Mehr' : 'More'}

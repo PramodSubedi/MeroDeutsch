@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { List, Headphones } from 'lucide-react';
 import { speakWord } from '../hooks/useSpeech';
 import { useLang } from '../hooks/useLang';
 import { usePageTitle } from '../hooks/usePageTitle';
@@ -8,6 +9,7 @@ import { useXp } from '../hooks/useXp';
 import type { NumberItem, NumberRange } from '../types';
 import { Card } from '../components/Card';
 import { SectionGrid } from '../components/SectionGrid';
+import { TabGroup, type Tab } from '../components/TabGroup';
 import { theme } from '../config/theme';
 import { sharedTextDatabase } from '../data/sharedContent';
 import { curriculumService } from '../services';
@@ -82,6 +84,11 @@ export function NumbersPage() {
   const description = isDE
     ? 'Lerne auf Deutsch zu zählen'
     : sharedTextDatabase.numbers.description;
+
+  const modeTabs: Tab<'learn' | 'listen'>[] = [
+    { id: 'learn', label: isDE ? 'Lernliste' : 'Learn List', icon: List },
+    { id: 'listen', label: isDE ? 'Hören & Tippen' : 'Listen & Type', icon: Headphones },
+  ];
 
   const nextQuiz = useCallback(() => {
     if (numbersData.length === 0) return;
@@ -173,22 +180,7 @@ export function NumbersPage() {
       <h1 className={theme.page.heading}>{title}</h1>
       <p className={theme.page.description}>{description}</p>
 
-      <div className="mb-4 flex flex-wrap gap-2">
-        <button
-          type="button"
-          onClick={() => setMode('learn')}
-          className={mode === 'learn' ? theme.button.toggleActive : theme.button.toggleInactive}
-        >
-          {isDE ? 'Lernliste' : 'Learn List'}
-        </button>
-        <button
-          type="button"
-          onClick={() => setMode('listen')}
-          className={mode === 'listen' ? theme.button.toggleActive : theme.button.toggleInactive}
-        >
-          {isDE ? 'Hören & Tippen' : 'Listen & Type'}
-        </button>
-      </div>
+      <TabGroup tabs={modeTabs} activeTab={mode} onTabChange={setMode} />
 
       {mode === 'learn' && (
         <SectionGrid

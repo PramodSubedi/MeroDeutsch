@@ -16,6 +16,25 @@ dist-ssr
 .env.*.local
 dev-error.txt
 
+# Temporary and generated files
+%~f.tmp
+file_list.txt
+d
+
+# Documentation files (never commit - reference only)
+UI_UX_ANALYSIS.md
+ARCHITECTURE.md
+BRANDING.md
+CHANGELOG.md
+CHANGELOG_AI.md
+DATA_PERSISTENCE.md
+ICON_AND_NAVIGATION_ANALYSIS.md
+MOBILE_OPTIMIZATION_SUMMARY.md
+README.md
+TASKS.md
+AI_CONTEXT.md
+AI_HANDOFF.md
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

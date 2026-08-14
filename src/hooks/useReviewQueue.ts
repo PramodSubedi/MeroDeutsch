@@ -4,6 +4,7 @@ import { getItem, removeItem, setItem } from '../utils/safeStorage';
 import { scopedKey } from '../utils/userStorage';
 import { useAuth } from './useAuth';
 import { supabase } from '../lib/supabase';
+import { useActivityLog } from './useActivityLog';
 
 const DEBOUNCE_MS = 300;
 let saveTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -89,6 +90,7 @@ export function useReviewQueue() {
   const userId = user?.userId ?? null;
   const key = scopedKey(BASE_KEY, userId);
   const [queue, setQueue] = useState<WrongAnswerItem[]>(() => loadQueue(key));
+  const { recordActivity } = useActivityLog();
 
   // Reset in-memory state when the user changes (login/logout/switch).
   useEffect(() => {
@@ -184,7 +186,9 @@ export function useReviewQueue() {
         },
       ];
     });
-  }, []);
+    // Record activity for wrong answers (engagement)
+    void recordActivity(1);
+  }, [recordActivity]);
 
   /** Mark an item as correctly recalled → promote to next Leitner box (1-5). */
   const markCorrect = useCallback((id: string) => {
@@ -205,7 +209,9 @@ export function useReviewQueue() {
         };
       })
     );
-  }, []);
+    // Record activity for correct review answers (engagement)
+    void recordActivity(1);
+  }, [recordActivity]);
 
   const markResolved = useCallback((id: string) => {
     setQueue((current) => current.filter((item) => item.id !== id));

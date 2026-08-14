@@ -1,7 +1,9 @@
 import { useMemo, useState } from 'react';
+import { Filter, Target, Award } from 'lucide-react';
 import { triggerConfetti } from '../utils/confetti';
 import { useLang } from '../hooks/useLang';
 import { useXp } from '../hooks/useXp';
+import { TabGroup, type Tab } from './TabGroup';
 import type { WrongAnswerItem } from '../types';
 
 interface ReviewSessionManagerProps {
@@ -205,19 +207,20 @@ export function ReviewSessionManager({
   }
 
   // ── Pre-session filter view ───────────────────────────────────
-  const filterTabs: { id: FilterId; label: string }[] = [
-    { id: 'all', label: isDE ? 'Alle fällig' : 'All Due' },
-    { id: 'focus', label: isDE ? 'Box 1-2 (Fokus)' : 'Box 1-2 (Focus)' },
-    { id: 'mastery', label: isDE ? 'Box 3-5 (Meisterschaft)' : 'Box 3-5 (Mastery)' },
+  const filterTabs: Tab<FilterId>[] = [
+    { id: 'all', label: isDE ? 'Alle fällig' : 'All Due', icon: Filter },
+    { id: 'focus', label: isDE ? 'Box 1-2 (Fokus)' : 'Box 1-2 (Focus)', icon: Target, badge: filteredQueue.filter(item => (item.boxLevel ?? 1) <= 2).length || undefined },
+    { id: 'mastery', label: isDE ? 'Box 3-5 (Meisterschaft)' : 'Box 3-5 (Mastery)', icon: Award, badge: filteredQueue.filter(item => (item.boxLevel ?? 1) >= 3).length || undefined },
     ...moduleTypes.map((moduleType) => ({
-      id: moduleType,
+      id: moduleType as FilterId,
       label: moduleType.charAt(0).toUpperCase() + moduleType.slice(1),
+      badge: queue.filter(item => item.moduleType === moduleType).length,
     })),
   ];
 
   return (
     <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-6 shadow-sm space-y-4">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
         <div>
           <h3 className="text-base font-bold text-slate-800 dark:text-slate-100">
             {isDE ? 'SRS Review-Warteschlange' : 'SRS Review Queue'}
@@ -238,23 +241,12 @@ export function ReviewSessionManager({
         </button>
       </div>
 
-      {/* Filter Tabs */}
-      <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-100 dark:border-slate-800">
-        {filterTabs.map((tab) => (
-          <button
-            key={tab.id}
-            type="button"
-            onClick={() => setActiveFilter(tab.id)}
-            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
-              activeFilter === tab.id
-                ? 'bg-blue-600 text-white shadow-sm'
-                : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
+      <TabGroup
+        tabs={filterTabs}
+        activeTab={activeFilter}
+        onTabChange={setActiveFilter}
+        variant="compact"
+      />
     </div>
   );
 }

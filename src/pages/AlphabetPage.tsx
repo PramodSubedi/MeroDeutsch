@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
+import { BookOpen, MessagesSquare, Sparkles } from 'lucide-react';
 import { sharedTextDatabase } from '../data/sharedContent';
 import { LetterCard } from '../components/alphabet/LetterCard';
 import { LetterDetailModal } from '../components/alphabet/LetterDetailModal';
 import { AlphabetQuiz } from '../components/alphabet/AlphabetQuiz';
 import { SpellingPractice } from '../components/alphabet/SpellingPractice';
+import { TabGroup, type Tab } from '../components/TabGroup';
 import { speakLetter, speakWord, useSpeechSpeed } from '../hooks/useSpeech';
 import { useLang } from '../hooks/useLang';
 import { usePageTitle } from '../hooks/usePageTitle';
@@ -60,17 +62,13 @@ export function AlphabetPage() {
   const standard = filtered.filter((i) => i.category === 'standard');
   const special = filtered.filter((i) => i.category === 'special');
 
-  const tab = (id: Sub, label: string) => (
-    <button
-      type="button"
-      onClick={() => setSub(id)}
-      className={sub === id ? theme.button.toggleActive : theme.button.toggleInactive}
-    >
-      {label}
-    </button>
-  );
-
   const meaning = lotd?.exampleFull?.match(/\((.+)\)/)?.[1] || '';
+
+  const tabs: Tab<Sub>[] = [
+    { id: 'learn', label: isDE ? 'Karten lernen' : 'Learn Cards', icon: BookOpen },
+    { id: 'quiz', label: 'Quiz', icon: Sparkles },
+    { id: 'spelling', label: isDE ? 'Rechtschreibung' : 'Spelling', icon: MessagesSquare },
+  ];
 
   return (
     <div className={theme.page.container}>
@@ -145,19 +143,21 @@ export function AlphabetPage() {
         </div>
       )}
 
-      <div className="mb-4 flex flex-wrap gap-2">
-        {tab('learn', isDE ? 'Karten lernen' : 'Learn Cards')}
-        {tab('quiz', 'Quiz')}
-        {tab('spelling', isDE ? 'Rechtschreibung' : 'Spelling')}
-        <button
-          type="button"
-          onClick={setNextSpeed}
-          className={`${theme.button.secondary} ml-auto inline-flex items-center gap-1.5`}
-          aria-label="Speech speed"
-        >
-          ⏱ {speed === 'slow' ? (isDE ? 'Langsam' : 'Slow') : speed === 'normal' ? (isDE ? 'Normal' : 'Normal') : isDE ? 'Schnell' : 'Fast'}
-        </button>
-      </div>
+      <TabGroup
+        tabs={tabs}
+        activeTab={sub}
+        onTabChange={setSub}
+        rightControls={
+          <button
+            type="button"
+            onClick={setNextSpeed}
+            className={`${theme.button.secondary} inline-flex items-center gap-1.5`}
+            aria-label="Speech speed"
+          >
+            ⏱ {speed === 'slow' ? (isDE ? 'Langsam' : 'Slow') : speed === 'normal' ? (isDE ? 'Normal' : 'Normal') : isDE ? 'Schnell' : 'Fast'}
+          </button>
+        }
+      />
 
       {sub === 'learn' && (
         <>
@@ -187,7 +187,7 @@ export function AlphabetPage() {
               <h2 className="mb-3 inline-block border-b-2 border-blue-500 pb-1 text-lg font-bold">
                 {isDE ? 'Standard 26 Buchstaben' : 'Standard 26 Letters'}
               </h2>
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
                 {standard.map((item) => (
                   <LetterCard
                     key={item.id}
@@ -206,7 +206,7 @@ export function AlphabetPage() {
               <h2 className="mb-3 inline-block border-b-2 border-amber-500 pb-1 text-lg font-bold">
                 {isDE ? 'Sonderzeichen' : 'Special Characters'}
               </h2>
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                 {special.map((item) => (
                   <LetterCard
                     key={item.id}

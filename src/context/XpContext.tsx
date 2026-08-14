@@ -2,6 +2,8 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 import { scopedKey } from '../utils/userStorage';
+import { getItem, setItem } from '../utils/safeStorage';
+import { useActivityLog } from '../hooks/useActivityLog';
 import type { UserXP } from '../types';
 
 const XP_STORAGE_KEY = 'mero_deutsch_xp';
@@ -38,11 +40,12 @@ function calculateLevel(totalXp: number): { level: number; rank: string; xpToNex
 }
 
 /**
- * Load XP from localStorage (per-user scoped)
+ * Load XP from storage (per-user scoped)
+ * Uses safeStorage for consistency with other hooks
  */
 function loadLocalXp(key: string): number {
   try {
-    const stored = localStorage.getItem(key);
+    const stored = getItem(key);
     return stored ? parseInt(stored, 10) : 0;
   } catch {
     return 0;
@@ -50,13 +53,14 @@ function loadLocalXp(key: string): number {
 }
 
 /**
- * Save XP to localStorage (per-user scoped)
+ * Save XP to storage (per-user scoped)
+ * Uses safeStorage for consistency with other hooks
  */
 function saveLocalXp(key: string, xp: number): void {
   try {
-    localStorage.setItem(key, xp.toString());
+    setItem(key, xp.toString());
   } catch (error) {
-    console.warn('Failed to save XP to localStorage:', error);
+    console.warn('Failed to save XP to storage:', error);
   }
 }
 
@@ -94,6 +98,7 @@ export function XpProvider({ children }: { children: ReactNode }) {
   const key = scopedKey(XP_STORAGE_KEY, userId);
   const [totalXp, setTotalXp] = useState<number>(() => loadLocalXp(key));
   const [levelUpCallback, setLevelUpCallback] = useState<((newLevel: number) => void) | null>(null);
+  const { recordActivity } = useActivityLog();
 
   // Reset in-memory state whenever the user changes (login/logout/switch).
   useEffect(() => {
@@ -185,14 +190,19 @@ export function XpProvider({ children }: { children: ReactNode }) {
 
   /**
    * Single shared award point for correct learning results.
-   * Wrong answers award nothing (or 0).
+   * Also records an engagement event for the activity heatmap.
+   * Wrong answers still record activity (via useReviewQueue.addWrongAnswer),
+   * so every answer attempt is counted — correct and wrong alike.
    */
   const reportAnswer = useCallback(
     ({ correct, module, amount }: ReportAnswerOptions) => {
-      if (!correct) return;
-      void awardXp(amount ?? XP_REWARDS.quiz, module);
+      if (correct) {
+        void awardXp(amount ?? XP_REWARDS.quiz, module);
+      }
+      // Record engagement activity for every answer attempt
+      void recordActivity(1);
     },
-    [awardXp]
+    [awardXp, recordActivity]
   );
 
   /**

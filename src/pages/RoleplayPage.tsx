@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { ShoppingCart, Coffee, Users, Home, Utensils, type LucideIcon } from 'lucide-react';
 import { speakWord } from '../hooks/useSpeech';
 import { useLang } from '../hooks/useLang';
 import { usePageTitle } from '../hooks/usePageTitle';
@@ -7,6 +8,15 @@ import { useXp } from '../hooks/useXp';
 import { theme } from '../config/theme';
 import { curriculumService } from '../services';
 import type { RoleplayScenario, RoleplayOption } from '../types/curriculum';
+
+// Mapping of scenario emoji to Lucide icons
+const SCENARIO_ICON_MAP: Record<string, LucideIcon> = {
+  '🛒': ShoppingCart,
+  '☕': Coffee,
+  '👥': Users,
+  '🏠': Home,
+  '🍽️': Utensils,
+};
 
 export function RoleplayPage() {
   usePageTitle('Roleplay');
@@ -26,6 +36,8 @@ export function RoleplayPage() {
 
   const scenario = scenarios[scenarioIdx];
   if (!scenario) return null;
+  
+  const ScenarioIcon = SCENARIO_ICON_MAP[scenario.emoji] || ShoppingCart;
 
   const step = scenario.steps[stepIdx];
   const isLastStep = stepIdx === scenario.steps.length - 1;
@@ -60,7 +72,7 @@ export function RoleplayPage() {
 
   return (
     <div className={theme.page.container}>
-      <h1 className="text-2xl font-semibold tracking-tight text-slate-950 dark:text-white">{isDE ? 'Rollenspiele' : 'Role-play'} 🎭</h1>
+      <h1 className="text-2xl font-semibold tracking-tight text-slate-950 dark:text-white">{isDE ? 'Rollenspiele' : 'Role-play'}</h1>
       <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{isDE ? 'Übe Alltagsgespräche auf Deutsch.' : 'Practice everyday German conversations.'}</p>
 
       {toast && (
@@ -71,11 +83,20 @@ export function RoleplayPage() {
       )}
 
       <div className="mb-4 flex flex-wrap gap-2">
-        {scenarios.map((s, i) => (
-          <button key={s.id} type="button" onClick={() => { setScenarioIdx(i); setStepIdx(0); setStatus('idle'); }} className={i === scenarioIdx ? theme.button.toggleActive : theme.button.toggleInactive}>
-            {s.emoji} {s.title}
-          </button>
-        ))}
+        {scenarios.map((s, i) => {
+          const Icon = SCENARIO_ICON_MAP[s.emoji] || ShoppingCart;
+          return (
+            <button
+              key={s.id}
+              type="button"
+              onClick={() => { setScenarioIdx(i); setStepIdx(0); setStatus('idle'); }}
+              className={i === scenarioIdx ? theme.button.toggleActive : theme.button.toggleInactive}
+            >
+              <Icon className="mr-1.5 inline-block h-4 w-4" strokeWidth={2} aria-hidden="true" />
+              {s.title}
+            </button>
+          );
+        })}
       </div>
 
       <div className={`${theme.panel.surface} mx-auto mt-4 max-w-xl`}>

@@ -11,27 +11,30 @@ export function AuthPage() {
   const navigate = useNavigate();
   const { register, login } = useAuth();
   const [mode, setMode] = useState<'login' | 'register'>('register');
-    const [email, setEmail] = useState('');
+  const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-
   const [confirmPassword, setConfirmPassword] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError('');
     setMessage('');
+    setIsLoading(true);
 
-        if (!email.trim() || !password) {
+    if (!email.trim() || !password) {
       setError('Both email and password are required.');
+      setIsLoading(false);
       return;
     }
 
     if (mode === 'register') {
       if (password !== confirmPassword) {
         setError('Passwords do not match.');
+        setIsLoading(false);
         return;
       }
       try {
@@ -39,6 +42,8 @@ export function AuthPage() {
         setMessage('Check your email for a confirmation link!');
       } catch (registerError: unknown) {
         setError(registerError instanceof Error ? registerError.message : 'Registration failed.');
+      } finally {
+        setIsLoading(false);
       }
       return;
     }
@@ -49,8 +54,8 @@ export function AuthPage() {
       window.setTimeout(() => navigate('/dashboard'), 600);
     } catch (loginError: unknown) {
       setError(loginError instanceof Error ? loginError.message : 'Login failed.');
+      setIsLoading(false);
     }
-
   };
 
   return (
@@ -94,6 +99,7 @@ export function AuthPage() {
               onChange={(event) => setEmail(event.target.value)}
               className={theme.input}
               placeholder="e.g. learner@example.com"
+              disabled={isLoading}
             />
           </label>
 
@@ -106,6 +112,7 @@ export function AuthPage() {
                 onChange={(event) => setUsername(event.target.value)}
                 className={theme.input}
                 placeholder="e.g. learner123"
+                disabled={isLoading}
               />
             </label>
           )}
@@ -119,6 +126,7 @@ export function AuthPage() {
               onChange={(event) => setPassword(event.target.value)}
               className={theme.input}
               placeholder="Enter a secure password"
+              disabled={isLoading}
             />
           </label>
 
@@ -131,6 +139,7 @@ export function AuthPage() {
                 onChange={(event) => setConfirmPassword(event.target.value)}
                 className={theme.input}
                 placeholder="Re-enter password"
+                disabled={isLoading}
               />
             </label>
           )}
@@ -138,8 +147,18 @@ export function AuthPage() {
           {error && <div className="rounded-xl border border-red-300 bg-red-50 p-4 text-sm text-red-700">{error}</div>}
           {message && <div className="rounded-xl border border-green-300 bg-green-50 p-4 text-sm text-green-700">{message}</div>}
 
-          <button type="submit" className={theme.button.primary}>
-            {mode === 'register' ? 'Register account' : 'Login'}
+          <button type="submit" className={theme.button.primary} disabled={isLoading}>
+            {isLoading ? (
+              <span className="flex items-center justify-center gap-2">
+                <svg className="h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                {mode === 'register' ? 'Registering...' : 'Signing in...'}
+              </span>
+            ) : (
+              mode === 'register' ? 'Register account' : 'Login'
+            )}
           </button>
         </form>
       </div>

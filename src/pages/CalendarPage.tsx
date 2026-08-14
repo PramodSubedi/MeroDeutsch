@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { BookOpen, Sparkles, Calendar, CalendarDays } from 'lucide-react';
 import { sharedTextDatabase } from '../data/sharedContent';
 import { useLang } from '../hooks/useLang';
 import { usePageTitle } from '../hooks/usePageTitle';
@@ -7,6 +8,7 @@ import { useXp } from '../hooks/useXp';
 import { speakWord } from '../hooks/useSpeech';
 import { StandardStudyCard } from '../components/StandardStudyCard';
 import { SectionGrid } from '../components/SectionGrid';
+import { TabGroup, type Tab } from '../components/TabGroup';
 import { theme } from '../config/theme';
 import { curriculumService } from '../services';
 import type { CalendarItem } from '../types';
@@ -87,44 +89,28 @@ export function CalendarPage() {
       <h1 className={theme.page.heading}>{title}</h1>
       <p className={theme.page.description}>{description}</p>
 
-      <div className="mb-4 flex flex-wrap gap-2">
-        <button
-          type="button"
-          onClick={() => setMode('learn')}
-          className={mode === 'learn' ? theme.button.toggleActive : theme.button.toggleInactive}
-        >
-          {isDE ? 'Lernliste' : 'Learn List'}
-        </button>
-        <button
-          type="button"
-          onClick={() => setMode('quiz')}
-          className={mode === 'quiz' ? theme.button.toggleActive : theme.button.toggleInactive}
-        >
-          {isDE ? 'Hören & Tippen' : 'Listen & Type'}
-        </button>
-      </div>
+      <TabGroup
+        tabs={[
+          { id: 'learn', label: isDE ? 'Lernliste' : 'Learn List', icon: BookOpen },
+          { id: 'quiz', label: isDE ? 'Hören & Tippen' : 'Listen & Type', icon: Sparkles },
+        ]}
+        activeTab={mode}
+        onChange={setMode}
+      />
 
       {mode === 'learn' && (
         <SectionGrid
           title={title}
           description={description}
           controls={
-            <>
-              <button
-                type="button"
-                onClick={() => setTab('days')}
-                className={tab === 'days' ? theme.button.toggleActive : theme.button.toggleInactive}
-              >
-                {isDE ? 'Wochentage' : 'Days of the Week'}
-              </button>
-              <button
-                type="button"
-                onClick={() => setTab('months')}
-                className={tab === 'months' ? theme.button.toggleActive : theme.button.toggleInactive}
-              >
-                {isDE ? 'Monate' : 'Months'}
-              </button>
-            </>
+            <TabGroup
+              tabs={[
+                { id: 'days', label: isDE ? 'Wochentage' : 'Days of the Week', icon: Calendar },
+                { id: 'months', label: isDE ? 'Monate' : 'Months', icon: CalendarDays },
+              ]}
+              activeTab={tab}
+              onChange={setTab}
+            />
           }
         >
           {data.map((item, index) => (

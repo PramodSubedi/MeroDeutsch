@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
+import { BookText, Check, RefreshCw, Layout } from 'lucide-react';
 import { useLang } from '../hooks/useLang';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { useReviewQueue } from '../hooks/useReviewQueue';
 import { useXp } from '../hooks/useXp';
+import { TabGroup } from '../components/TabGroup';
 import { theme } from '../config/theme';
 import { curriculumService } from '../services';
 import type { GrammarDrill } from '../types/curriculum';
@@ -42,11 +44,6 @@ export function GrammarPage() {
     }
   };
 
-  const tabBtn = (id: 'sein' | 'haben' | 'weakVerb' | 'cases', label: string) => (
-    <button type="button" onClick={() => { setTab(id); setAnswers({}); }} className={tab === id ? theme.button.toggleActive : theme.button.toggleInactive}>
-      {label}
-    </button>
-  );
 
   return (
     <div className={theme.page.container}>
@@ -55,12 +52,16 @@ export function GrammarPage() {
         {isDE ? 'A1-Grammatik: sein, haben, regelmäßige Verben & Fälle.' : 'A1 grammar: sein, haben, weak verbs & cases.'}
       </p>
 
-      <div className="mb-4 mt-4 flex flex-wrap gap-2">
-        {tabBtn('sein', 'sein')}
-        {tabBtn('haben', 'haben')}
-        {tabBtn('weakVerb', isDE ? 'machen' : 'machen')}
-        {tabBtn('cases', isDE ? 'Fälle' : 'Cases')}
-      </div>
+      <TabGroup
+        tabs={[
+          { id: 'sein', label: 'sein', icon: BookText },
+          { id: 'haben', label: 'haben', icon: Check },
+          { id: 'weakVerb', label: 'machen', icon: RefreshCw },
+          { id: 'cases', label: isDE ? 'Fälle' : 'Cases', icon: Layout },
+        ]}
+        activeTab={tab}
+        onChange={(newTab) => { setTab(newTab); setAnswers({}); }}
+      />
 
       <div className={`${theme.panel.surface} mb-6`}>
         <h2 className="text-lg font-semibold">{isDE ? 'Fälle' : 'Cases'}</h2>

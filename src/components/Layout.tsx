@@ -78,8 +78,6 @@ export function Layout() {
           <nav className={`${theme.layout.nav} hidden md:flex`}>
             {link('/', 'Home')}
             {user && link('/dashboard', 'Dashboard')}
-            {user && link('/analytics', 'Analytics')}
-            {user && link('/import', 'Import')}
             {user ? link('/learn', 'Learn') : link('/auth', 'Sign in')}
             <button type="button" onClick={toggleLang} className={theme.layout.toggleButton}>
               {langMode === 'normal'
