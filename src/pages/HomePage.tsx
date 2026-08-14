@@ -125,7 +125,7 @@ export function HomePage() {
   // Region: At-a-glance stats component
   const atAGlance = (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
-      <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm transition duration-300 hover:shadow-xl dark:border-slate-700 dark:bg-slate-950">
+      <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm transition-[transform,box-shadow] duration-300 hover:shadow-xl dark:border-slate-700 dark:bg-slate-950">
         <div className="text-sm uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">{isDE ? 'Fortschritt' : 'Progress'}</div>
         <div className="mt-4">
           <div className="flex items-end gap-3">
@@ -135,10 +135,16 @@ export function HomePage() {
           <div className="mt-4 h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
             <div className="h-full rounded-full bg-blue-600 transition-all duration-500" style={{ width: `${progressPct}%` }} />
           </div>
+          <Link
+            to="/alphabet"
+            className={`${theme.button.secondary} mt-4 w-full text-center`}
+          >
+            {isDE ? 'Weiter lernen' : 'Resume Lesson'} →
+          </Link>
         </div>
       </div>
 
-      <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm transition duration-300 hover:shadow-xl dark:border-slate-700 dark:bg-slate-950">
+      <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm transition-[transform,box-shadow] duration-300 hover:shadow-xl dark:border-slate-700 dark:bg-slate-950">
         <div className="text-sm uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">{isDE ? 'Genauigkeit' : 'Accuracy'}</div>
         <div className="mt-4 flex items-end gap-3">
           <div className="text-4xl font-semibold text-slate-950 dark:text-white">{quizPct}%</div>
@@ -149,7 +155,7 @@ export function HomePage() {
         </div>
       </div>
 
-      <div className={`rounded-[28px] ${reviewCount > 0 ? 'border-l-4 border-blue-600 dark:border-blue-500' : 'border border-slate-300 dark:border-slate-700'} bg-white p-6 shadow-sm transition duration-300 hover:shadow-xl dark:bg-slate-950`}>
+      <div className={`rounded-[28px] ${reviewCount > 0 ? 'border-l-4 border-blue-600 dark:border-blue-500' : 'border border-slate-300 dark:border-slate-700'} bg-white p-6 shadow-sm transition-[transform,box-shadow] duration-300 hover:shadow-xl dark:bg-slate-950`}>
         <div className="text-sm uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">{isDE ? 'Review' : 'Review Queue'}</div>
         <div className="mt-4 flex items-center justify-between">
           <div>

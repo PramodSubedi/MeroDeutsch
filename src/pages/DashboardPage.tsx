@@ -181,7 +181,7 @@ export function DashboardPage() {
         <ActivityHeatmap activities={activities} />
       </div>
 
-      <div className="mt-4 rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm transition duration-300 hover:border-blue-300 hover:shadow-xl dark:border-slate-700 dark:bg-slate-950 dark:hover:border-blue-500">
+      <div className="mt-4 rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm transition-[transform,box-shadow,border-color] duration-300 hover:border-blue-300 hover:shadow-xl dark:border-slate-700 dark:bg-slate-950 dark:hover:border-blue-500">
         <div className="mb-4 flex items-center justify-between gap-3">
           <div>
             <h2 className="text-xl font-semibold tracking-tight text-slate-950 dark:text-white">{reviewTitle}</h2>
