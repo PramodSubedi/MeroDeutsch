@@ -8,8 +8,10 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "enrich": "tsx scripts/enrich-cards.ts",
+    "extract-vocab": "tsx scripts/extract-vocab.ts",
     "seed-vocab": "tsx scripts/seedVocab.ts",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "import-csv": "tsx scripts/import-csv.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.112.3",
@@ -20,6 +22,7 @@
     "dexie": "^4.4.4",
     "dexie-react-hooks": "^4.4.0",
     "lucide-react": "^1.31.0",
+    "pdf-parse": "^2.4.5",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-helmet-async": "^3.0.0",

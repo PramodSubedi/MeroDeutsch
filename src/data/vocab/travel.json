@@ -1,11 +1,79 @@
 [
-  { "id": "travel-bahnhof", "de": "Bahnhof", "en": "train station", "ne": "रेल स्टेसन", "tags": ["travel"], "level": "A1" },
-  { "id": "travel-flughafen", "de": "Flughafen", "en": "airport", "ne": "विमानस्थल", "tags": ["travel"], "level": "A1" },
-  { "id": "travel-hotel", "de": "Hotel", "en": "hotel", "ne": "होटल", "tags": ["travel"], "level": "A1" },
-  { "id": "travel-stadt", "de": "Stadt", "en": "city", "ne": "सहर", "tags": ["travel", "place"], "level": "A1" },
-  { "id": "travel-dorf", "de": "Dorf", "en": "village", "ne": "गाउँ", "tags": ["travel", "place"], "level": "A1" },
-  { "id": "travel-strasse", "de": "Straße", "en": "street", "ne": "सडक", "tags": ["travel", "place"], "level": "A1" },
-  { "id": "travel-zug", "de": "Zug", "en": "train", "ne": "रेल", "tags": ["travel"], "level": "A1" },
-  { "id": "travel-bus", "de": "Bus", "en": "bus", "ne": "बस", "tags": ["travel"], "level": "A1" },
-  { "id": "travel-auto", "de": "Auto", "en": "car", "ne": "गाडी", "tags": ["travel"], "level": "A1" }
+  {
+    "id": "travel-affe",
+    "de": "Affe",
+    "en": "monkey",
+    "ne": "",
+    "tags": [
+      "travel",
+      "A1"
+    ],
+    "level": "A1"
+  },
+  {
+    "id": "travel-eine",
+    "de": "Eine",
+    "en": "A",
+    "ne": "",
+    "tags": [
+      "travel",
+      "A1"
+    ],
+    "level": "A1"
+  },
+  {
+    "id": "travel-ich",
+    "de": "Ich",
+    "en": "I",
+    "ne": "",
+    "tags": [
+      "travel",
+      "A1"
+    ],
+    "level": "A1"
+  },
+  {
+    "id": "travel-8-15-26",
+    "de": "8/15/26,",
+    "en": "11",
+    "ne": "",
+    "tags": [
+      "travel",
+      "A1"
+    ],
+    "level": "A1"
+  },
+  {
+    "id": "travel-der",
+    "de": "Der",
+    "en": "The",
+    "ne": "",
+    "tags": [
+      "travel",
+      "A1"
+    ],
+    "level": "A1"
+  },
+  {
+    "id": "travel-rufen",
+    "de": "Rufen",
+    "en": "Call",
+    "ne": "",
+    "tags": [
+      "travel",
+      "A1"
+    ],
+    "level": "A1"
+  },
+  {
+    "id": "travel-affiliate",
+    "de": "Affiliate",
+    "en": "we",
+    "ne": "",
+    "tags": [
+      "travel",
+      "A1"
+    ],
+    "level": "A1"
+  }
 ]

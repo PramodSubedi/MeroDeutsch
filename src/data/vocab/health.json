@@ -1,0 +1,46 @@
+[
+  {
+    "id": "health-auge",
+    "de": "Auge",
+    "en": "eye",
+    "ne": "",
+    "tags": [
+      "health",
+      "A1"
+    ],
+    "level": "A1"
+  },
+  {
+    "id": "health-anfänger",
+    "de": "Anfänger",
+    "en": "beginner",
+    "ne": "",
+    "tags": [
+      "health",
+      "B1"
+    ],
+    "level": "B1"
+  },
+  {
+    "id": "health-abendessen",
+    "de": "Abendessen",
+    "en": "dinner",
+    "ne": "",
+    "tags": [
+      "health",
+      "A1"
+    ],
+    "level": "A1"
+  },
+  {
+    "id": "health-besteck",
+    "de": "Besteck",
+    "en": "cutlery",
+    "ne": "",
+    "tags": [
+      "health",
+      "B1"
+    ],
+    "level": "B1"
+  }
+]

@@ -1,0 +1,57 @@
+[
+  {
+    "id": "leisur-amüsieren",
+    "de": "amüsieren",
+    "en": "to",
+    "ne": "",
+    "tags": [
+      "leisure",
+      "A1"
+    ],
+    "level": "A1"
+  },
+  {
+    "id": "leisur-well-known",
+    "de": "well-known",
+    "en": "acquaintance",
+    "ne": "",
+    "tags": [
+      "leisure",
+      "B1"
+    ],
+    "level": "B1"
+  },
+  {
+    "id": "leisur-bekannter",
+    "de": "Bekannter",
+    "en": "drucken",
+    "ne": "",
+    "tags": [
+      "leisure",
+      "B1"
+    ],
+    "level": "B1"
+  },
+  {
+    "id": "leisur-blockflöte",
+    "de": "Blockflöte",
+    "en": "recorder",
+    "ne": "",
+    "tags": [
+      "leisure",
+      "B1"
+    ],
+    "level": "B1"
+  },
+  {
+    "id": "leisur-abenteuer",
+    "de": "Abenteuer",
+    "en": "flute",
+    "ne": "",
+    "tags": [
+      "leisure",
+      "B1"
+    ],
+    "level": "B1"
+  }
+]

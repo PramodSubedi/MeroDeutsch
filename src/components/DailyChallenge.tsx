@@ -7,38 +7,17 @@ import { useAchievements } from '../hooks/useAchievements';
 import { getItem, setItem } from '../utils/safeStorage';
 import { useAuth } from '../hooks/useAuth';
 import { theme } from '../config/theme';
+import { shuffleArray } from '../utils/shuffleArray';
 
 // Article mapping for common German nouns
 const articleMap: Record<string, string> = {
-  'Mutter': 'die',
-  'Vater': 'der',
-  'Bruder': 'der',
-  'Schwester': 'die',
-  'Kind': 'das',
-  'Familie': 'die',
-  'Freund': 'der',
-  'Freundin': 'die',
-  'Tag': 'der',
-  'Woche': 'die',
-  'Monat': 'der',
-  'Jahr': 'das',
-  'Haus': 'das',
-  'Auto': 'das',
-  'Buch': 'das',
-  'Tisch': 'der',
-  'Stuhl': 'der',
-  'Brot': 'das',
-  'Wasser': 'das',
-  'Kaffee': 'der',
-  'Tee': 'der',
-  'Milch': 'die',
-  'Apfel': 'der',
-  'Banane': 'die',
-  'Stadt': 'die',
-  'Land': 'das',
-  'Mensch': 'der',
-  'Mann': 'der',
-  'Frau': 'die',
+  'Mutter': 'die', 'Vater': 'der', 'Bruder': 'der', 'Schwester': 'die',
+  'Kind': 'das', 'Familie': 'die', 'Freund': 'der', 'Freundin': 'die',
+  'Tag': 'der', 'Woche': 'die', 'Monat': 'der', 'Jahr': 'das',
+  'Haus': 'das', 'Auto': 'das', 'Buch': 'das', 'Tisch': 'der',
+  'Stuhl': 'der', 'Brot': 'das', 'Wasser': 'das', 'Kaffee': 'der',
+  'Tee': 'der', 'Milch': 'die', 'Apfel': 'der', 'Banane': 'die',
+  'Stadt': 'die', 'Land': 'das', 'Mensch': 'der', 'Mann': 'der', 'Frau': 'die',
 };
 
 function getGermanWithArticle(word: string): string {
@@ -67,19 +46,19 @@ function buildQuestions(
   const vw = pick(vocabularyData, seed);
   out.push({
     prompt: `What does "${vw.de}" mean?`,
-    options: [vw.en, ...vocabularyData.filter((x) => x.id !== vw.id).slice(seed % 10, seed % 10 + 3).map((x) => x.en)],
+    options: shuffleArray([vw.en, ...vocabularyData.filter((x) => x.id !== vw.id).slice(seed % 10, seed % 10 + 3).map((x) => x.en)]),
     correct: vw.en,
   });
   const al = pick(alphabetData, seed + 1);
   out.push({
     prompt: `How is "${al.letter.split(' ')[0]}" pronounced?`,
-    options: [al.gerPhonetic, ...alphabetData.filter((x) => x.id !== al.id).slice(seed % 5, seed % 5 + 3).map((x) => x.gerPhonetic)],
+    options: shuffleArray([al.gerPhonetic, ...alphabetData.filter((x) => x.id !== al.id).slice(seed % 5, seed % 5 + 3).map((x) => x.gerPhonetic)]),
     correct: al.gerPhonetic,
   });
   const num = pick(numbersData, seed + 2);
   out.push({
     prompt: `Which German number is "${num.n}"?`,
-    options: [num.de, ...numbersData.filter((x) => x.n !== num.n).slice(seed % 7, seed % 7 + 3).map((x) => x.de)],
+    options: shuffleArray([num.de, ...numbersData.filter((x) => x.n !== num.n).slice(seed % 7, seed % 7 + 3).map((x) => x.de)]),
     correct: num.de,
   });
   return out;
@@ -91,13 +70,13 @@ export function DailyChallenge() {
   const { unlockBadge } = useAchievements();
   const { isAuthenticated } = useAuth();
   const seed = useMemo(daySeed, []);
-  
+
   // State for data from curriculumService
   const [vocabularyData, setVocabularyData] = useState<VocabEntry[]>([]);
   const [alphabetData, setAlphabetData] = useState<AlphabetItem[]>([]);
   const [numbersData, setNumbersData] = useState<NumberItem[]>([]);
   const [dataLoaded, setDataLoaded] = useState(false);
-  
+
   // Fetch data from curriculumService
   useEffect(() => {
     const loadData = async () => {
@@ -113,11 +92,11 @@ export function DailyChallenge() {
     };
     loadData();
   }, []);
-  
+
   const wordOfDay = useMemo(() => dataLoaded ? pick(vocabularyData, seed) : null, [vocabularyData, seed, dataLoaded]);
-  const questions = useMemo(() => dataLoaded ? buildQuestions(seed, vocabularyData, alphabetData, numbersData) : [], 
+  const questions = useMemo(() => dataLoaded ? buildQuestions(seed, vocabularyData, alphabetData, numbersData) : [],
     [seed, vocabularyData, alphabetData, numbersData, dataLoaded]);
-  
+
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [started, setStarted] = useState(false);
   const done = getItem(KEY) === new Date().toDateString();
@@ -126,6 +105,7 @@ export function DailyChallenge() {
 
   // Collapsible WOTD state
   const [isExpanded, setIsExpanded] = useState(() => !done);
+  const [showTranslation, setShowTranslation] = useState(false);
   const expandTimer = useMemo(() => {
     if (done) return undefined;
     return setTimeout(() => setIsExpanded(false), 5500);
@@ -138,12 +118,13 @@ export function DailyChallenge() {
   const choose = (qi: number, opt: string) => {
     const next = { ...answers, [qi]: opt };
     setAnswers(next);
+    // Collapse the panel after all questions are answered, regardless of correctness
     if (Object.keys(next).length === questions.length && !done) {
       if (questions.every((q, i) => next[i] === q.correct)) {
         setItem(KEY, new Date().toDateString());
         unlockBadge('daily_challenger');
-        setIsExpanded(false);
       }
+      setIsExpanded(false);
     }
   };
 
@@ -162,8 +143,19 @@ export function DailyChallenge() {
           <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-1">
             {getGermanWithArticle(wordOfDay.de)}
           </div>
+          {/* Hide translations by default — reveal on click to prevent spoilers */}
           <div className="text-sm text-slate-600 dark:text-slate-400">
-            {wordOfDay.en} • {wordOfDay.ne}
+            {showTranslation ? (
+              <span>{wordOfDay.en} • {wordOfDay.ne}</span>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setShowTranslation(true)}
+                className="text-xs text-slate-500 underline decoration-dotted underline-offset-1 hover:text-slate-700 dark:hover:text-slate-300"
+              >
+                {isDE ? 'Übersetzung anzeigen' : 'Show translation'}
+              </button>
+            )}
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-2">

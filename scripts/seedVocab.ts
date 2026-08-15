@@ -32,7 +32,7 @@ dotenv.config({ path: '.env.local', override: true });
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import { createClient } from '@supabase/supabase-js';
 import type { VocabularyEntity } from '../src/types/content';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -71,6 +71,30 @@ function legacyToEntity(row: LegacyVocabRow): VocabularyEntity {
   };
 }
 
+/**
+ * Convert an entity-shaped row (e.g. from german_vocabulary.json) straight
+ * through. Recognises rows that already have `word` and `translation_en`.
+ */
+function entityToEntity(row: Record<string, unknown>): VocabularyEntity | null {
+  const word = row.word as string | undefined;
+  const en = row.translation_en as string | undefined;
+  const np = row.translation_np as string | undefined;
+  if (!word || !en || !np) return null;
+
+  return {
+    word,
+    article: (row.article as 'der' | 'die' | 'das') ?? undefined,
+    part_of_speech: (row.part_of_speech as VocabularyEntity['part_of_speech']) ?? 'noun',
+    translation_en: en,
+    translation_np: np,
+    example_de: (row.example_de as string | undefined) ?? undefined,
+    example_en: (row.example_en as string | undefined) ?? undefined,
+    example_np: (row.example_np as string | undefined) ?? undefined,
+    category: (row.category as string | undefined) ?? 'general',
+    level: (row.level as string | undefined) ?? 'A1',
+  };
+}
+
 function enrichedToEntity(card: Record<string, unknown>): VocabularyEntity | null {
   const lemma = card.lemma;
   const translation = card.translation as { en?: string; np?: string } | undefined;
@@ -93,8 +117,13 @@ function enrichedToEntity(card: Record<string, unknown>): VocabularyEntity | nul
 }
 
 async function loadLegacyBatch(file: string): Promise<VocabularyEntity[]> {
-  const rows = JSON.parse(await fs.readFile(file, 'utf8')) as LegacyVocabRow[];
-  return rows.map(legacyToEntity);
+  const rows = JSON.parse(await fs.readFile(file, 'utf8')) as Record<string, unknown>[];
+  // Entity-shaped rows (word + translation_en) pass through directly.
+  if (rows.length > 0 && (rows[0] as Record<string, unknown>).word) {
+    return rows.map(entityToEntity).filter((e): e is VocabularyEntity => e !== null);
+  }
+  // Otherwise treat as legacy {id, de, en, ne, tags} shape.
+  return (rows as unknown as LegacyVocabRow[]).map(legacyToEntity);
 }
 
 async function loadEnriched(): Promise<VocabularyEntity[]> {
@@ -133,7 +162,19 @@ async function main(): Promise<void> {
     return;
   }
 
-  const { error } = await client.from('vocabulary').upsert(entities, {
+  // Deduplicate by (word, part_of_speech) — Postgres `ON CONFLICT DO UPDATE`
+  // throws "ON CONFLICT DO UPDATE command cannot affect row a second time"
+  // when the same conflict key appears more than once in a single upsert.
+  const seen = new Set<string>();
+  const uniqueEntities: VocabularyEntity[] = [];
+  for (const e of entities) {
+    const key = `${e.word}|${e.part_of_speech}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    uniqueEntities.push(e);
+  }
+
+  const { error } = await client.from('vocabulary').upsert(uniqueEntities, {
     onConflict: 'word,part_of_speech',
   });
 
@@ -142,7 +183,10 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
-  console.log(`✓ Seeded ${entities.length} vocabulary rows into public.vocabulary`);
+  console.log(
+    `✓ Seeded ${uniqueEntities.length} vocabulary rows into public.vocabulary` +
+      ` (filtered ${entities.length - uniqueEntities.length} duplicates)`,
+  );
 }
 
 main().catch((err) => {

@@ -21,6 +21,10 @@ dev-error.txt
 file_list.txt
 d
 
+# Stray project files
+gemini-svg.svg
+File path here
+
 # Documentation files (never commit - reference only)
 UI_UX_ANALYSIS.md
 ARCHITECTURE.md

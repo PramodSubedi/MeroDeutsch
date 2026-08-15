@@ -1,0 +1,222 @@
+[
+  {
+    "id": "educat-tier",
+    "de": "Tier:",
+    "en": "tasks",
+    "ne": "",
+    "tags": [
+      "education",
+      "B1"
+    ],
+    "level": "B1"
+  },
+  {
+    "id": "educat-assessment",
+    "de": "Assessment",
+    "en": "for",
+    "ne": "",
+    "tags": [
+      "education",
+      "B1"
+    ],
+    "level": "B1"
+  },
+  {
+    "id": "educat-tier",
+    "de": "Tier",
+    "en": "and",
+    "ne": "",
+    "tags": [
+      "education",
+      "B1"
+    ],
+    "level": "B1"
+  },
+  {
+    "id": "educat-listening",
+    "de": "Listening",
+    "en": "Reading",
+    "ne": "",
+    "tags": [
+      "education",
+      "B1"
+    ],
+    "level": "B1"
+  },
+  {
+    "id": "educat-tier",
+    "de": "Tier:",
+    "en": "will",
+    "ne": "",
+    "tags": [
+      "education",
+      "B1"
+    ],
+    "level": "B1"
+  },
+  {
+    "id": "educat-assessment",
+    "de": "Assessment",
+    "en": "be",
+    "ne": "",
+    "tags": [
+      "education",
+      "B1"
+    ],
+    "level": "B1"
+  },
+  {
+    "id": "educat-tier",
+    "de": "Tier",
+    "en": "based",
+    "ne": "",
+    "tags": [
+      "education",
+      "B1"
+    ],
+    "level": "B1"
+  },
+  {
+    "id": "educat-listening",
+    "de": "Listening",
+    "en": "on",
+    "ne": "",
+    "tags": [
+      "education",
+      "B1"
+    ],
+    "level": "B1"
+  },
+  {
+    "id": "educat-tier",
+    "de": "Tier",
+    "en": "material",
+    "ne": "",
+    "tags": [
+      "education",
+      "B1"
+    ],
+    "level": "B1"
+  },
+  {
+    "id": "educat-übernachten",
+    "de": "übernachten",
+    "en": "producir",
+    "ne": "",
+    "tags": [
+      "education",
+      "A1"
+    ],
+    "level": "A1"
+  },
+  {
+    "id": "educat-übernachtung",
+    "de": "Übernachtung",
+    "en": "reducir",
+    "ne": "",
+    "tags": [
+      "education",
+      "A1"
+    ],
+    "level": "A1"
+  },
+  {
+    "id": "educat-absicht",
+    "de": "Absicht",
+    "en": "intention",
+    "ne": "",
+    "tags": [
+      "education",
+      "B1"
+    ],
+    "level": "B1"
+  },
+  {
+    "id": "educat-aufenthaltsdauer",
+    "de": "Aufenthaltsdauer",
+    "en": "length",
+    "ne": "",
+    "tags": [
+      "education",
+      "A1"
+    ],
+    "level": "A1"
+  },
+  {
+    "id": "educat-abfall-eimer",
+    "de": "Abfall(eimer",
+    "en": "of",
+    "ne": "",
+    "tags": [
+      "education",
+      "A1"
+    ],
+    "level": "A1"
+  },
+  {
+    "id": "educat-abschleppwagen",
+    "de": "Abschleppwagen",
+    "en": "breakdown",
+    "ne": "",
+    "tags": [
+      "education",
+      "B1"
+    ],
+    "level": "B1"
+  },
+  {
+    "id": "educat-abitur",
+    "de": "Abitur",
+    "en": "level",
+    "ne": "",
+    "tags": [
+      "education",
+      "A1"
+    ],
+    "level": "A1"
+  },
+  {
+    "id": "educat-abiturient-in",
+    "de": "Abiturient/in",
+    "en": "exam",
+    "ne": "",
+    "tags": [
+      "education",
+      "A1"
+    ],
+    "level": "A1"
+  },
+  {
+    "id": "educat-aufsatz",
+    "de": "Aufsatz",
+    "en": "essay",
+    "ne": "",
+    "tags": [
+      "education",
+      "B1"
+    ],
+    "level": "B1"
+  },
+  {
+    "id": "educat-aktentasche",
+    "de": "Aktentasche",
+    "en": "briefcase",
+    "ne": "",
+    "tags": [
+      "education",
+      "A1"
+    ],
+    "level": "A1"
+  },
+  {
+    "id": "educat-arbeitgeber",
+    "de": "Arbeitgeber",
+    "en": "employer",
+    "ne": "",
+    "tags": [
+      "education",
+      "B1"
+    ],
+    "level": "B1"
+  }
+]
