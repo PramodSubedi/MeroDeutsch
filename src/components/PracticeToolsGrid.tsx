@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { BookOpen, Mic, FileText, MessageSquare, Volume2 } from 'lucide-react';
+import { BookOpen, Mic, FileText, MessageSquare, Volume2, Zap } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 interface ToolItem {
@@ -51,6 +51,14 @@ const tools: ToolItem[] = [
     iconColor: "text-rose-600 dark:text-rose-400",
     href: "/pronunciation",
     buttonText: "Open Pronunciation →",
+  },
+  {
+    title: "Rapid-Fire Blitz",
+    description: "60 seconds of der/die/das at max speed",
+    icon: Zap,
+    iconColor: "text-orange-600 dark:text-orange-400",
+    href: "/rapid-fire",
+    buttonText: "Start Blitz →",
   },
 ];
 

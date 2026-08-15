@@ -46,7 +46,8 @@ export function BottomNav() {
               pathname.startsWith('/dictation') ||
               pathname.startsWith('/grammar') ||
               pathname.startsWith('/pronunciation') ||
-              pathname.startsWith('/roleplay'),
+              pathname.startsWith('/roleplay') ||
+              pathname.startsWith('/rapid-fire'),
     },
     ...(user
       ? [

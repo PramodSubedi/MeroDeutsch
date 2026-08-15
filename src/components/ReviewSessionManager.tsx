@@ -214,7 +214,7 @@ export function ReviewSessionManager({
   const filterTabs: Tab<FilterId>[] = [
     { id: 'all', label: isDE ? 'Alle fällig' : 'All Due', icon: Filter, badge: queue.length },
     { id: 'focus', label: isDE ? 'Box 1-2 (Fokus)' : 'Box 1-2 (Focus)', icon: Target, badge: filteredQueue.filter(item => (item.boxLevel ?? 1) <= 2).length },
-    { id: 'mastery', label: isDE ? 'Box 3-5 (Meisterschaft)' : 'Box 3-5 (Mastery)', icon: Award, badge: filteredQueue.filter(item => (item.boxLevel ?? 1) >= 3).length },
+    { id: 'mastery', label: isDE ? 'Box 3-4 (Meisterschaft)' : 'Box 3-4 (Mastery)', icon: Award, badge: filteredQueue.filter(item => (item.boxLevel ?? 1) >= 3).length },
     ...moduleTypes.map((moduleType) => ({
       id: moduleType as FilterId,
       label: moduleType.charAt(0).toUpperCase() + moduleType.slice(1),

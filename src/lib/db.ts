@@ -7,7 +7,7 @@
  *
  * Schema:
  *   vocab          -> VocabCard (static German items; seeded at boot)
- *   userProgress   -> UserProgress (per-user Leitner 5-Box SRS state)
+ *   userProgress   -> UserProgress (per-user Leitner 4-Box SRS state)
  *   moduleProgress -> aggregate Progress per user/module (e.g. alphabet stats)
  */
 import Dexie from 'dexie';
@@ -34,8 +34,8 @@ const LEGACY_PROGRESS_KEY_BASE = 'germanAlphabetProgress';
 /** Per-user flag that marks progress migration as complete. */
 const PROGRESS_FLAG_BASE = 'mero_progress_migrated_v1';
 
-/** Leitner 5-Box review intervals in days (Box 1–5). */
-export const LEITNER_INTERVALS = [1, 3, 7, 14, 30];
+/** Leitner 4-Box review intervals in days (Box 1–4). */
+export const LEITNER_INTERVALS = [1, 3, 7, 14];
 
 /**
  * Dexie-backed database for MeroDeutsch.

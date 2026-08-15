@@ -8,6 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "enrich": "tsx scripts/enrich-cards.ts",
+    "seed-vocab": "tsx scripts/seedVocab.ts",
     "preview": "vite preview"
   },
   "dependencies": {

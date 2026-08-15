@@ -15,6 +15,10 @@ import { SEO } from '../components/common/SEO';
 import { ActivityHeatmap } from '../components/ActivityHeatmap';
 import { ReviewSessionManager } from '../components/ReviewSessionManager';
 import { MasteryIndicator } from '../components/MasteryIndicator';
+import { SRSReviewWidget } from '../components/SRSReviewWidget';
+import { DailyQuestsWidget } from '../components/DailyQuestsWidget';
+import { useDailyQuests } from '../hooks/useDailyQuests';
+import { useAchievements } from '../hooks/useAchievements';
 import { Link } from 'react-router-dom';
 import type { WrongAnswerItem } from '../types';
 
@@ -28,6 +32,8 @@ export function DashboardPage() {
   const { progress } = useProgress();
   const { langMode } = useLang();
   const { streakCount, longestStreak } = useStreak();
+  const { reportReview } = useDailyQuests();
+  const { unlockBadge } = useAchievements();
   const { activities } = useActivityLog();
   const { toast, showToast, dismissToast } = useMilestoneToast();
   const isDE = langMode === 'german';
@@ -47,6 +53,9 @@ export function DashboardPage() {
     }
     if (streakCount >= 3) {
       showToast({ message: isDE ? `${streakCount}-Tage-Serie! 🔥` : `${streakCount}-day streak! 🔥`, icon: '🔥' });
+    }
+    if (streakCount >= 7) {
+      unlockBadge('streak_7');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -186,7 +195,14 @@ export function DashboardPage() {
         <ActivityHeatmap activities={activities} />
       </div>
 
-      <div className="mt-4 rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm transition-[transform,box-shadow,border-color] duration-300 hover:border-blue-300 hover:shadow-xl dark:border-slate-700 dark:bg-slate-950 dark:hover:border-blue-500">
+      {/* Daily quests hub + compact SRS due-now widget */}
+      <DailyQuestsWidget />
+      <SRSReviewWidget />
+
+      <div
+        id="review-queue-section"
+        className="mt-4 rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm transition-[transform,box-shadow,border-color] duration-300 hover:border-blue-300 hover:shadow-xl dark:border-slate-700 dark:bg-slate-950 dark:hover:border-blue-500"
+      >
         <div className="mb-4 flex items-center justify-between gap-3">
           <div>
             <h2 className="text-xl font-semibold tracking-tight text-slate-950 dark:text-white">{reviewTitle}</h2>
@@ -238,7 +254,18 @@ export function DashboardPage() {
                     </div>
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    <button type="button" onClick={() => markCorrect(item.id)} className={theme.button.primary}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        // SRS Scholar quest: count a completed review.
+                        reportReview(1);
+                        markCorrect(item.id);
+                        // Box 4 Master badge: check if this promotion reaches Box 4.
+                        const nextBox = Math.min((item.boxLevel ?? 1) + 1, 4);
+                        if (nextBox >= 4) unlockBadge('box4_master');
+                      }}
+                      className={theme.button.primary}
+                    >
                       {gotItLabel}
                     </button>
                     <button type="button" onClick={() => markResolved(item.id)} className={theme.button.secondary}>

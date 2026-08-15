@@ -8,6 +8,12 @@ export interface DailyQuest {
   requirementDE: string;
   completed: boolean;
   rewardXp: number;
+  /** Current progress toward completion (e.g. 3/5 due reviews). */
+  progress?: number;
+  /** Completion threshold for `progress`. */
+  maxProgress?: number;
+  /** Whether the bonus XP for this quest has already been claimed. */
+  claimed?: boolean;
 }
 
 export interface DailyQuestState {

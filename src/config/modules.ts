@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
-import { BookA, Hash, Calendar, BookOpen, MessageCircle, Mic, BookText, Volume2, Users, Library } from 'lucide-react';
+import { BookA, Hash, Calendar, BookOpen, MessageCircle, Mic, BookText, Volume2, Users, Library, Zap } from 'lucide-react';
 
 /**
  * Single canonical module registry for MeroDeutsch.
@@ -35,6 +35,7 @@ export const MODULES: Module[] = [
   { id: 'pronunciation', path: '/pronunciation', label: 'Pronunciation', labelDE: 'Aussprache', icon: Volume2, showChrome: true, category: 'practice' },
   { id: 'roleplay', path: '/roleplay', label: 'Roleplay', labelDE: 'Rollenspiel', icon: Users, showChrome: true, category: 'practice' },
   { id: 'glossary', path: '/glossary', label: 'Glossary', labelDE: 'Glossar', icon: BookOpen, showChrome: true, category: 'practice' },
+  { id: 'rapid', path: '/rapid-fire', label: 'Rapid Fire', labelDE: 'Schnellfeuer', icon: Zap, showChrome: false, category: 'practice' },
   { id: 'practice', path: '/practice', label: 'Practice', labelDE: 'Übung', icon: BookOpen, showChrome: false, category: 'practice' },
 ];
 

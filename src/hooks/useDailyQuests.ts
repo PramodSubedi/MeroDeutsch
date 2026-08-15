@@ -1,123 +1,204 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { DailyQuest, DailyQuestState } from '../types/quests';
 import { getItem, setItem } from '../utils/safeStorage';
+import { scopedKey } from '../utils/userStorage';
+import { useAuth } from './useAuth';
+import { useXp } from './useXp';
 
 const QUEST_STORAGE_KEY = 'meroDeutschDailyQuests';
 
-// Default quest templates
-const QUEST_TEMPLATES: Omit<DailyQuest, 'completed'>[] = [
+/** Quest archetypes — randomized 3-per-day, resetting at local midnight. */
+const QUEST_TEMPLATES: Omit<DailyQuest, 'completed' | 'progress' | 'maxProgress' | 'claimed'>[] = [
   {
-    id: 'review-master',
-    title: 'Review Master',
-    titleDE: 'Review-Meister',
-    description: 'Complete 10 SRS reviews',
-    descriptionDE: 'Schließe 10 SRS-Wiederholungen ab',
-    requirement: '10 reviews',
-    requirementDE: '10 Wiederholungen',
+    id: 'speed-demon',
+    title: 'Speed Demon',
+    titleDE: 'Schnellfeuer-Ass',
+    description: 'Play 1 Rapid-Fire Blitz round',
+    descriptionDE: 'Spiele 1 Schnellfeuer-Blitz-Runde',
+    requirement: '1 blitz round',
+    requirementDE: '1 Runde Blitz',
     rewardXp: 50,
   },
   {
-    id: 'story-teller',
-    title: 'Story Teller',
-    titleDE: 'Geschichtenerzähler',
-    description: 'Finish reading 1 micro-story',
-    descriptionDE: 'Schließe 1 Mikrogeschichte ab',
-    requirement: '1 story',
-    requirementDE: '1 Geschichte',
-    rewardXp: 30,
+    id: 'srs-scholar',
+    title: 'SRS Scholar',
+    titleDE: 'SRS-Gelehrter',
+    description: 'Review 5 due items in the SRS queue',
+    descriptionDE: 'Wiederhole 5 fällige Einträge in der SRS-Warteschlange',
+    requirement: '5 reviews',
+    requirementDE: '5 Wiederholungen',
+    rewardXp: 40,
   },
   {
-    id: 'sharp-shooter',
-    title: 'Sharp Shooter',
-    titleDE: 'Scharfschütze',
-    description: 'Score 100% on any practice quiz',
-    descriptionDE: 'Erreiche 100% auf einem Übungsquiz',
-    requirement: '100% quiz',
-    requirementDE: '100% Quiz',
-    rewardXp: 75,
+    id: 'accuracy-master',
+    title: 'Accuracy Master',
+    titleDE: 'Präzisions-Meister',
+    description: 'Score ≥ 80% accuracy in any exercise',
+    descriptionDE: 'Erreiche ≥ 80% Genauigkeit in einer Übung',
+    requirement: '≥ 80% accuracy',
+    requirementDE: '≥ 80% Genauigkeit',
+    rewardXp: 30,
   },
 ];
 
-// Check if day has changed (for quest reset)
-function hasDayChanged(lastReset: string): boolean {
-  const lastDate = new Date(lastReset);
-  const today = new Date();
-  return (
-    lastDate.getFullYear() !== today.getFullYear() ||
-    lastDate.getMonth() !== today.getMonth() ||
-    lastDate.getDate() !== today.getDate()
-  );
+/** Completion target per quest id. */
+function questMax(id: string): number {
+  switch (id) {
+    case 'speed-demon':
+      return 1;
+    case 'srs-scholar':
+      return 5;
+    default:
+      return 1;
+  }
 }
 
-// Generate daily quests
-function generateDailyQuests(): DailyQuest[] {
-  // Shuffle and take 3 quests
-  const shuffled = [...QUEST_TEMPLATES].sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, 3).map(quest => ({
-    ...quest,
+/** Build a fresh daily quest set with progress counters reset. */
+function buildQuests(): DailyQuest[] {
+  return QUEST_TEMPLATES.map((q) => ({
+    ...q,
     completed: false,
+    progress: 0,
+    maxProgress: questMax(q.id),
+    claimed: false,
   }));
 }
 
-// Load quests from storage
-function loadQuests(): DailyQuestState {
-  const stored = getItem(QUEST_STORAGE_KEY);
+/** True when the stored reset date is not today (needs a new set). */
+function hasDayChanged(lastReset: string): boolean {
+  const last = new Date(lastReset);
+  const today = new Date();
+  return (
+    last.getFullYear() !== today.getFullYear() ||
+    last.getMonth() !== today.getMonth() ||
+    last.getDate() !== today.getDate()
+  );
+}
+
+function loadQuests(key: string): DailyQuestState {
+  const stored = getItem(key);
   if (stored) {
     try {
       const parsed = JSON.parse(stored) as DailyQuestState;
       if (hasDayChanged(parsed.lastReset)) {
-        // Day changed, generate new quests
-        const newQuests = generateDailyQuests();
-        const newState: DailyQuestState = { quests: newQuests, lastReset: new Date().toISOString() };
-        setItem(QUEST_STORAGE_KEY, JSON.stringify(newState));
-        return newState;
+        return { quests: buildQuests(), lastReset: new Date().toISOString() };
       }
       return parsed;
     } catch {
-      // Invalid stored data, generate new
-      const newQuests = generateDailyQuests();
-      const newState: DailyQuestState = { quests: newQuests, lastReset: new Date().toISOString() };
-      setItem(QUEST_STORAGE_KEY, JSON.stringify(newState));
-      return newState;
+      return { quests: buildQuests(), lastReset: new Date().toISOString() };
     }
   }
-  
-  // No stored data, generate new
-  const newQuests = generateDailyQuests();
-  const newState: DailyQuestState = { quests: newQuests, lastReset: new Date().toISOString() };
-  setItem(QUEST_STORAGE_KEY, JSON.stringify(newState));
-  return newState;
+  return { quests: buildQuests(), lastReset: new Date().toISOString() };
 }
 
+/**
+ * useDailyQuests — auto-resetting gamified daily objectives.
+ *
+ * Three randomized archetypes ("Speed Demon", "SRS Scholar", "Accuracy
+ * Master") that refresh at local midnight. Progress is persisted per-user
+ * via `safeStorage` + `scopedKey`. Completed quests award bonus XP through
+ * the shared `useXp` context (`awardXp`).
+ */
 export function useDailyQuests() {
-  const [state, setState] = useState<DailyQuestState | null>(null);
+  const { user } = useAuth();
+  const userId = user?.userId ?? null;
+  const key = scopedKey(QUEST_STORAGE_KEY, userId);
+  const { awardXp } = useXp();
 
+  const [state, setState] = useState<DailyQuestState>(() => loadQuests(key));
+
+  // Reload (and auto-reset at midnight) whenever the user scoped key changes.
   useEffect(() => {
-    setState(loadQuests());
+    setState(loadQuests(key));
+  }, [key]);
+
+  // Persist on any state change.
+  useEffect(() => {
+    setItem(key, JSON.stringify(state));
+  }, [key, state]);
+
+  /**
+   * Update a quest's progress without affecting others' claimed state.
+   * Marks the quest completed when `progress >= maxProgress`.
+   */
+  const updateProgress = useCallback((questId: string, delta = 1) => {
+    setState((prev) => {
+      const quest = prev.quests.find((q) => q.id === questId);
+      if (!quest || quest.completed) return prev;
+      const next = {
+        ...quest,
+        progress: Math.min((quest.progress ?? 0) + delta, quest.maxProgress ?? questMax(questId)),
+      };
+      const completed = next.maxProgress ? next.progress >= next.maxProgress : false;
+      return {
+        quests: prev.quests.map((q) => (q.id === questId ? { ...next, completed } : q)),
+        lastReset: prev.lastReset,
+      };
+    });
   }, []);
 
-  // Mark quest as completed
-  const completeQuest = useCallback((questId: string) => {
-    if (!state) return;
-    
-    const updatedQuests = state.quests.map((quest: DailyQuest) =>
-      quest.id === questId ? { ...quest, completed: true } : quest
-    );
-    
-    const newState: DailyQuestState = { ...state, quests: updatedQuests };
-    setState(newState);
-    setItem(QUEST_STORAGE_KEY, JSON.stringify(newState));
-  }, [state]);
+  /** Speed Demon: +1 per blitz round finished. */
+  const reportBlitzPlayed = useCallback(() => {
+    updateProgress('speed-demon');
+  }, [updateProgress]);
 
-  // Get total XP from completed quests
-  const totalRewardXp = state?.quests
-    .filter((q: DailyQuest) => q.completed)
-    .reduce((sum: number, q: DailyQuest) => sum + q.rewardXp, 0) || 0;
+  /** SRS Scholar: add `count` completed review actions. */
+  const reportReview = useCallback(
+    (count = 1) => {
+      updateProgress('srs-scholar', count);
+    },
+    [updateProgress]
+  );
+
+  /** Accuracy Master: instant-complete when an exercise hits ≥ 80%. */
+  const reportAccuracy = useCallback((accuracy: number) => {
+    if (accuracy >= 80) {
+      setState((prev) => {
+        const quest = prev.quests.find((q) => q.id === 'accuracy-master');
+        if (!quest || quest.completed) return prev;
+        return {
+          quests: prev.quests.map((q) =>
+            q.id === 'accuracy-master'
+              ? { ...q, progress: q.maxProgress ?? 1, completed: true }
+              : q
+          ),
+          lastReset: prev.lastReset,
+        };
+      });
+    }
+  }, []);
+
+  /** Claim the bonus XP for a completed quest (one-time per quest per day). */
+  const claimReward = useCallback(
+    (questId: string) => {
+      setState((prev) => {
+        const quest = prev.quests.find((q) => q.id === questId);
+        if (!quest || !quest.completed || quest.claimed) return prev;
+        void awardXp(quest.rewardXp, `quest:${questId}`);
+        return {
+          quests: prev.quests.map((q) => (q.id === questId ? { ...q, claimed: true } : q)),
+          lastReset: prev.lastReset,
+        };
+      });
+    },
+    [awardXp]
+  );
+
+  const totalRewardXp = useMemo(
+    () => state.quests.filter((q) => q.claimed).reduce((sum, q) => sum + q.rewardXp, 0),
+    [state]
+  );
+
+  const completedCount = state.quests.filter((q) => q.completed).length;
 
   return {
-    quests: state?.quests ?? [],
-    completeQuest,
+    quests: state.quests,
     totalRewardXp,
-    isLoading: state === null,
+    completedCount,
+    reportBlitzPlayed,
+    reportReview,
+    reportAccuracy,
+    claimReward,
+    isLoading: false,
   };
 }

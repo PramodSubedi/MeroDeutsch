@@ -6,13 +6,18 @@ import { useTranslation } from '../hooks/useTranslation';
 import { useReviewQueue } from '../hooks/useReviewQueue';
 import { useXp } from '../hooks/useXp';
 import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
+import { useDailyQuests } from '../hooks/useDailyQuests';
+import { speakGerman } from '../utils/audioService';
 import { theme } from '../config/theme';
 import { curriculumService } from '../services';
 import type { ArticleItem } from '../types';
+import fallbackNouns from '../data/nouns.json';
 
-function randomArticleItem(pool: ArticleItem[], previous: string | null) {
+function randomArticleItem(pool: ArticleItem[], previous: string | null): ArticleItem | null {
+  if (pool.length === 0) return null;
   const filtered = pool.filter((item) => item.noun !== previous);
-  return filtered[Math.floor(Math.random() * filtered.length)];
+  const safePool = filtered.length > 0 ? filtered : pool;
+  return safePool[Math.floor(Math.random() * safePool.length)];
 }
 
 
@@ -42,19 +47,51 @@ function playBeep(success: boolean) {
 export function ArticlesPage() {
   const { langMode } = useLang();
   const { isDE, t } = useTranslation(langMode);
+  const { quests, reportAccuracy, claimReward } = useDailyQuests();
   const [articlesData, setArticlesData] = useState<ArticleItem[]>([]);
   const [currentItem, setCurrentItem] = useState<ArticleItem | null>(null);
   const [guideOpen, setGuideOpen] = useState(false);
-
-  useEffect(() => {
-    curriculumService.getArticles().then(data => {
-      setArticlesData(data);
-      setCurrentItem(randomArticleItem(data, null));
-    });
-  }, []);
-
+  const [spokenKey, setSpokenKey] = useState<string | null>(null);
   const [articleScore, setArticleScore] = useState(0);
   const [articleTotal, setArticleTotal] = useState(0);
+
+  useEffect(() => {
+    curriculumService
+      .getArticles()
+      .then((data) => {
+        // Defensive: never render a blank card. If the dynamic source is empty
+        // or slow, fall back to the bundled offline deck (src/data/nouns.json).
+        const pool = data.length > 0 ? data : (fallbackNouns as ArticleItem[]);
+        setArticlesData(pool);
+        setCurrentItem(randomArticleItem(pool, null));
+      })
+      .catch(() => {
+        const pool = fallbackNouns as ArticleItem[];
+        setArticlesData(pool);
+        setCurrentItem(randomArticleItem(pool, null));
+      });
+  }, []);
+
+  // Auto-speak the current article phrase on mount/change + report Accuracy Master quest.
+  useEffect(() => {
+    if (!currentItem) return;
+    const phrase = `${currentItem.art} ${currentItem.noun}`;
+    if (spokenKey !== phrase) {
+      setSpokenKey(phrase);
+      speakGerman(phrase);
+      // Accuracy Master: feed the reviewer's accuracy ratio (session average).
+      reportAccuracy(articleTotal > 0 ? articleScore / articleTotal : 0.5);
+    }
+  }, [currentItem, spokenKey, articleScore, articleTotal, reportAccuracy]);
+
+  // Claim any completed-but-unclaimed daily quest rewards.
+  useEffect(() => {
+    const completed = quests.find((q) => q.completed && !q.claimed);
+    if (completed) {
+      claimReward(completed.id);
+    }
+  }, [quests, claimReward]);
+
   const [feedback, setFeedback] = useState('');
   const [locked, setLocked] = useState(false);
   const [lastChoice, setLastChoice] = useState<'der' | 'die' | 'das' | null>(null);

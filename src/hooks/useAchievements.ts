@@ -4,6 +4,7 @@ import { scopedKey } from '../utils/userStorage';
 import { useAuth } from './useAuth';
 import { supabase } from '../lib/supabase';
 import type { Badge, Progress, UnlockedBadge, UserAchievements } from '../types';
+import { ADDITIONAL_BADGES } from '../config/achievements';
 
 const DEBOUNCE_MS = 300;
 let saveTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -11,6 +12,7 @@ let saveTimeout: ReturnType<typeof setTimeout> | null = null;
 const BASE_KEY = 'meroDeutschAchievements';
 
 export const ALL_BADGES: Badge[] = [
+  ...ADDITIONAL_BADGES,
   {
     id: 'first_steps',
     label: 'First Steps',

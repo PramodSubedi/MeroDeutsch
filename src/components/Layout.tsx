@@ -10,6 +10,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useOnlineStatus } from '../hooks/useOnlineStatus';
 import { useLastModule } from '../hooks/useLastModule';
 import { useXp } from '../hooks/useXp';
+import { isAudioEnabled, setAudioEnabled } from '../utils/audioService';
 import { Logo } from './common/Logo';
 import { Footer } from './Footer';
 import { ModuleChrome } from './learning/ModuleChrome';
@@ -30,6 +31,7 @@ export function Layout() {
   const { rank, onLevelUp } = useXp();
   const [levelUpModalOpen, setLevelUpModalOpen] = useState(false);
   const [newLevel, setNewLevel] = useState(1);
+  const [audioEnabled, setAudioEnabledState] = useState(isAudioEnabled);
 
   // Global level-up listener — any module that awards XP can trigger the modal.
   useEffect(() => {
@@ -99,6 +101,18 @@ export function Layout() {
             >
               {dark ? '☀️' : '🌙'}
             </button>
+            <button
+              type="button"
+              onClick={() => {
+                const next = !audioEnabled;
+                setAudioEnabled(next);
+                setAudioEnabledState(next);
+              }}
+              className={theme.layout.themeButton}
+              aria-label={audioEnabled ? 'Mute audio' : 'Unmute audio'}
+            >
+              {audioEnabled ? '🔊' : '🔇'}
+            </button>
             {user && <UserMenu user={user} />}
           </nav>
           {/* Mobile-only controls — nav is hidden below md */}
@@ -118,6 +132,18 @@ export function Layout() {
               aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'}
             >
               {dark ? '☀️' : '🌙'}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                const next = !audioEnabled;
+                setAudioEnabled(next);
+                setAudioEnabledState(next);
+              }}
+              className={theme.layout.themeButton}
+              aria-label={audioEnabled ? 'Mute audio' : 'Unmute audio'}
+            >
+              {audioEnabled ? '🔊' : '🔇'}
             </button>
             {user && <UserMenu user={user} />}
           </div>

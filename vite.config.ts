@@ -29,6 +29,7 @@ export default defineConfig({
         '/stories',
         '/analytics',
         '/import',
+        '/rapid-fire',
         '/settings',
         '/privacy',
         '/terms',
@@ -39,6 +40,11 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       injectRegister: 'auto',
+      devOptions: {
+        // Generate + serve /sw.js during `vite dev` so the Worker registers
+        // with the correct MIME type instead of falling back to index.html.
+        enabled: true,
+      },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
         cleanupOutdatedCaches: true,
