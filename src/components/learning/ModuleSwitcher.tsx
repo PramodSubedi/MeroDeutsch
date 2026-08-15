@@ -26,9 +26,9 @@ export function ModuleSwitcher() {
   return (
     <nav
       aria-label="Module navigation"
-      className="py-2"
+      className="py-1"
     >
-      <div className="flex flex-nowrap items-start gap-4 overflow-x-auto no-scrollbar sm:flex-wrap sm:overflow-visible sm:gap-6">
+      <div className="flex flex-nowrap items-start gap-3 overflow-x-auto no-scrollbar sm:flex-wrap sm:overflow-visible sm:gap-4">
         {/* A1 Learning Modules Group */}
         <CollapsibleModuleGroup
           title="A1 Learning"

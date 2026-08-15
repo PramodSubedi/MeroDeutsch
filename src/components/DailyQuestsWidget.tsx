@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { useDailyQuests } from '../hooks/useDailyQuests';
 import { useLang } from '../hooks/useLang';
 import { theme } from '../config/theme';
@@ -12,7 +13,20 @@ import { theme } from '../config/theme';
 export function DailyQuestsWidget() {
   const { quests, claimReward, totalRewardXp, completedCount } = useDailyQuests();
   const { langMode } = useLang();
+  const navigate = useNavigate();
   const isDE = langMode === 'german';
+
+  const handleQuestAction = (questId: string) => {
+    if (questId === 'speed-demon') {
+      navigate('/rapid-fire');
+      return;
+    }
+    if (questId === 'srs-scholar') {
+      document.getElementById('review-queue-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+    navigate('/practice');
+  };
 
   if (quests.length === 0) return null;
 
@@ -76,9 +90,17 @@ export function DailyQuestsWidget() {
                     </button>
                   )
                 ) : (
-                  <span className="inline-flex w-full items-center justify-center rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-500 dark:bg-slate-700 dark:text-slate-400">
-                    {isDE ? 'In Arbeit…' : 'In progress…'}
-                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleQuestAction(quest.id)}
+                    className={`w-full ${theme.button.secondary} !px-3 !py-1.5 text-xs`}
+                  >
+                    {quest.id === 'speed-demon'
+                      ? isDE ? 'Blitz starten' : 'Start Blitz'
+                      : quest.id === 'srs-scholar'
+                        ? isDE ? 'Review starten' : 'Start review'
+                        : isDE ? 'Übung starten' : 'Start practice'}
+                  </button>
                 )}
               </div>
             </div>

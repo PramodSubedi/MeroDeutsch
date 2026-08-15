@@ -43,7 +43,7 @@ export function TabGroup<T extends string = string>({
       <div
         className={
           isCompact
-            ? 'grid grid-cols-2 gap-2 w-full md:flex md:w-auto'
+            ? 'flex w-full gap-2 overflow-x-auto no-scrollbar pb-1 md:flex-wrap md:overflow-visible'
             : 'flex flex-wrap gap-2'
         }
       >
@@ -52,7 +52,7 @@ export function TabGroup<T extends string = string>({
           const Icon = tab.icon;
           const buttonClass =
             (isActive ? theme.button.toggleActive : theme.button.toggleInactive) +
-            (isCompact ? ' min-h-[44px] min-w-[44px] w-full md:w-auto' : '');
+            (isCompact ? ' min-h-[44px] min-w-[44px] shrink-0 whitespace-nowrap md:w-auto' : '');
 
           return (
             <button

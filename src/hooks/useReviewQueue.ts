@@ -222,8 +222,14 @@ export function useReviewQueue() {
     });
   }, [queue]);
 
+  const dueQueue = useMemo(() => {
+    const now = new Date().toISOString();
+    return sortedQueue.filter((item) => !item.dueAt || item.dueAt <= now);
+  }, [sortedQueue]);
+
   return {
     queue: sortedQueue,
+    dueQueue,
     addWrongAnswer,
     markCorrect,
     markResolved,

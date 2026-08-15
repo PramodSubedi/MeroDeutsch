@@ -28,7 +28,7 @@ const numberFormatter = (locale: string) => new Intl.NumberFormat(locale);
 export function DashboardPage() {
   usePageTitle('Dashboard');
   const { user, isAuthenticated } = useAuth();
-  const { queue, markCorrect, markResolved, clearQueue } = useReviewQueue();
+  const { queue, dueQueue, markCorrect, markResolved, clearQueue } = useReviewQueue();
   const { progress } = useProgress();
   const { langMode } = useLang();
   const { streakCount, longestStreak } = useStreak();
@@ -70,6 +70,7 @@ export function DashboardPage() {
   const reviewTitle = isDE ? 'Review-Warteschlange' : 'Review queue';
   const reviewSubtitle = isDE ? 'Konzentriere dich auf deine häufigsten Fehler.' : 'Focus on your most frequent mistakes.';
   const clearAllLabel = isDE ? 'Alle löschen' : 'Clear all';
+  const dueCount = dueQueue.length;
   const resolvedLabel = isDE ? 'Erledigt' : 'Resolved';
   const overallScore = isDE ? 'Gesamtpunktzahl' : 'Overall score';
   const quizAccuracy = isDE ? 'Quiz-Genauigkeit beim Alphabet-Training.' : 'Quiz accuracy across alphabet practice.';
@@ -105,10 +106,10 @@ export function DashboardPage() {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
-          {queue.length > 0 && (
+          {dueCount > 0 && (
             <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow dark:border-amber-700/60 dark:bg-amber-900/30 dark:text-amber-300">
               <span aria-hidden="true">⚠️</span>
-              {formatCount.format(queue.length)} {isDE ? 'fehlende Einträge' : 'missed items'}
+              {formatCount.format(dueCount)} {isDE ? 'fällige Einträge' : 'due items'}
             </span>
           )}
           <Link to="/settings" className={theme.button.secondary}>
@@ -209,7 +210,18 @@ export function DashboardPage() {
             <p className="text-sm text-slate-500 dark:text-slate-400">{reviewSubtitle}</p>
           </div>
           {queue.length > 0 && (
-            <button type="button" onClick={clearQueue} className={theme.button.secondary}>
+            <button
+              type="button"
+              onClick={() => {
+                const confirmed = window.confirm(
+                  isDE
+                    ? 'Sollen alle offenen Review-Einträge gelöscht werden? Dieser Schritt kann nicht rückgängig gemacht werden.'
+                    : 'Clear all open review items? This cannot be undone.'
+                );
+                if (confirmed) clearQueue();
+              }}
+              className={theme.button.secondary}
+            >
               {clearAllLabel}
             </button>
           )}
@@ -218,6 +230,7 @@ export function DashboardPage() {
         {/* SRS Review Session Manager (filter tabs + flashcard player + summary) — embedded, no nested card */}
         <ReviewSessionManager
           queue={queue}
+          dueQueue={dueQueue}
           onMarkCorrect={markCorrect}
           embedded
         />

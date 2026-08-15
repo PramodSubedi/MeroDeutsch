@@ -8,6 +8,7 @@ import type { WrongAnswerItem } from '../types';
 
 interface ReviewSessionManagerProps {
   queue: WrongAnswerItem[];
+  dueQueue?: WrongAnswerItem[];
   onMarkCorrect: (id: string) => void;
   onCompleteSession?: () => void;
   /** When true, renders without its own card shell (for embedding inside a parent card). */
@@ -27,6 +28,7 @@ const EMPTY_STATS: SessionStats = { reviewed: 0, promoted: 0, demoted: 0, xp: 0 
 
 export function ReviewSessionManager({
   queue,
+  dueQueue,
   onMarkCorrect,
   onCompleteSession,
   embedded = false,
@@ -42,6 +44,14 @@ export function ReviewSessionManager({
   const [sessionStats, setSessionStats] = useState<SessionStats>(EMPTY_STATS);
   const [showSummary, setShowSummary] = useState(false);
 
+  const isDueNow = (item: WrongAnswerItem) => !item.dueAt || new Date(item.dueAt).getTime() <= Date.now();
+
+  // Single source of truth for due items across the dashboard and session manager.
+  const effectiveDueQueue = useMemo(() => {
+    if (dueQueue) return dueQueue;
+    return queue.filter(isDueNow);
+  }, [dueQueue, queue]);
+
   // Unique module types present in the queue (for dynamic filter tabs).
   const moduleTypes = useMemo(() => {
     const seen = new Set<string>();
@@ -51,14 +61,14 @@ export function ReviewSessionManager({
 
   // Filter items based on the selected tab.
   const filteredQueue = useMemo(() => {
-    return queue.filter((item) => {
+    return effectiveDueQueue.filter((item) => {
       const box = item.boxLevel ?? 1;
       if (activeFilter === 'focus') return box <= 2;
       if (activeFilter === 'mastery') return box >= 3;
       if (activeFilter !== 'all') return item.moduleType === activeFilter;
       return true;
     });
-  }, [queue, activeFilter]);
+  }, [effectiveDueQueue, activeFilter]);
 
   const handleAnswerResult = (isCorrect: boolean) => {
     const currentItem = sessionItems[currentIndex];
@@ -205,6 +215,11 @@ export function ReviewSessionManager({
             {isDE ? 'Verstanden! ✅' : 'Got It! ✅'}
           </button>
         </div>
+        <p className="text-center text-xs text-slate-500 dark:text-slate-400">
+          {isDE
+            ? 'Verstanden = befördert, Noch lernen = bleibt in der Warteschlange.'
+            : 'Got it promotes the item; still learning keeps it in the queue.'}
+        </p>
       </div>
     );
   }
@@ -212,9 +227,9 @@ export function ReviewSessionManager({
   // ── Pre-session filter view ───────────────────────────────────
   // Badges always show the count (including 0) for consistent review-queue feedback.
   const filterTabs: Tab<FilterId>[] = [
-    { id: 'all', label: isDE ? 'Alle fällig' : 'All Due', icon: Filter, badge: queue.length },
-    { id: 'focus', label: isDE ? 'Box 1-2 (Fokus)' : 'Box 1-2 (Focus)', icon: Target, badge: filteredQueue.filter(item => (item.boxLevel ?? 1) <= 2).length },
-    { id: 'mastery', label: isDE ? 'Box 3-4 (Meisterschaft)' : 'Box 3-4 (Mastery)', icon: Award, badge: filteredQueue.filter(item => (item.boxLevel ?? 1) >= 3).length },
+    { id: 'all', label: isDE ? 'Alle fällig' : 'All Due', icon: Filter, badge: effectiveDueQueue.length },
+    { id: 'focus', label: isDE ? 'Box 1-2 (Fokus)' : 'Box 1-2 (Focus)', icon: Target, badge: effectiveDueQueue.filter(item => (item.boxLevel ?? 1) <= 2).length },
+    { id: 'mastery', label: isDE ? 'Box 3-4 (Meisterschaft)' : 'Box 3-4 (Mastery)', icon: Award, badge: effectiveDueQueue.filter(item => (item.boxLevel ?? 1) >= 3).length },
     ...moduleTypes.map((moduleType) => ({
       id: moduleType as FilterId,
       label: moduleType.charAt(0).toUpperCase() + moduleType.slice(1),

@@ -102,6 +102,7 @@ export function DailyChallenge() {
   const done = getItem(KEY) === new Date().toDateString();
   const count = Object.keys(answers).length;
   const allOk = questions.every((q, i) => answers[i] === q.correct);
+  const challengeComplete = done || count === questions.length;
 
   // Collapsible WOTD state
   const [isExpanded, setIsExpanded] = useState(() => !done);
@@ -153,7 +154,7 @@ export function DailyChallenge() {
                 onClick={() => setShowTranslation(true)}
                 className="text-xs text-slate-500 underline decoration-dotted underline-offset-1 hover:text-slate-700 dark:hover:text-slate-300"
               >
-                {isDE ? 'Übersetzung anzeigen' : 'Show translation'}
+                {isDE ? 'Bedeutung anzeigen' : 'Reveal meaning'}
               </button>
             )}
           </div>
@@ -175,15 +176,22 @@ export function DailyChallenge() {
             aria-controls="wotd-content"
             aria-expanded={isExpanded}
           >
-            <span aria-hidden="true">{isExpanded ? '👁️' : '👁️'}</span>
+            <span aria-hidden="true">{isExpanded ? '🙈' : '👁️'}</span>
             {isExpanded ? (isDE ? 'Ausblenden' : 'Hide') : (isDE ? 'Einblenden' : 'Show')}
           </button>
         </div>
       </div>
 
-      {!isExpanded || done ? (
-        <div className="mb-3 text-sm font-semibold text-slate-700 dark:text-slate-200">
-          {isDE ? 'Tägliche Herausforderung' : 'Daily Challenge'} — {count}/{questions.length}
+      {/* B. Daily Challenge complete state — collapse once done for today */}
+      {challengeComplete ? (
+        <div className="mb-3 flex flex-wrap items-center gap-2 rounded-xl bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300">
+          <span aria-hidden="true">🎉</span>
+          <span>{isDE ? 'Heute erledigt!' : 'Done for today!'}</span>
+          {count === questions.length && !allOk && (
+            <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+              {isDE ? `(${count}/${questions.length} beantwortet)` : `(${count}/${questions.length} answered)`}
+            </span>
+          )}
         </div>
       ) : (
         <div className="mb-3 text-sm font-semibold text-slate-700 dark:text-slate-200">
@@ -191,16 +199,16 @@ export function DailyChallenge() {
         </div>
       )}
 
-      {!started ? (
+      {!started && !challengeComplete ? (
         <button type="button" onClick={() => setStarted(true)} className={theme.button.primary}>
           {isDE ? 'Herausforderung starten' : 'Start challenge'}
         </button>
-      ) : (
+      ) : !challengeComplete ? (
         <div className="space-y-4">
           {questions.map((q, i) => (
             <div key={q.prompt}>
-              <div className="mb-2 text-sm font-medium text-slate-700 dark:text-slate-200">{q.prompt}</div>
-              <div className="grid gap-2 sm:grid-cols-2">
+              <div className="mb-1.5 text-sm font-medium text-slate-700 dark:text-slate-200">{q.prompt}</div>
+              <div className="grid gap-1.5 sm:grid-cols-2">
                 {q.options.map((opt) => {
                   const chosen = answers[i] === opt;
                   const ok = q.correct === opt;
@@ -227,7 +235,7 @@ export function DailyChallenge() {
             </div>
           )}
         </div>
-      )}
+      ) : null}
     </div>
   );
 }

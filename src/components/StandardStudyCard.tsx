@@ -61,10 +61,10 @@ export function StandardStudyCard({
   const masteryInfo = getMasteryInfo(masteryLevel);
 
   return (
-    <div className="group relative rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md hover:border-blue-300 dark:border-slate-700 dark:bg-slate-950 dark:hover:border-blue-500">
+    <div className="group relative flex h-full min-h-[180px] flex-col rounded-[22px] border border-slate-200/80 bg-white p-4 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md dark:border-slate-700 dark:bg-slate-950 dark:hover:border-blue-500 sm:p-5">
       {/* Mastery level indicator (bottom progress bar) */}
       {masteryInfo && (
-        <div className="absolute bottom-0 left-0 right-0 h-1 overflow-hidden rounded-b-2xl bg-slate-100 dark:bg-slate-800">
+        <div className="absolute bottom-0 left-0 right-0 h-1 overflow-hidden rounded-b-[22px] bg-slate-100 dark:bg-slate-800">
           <div 
             className={`h-full transition-all duration-500 ${masteryInfo.color}`}
             style={{ width: `${((masteryLevel ?? 0) + 1) * 20}%` }}
@@ -73,7 +73,7 @@ export function StandardStudyCard({
         </div>
       )}
       {/* Top row: Badge + Audio Button */}
-      <div className="mb-3 flex items-start justify-between">
+      <div className="mb-3 flex items-start justify-between gap-3">
         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-sm font-bold text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
           {badge}
         </div>
@@ -81,9 +81,9 @@ export function StandardStudyCard({
       </div>
 
       {/* Vertical content stack */}
-      <div className="flex flex-col gap-2 text-center">
+      <div className="flex flex-1 flex-col items-start gap-2 text-left">
         {/* 1. Primary German term */}
-        <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+        <div className="text-2xl font-bold leading-tight text-blue-600 dark:text-blue-400">
           {german}
         </div>
 
@@ -103,7 +103,7 @@ export function StandardStudyCard({
 
         {/* 4. Context badge */}
         {contextNote && (
-          <div className="mt-2 inline-flex items-center justify-center rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-400">
+          <div className="mt-auto inline-flex items-center justify-center rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-400">
             {contextNote}
           </div>
         )}

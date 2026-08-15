@@ -80,6 +80,10 @@ export function AlphabetPage() {
       <div className={theme.section.surface}>
         <h1 className={theme.section.title}>{pageTitle}</h1>
         <p className={theme.section.description}>{pageDescription}</p>
+        {/* Clarify: Speed control is separate from mode tabs */}
+        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+          {isDE ? 'Geschwindigkeit: Langsam | Normal | Schnell | Mode: Karten | Quiz | Rechtschreibung' : 'Speed: Slow | Normal | Fast | Mode: Learn Cards | Quiz | Spelling'}
+        </p>
       </div>
       {sub === 'learn' && lotd && (
         <div className="my-2 grid gap-3 md:grid-cols-2">

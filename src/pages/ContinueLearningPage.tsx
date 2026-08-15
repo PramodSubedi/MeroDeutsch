@@ -16,17 +16,29 @@ import { theme } from '../config/theme';
  *
  * Accessible to both guest and authenticated users.
  */
+const MODULE_LABELS: Record<string, { en: string; de: string }> = {
+  alphabet: { en: 'Alphabet', de: 'Alphabet' },
+  numbers: { en: 'Numbers', de: 'Zahlen' },
+  calendar: { en: 'Calendar', de: 'Kalender' },
+  articles: { en: 'Articles', de: 'Artikel' },
+  greetings: { en: 'Greetings', de: 'Grüße' },
+  dictation: { en: 'Dictation', de: 'Diktat' },
+  grammar: { en: 'Grammar', de: 'Grammatik' },
+};
+
 export function ContinueLearningPage() {
   usePageTitle('Learn');
   const { langMode } = useLang();
   const { getLastModule } = useLastModule();
   const isDE = langMode === 'german';
   const continuePath = getLastModule();
+  const moduleKey = continuePath.split('/').filter(Boolean)[0] ?? '';
+  const moduleLabel = MODULE_LABELS[moduleKey] ?? { en: 'Last Module', de: 'Letztes Modul' };
 
   return (
     <div className={theme.page.container}>
       {/* A. Page header — back-to-home + title */}
-      <header className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <header className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <Link
             to="/"
@@ -47,7 +59,7 @@ export function ContinueLearningPage() {
           to={continuePath}
           className={`${theme.button.primary} min-w-[160px] text-center`}
         >
-          {isDE ? 'Letztes Modul' : 'Last Module'} →
+          {isDE ? moduleLabel.de : moduleLabel.en} →
         </Link>
       </header>
 
@@ -57,8 +69,8 @@ export function ContinueLearningPage() {
       {/* C. A1 Learning Path — reuses extracted component */}
       <LearningPath />
 
-      {/* D. Learning tools — reuses existing PracticeToolsGrid, wrapped in the same card shell as other Learn sections */}
-      <section className={`${theme.panel.surface} mb-8`}>
+      {/* D. Learning tools — full grid with anchor for home compact links */}
+      <section className={`${theme.panel.surface} mb-8`} id="practice">
         <h2 className="mb-4 text-xl font-bold text-slate-950 dark:text-white">
           {isDE ? 'Lern-Übungs-Tools' : 'Practice Tools'}
         </h2>
