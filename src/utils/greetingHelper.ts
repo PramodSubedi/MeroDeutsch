@@ -73,8 +73,8 @@ export function getLoggedInWelcomeMessage(
   const englishPart = timeMap[period].english;
   const germanPart = timeMap[period].german;
 
-  const english = englishPart + ` Welcome back, ${userName}! You've reviewed ${wordsToday} words today. Keep going! 💪`;
-  const german = germanPart + ` Willkommen zurück, ${userName}! Heute ${wordsToday} Wörter wiederholt. Weit so gut! 💪`;
+  const english = englishPart + ` Welcome back, ${userName}! You've reviewed ${wordsToday} words today. ${streak > 0 ? `🔥 ${streak} day streak!` : ''} Keep going! 💪`;
+  const german = germanPart + ` Willkommen zurück, ${userName}! Heute ${wordsToday} Wörter wiederholt. ${streak > 0 ? `🔥 ${streak} Tage Serie!` : ''} Weit so gut! 💪`;
 
   return { english, german };
 }
