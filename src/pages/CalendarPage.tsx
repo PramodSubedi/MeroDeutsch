@@ -11,6 +11,7 @@ import { SectionGrid } from '../components/SectionGrid';
 import { TabGroup } from '../components/TabGroup';
 import { theme } from '../config/theme';
 import { curriculumService } from '../services';
+import { drawWithoutReplacement } from '../utils/questionGenerator';
 import type { CalendarItem } from '../types';
 
 function normalize(input: string): string {
@@ -32,12 +33,16 @@ export function CalendarPage() {
   const [quizScore, setQuizScore] = useState(0);
   const [quizTotal, setQuizTotal] = useState(0);
   const quizInputRef = useRef<HTMLInputElement>(null);
+  // Track shown calendar keys so the same prompt isn't repeated until the pool cycles.
+  const usedQuizKeysRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     curriculumService.getCalendar().then(data => {
       setCalendar(data);
       if (data.length > 0) {
         setQuizItem(data[0]);
+        // Register the initial item so the first nextQuiz() cannot redraw it.
+        usedQuizKeysRef.current.add(data[0].de);
       }
     });
   }, []);
@@ -51,8 +56,8 @@ export function CalendarPage() {
 
   const nextQuiz = () => {
     if (calendar.length === 0) return;
-    const pool = calendar.filter((item) => item.de !== quizItem?.de);
-    const next = pool[Math.floor(Math.random() * pool.length)];
+    const next = drawWithoutReplacement(calendar, usedQuizKeysRef.current, (item) => item.de);
+    if (!next) return;
     setQuizItem(next);
     setQuizInput('');
     setQuizStatus('idle');

@@ -171,15 +171,23 @@ export function useDailyQuests() {
   /** Claim the bonus XP for a completed quest (one-time per quest per day). */
   const claimReward = useCallback(
     (questId: string) => {
+      let rewardXp = 0;
+      let shouldAward = false;
       setState((prev) => {
         const quest = prev.quests.find((q) => q.id === questId);
         if (!quest || !quest.completed || quest.claimed) return prev;
-        void awardXp(quest.rewardXp, `quest:${questId}`);
+        rewardXp = quest.rewardXp;
+        shouldAward = true;
         return {
           quests: prev.quests.map((q) => (q.id === questId ? { ...q, claimed: true } : q)),
           lastReset: prev.lastReset,
         };
       });
+      // Award XP *after* the state update, once per claim — never inside the
+      // updater (avoids StrictMode double-award and unordered async writes).
+      if (shouldAward) {
+        void awardXp(rewardXp, `quest:${questId}`);
+      }
     },
     [awardXp]
   );

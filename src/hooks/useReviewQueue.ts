@@ -7,13 +7,64 @@ import { db } from '../lib/db';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { LEITNER_INTERVALS } from '../lib/db';
 
+/** Local Dexie row shape for the review queue. */
+interface LocalReviewRow {
+  id: string;
+  userId: string;
+  cardId: string;
+  moduleType: string;
+  box?: number;
+  dueAt?: string;
+  intervalDays?: number;
+  lapses?: number;
+  lastReviewedAt?: string;
+  ease?: number;
+  repetitions?: number;
+  lastResult?: string;
+  userAnswer?: string;
+  correctAnswer?: string;
+  updatedAt?: string;
+  errorTag?: string;
+}
+
+/** Remote Supabase row shape for the review queue. */
+interface RemoteReviewRow {
+  id: string;
+  module_type: string;
+  item_key: string;
+  user_answer: string | null;
+  correct_answer: string | null;
+  error_count: number | null;
+  ease: number | null;
+  interval_days: number | null;
+  repetitions: number | null;
+  due_at: string | null;
+  updated_at: string | null;
+  last_result: string | null;
+  box_level: number | null;
+  error_tag?: string | null;
+}
+
 function daysFromNow(days: number): string {
   const date = new Date();
   date.setDate(date.getDate() + days);
   return date.toISOString();
 }
 
-function rowToItem(row: any): WrongAnswerItem {
+/** RFC-4122 v4 UUID generator (crypto.randomUUID fallback for older browsers). */
+function uuidv4(): string {
+  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
+    return crypto.randomUUID();
+  }
+  // Fallback: generate a v4 UUID manually
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
+
+function rowToItem(row: LocalReviewRow): WrongAnswerItem {
   return {
     id: row.id,
     moduleType: row.moduleType,
@@ -21,19 +72,38 @@ function rowToItem(row: any): WrongAnswerItem {
     userAnswer: row.userAnswer ?? '',
     correctAnswer: row.correctAnswer ?? '',
     errorCount: row.lapses ?? 0,
-    timestamp: row.updatedAt,
+    timestamp: row.updatedAt ?? '',
     ease: row.ease,
     intervalDays: row.intervalDays ?? 1,
     repetitions: row.repetitions ?? 0,
     dueAt: row.dueAt,
-    lastResult: row.lastResult,
+    lastResult: (row.lastResult as WrongAnswerItem['lastResult']) ?? undefined,
     boxLevel: row.box,
+    errorTag: row.errorTag as WrongAnswerItem['errorTag'],
   };
 }
 
-function itemToRow(item: WrongAnswerItem): any {
+function remoteToItem(row: RemoteReviewRow): WrongAnswerItem {
   return {
-    id: item.id,
+    id: row.id,
+    moduleType: row.module_type,
+    itemKey: row.item_key,
+    userAnswer: row.user_answer ?? '',
+    correctAnswer: row.correct_answer ?? '',
+    errorCount: row.error_count ?? 0,
+    timestamp: row.updated_at ?? '',
+    ease: row.ease ?? undefined,
+    intervalDays: row.interval_days ?? 1,
+    repetitions: row.repetitions ?? 0,
+    dueAt: row.due_at ?? undefined,
+    lastResult: (row.last_result as WrongAnswerItem['lastResult']) ?? undefined,
+    boxLevel: row.box_level ?? undefined,
+    errorTag: row.error_tag as WrongAnswerItem['errorTag'],
+  };
+}
+
+function itemToRow(item: WrongAnswerItem): Omit<RemoteReviewRow, 'id'> {
+  return {
     module_type: item.moduleType,
     item_key: item.itemKey,
     user_answer: item.userAnswer,
@@ -43,8 +113,10 @@ function itemToRow(item: WrongAnswerItem): any {
     interval_days: item.intervalDays ?? 1,
     repetitions: item.repetitions ?? 0,
     due_at: item.dueAt ?? new Date().toISOString(),
-    last_result: item.lastResult,
-    box_level: item.boxLevel,
+    last_result: item.lastResult ?? null,
+    box_level: item.boxLevel ?? null,
+    error_tag: item.errorTag ?? null,
+    updated_at: new Date().toISOString(),
   };
 }
 
@@ -61,10 +133,18 @@ export function useReviewQueue() {
 
   const queue = useMemo(() => rows.map(rowToItem), [rows]);
 
+  // Ref mirroring the latest queue so the remote-merge effect can read the
+  // current local items without depending on `queue` (which would loop).
+  const queueRef = useRef(queue);
+  useEffect(() => {
+    queueRef.current = queue;
+  }, [queue]);
+
   const DEBOUNCE_MS = 300;
   const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Sync from Supabase on login (once)
+  // Sync from Supabase on login (once). Merges remote rows with the *latest*
+  // local queue (via queueRef) so newer local items are never dropped.
   useEffect(() => {
     if (isAuthenticated && user && userId) {
       supabase
@@ -73,24 +153,10 @@ export function useReviewQueue() {
         .eq('user_id', user.userId)
         .then(({ data, error }) => {
           if (!error && data && db) {
-            const remote = data.map((row: any) => rowToItem({
-              id: row.id,
-              moduleType: row.module_type,
-              cardId: row.item_key,
-              userAnswer: row.user_answer,
-              correctAnswer: row.correct_answer,
-              lapses: row.error_count,
-              updatedAt: row.updated_at,
-              ease: row.ease,
-              intervalDays: row.interval_days,
-              repetitions: row.repetitions,
-              dueAt: row.due_at,
-              lastResult: row.last_result,
-              box: row.box_level,
-            }));
+            const remote = data.map((row) => remoteToItem(row as RemoteReviewRow));
 
             const mergedMap = new Map<string, WrongAnswerItem>();
-            [...queue, ...remote].forEach(item => {
+            [...queueRef.current, ...remote].forEach(item => {
               if (item.id) mergedMap.set(item.id, item);
             });
             const merged = Array.from(mergedMap.values());
@@ -117,25 +183,30 @@ export function useReviewQueue() {
           }
         });
     }
-  }, [isAuthenticated, userId]); // Note: removing queue from deps list to prevent loops
+  }, [isAuthenticated, userId]); // queue intentionally read via queueRef to avoid loops
 
-  // Debounced persist to remote Supabase (only when queue changes)
+  // Debounced persist to remote Supabase (only when queue changes).
+  // Uses upsert-by-id (never delete-all + insert) so a failed write cannot
+  // wipe the cloud queue. Local queue is never destroyed on remote failure.
   useEffect(() => {
     if (!isAuthenticated || !userId) return;
     if (saveTimeoutRef.current) {
       clearTimeout(saveTimeoutRef.current);
     }
     saveTimeoutRef.current = setTimeout(async () => {
-      // Full sync (delete + insert)
-      await supabase.from('review_queue').delete().eq('user_id', userId);
-      if (queue.length > 0) {
-        await supabase.from('review_queue').insert(
-          queue.map(item => ({
-            user_id: userId,
-            ...itemToRow(item),
-            updated_at: new Date().toISOString(),
-          }))
-        );
+      const current = queueRef.current;
+      if (current.length === 0) return;
+
+      const { error } = await supabase.from('review_queue').upsert(
+        current.map(item => ({
+          id: item.id,
+          user_id: userId,
+          ...itemToRow(item),
+        })),
+        { onConflict: 'id' }
+      );
+      if (error) {
+        console.warn('Failed to sync review queue to Supabase:', error);
       }
     }, DEBOUNCE_MS);
 
@@ -150,8 +221,16 @@ export function useReviewQueue() {
     if (!db || !userId) return;
 
     const existing = queue.find((entry) => entry.moduleType === item.moduleType && entry.itemKey === item.itemKey);
-    const id = existing?.id ?? (typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : `wrong-${Date.now()}`);
+    const id = existing?.id ?? uuidv4();
     const errorCount = (existing?.errorCount ?? 0) + 1;
+
+    // Phase C: Infer error tag
+    let inferredTag: WrongAnswerItem['errorTag'] = 'other';
+    const m = (item.moduleType ?? '').toLowerCase();
+    if (m === 'articles' || m === 'blitz' || m === 'rapid-fire' || m === 'rapid-blitz') inferredTag = 'article';
+    else if (m === 'grammar') inferredTag = 'verb';
+    else if (m === 'alphabet' || m === 'spelling') inferredTag = 'spelling';
+    else if (m === 'dictation' || m === 'pronunciation') inferredTag = 'listening';
 
     db.userProgress.put({
       id,
@@ -169,17 +248,20 @@ export function useReviewQueue() {
       userAnswer: item.userAnswer,
       correctAnswer: item.correctAnswer,
       updatedAt: new Date().toISOString(),
-    });
+      // Store dynamic custom field on Dexie row
+      errorTag: inferredTag,
+    } as any);
 
     void recordActivity(1);
   }, [userId, queue, recordActivity]);
 
   const markCorrect = useCallback((id: string) => {
     const localDb = db;
-    if (!localDb) return;
+    if (!localDb || !userId) return;
 
     localDb.userProgress.get(id).then((row) => {
-      if (!row) return;
+      // Only mutate rows belonging to the current user.
+      if (!row || row.userId !== userId) return;
       const nextBox = Math.min((row.box ?? 1) + 1, 5);
       const reps = (row.repetitions ?? 0) + 1;
       const interval = LEITNER_INTERVALS[nextBox - 1];
@@ -196,12 +278,18 @@ export function useReviewQueue() {
     });
 
     void recordActivity(1);
-  }, [recordActivity]);
+  }, [userId, recordActivity]);
 
   const markResolved = useCallback((id: string) => {
-    if (!db) return;
-    db.userProgress.delete(id);
-  }, []);
+    const localDb = db;
+    if (!localDb || !userId) return;
+    localDb.userProgress.get(id).then((row) => {
+      // Only delete rows belonging to the current user.
+      if (row && row.userId === userId) {
+        localDb.userProgress.delete(id);
+      }
+    });
+  }, [userId]);
 
   const clearQueue = useCallback(() => {
     if (!db || !userId) return;

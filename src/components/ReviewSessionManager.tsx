@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Filter, Target, Award } from 'lucide-react';
 import { triggerConfetti } from '../utils/confetti';
 import { useLang } from '../hooks/useLang';
@@ -13,6 +13,10 @@ interface ReviewSessionManagerProps {
   onCompleteSession?: () => void;
   /** When true, renders without its own card shell (for embedding inside a parent card). */
   embedded?: boolean;
+  /** Cap the number of items drawn for a short, high-retention study sprint. */
+  limit?: number;
+  /** Automatically trigger study session upon mount (used for quick-starts). */
+  autoStart?: boolean;
 }
 
 type FilterId = 'all' | 'focus' | 'mastery' | string;
@@ -32,6 +36,8 @@ export function ReviewSessionManager({
   onMarkCorrect,
   onCompleteSession,
   embedded = false,
+  limit,
+  autoStart = false,
 }: ReviewSessionManagerProps) {
   const { langMode } = useLang();
   const { reportAnswer } = useXp();
@@ -107,12 +113,22 @@ export function ReviewSessionManager({
 
   const startSession = () => {
     if (filteredQueue.length === 0) return;
-    setSessionItems(filteredQueue);
+    // Cap the pool if limit is set (Phase B short daily refresh/3-minute sprint).
+    const pool = limit && limit > 0 ? filteredQueue.slice(0, limit) : filteredQueue;
+    setSessionItems(pool);
     setCurrentIndex(0);
     setSessionStats(EMPTY_STATS);
     setSessionActive(true);
     setShowSummary(false);
   };
+
+  // Phase B: Automatically start study sprint on load if autoStart is true.
+  useEffect(() => {
+    if (autoStart && filteredQueue.length > 0 && !sessionActive && !showSummary) {
+      startSession();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoStart, filteredQueue.length]);
 
   // ── Summary view ──────────────────────────────────────────────
   if (showSummary) {

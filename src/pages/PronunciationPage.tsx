@@ -1,10 +1,11 @@
-import { useCallback, useMemo, useState, useEffect } from 'react';
+import { useCallback, useMemo, useState, useEffect, useRef } from 'react';
 import { speakWord } from '../hooks/useSpeech';
 import { useLang } from '../hooks/useLang';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { useReviewQueue } from '../hooks/useReviewQueue';
 import { useXp } from '../hooks/useXp';
 import { useSpeechRecognition, isSpeechRecognitionSupported } from '../hooks/useSpeechRecognition';
+import { drawWithoutReplacement } from '../utils/questionGenerator';
 import { theme } from '../config/theme';
 import { curriculumService } from '../services';
 
@@ -28,11 +29,16 @@ export function PronunciationPage() {
   const [total, setTotal] = useState(0);
   const [result, setResult] = useState<null | 'correct' | 'partial' | 'wrong'>(null);
   const [typed, setTyped] = useState('');
+  // Track shown word keys so the same prompt isn't repeated until the pool cycles.
+  const usedWordKeysRef = useRef<Set<string>>(new Set());
+  const vocabRef = useRef<any[]>([]);
 
   useEffect(() => {
     curriculumService.getVocabulary().then(vocab => {
       if (vocab && vocab.length > 0) {
-        setWord(vocab[Math.floor(Math.random() * vocab.length)]);
+        vocabRef.current = vocab;
+        const first = drawWithoutReplacement(vocab, usedWordKeysRef.current, (v: any) => v.id);
+        setWord(first ?? vocab[0]);
       }
     });
   }, []);
@@ -90,12 +96,13 @@ export function PronunciationPage() {
   }
 
   const next = () => {
-    curriculumService.getVocabulary().then(vocab => {
-      const pool = vocab.filter((item: any) => item.id !== word?.id);
-      setWord(pool[Math.floor(Math.random() * pool.length)]);
-      setResult(null);
-      setTyped('');
-    });
+    const vocab = vocabRef.current;
+    if (vocab.length === 0) return;
+    const n = drawWithoutReplacement(vocab, usedWordKeysRef.current, (v: any) => v.id);
+    if (!n) return;
+    setWord(n);
+    setResult(null);
+    setTyped('');
   };
 
   if (!word) {

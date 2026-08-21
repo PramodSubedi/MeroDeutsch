@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getItem, setItem } from '../utils/safeStorage';
 import { scopedKey } from '../utils/userStorage';
+import { toLocalDateKey, diffCalendarDays } from '../utils/dateUtils';
 import { useAuth } from './useAuth';
 import { supabase } from '../lib/supabase';
 
@@ -28,25 +29,22 @@ function saveStreak(key: string, data: StreakData) {
 
 /** Compute the streak for a visit today, given the previous streak state. */
 function computeStreak(previous: StreakData): StreakData {
-  const today = new Date().toDateString();
+  const todayKey = toLocalDateKey();
   let nextStreak = 1;
 
-  if (previous.lastVisit === today) {
+  if (previous.lastVisit === todayKey) {
     nextStreak = previous.streakCount || 0;
-  } else {
-    const lastDate = previous.lastVisit ? new Date(previous.lastVisit) : null;
-    if (lastDate) {
-      const diff = Math.round((new Date(today).getTime() - lastDate.getTime()) / 86400000);
-      if (diff === 1) {
-        nextStreak = (previous.streakCount || 0) + 1;
-      }
+  } else if (previous.lastVisit) {
+    const lastDate = new Date(`${previous.lastVisit}T00:00:00`);
+    if (!Number.isNaN(lastDate.getTime()) && diffCalendarDays(lastDate, new Date()) === 1) {
+      nextStreak = (previous.streakCount || 0) + 1;
     }
   }
 
   return {
     streakCount: nextStreak,
     longestStreak: Math.max(nextStreak, previous.longestStreak || 0),
-    lastVisit: today,
+    lastVisit: todayKey,
   };
 }
 
@@ -83,7 +81,8 @@ export function useStreak() {
           previous = {
             streakCount: data.current_streak ?? 0,
             longestStreak: data.longest_streak ?? 0,
-            lastVisit: data.last_activity_date ?? undefined,
+            // DB stores a DATE (YYYY-MM-DD); normalize to local key format.
+            lastVisit: data.last_activity_date ? String(data.last_activity_date).slice(0, 10) : undefined,
           };
           cloudLongest = data.longest_streak ?? 0;
         }
@@ -102,7 +101,7 @@ export function useStreak() {
           user_id: user.userId,
           current_streak: next.streakCount,
           longest_streak: Math.max(next.streakCount, cloudLongest),
-          last_activity_date: new Date().toDateString(),
+          last_activity_date: toLocalDateKey(),
           updated_at: new Date().toISOString(),
         });
       }

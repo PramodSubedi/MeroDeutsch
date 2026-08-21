@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { getItem, setItem } from '../utils/safeStorage';
 import { scopedKey } from '../utils/userStorage';
 import { useAuth } from './useAuth';
@@ -7,7 +7,6 @@ import type { Badge, Progress, UnlockedBadge, UserAchievements } from '../types'
 import { ADDITIONAL_BADGES } from '../config/achievements';
 
 const DEBOUNCE_MS = 300;
-let saveTimeout: ReturnType<typeof setTimeout> | null = null;
 
 const BASE_KEY = 'meroDeutschAchievements';
 
@@ -114,10 +113,29 @@ export function useAchievements() {
   const key = scopedKey(BASE_KEY, userId);
   const [achievements, setAchievements] = useState<UserAchievements>(() => loadAchievements(key));
 
-  // Reset in-memory state when the user changes (login/logout/switch).
+  // Per-instance debounce timer (not module-level) so multiple hook instances
+  // or user switches never share/race a single timeout.
+  const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Reset in-memory state when the user changes (login/logout/switch) and
+  // clear any pending debounced save from the previous user.
   useEffect(() => {
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+      saveTimeoutRef.current = null;
+    }
     setAchievements(loadAchievements(key));
   }, [key]);
+
+  // Clear pending debounced save on unmount.
+  useEffect(() => {
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+        saveTimeoutRef.current = null;
+      }
+    };
+  }, []);
 
   // Fetch achievements from Supabase on login.
   useEffect(() => {
@@ -153,10 +171,10 @@ export function useAchievements() {
         const next: UserAchievements = {
           badges: [...prev.badges, { id: badgeId, unlockedAt: new Date().toISOString() }],
         };
-        if (saveTimeout) {
-          clearTimeout(saveTimeout);
+        if (saveTimeoutRef.current) {
+          clearTimeout(saveTimeoutRef.current);
         }
-        saveTimeout = setTimeout(() => {
+        saveTimeoutRef.current = setTimeout(() => {
           saveAchievements(key, next);
           if (isAuthenticated && user) {
             void supabase.from('user_achievements').upsert({
@@ -181,7 +199,10 @@ export function useAchievements() {
     [unlockBadge]
   );
 
-  const unlockedMap = new Map(achievements.badges.map((b) => [b.id, b.unlockedAt]));
+  const unlockedMap = useMemo(
+    () => new Map(achievements.badges.map((b) => [b.id, b.unlockedAt])),
+    [achievements.badges]
+  );
 
   const unlockedBadges: Badge[] = ALL_BADGES.filter((b) => unlockedMap.has(b.id)).map((b) => ({
     ...b,

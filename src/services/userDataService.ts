@@ -139,20 +139,13 @@ export const userDataService = {
   },
 
   async saveReviewQueue(userId: string, items: WrongAnswerItem[]): Promise<void> {
-    // For simplicity, we'll do a full sync: delete all and re-insert
-    // In production, you'd want smarter diffing
-    const { error: deleteError } = await supabase
-      .from('review_queue')
-      .delete()
-      .eq('user_id', userId);
-    
-    if (deleteError) throw deleteError;
-
+    // Upsert by primary key (id) — never delete-all + insert, so a failed
+    // write cannot wipe the cloud queue.
     if (items.length === 0) return;
 
     const { error } = await supabase
       .from('review_queue')
-      .insert(items.map(item => ({
+      .upsert(items.map(item => ({
         id: item.id,
         user_id: userId,
         module_type: item.moduleType,
@@ -167,8 +160,9 @@ export const userDataService = {
         due_at: item.dueAt,
         last_result: item.lastResult,
         box_level: item.boxLevel,
-      })));
-    
+        updated_at: new Date().toISOString(),
+      })), { onConflict: 'id' });
+
     if (error) throw error;
   },
 
@@ -234,22 +228,22 @@ export const userDataService = {
   async migrateLocalToCloud(userId: string): Promise<void> {
     // This would be called once after first login to migrate localStorage data
     const { getItem } = await import('../utils/safeStorage');
-    
+
     // Progress
     const localProgress = getItem(PROGRESS_KEY);
     if (localProgress) {
       const progress = JSON.parse(localProgress) as Progress;
-      await this.saveProgress(userId, progress);
+      await userDataService.saveProgress(userId, progress);
     }
 
     // Streak
     const localStreak = getItem(STREAK_KEY);
     if (localStreak) {
       const streak = JSON.parse(localStreak);
-      await this.saveStreak(userId, {
+      await userDataService.saveStreak(userId, {
         current_streak: streak.streakCount || 0,
         longest_streak: streak.longestStreak || 0,
-        last_activity_date: streak.lastVisit || new Date().toDateString(),
+        last_activity_date: streak.lastVisit || new Date().toISOString().slice(0, 10),
       });
     }
 
@@ -258,7 +252,7 @@ export const userDataService = {
     if (localAchievements) {
       const achievements = JSON.parse(localAchievements) as UserAchievements;
       for (const badge of achievements.badges) {
-        await this.unlockAchievement(userId, badge.id);
+        await userDataService.unlockAchievement(userId, badge.id);
       }
     }
 
@@ -266,7 +260,7 @@ export const userDataService = {
     const localQueue = getItem(REVIEW_QUEUE_KEY);
     if (localQueue) {
       const queue = JSON.parse(localQueue) as WrongAnswerItem[];
-      await this.saveReviewQueue(userId, queue);
+      await userDataService.saveReviewQueue(userId, queue);
     }
   },
 };

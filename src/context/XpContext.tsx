@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 import { scopedKey } from '../utils/userStorage';
@@ -100,9 +100,18 @@ export function XpProvider({ children }: { children: ReactNode }) {
   const [levelUpCallback, setLevelUpCallback] = useState<((newLevel: number) => void) | null>(null);
   const { recordActivity } = useActivityLog();
 
+  // Ref mirroring totalXp so `awardXp` can accumulate synchronously across
+  // rapid consecutive calls without reading a stale render-closure value.
+  const totalXpRef = useRef(totalXp);
+  useEffect(() => {
+    totalXpRef.current = totalXp;
+  }, [totalXp]);
+
   // Reset in-memory state whenever the user changes (login/logout/switch).
   useEffect(() => {
-    setTotalXp(loadLocalXp(key));
+    const local = loadLocalXp(key);
+    setTotalXp(local);
+    totalXpRef.current = local;
   }, [key]);
 
   const userXp = useMemo<UserXP>(() => {
@@ -126,15 +135,14 @@ export function XpProvider({ children }: { children: ReactNode }) {
           .from('user_xp')
           .select('total_xp')
           .eq('user_id', user.userId)
-          .single();
+          .maybeSingle();
 
         if (error) {
-          if (error.code !== 'PGRST116') { // Not found is OK
-            console.warn('Failed to fetch XP from Supabase:', error);
-          }
+          console.warn('Failed to fetch XP from Supabase:', error);
           return;
         }
 
+        // No row exists yet — keep local XP (normal for first-time users)
         if (data && data.total_xp !== undefined) {
           setTotalXp(data.total_xp);
           saveLocalXp(key, data.total_xp);
@@ -153,12 +161,16 @@ export function XpProvider({ children }: { children: ReactNode }) {
    */
   const awardXp = useCallback(
     async (amount: number, _source: string = 'activity') => {
-      const oldLevel = calculateLevel(totalXp).level;
-      const newTotalXp = totalXp + amount;
-      const newLevel = calculateLevel(newTotalXp).level;
-
+      // Accumulate synchronously from the ref so rapid consecutive awards
+      // (e.g. 3 × awardXp(10)) sum to +30 instead of overwriting to +10.
+      const newTotalXp = totalXpRef.current + amount;
+      totalXpRef.current = newTotalXp;
       setTotalXp(newTotalXp);
       saveLocalXp(key, newTotalXp);
+
+      // Derive level from the post-add total.
+      const oldLevel = calculateLevel(newTotalXp - amount).level;
+      const newLevel = calculateLevel(newTotalXp).level;
 
       // Trigger level-up callback if level increased
       if (newLevel > oldLevel && levelUpCallback) {
@@ -178,7 +190,7 @@ export function XpProvider({ children }: { children: ReactNode }) {
         }
       }
     },
-    [totalXp, isAuthenticated, user, levelUpCallback, key]
+    [isAuthenticated, user, levelUpCallback, key]
   );
 
   /**

@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { useLang } from '../hooks/useLang';
+import { toLocalDateKey, diffCalendarDays, parseLocalDateKey } from '../utils/dateUtils';
 
 interface ActivityDay {
   date: string;
@@ -29,8 +30,9 @@ export function ActivityHeatmap({ activities = [], days = 30 }: ActivityHeatmapP
     for (let i = days - 1; i >= 0; i--) {
       const date = new Date(today);
       date.setDate(date.getDate() - i);
-      const dateStr = date.toISOString().split('T')[0];
-      
+      // Local YYYY-MM-DD key (not UTC) so "today" matches the user's timezone.
+      const dateStr = toLocalDateKey(date);
+
       // Find activity for this date
       const activity = activities.find(a => a.date === dateStr);
       data.push({
@@ -53,10 +55,9 @@ export function ActivityHeatmap({ activities = [], days = 30 }: ActivityHeatmapP
 
   // Get day label for tooltip
   const getDayLabel = (dateStr: string): string => {
-    const date = new Date(dateStr);
-    const today = new Date();
-    const diffDays = Math.floor((today.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
-    
+    const date = parseLocalDateKey(dateStr);
+    const diffDays = diffCalendarDays(date, new Date());
+
     if (diffDays === 0) return isDE ? 'Heute' : 'Today';
     if (diffDays === 1) return isDE ? 'Gestern' : 'Yesterday';
     return date.toLocaleDateString(isDE ? 'de-DE' : 'en-US', { month: 'short', day: 'numeric' });

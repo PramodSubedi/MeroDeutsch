@@ -87,6 +87,8 @@ export interface WrongAnswerItem {
   lastResult?: 'correct' | 'wrong';
   /** Leitner 5-Box SRS System */
   boxLevel?: number; // 1-5, representing mastery level
+  /** Phase C error category tag */
+  errorTag?: 'article' | 'verb' | 'spelling' | 'listening' | 'other';
 }
 
 export interface Badge {

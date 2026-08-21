@@ -11,6 +11,16 @@ const MISSING_LETTER_FALLBACKS: Record<string, string> = {
   CH: 'Ce-Ha',
 };
 
+/** Fisher-Yates shuffle — stable, unbiased. */
+function shuffle<T>(arr: T[]): T[] {
+  const copy = [...arr];
+  for (let i = copy.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
 function resolvePhonetic(id: string, gerPhonetic?: string): string {
   if (gerPhonetic) return gerPhonetic;
   if (MISSING_LETTER_FALLBACKS[id]) return MISSING_LETTER_FALLBACKS[id];
@@ -56,7 +66,7 @@ export function SpellingPractice({ langMode }: { langMode: LangMode }) {
       const r = alphabetData[Math.floor(Math.random() * alphabetData.length)];
       if (r.category === 'standard' && !opts.find((o) => o.id === r.id)) opts.push(r);
     }
-    return opts.sort(() => Math.random() - 0.5);
+    return shuffle(opts);
   }, [correct]);
 
   const check = (id: string) => {
@@ -167,7 +177,7 @@ export function SpellingPractice({ langMode }: { langMode: LangMode }) {
                   key={o.id}
                   type="button"
                   onClick={() => check(o.id)}
-                  className="rounded-xl border-2 border-slate-200 p-2.5 text-sm font-medium hover:border-green-500 dark:border-slate-600"
+                  className="rounded-xl border-2 border-slate-200 p-2.5 text-sm font-medium transition-colors hover:border-green-500 dark:border-slate-600"
                 >
                   <span className="block font-semibold">{resolvePhonetic(o.id, o.gerPhonetic)}</span>
                   {langMode !== 'german' && (

@@ -35,7 +35,10 @@ export function RoleplayPage() {
   }, []);
 
   const scenario = scenarios[scenarioIdx];
-  if (!scenario) return null;
+  if (!scenario) {
+    // Loading guard — avoid blank flash while roleplay scenarios load.
+    return <div className={theme.page.container}>Loading...</div>;
+  }
 
   const step = scenario.steps[stepIdx];
   const isLastStep = stepIdx === scenario.steps.length - 1;

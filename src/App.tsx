@@ -26,7 +26,7 @@ const PracticeHubPage = lazy(() => import('./pages/PracticeHubPage').then(m => (
 const StoriesPage = lazy(() => import('./pages/StoriesPage').then(m => ({ default: m.StoriesPage })));
 const AnalyticsPage = lazy(() => import('./pages/Analytics').then(m => ({ default: m.AnalyticsPage })));
 const ImportDeckPage = lazy(() => import('./pages/ImportDeck').then(m => ({ default: m.ImportDeckPage })));
-const RapidFirePage = lazy(() => import('./pages/RapidFirePage').then(m => ({ default: m.RapidFirePage })));
+const RapidBlitzPage = lazy(() => import('./pages/RapidBlitzPage').then(m => ({ default: m.RapidBlitzPage })));
 const SettingsPage = lazy(() => import('./pages/SettingsPage').then(m => ({ default: m.SettingsPage })));
 const PrivacyPage = lazy(() => import('./pages/PrivacyPage').then(m => ({ default: m.PrivacyPage })));
 const TermsPage = lazy(() => import('./pages/TermsPage').then(m => ({ default: m.TermsPage })));
@@ -58,7 +58,8 @@ export default function App() {
               <Route path="dashboard" element={<DashboardPage />} />
               <Route path="learn" element={<ContinueLearningPage />} />
               <Route path="practice" element={<PracticeHubPage />} />
-              <Route path="rapid-fire" element={<RapidFirePage />} />
+              <Route path="rapid-fire" element={<RapidBlitzPage />} />
+              <Route path="rapid-blitz" element={<RapidBlitzPage />} />
               <Route path="stories" element={<StoriesPage />} />
               <Route path="analytics" element={<AnalyticsPage />} />
               <Route path="import" element={<ImportDeckPage />} />

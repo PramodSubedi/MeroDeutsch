@@ -1,4 +1,8 @@
-import { LocalCurriculumService } from './localCurriculumService';
+import { SupabaseCurriculumService } from './supabaseCurriculumService';
 import type { CurriculumService } from '../types/curriculum';
 
-export const curriculumService: CurriculumService = new LocalCurriculumService();
+/**
+ * Hybrid curriculum service: fetches dynamic content from Supabase (with local fallback).
+ * Static content always uses local JSON data.
+ */
+export const curriculumService: CurriculumService = new SupabaseCurriculumService();

@@ -18,6 +18,7 @@ import { BottomNav } from './BottomNav';
 import { Breadcrumb } from './Breadcrumb';
 import { UserMenu } from './UserMenu';
 import { LevelUpModal } from './LevelUpModal';
+import { useMilestoneToast } from '../hooks/useMilestoneToast';
 
 /** Top nav + shell — branding/layout only; features live in pages/ */
 export function Layout() {
@@ -32,14 +33,44 @@ export function Layout() {
   const [levelUpModalOpen, setLevelUpModalOpen] = useState(false);
   const [newLevel, setNewLevel] = useState(1);
   const [audioEnabled, setAudioEnabledState] = useState(isAudioEnabled);
+  const { toast, showToast, dismissToast } = useMilestoneToast();
+  const [pendingLevelUp, setPendingLevelUp] = useState<number | null>(null);
+
+  const isDE = langMode === 'german';
+
+  // Check if current route is a quiz, blitz, or active training session (Phase D: TTS/Modal safety)
+  const isActiveQuizRoute =
+    pathname.includes('/rapid-fire') ||
+    pathname.includes('/rapid-blitz') ||
+    pathname.endsWith('/quiz') ||
+    pathname.includes('/dictation') ||
+    pathname.includes('/pronunciation');
 
   // Global level-up listener — any module that awards XP can trigger the modal.
   useEffect(() => {
     onLevelUp((lvl) => {
       setNewLevel(lvl);
-      setLevelUpModalOpen(true);
+      if (isActiveQuizRoute) {
+        // Delay full-screen blocking modal; show non-blocking toast instead (Phase D)
+        setPendingLevelUp(lvl);
+        showToast({
+          message: isDE ? `Level ${lvl} erreicht! ⭐` : `Level ${lvl} reached! ⭐`,
+          icon: '⭐',
+        });
+      } else {
+        setLevelUpModalOpen(true);
+      }
     });
-  }, [onLevelUp]);
+  }, [onLevelUp, isActiveQuizRoute, isDE, showToast]);
+
+  // Flush pending level-up modal when returning to a non-quiz page (Phase D)
+  useEffect(() => {
+    if (!isActiveQuizRoute && pendingLevelUp !== null) {
+      setNewLevel(pendingLevelUp);
+      setLevelUpModalOpen(true);
+      setPendingLevelUp(null);
+    }
+  }, [pathname, isActiveQuizRoute, pendingLevelUp]);
 
   // Module routes that should show the chrome navigation bar (from registry)
   const moduleRoutes = getModuleRoutes();
@@ -68,6 +99,17 @@ export function Layout() {
         rank={rank}
         onClose={() => setLevelUpModalOpen(false)}
       />
+
+      {/* Global non-blocking milestone/level-up toast */}
+      {toast && (
+        <div className="fixed top-16 left-1/2 z-50 -translate-x-1/2 flex items-center gap-3 rounded-2xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm font-bold text-blue-800 shadow-lg animate-bounce dark:border-blue-800 dark:bg-blue-950 dark:text-blue-200">
+          <span>{toast.icon} {toast.message}</span>
+          <button type="button" onClick={dismissToast} className="text-blue-500 hover:text-blue-700 font-bold" aria-label="Dismiss">
+            ×
+          </button>
+        </div>
+      )}
+
       {/* Skip to main content link for keyboard navigation */}
       <a href="#main-content" className="skip-to-main">
         {langMode === 'german' ? 'Zum Hauptinhalt springen' : 'Skip to main content'}

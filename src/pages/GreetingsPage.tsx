@@ -11,6 +11,7 @@ import { SectionGrid } from '../components/SectionGrid';
 import { TabGroup } from '../components/TabGroup';
 import { theme } from '../config/theme';
 import { curriculumService } from '../services';
+import { drawWithoutReplacement } from '../utils/questionGenerator';
 import type { GreetingItem } from '../types';
 
 function normalize(input: string): string {
@@ -31,12 +32,16 @@ export function GreetingsPage() {
   const [quizScore, setQuizScore] = useState(0);
   const [quizTotal, setQuizTotal] = useState(0);
   const quizInputRef = useRef<HTMLInputElement>(null);
+  // Track shown greeting keys so the same prompt isn't repeated until the pool cycles.
+  const usedQuizKeysRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     curriculumService.getGreetings().then(data => {
       setGreetings(data);
       if (data.length > 0) {
         setQuizItem(data[0]);
+        // Register the initial item so the first nextQuiz() cannot redraw it.
+        usedQuizKeysRef.current.add(data[0].de);
       }
     });
   }, []);
@@ -48,8 +53,8 @@ export function GreetingsPage() {
 
   const nextQuiz = () => {
     if (greetings.length === 0) return;
-    const pool = greetings.filter((item) => item.de !== quizItem?.de);
-    const next = pool[Math.floor(Math.random() * pool.length)];
+    const next = drawWithoutReplacement(greetings, usedQuizKeysRef.current, (item) => item.de);
+    if (!next) return;
     setQuizItem(next);
     setQuizInput('');
     setQuizStatus('idle');
@@ -99,6 +104,7 @@ export function GreetingsPage() {
         <SectionGrid
           title={title}
           description={description}
+          hideHeader
         >
           {greetings.map((item, index) => (
             <StandardStudyCard

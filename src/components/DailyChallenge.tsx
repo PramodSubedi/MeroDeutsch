@@ -4,10 +4,12 @@ import type { VocabEntry, AlphabetItem, NumberItem } from '../types';
 import { speakWord } from '../hooks/useSpeech';
 import { useLang } from '../hooks/useLang';
 import { useAchievements } from '../hooks/useAchievements';
+import { useReviewQueue } from '../hooks/useReviewQueue';
+import { useXp } from '../hooks/useXp';
 import { getItem, setItem } from '../utils/safeStorage';
 import { useAuth } from '../hooks/useAuth';
 import { theme } from '../config/theme';
-import { shuffleArray } from '../utils/shuffleArray';
+import { buildMcq } from '../utils/questionGenerator';
 
 // Article mapping for common German nouns
 const articleMap: Record<string, string> = {
@@ -43,22 +45,43 @@ function buildQuestions(
   numbersData: NumberItem[]
 ): QA[] {
   const out: QA[] = [];
+
   const vw = pick(vocabularyData, seed);
   out.push({
     prompt: `What does "${vw.de}" mean?`,
-    options: shuffleArray([vw.en, ...vocabularyData.filter((x) => x.id !== vw.id).slice(seed % 10, seed % 10 + 3).map((x) => x.en)]),
+    options: buildMcq({
+      correctItem: vw,
+      allItems: vocabularyData,
+      getKey: (x) => x.id,
+      count: 4,
+      seed,
+    }).map((x) => x.en),
     correct: vw.en,
   });
+
   const al = pick(alphabetData, seed + 1);
   out.push({
     prompt: `How is "${al.letter.split(' ')[0]}" pronounced?`,
-    options: shuffleArray([al.gerPhonetic, ...alphabetData.filter((x) => x.id !== al.id).slice(seed % 5, seed % 5 + 3).map((x) => x.gerPhonetic)]),
+    options: buildMcq({
+      correctItem: al,
+      allItems: alphabetData,
+      getKey: (x) => x.id,
+      count: 4,
+      seed: seed + 1,
+    }).map((x) => x.gerPhonetic),
     correct: al.gerPhonetic,
   });
+
   const num = pick(numbersData, seed + 2);
   out.push({
     prompt: `Which German number is "${num.n}"?`,
-    options: shuffleArray([num.de, ...numbersData.filter((x) => x.n !== num.n).slice(seed % 7, seed % 7 + 3).map((x) => x.de)]),
+    options: buildMcq({
+      correctItem: num,
+      allItems: numbersData,
+      getKey: (x) => String(x.n),
+      count: 4,
+      seed: seed + 2,
+    }).map((x) => x.de),
     correct: num.de,
   });
   return out;
@@ -68,6 +91,8 @@ export function DailyChallenge() {
   const { langMode } = useLang();
   const isDE = langMode === 'german';
   const { unlockBadge } = useAchievements();
+  const { addWrongAnswer } = useReviewQueue();
+  const { reportAnswer } = useXp();
   const { isAuthenticated } = useAuth();
   const seed = useMemo(daySeed, []);
 
@@ -117,8 +142,26 @@ export function DailyChallenge() {
   }, [expandTimer]);
 
   const choose = (qi: number, opt: string) => {
+    const isFirstSelection = answers[qi] === undefined;
     const next = { ...answers, [qi]: opt };
     setAnswers(next);
+    // Wire to XP + review queue on first selection, consistent with sibling
+    // quiz modules (AlphabetQuiz, Numbers, etc.).
+    if (isFirstSelection) {
+      const q = questions[qi];
+      if (q) {
+        if (opt === q.correct) {
+          reportAnswer({ correct: true, module: 'daily-challenge' });
+        } else {
+          addWrongAnswer({
+            moduleType: 'daily-challenge',
+            itemKey: q.prompt,
+            userAnswer: opt,
+            correctAnswer: q.correct,
+          });
+        }
+      }
+    }
     // Collapse the panel after all questions are answered, regardless of correctness
     if (Object.keys(next).length === questions.length && !done) {
       if (questions.every((q, i) => next[i] === q.correct)) {

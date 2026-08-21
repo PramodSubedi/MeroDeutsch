@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { theme } from '../../config/theme';
+import { LearningPath } from '../learning/LearningPath';
 import { useAchievements } from '../../hooks/useAchievements';
 import { useAuth } from '../../hooks/useAuth';
 import { useLang } from '../../hooks/useLang';
@@ -60,6 +61,11 @@ export function HomeLayoutA() {
   const quizPct = progress?.quizTotal
     ? Math.min(100, Math.max(0, Math.round(((progress.quizCorrect ?? 0) / progress.quizTotal) * 100)))
     : 0;
+  
+  // Phase B: Filter review queue to due items only
+  const dueItems = queue?.filter((item) => !item.dueAt || item.dueAt <= new Date().toISOString()) ?? [];
+  const dueCount = dueItems.length;
+
   const reviewCount = queue?.length ?? 0;
   const displayName = user?.username || (isAuthenticated ? 'Learner' : 'MeroDeutsch learner');
   const greeting = isAuthenticated
@@ -87,7 +93,7 @@ export function HomeLayoutA() {
       ...PRACTICE_ITEM_STYLES[1],
     },
     {
-      title: 'Aussprache',
+      title: isDE ? 'Aussprache' : 'Pronunciation',
       description: isDE ? 'Aussprachetraining' : 'Pronunciation practice',
       to: '/pronunciation',
       ...PRACTICE_ITEM_STYLES[2],
@@ -105,8 +111,9 @@ export function HomeLayoutA() {
                 <span>{streakCount} {isDE ? 'Tage' : 'day streak'}</span>
               </span>
             )}
+            {/* "All clear" badge: emerald-800 on emerald-50 ≈ 7:1 contrast (≥ 4.5:1 WCAG AA). */}
             {reviewCount === 0 && (
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 dark:border-emerald-900/50 dark:bg-emerald-950/40 dark:text-emerald-300">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800 dark:border-emerald-900/50 dark:bg-emerald-950/40 dark:text-emerald-300">
                 <span aria-hidden="true">✅</span>
                 <span>{isDE ? 'Alles erledigt' : 'All clear'}</span>
               </span>
@@ -118,7 +125,7 @@ export function HomeLayoutA() {
               <p className="text-xs font-semibold uppercase tracking-[0.28em] text-blue-600 dark:text-blue-400">
                 {isDE ? 'MeroDeutsch' : 'MeroDeutsch'}
               </p>
-              <h1 className="mt-2 text-3xl font-semibold tracking-[-0.04em] text-slate-950 dark:text-white sm:text-5xl">
+              <h1 className="mt-2 min-w-0 break-words text-3xl font-semibold tracking-[-0.04em] text-slate-950 dark:text-white sm:text-5xl">
                 {greeting}
               </h1>
               <p className="mt-3 max-w-xl text-base leading-7 text-slate-600 dark:text-slate-300">
@@ -135,18 +142,28 @@ export function HomeLayoutA() {
               >
                 {isDE ? 'Weiterlernen' : 'Continue learning'}
               </Link>
-              <button
-                type="button"
-                onClick={() => navigate('/dashboard')}
-                className="inline-flex min-h-[48px] items-center justify-center rounded-2xl border border-slate-300 bg-white px-5 py-3 text-base font-semibold text-slate-700 transition hover:border-blue-400 hover:text-blue-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
-              >
-                {isDE ? 'Review starten' : 'Review now'}
-                {reviewCount > 0 && (
-                  <span className="ml-2 inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-blue-600 px-1.5 text-xs font-bold text-white">
-                    {reviewCount}
+              {dueCount > 0 ? (
+                // 3-min Daily Refresh CTA targeting up to 10 due items automatically on mount
+                <button
+                  type="button"
+                  onClick={() => navigate('/dashboard?sprint=true')}
+                  className="inline-flex min-h-[48px] items-center justify-center rounded-2xl border-2 border-amber-300 bg-amber-50/50 px-5 py-3 text-base font-bold text-amber-800 transition hover:bg-amber-100 hover:text-amber-900 dark:border-amber-800 dark:bg-amber-950/20 dark:text-amber-300 dark:hover:bg-amber-950/40"
+                >
+                  ⚡ {isDE ? '3-Minuten-Auffrischung' : '3-Min Daily Refresh'}
+                  <span className="ml-2 inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-amber-600 px-1.5 text-xs font-bold text-white">
+                    {dueCount}
                   </span>
-                )}
-              </button>
+                </button>
+              ) : (
+                // Fallback to Practice Blitz if 0 items are due (prevent empty session)
+                <button
+                  type="button"
+                  onClick={() => navigate('/rapid-fire')}
+                  className="inline-flex min-h-[48px] items-center justify-center rounded-2xl border border-slate-300 bg-white px-5 py-3 text-base font-semibold text-slate-700 transition hover:border-blue-400 hover:text-blue-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+                >
+                  🎯 {isDE ? 'Schnell-Quiz starten' : 'Practice Blitz'}
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -223,6 +240,10 @@ export function HomeLayoutA() {
           </Link>
         ))}
       </section>
+
+      {/* A1 module grid — visible to guests and signed-in users alike so the
+          core learning modules are discoverable from Home without /learn. */}
+      <LearningPath />
 
       <section className="rounded-[24px] border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-950">
         <div className="mb-3 flex items-center justify-between gap-3">

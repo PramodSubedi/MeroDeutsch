@@ -13,6 +13,7 @@ import { TabGroup, type Tab } from '../components/TabGroup';
 import { theme } from '../config/theme';
 import { sharedTextDatabase } from '../data/sharedContent';
 import { curriculumService } from '../services';
+import { buildMcq, drawWithoutReplacement } from '../utils/questionGenerator';
 
 const ranges: { id: NumberRange; label: string }[] = [
   { id: '0-12', label: '0 – 12' },
@@ -59,6 +60,9 @@ export function NumbersPage() {
   const [listenScore, setListenScore] = useState(0);
   const [listenTotal, setListenTotal] = useState(0);
   const listenInputRef = useRef<HTMLInputElement>(null);
+  // Track shown number keys so the same prompt isn't repeated until the pool cycles.
+  const usedQuizKeysRef = useRef<Set<string>>(new Set());
+  const usedListenKeysRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     curriculumService.getNumbers().then(data => {
@@ -67,6 +71,10 @@ export function NumbersPage() {
         const initial = data[Math.min(1, data.length - 1)];
         setQuiz(initial);
         setListenItem(initial);
+        // Register the initial items so the first next()/nextListen() cannot
+        // redraw them (without-replacement guarantee).
+        usedQuizKeysRef.current.add(initial.de);
+        usedListenKeysRef.current.add(initial.de);
       }
     });
   }, []);
@@ -92,15 +100,16 @@ export function NumbersPage() {
 
   const nextQuiz = useCallback(() => {
     if (numbersData.length === 0) return;
-    const pool = numbersData;
-    const q = pool[Math.floor(Math.random() * pool.length)];
-    const o = [q];
-    while (o.length < 4) {
-      const r = pool[Math.floor(Math.random() * pool.length)];
-      if (!o.find((x) => x.de === r.de)) o.push(r);
-    }
+    const q = drawWithoutReplacement(numbersData, usedQuizKeysRef.current, (x) => x.de);
+    if (!q) return;
+    const options = buildMcq({
+      correctItem: q,
+      allItems: numbersData,
+      getKey: (x) => x.de,
+      count: 4,
+    });
     setQuiz(q);
-    setOpts(o.sort(() => Math.random() - 0.5));
+    setOpts(options);
     setFb('');
   }, [numbersData]);
 
@@ -114,8 +123,8 @@ export function NumbersPage() {
 
   const nextListen = () => {
     if (numbersData.length === 0) return;
-    const pool = numbersData.filter((item) => item.n !== listenItem?.n);
-    const next = pool[Math.floor(Math.random() * pool.length)];
+    const next = drawWithoutReplacement(numbersData, usedListenKeysRef.current, (x) => x.de);
+    if (!next) return;
     setListenItem(next);
     setListenInput('');
     setListenStatus('idle');
@@ -186,6 +195,7 @@ export function NumbersPage() {
         <SectionGrid
           title={title}
           description={description}
+          hideHeader
           controls={
             ranges.map((r) => (
               <button
@@ -297,7 +307,11 @@ export function NumbersPage() {
               </button>
             ))}
           </div>
-        {fb && <div className="mb-2 font-bold text-green-600">{fb}</div>}
+        {fb && (
+          <div className={`mb-2 font-bold ${fb.includes('Richtig') ? 'text-green-600' : 'text-red-600'}`}>
+            {fb}
+          </div>
+        )}
         <button type="button" onClick={nextQuiz} className={theme.button.primary}>
           {isDE ? 'Weiter' : 'Next'}
         </button>

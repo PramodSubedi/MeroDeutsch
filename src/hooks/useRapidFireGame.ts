@@ -6,6 +6,7 @@ import { useXp } from './useXp';
 import { useAuth } from './useAuth';
 import { getItem, setItem } from '../utils/safeStorage';
 import { scopedKey } from '../utils/userStorage';
+import { buildQuestionDeck } from '../utils/questionGenerator';
 
 /** Blitz duration in seconds. */
 export const RAPID_FIRE_DURATION = 60;
@@ -18,7 +19,7 @@ function getMultiplier(combo: number): number {
   return 1;
 }
 
-export type RapidFireStatus = 'idle' | 'playing' | 'finished';
+export type RapidFireStatus = 'idle' | 'countdown' | 'playing' | 'finished';
 
 export interface RapidFireHighScore {
   score: number;
@@ -50,18 +51,6 @@ function loadHighScore(key: string): RapidFireState {
 
 function saveHighScore(key: string, state: RapidFireState): void {
   setItem(key, JSON.stringify(state));
-}
-
-/** Shuffle a copy so the deck is different per run. */
-function shuffleDeck(pool: ArticleItem[]): ArticleItem[] {
-  const copy = [...pool];
-  for (let i = copy.length - 1; i > 0; i -= 1) {
-    const j = Math.floor(Math.random() * (i + 1));
-    const tmp = copy[i];
-    copy[i] = copy[j];
-    copy[j] = tmp;
-  }
-  return copy;
 }
 
 /**
@@ -99,7 +88,7 @@ export function useRapidFireGame() {
     curriculumService.getArticles().then((data) => {
       if (cancelled || data.length === 0) return;
       setPool(data);
-      setDeck(shuffleDeck(data));
+      setDeck(buildQuestionDeck(data, data.length, (item) => item.noun));
     });
     return () => {
       cancelled = true;
@@ -212,7 +201,7 @@ export function useRapidFireGame() {
   /** Start a fresh run (or restart after finishing). */
   const startGame = useCallback(() => {
     if (pool.length === 0) return;
-    setDeck(shuffleDeck(pool));
+    setDeck(buildQuestionDeck(pool, pool.length, (item) => item.noun));
     setCurrentIndex(0);
     setSecondsLeft(RAPID_FIRE_DURATION);
     setScore(0);
@@ -221,8 +210,13 @@ export function useRapidFireGame() {
     setCombo(0);
     setMissedWords([]);
     setXpEarned(0);
-    setStatus('playing');
+    setStatus('countdown');
   }, [pool]);
+
+  /** Transition from countdown → playing. */
+  const startPlaying = useCallback(() => {
+    setStatus('playing');
+  }, []);
 
   /** Return to the idle / ready screen. */
   const resetGame = useCallback(() => {
@@ -254,6 +248,7 @@ export function useRapidFireGame() {
     lastRun: highScore.lastRun,
     answer,
     startGame,
+    startPlaying,
     resetGame,
     isLoading: pool.length === 0,
   };

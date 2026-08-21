@@ -7,6 +7,22 @@ export const theme = {
     deutschText: 'Deutsch',
     tagline: 'Learn German from zero — with Nepali support',
   },
+  /**
+   * Global German gender color system (locked tokens — use everywhere,
+   * never one-off hexes):
+   *   der (m)  = blue   #2563eb  (brand primary)
+   *   die (f)  = red    #dc2626  (brand meroRed)
+   *   das (n)  = green  #16a34a
+   *   die (pl) = amber  #d97706
+   * Class helpers map 1:1 to the default Tailwind palette so light/dark
+   * variants stay consistent across Articles, Glossary, Blitz, review rows.
+   */
+  gender: {
+    der: { hex: '#2563eb', text: 'text-blue-600', bg: 'bg-blue-600', border: 'border-blue-600', darkText: 'dark:text-blue-400' },
+    dieF: { hex: '#dc2626', text: 'text-red-600', bg: 'bg-red-600', border: 'border-red-600', darkText: 'dark:text-red-400' },
+    das: { hex: '#16a34a', text: 'text-green-600', bg: 'bg-green-600', border: 'border-green-600', darkText: 'dark:text-green-400' },
+    diePl: { hex: '#d97706', text: 'text-amber-600', bg: 'bg-amber-600', border: 'border-amber-600', darkText: 'dark:text-amber-400' },
+  } as const,
   page: {
     container: 'py-4',
     heading: 'text-xl font-bold',
@@ -18,8 +34,10 @@ export const theme = {
     headerInner: 'max-w-7xl mx-auto px-3 py-2.5 flex flex-col sm:flex-row justify-between items-center gap-2',
     brand: 'text-lg font-bold flex items-center gap-1',
     nav: 'flex flex-wrap justify-center gap-1.5',
-    navLinkActive: 'px-3 py-1.5 rounded-lg text-sm font-semibold bg-white text-blue-600 shadow',
-    navLink: 'px-3 py-1.5 rounded-lg text-sm font-semibold bg-blue-700 text-white border border-blue-500 hover:bg-blue-800',
+    // Nav items stay router <Link>s (anchor semantics); focus-visible ring
+    // gives keyboard users a clear indicator without changing semantics.
+    navLinkActive: 'px-3 py-1.5 rounded-lg text-sm font-semibold bg-white text-blue-600 shadow focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none focus-visible:ring-offset-2 focus-visible:ring-offset-blue-600',
+    navLink: 'px-3 py-1.5 rounded-lg text-sm font-semibold bg-blue-700 text-white border border-blue-500 hover:bg-blue-800 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none focus-visible:ring-offset-2 focus-visible:ring-offset-blue-600',
     toggleButton: 'min-h-[44px] min-w-[44px] inline-flex items-center justify-center px-3 py-2 rounded-lg text-xs font-semibold bg-indigo-600 border border-indigo-400 transition hover:bg-indigo-700 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none focus-visible:ring-offset-2',
     themeButton: 'min-h-[44px] min-w-[44px] inline-flex items-center justify-center px-3 py-2 rounded-lg text-sm bg-blue-700 border border-blue-500 transition hover:bg-blue-800 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none focus-visible:ring-offset-2',
     main: 'mx-auto w-full max-w-7xl px-3 sm:px-4 md:px-6',

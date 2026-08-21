@@ -8,6 +8,7 @@ import { useAchievements } from '../hooks/useAchievements';
 import { useSyncBridge } from '../hooks/useSyncBridge';
 import { speakGerman } from '../utils/audioService';
 import { theme } from '../config/theme';
+import { GetReadyCountdown } from '../components/common/GetReadyCountdown';
 
 /**
  * Rapid-Fire Blitz — 60 seconds of der/die/das at speed.
@@ -40,6 +41,7 @@ export function RapidFirePage() {
     lastRun,
     answer,
     startGame,
+    startPlaying,
     isLoading,
   } = useRapidFireGame();
 
@@ -70,10 +72,11 @@ export function RapidFirePage() {
     newBest: isDE ? '🎉 Neuer Rekord!' : '🎉 New Best!',
   };
 
-  // Auto-speak the active card phrase (article + noun) whenever it changes.
+  // Auto-speak only the noun (not the article) to avoid spoiling the answer.
+  // User must choose the article first, then can hear/verify the full phrase.
   useEffect(() => {
     if (!currentItem) return;
-    speakGerman(`${currentItem.art} ${currentItem.noun}`);
+    speakGerman(currentItem.noun);
   }, [currentItem]);
 
   // Daily quest + achievement wiring on game finish:
@@ -108,7 +111,7 @@ export function RapidFirePage() {
   if (status === 'idle') {
     return (
       <div className={theme.page.container}>
-        <div className="mx-auto max-w-xl">
+        <div className="mx-auto w-full max-w-xl px-2 sm:px-0">
           <div className={theme.panel.surface}>
             <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white">{t.title}</h1>
             <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">{t.subtitle}</p>
@@ -147,12 +150,25 @@ export function RapidFirePage() {
     );
   }
 
-  // ── Playing state — zero-delay transitions ────────────────────
+  // ── Countdown (3→2→1→GO!) ─────────────────────────────────────
+  if (status === 'countdown') {
+    return (
+      <div className={theme.page.container}>
+        <div className="mx-auto flex min-h-[80vh] w-full max-w-xl items-center justify-center px-2 sm:px-0">
+          <div className="text-center">
+            <GetReadyCountdown onDone={startPlaying} title={t.title} />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Playing state ─────────────────────────────────────────────
   if (status === 'playing') {
     const comboActive = combo >= 3;
     return (
       <div className={theme.page.container}>
-        <div className="mx-auto max-w-xl">
+        <div className="mx-auto w-full max-w-xl px-2 sm:px-0">
           <div className={theme.panel.surface}>
             {/* Timer bar */}
             <div className="mb-4">
@@ -194,7 +210,7 @@ export function RapidFirePage() {
             )}
 
             {/* Article buttons — zero-delay answers */}
-            <div className="mt-6 grid grid-cols-3 gap-3">
+            <div className="mt-6 grid grid-cols-3 gap-2 sm:gap-3">
               {(['der', 'die', 'das'] as const).map((choice) => (
                 <button
                   key={choice}
@@ -207,7 +223,7 @@ export function RapidFirePage() {
                     reportBlitzPlayed();
                     reportReview(1);
                   }}
-                  className={`min-h-[72px] rounded-3xl text-xl font-extrabold text-white shadow-lg transition active:scale-95 ${
+                  className={`min-h-[72px] rounded-3xl text-xl font-extrabold text-white shadow-lg transition-colors ${
                     choice === 'der'
                       ? 'bg-blue-600 hover:bg-blue-700'
                       : choice === 'die'

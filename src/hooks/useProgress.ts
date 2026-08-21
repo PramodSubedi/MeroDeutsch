@@ -5,6 +5,8 @@ import { supabase } from '../lib/supabase';
 import { db } from '../lib/db';
 import { useLiveQuery } from 'dexie-react-hooks';
 
+const EMPTY_PROGRESS: Progress = { practiced: [], quizCorrect: 0, quizTotal: 0, spellCompleted: 0 };
+
 export function useProgress() {
   const { user, isAuthenticated } = useAuth();
   const userId = user?.userId ?? null;
@@ -17,8 +19,7 @@ export function useProgress() {
 
   const moduleProgressRow = useMemo(() => rows.find(row => row.module === 'alphabet'), [rows]);
 
-  const EMPTY: Progress = { practiced: [], quizCorrect: 0, quizTotal: 0, spellCompleted: 0 };
-  const [progress, setProgress] = useState<Progress>(EMPTY);
+  const [progress, setProgress] = useState<Progress>(EMPTY_PROGRESS);
 
   // Sync state when database row is loaded asynchronously
   useEffect(() => {
@@ -106,18 +107,19 @@ export function useProgress() {
   const markPracticed = useCallback((id: string) => {
     setProgress((prev) => {
       if (prev.practiced.includes(id)) return prev;
-      const next = { ...prev, practiced: [...prev.practiced, id] };
-      save(next);
-      return next;
+      return { ...prev, practiced: [...prev.practiced, id] };
     });
-  }, [save]);
+    // Persist after state update — never inside the updater (avoids
+    // StrictMode double-invoke and unordered async writes).
+    void save({ ...progress, practiced: [...progress.practiced, id] });
+  }, [save, progress]);
 
   const reset = useCallback(async () => {
     if (!userId) return;
     if (db) {
       await db.moduleProgress.delete(`${userId}:alphabet`);
     }
-    setProgress(EMPTY);
+    setProgress(EMPTY_PROGRESS);
     if (isAuthenticated && user) {
       await supabase.from('user_progress')
         .update({

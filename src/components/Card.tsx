@@ -8,7 +8,7 @@ interface CardProps {
   footer?: string;
   note?: string;
   onClick?: () => void;
-  onSpeak: () => void;
+  onSpeak?: () => void;
 }
 
 export function Card({ badge, title, lines, footer, note, onClick, onSpeak }: CardProps) {
@@ -29,8 +29,9 @@ export function Card({ badge, title, lines, footer, note, onClick, onSpeak }: Ca
         <div className={theme.card.badge}>{badge}</div>
         <div className="min-w-0 flex-1">
           <div className={theme.card.title}>{title}</div>
-          {lines.map((line) => (
-            <div key={line} className={theme.card.line}>
+          {lines.map((line, index) => (
+            // Stable key: index + content (duplicate line strings are legal).
+            <div key={`${index}:${line}`} className={theme.card.line}>
               {line}
             </div>
           ))}
@@ -41,7 +42,7 @@ export function Card({ badge, title, lines, footer, note, onClick, onSpeak }: Ca
           type="button"
           onClick={(event) => {
             event.stopPropagation();
-            onSpeak();
+            onSpeak?.();
           }}
           className={theme.button.icon}
           aria-label={`Play audio for ${title}`}

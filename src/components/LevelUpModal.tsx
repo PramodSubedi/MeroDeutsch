@@ -1,6 +1,5 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import confetti from 'canvas-confetti';
-import { theme } from '../config/theme';
 import { useLang } from '../hooks/useLang';
 
 interface LevelUpModalProps {
@@ -11,40 +10,27 @@ interface LevelUpModalProps {
 }
 
 /**
- * Level-up celebration modal with confetti effect
+ * Level-up toast notification (non-blocking, auto-dismisses).
+ * Replaces the intrusive modal with a subtle toast banner.
  */
 export function LevelUpModal({ isOpen, level, rank, onClose }: LevelUpModalProps) {
   const { langMode } = useLang();
   const isDE = langMode === 'german';
-  const closeButtonRef = useRef<HTMLButtonElement>(null);
 
-  // Handle Escape key to close modal
+  // Auto-dismiss after 4 seconds
   useEffect(() => {
     if (!isOpen) return;
-
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose();
-      }
-    };
-    window.addEventListener('keydown', handleEscape);
-    return () => window.removeEventListener('keydown', handleEscape);
+    const timer = setTimeout(onClose, 4000);
+    return () => clearTimeout(timer);
   }, [isOpen, onClose]);
 
-  // Focus management: focus close button when modal opens
-  useEffect(() => {
-    if (isOpen && closeButtonRef.current) {
-      closeButtonRef.current.focus();
-    }
-  }, [isOpen]);
-
+  // Fire confetti effect (subtle, doesn't block interaction)
   useEffect(() => {
     if (!isOpen) return;
 
-    // Fire confetti cannon
-    const duration = 3000;
+    const duration = 2500;
     const animationEnd = Date.now() + duration;
-    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 9999 };
+    const defaults = { startVelocity: 20, spread: 360, ticks: 60, zIndex: 9999 };
 
     function randomInRange(min: number, max: number) {
       return Math.random() * (max - min) + min;
@@ -58,7 +44,7 @@ export function LevelUpModal({ isOpen, level, rank, onClose }: LevelUpModalProps
         return;
       }
 
-      const particleCount = 50 * (timeLeft / duration);
+      const particleCount = 30 * (timeLeft / duration);
       
       // Fire from left
       confetti({
@@ -82,61 +68,29 @@ export function LevelUpModal({ isOpen, level, rank, onClose }: LevelUpModalProps
 
   return (
     <div
-      className={theme.modal.overlay}
-      onClick={onClose}
-      role="dialog"
-      aria-labelledby="level-up-title"
-      aria-modal="true"
+      className="fixed top-4 left-4 right-4 z-50 mx-auto max-w-md rounded-2xl border border-blue-200 bg-gradient-to-r from-blue-50 to-blue-100 p-4 shadow-lg dark:border-blue-800 dark:from-blue-950/60 dark:to-blue-900/40 animate-in fade-in slide-in-from-top-4 duration-300"
+      role="status"
+      aria-live="polite"
+      aria-label={isDE ? `Level aufgestiegen! Stufe ${level}` : `Level up! Level ${level}`}
     >
-      <div
-        className={theme.modal.dialog}
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className="flex items-center gap-3">
+        <div className="text-2xl" aria-hidden="true">🎉</div>
+        <div className="flex-1">
+          <h3 className="font-bold text-blue-900 dark:text-blue-100">
+            {isDE ? 'Level Up! Stufe ' : 'Level Up! Level '} <span className="text-2xl">{level}</span>
+          </h3>
+          <p className="text-sm text-blue-800 dark:text-blue-200 mt-1">
+            {rank}
+          </p>
+        </div>
         <button
-          ref={closeButtonRef}
           type="button"
           onClick={onClose}
-          className={theme.modal.close}
-          aria-label="Close"
+          className="text-blue-600 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-100 font-semibold text-lg leading-none"
+          aria-label="Dismiss"
         >
           ×
         </button>
-
-        <div className="text-center">
-          <div className="mb-4 text-6xl" aria-hidden="true">
-            🎉
-          </div>
-
-          <h2
-            id="level-up-title"
-            className="text-3xl font-bold text-slate-900 dark:text-slate-100"
-          >
-            {isDE ? 'Level Up!' : 'Level Up!'}
-          </h2>
-
-          <div className="mt-4">
-            <div className="text-5xl font-black text-blue-600 dark:text-blue-400">
-              {isDE ? 'Stufe' : 'Level'} {level}
-            </div>
-            <div className="mt-2 text-lg font-semibold text-slate-600 dark:text-slate-400">
-              {rank}
-            </div>
-          </div>
-
-          <p className="mt-6 text-sm text-slate-600 dark:text-slate-400">
-            {isDE
-              ? 'Gratulation! Du machst großartige Fortschritte beim Deutschlernen!'
-              : 'Congratulations! You are making amazing progress in your German learning journey!'}
-          </p>
-
-          <button
-            type="button"
-            onClick={onClose}
-            className={`${theme.button.primary} mt-6 w-full`}
-          >
-            {isDE ? 'Weiter!' : 'Continue!'}
-          </button>
-        </div>
       </div>
     </div>
   );

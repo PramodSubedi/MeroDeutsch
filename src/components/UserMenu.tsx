@@ -39,12 +39,17 @@ export function UserMenu({ user }: UserMenuProps) {
     }
   };
 
-  const initials = user.username
-    .split(' ')
-    .map((n) => n[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2);
+  // Null-safe display name + initials: username → single-letter fallback.
+  // Never crash on a missing/partial profile from the auth provider.
+  const displayName = user.username ?? '';
+  const initials =
+    displayName
+      .split(' ')
+      .map((n) => n[0])
+      .filter(Boolean)
+      .join('')
+      .toUpperCase()
+      .slice(0, 2) || 'U';
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -66,7 +71,7 @@ export function UserMenu({ user }: UserMenuProps) {
             {initials}
           </div>
         )}
-        <span className="hidden sm:block font-medium">{user.username}</span>
+        <span className="hidden sm:block font-medium">{displayName}</span>
         <svg
           className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
           fill="none"
@@ -80,7 +85,7 @@ export function UserMenu({ user }: UserMenuProps) {
       {isOpen && (
         <div className="absolute right-0 mt-2 w-48 origin-top-right rounded-xl bg-white shadow-lg ring-1 ring-black/5 animate-in fade-in-0 zoom-in-95 dark:bg-slate-800 dark:ring-white/10">
           <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-700">
-            <p className="text-sm font-medium text-slate-900 dark:text-white">{user.username}</p>
+            <p className="text-sm font-medium text-slate-900 dark:text-white">{displayName}</p>
             <p className="text-xs text-slate-500 dark:text-slate-400 truncate">Signed in</p>
           </div>
           <Link

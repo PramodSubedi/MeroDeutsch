@@ -14,10 +14,12 @@ export function ModuleChrome() {
   const isDE = langMode === 'german';
 
   return (
-    <div className="mb-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+    // Single wrapped row: back link sits inline with the switcher pills so it
+    // never floats as an orphan on wide screens.
+    <div className="mb-2 flex flex-wrap items-center gap-x-3 gap-y-2">
       <Link
         to="/learn"
-        className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-200"
+        className="inline-flex shrink-0 items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-200"
       >
         ← {isDE ? 'Zurück zum Lern-Hub' : 'Back to Learning Hub'}
       </Link>

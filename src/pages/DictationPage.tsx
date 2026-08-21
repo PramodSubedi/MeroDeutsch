@@ -6,6 +6,7 @@ import { useReviewQueue } from '../hooks/useReviewQueue';
 import { useXp, XP_REWARDS } from '../hooks/useXp';
 import { theme } from '../config/theme';
 import { curriculumService } from '../services';
+import { drawWithoutReplacement } from '../utils/questionGenerator';
 import type { DictationWord } from '../types/curriculum';
 
 function normalize(input: string): string {
@@ -25,23 +26,30 @@ export function DictationPage() {
   const [score, setScore] = useState(0);
   const [total, setTotal] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
+  // Track shown word keys so the same prompt isn't repeated until the pool cycles.
+  const usedWordKeysRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     curriculumService.getDictationWords().then(data => {
       setDictationWords(data);
       if (data.length > 0) {
-        setWord(data[Math.floor(Math.random() * data.length)]);
+        setWord(data[Math.min(0, data.length - 1)]);
+        usedWordKeysRef.current.add(data[Math.min(0, data.length - 1)].word);
       }
     });
   }, []);
 
-  if (!word) return null;
+  if (!word) {
+    // Loading guard — avoid blank flash while dictation words load.
+    return <div className={theme.page.container}>Loading...</div>;
+  }
 
   const play = () => speakWord(word.word);
 
   const next = () => {
-    const pool = dictationWords.filter((item) => item.word !== word.word);
-    setWord(pool[Math.floor(Math.random() * pool.length)]);
+    const n = drawWithoutReplacement(dictationWords, usedWordKeysRef.current, (item) => item.word);
+    if (!n) return;
+    setWord(n);
     setAttempt('');
     setStatus('idle');
     inputRef.current?.focus();

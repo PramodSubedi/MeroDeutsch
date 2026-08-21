@@ -65,9 +65,10 @@ export function StandardStudyCard({
       {/* Mastery level indicator (bottom progress bar) */}
       {masteryInfo && (
         <div className="absolute bottom-0 left-0 right-0 h-1 overflow-hidden rounded-b-[22px] bg-slate-100 dark:bg-slate-800">
-          <div 
+          <div
             className={`h-full transition-all duration-500 ${masteryInfo.color}`}
-            style={{ width: `${((masteryLevel ?? 0) + 1) * 20}%` }}
+            // Clamp to 0–100% so out-of-range mastery levels can't overflow the bar.
+            style={{ width: `${Math.min(100, Math.max(0, ((masteryLevel ?? 0) + 1) * 20))}%` }}
             title={masteryInfo.label}
           />
         </div>

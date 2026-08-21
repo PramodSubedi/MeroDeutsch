@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { isOnline, executeSync, queueAchievementUnlock } from '../services/syncService';
 import { useAuth } from './useAuth';
 
@@ -18,24 +18,32 @@ export function useSyncBridge() {
   const userId = user?.userId ?? null;
   const [lastSyncAt, setLastSyncAt] = useState<number | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
+  // Ref mirroring isSyncing so the guard doesn't recreate runSync/onOnline
+  // (which would tear down the interval/listeners on every sync).
+  const isSyncingRef = useRef(false);
 
   const runSync = useCallback(async () => {
-    if (isSyncing) return;
+    if (isSyncingRef.current) return;
+    isSyncingRef.current = true;
     setIsSyncing(true);
-    const errors = await executeSync(userId ?? '');
-    setIsSyncing(false);
-    setLastSyncAt(Date.now());
-    if (errors.length) {
-      // Errors are logged to console; UI toast can be added if desired.
-      console.warn('Sync errors:', errors);
+    try {
+      const errors = await executeSync(userId ?? '');
+      setLastSyncAt(Date.now());
+      if (errors.length) {
+        // Errors are logged to console; UI toast can be added if desired.
+        console.warn('Sync errors:', errors);
+      }
+    } finally {
+      isSyncingRef.current = false;
+      setIsSyncing(false);
     }
-  }, [isSyncing, userId, executeSync]);
+  }, [userId, executeSync]);
 
   const onOnline = useCallback(() => {
     if (!isAuthenticated || !userId) return;
-    if (isSyncing) return;
+    if (isSyncingRef.current) return;
     void runSync();
-  }, [isAuthenticated, userId, isSyncing, runSync]);
+  }, [isAuthenticated, userId, runSync]);
 
   // Initial check: if already online + authed at mount, sync once.
   useEffect(() => {

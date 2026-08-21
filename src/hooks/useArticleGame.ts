@@ -6,6 +6,7 @@ import { useXp } from './useXp';
 import { useAuth } from './useAuth';
 import { getItem, setItem } from '../utils/safeStorage';
 import { scopedKey } from '../utils/userStorage';
+import { pickRandom } from '../utils/questionGenerator';
 import fallbackNouns from '../data/nouns.json';
 
 const STORAGE_KEY_BASE = 'meroDeutschArticleGame';
@@ -33,12 +34,6 @@ function loadState(key: string): ArticleGameState {
 
 function saveState(key: string, state: ArticleGameState): void {
   setItem(key, JSON.stringify(state));
-}
-
-/** Pick a random noun, avoiding the previously shown one. */
-function randomArticleItem(pool: ArticleItem[], previous: string | null): ArticleItem {
-  const filtered = pool.filter((item) => item.noun !== previous);
-  return filtered[Math.floor(Math.random() * filtered.length)];
 }
 
 /**
@@ -86,14 +81,14 @@ export function useArticleGame() {
         if (cancelled) return;
         const pool = data.length > 0 ? data : (fallbackNouns as ArticleItem[]);
         setArticlesData(pool);
-        setCurrentItem(randomArticleItem(pool, null));
+        setCurrentItem(pickRandom(pool));
         setLoading(false);
       })
       .catch(() => {
         if (cancelled) return;
         const pool = fallbackNouns as ArticleItem[];
         setArticlesData(pool);
-        setCurrentItem(randomArticleItem(pool, null));
+        setCurrentItem(pickRandom(pool));
         setLoading(false);
       });
     return () => {
@@ -169,8 +164,8 @@ export function useArticleGame() {
   const nextItem = useCallback(() => {
     if (articlesData.length === 0) return;
     setCurrentItem((prev) => {
-      if (!prev) return randomArticleItem(articlesData, null);
-      return randomArticleItem(articlesData, prev.noun);
+      if (!prev) return pickRandom(articlesData);
+      return pickRandom(articlesData, (item) => item.noun === prev.noun);
     });
     setLocked(false);
     setLastChoice(null);
@@ -186,7 +181,7 @@ export function useArticleGame() {
     setLastChoice(null);
     setLastResult(null);
     if (articlesData.length > 0) {
-      setCurrentItem(randomArticleItem(articlesData, null));
+      setCurrentItem(pickRandom(articlesData));
     }
   }, [articlesData]);
 

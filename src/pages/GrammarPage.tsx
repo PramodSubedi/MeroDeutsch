@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { BookText, Check, RefreshCw, Layout } from 'lucide-react';
+import { BookText, Check, RefreshCw, Layout, Globe } from 'lucide-react';
 import { useLang } from '../hooks/useLang';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { useReviewQueue } from '../hooks/useReviewQueue';
@@ -20,13 +20,17 @@ export function GrammarPage() {
   const isDE = langMode === 'german';
   const { addWrongAnswer } = useReviewQueue();
   const { reportAnswer } = useXp();
-  const [tab, setTab] = useState<'sein' | 'haben' | 'weakVerb' | 'cases'>('sein');
+  const [tab, setTab] = useState<'sein' | 'haben' | 'weakVerb' | 'cases' | 'bridge'>('sein');
   const [answers, setAnswers] = useState<Record<number, string>>({});
 
   const [drills, setDrills] = useState<GrammarDrill[]>([]);
 
   useEffect(() => {
-    curriculumService.getGrammarDrills(tab).then(setDrills);
+    if (tab === 'bridge') {
+      setDrills([]);
+    } else {
+      curriculumService.getGrammarDrills(tab).then(setDrills);
+    }
   }, [tab]);
 
   const count = Object.keys(answers).length;
@@ -57,24 +61,132 @@ export function GrammarPage() {
           { id: 'haben', label: 'haben', icon: Check },
           { id: 'weakVerb', label: 'machen', icon: RefreshCw },
           { id: 'cases', label: isDE ? 'Fälle' : 'Cases', icon: Layout },
+          { id: 'bridge', label: isDE ? 'Grammatik-Brücke' : 'Grammar Bridge', icon: Globe },
         ]}
         activeTab={tab}
-        onTabChange={(newTab) => { setTab(newTab as 'sein' | 'haben' | 'weakVerb' | 'cases'); setAnswers({}); }}
+        onTabChange={(newTab) => { setTab(newTab as any); setAnswers({}); }}
       />
 
-      <div className={`${theme.panel.surface} mb-6`}>
-        <h2 className="text-lg font-semibold">{isDE ? 'Fälle' : 'Cases'}</h2>
-        <div className="mt-3 grid gap-3 sm:grid-cols-2">
-          {CASES.map((c) => (
-            <div key={c.label} className="rounded-xl border border-blue-100 bg-blue-50 p-4 text-sm dark:border-blue-800 dark:bg-blue-950/40">
-              <div className="font-bold text-blue-700 dark:text-blue-300">{c.label}</div>
-              <div className="mt-1 text-slate-600 dark:text-slate-300">{isDE ? c.de : c.en}</div>
-            </div>
-          ))}
+      {tab === 'cases' && (
+        <div className={`${theme.panel.surface} mb-6`}>
+          <h2 className="text-lg font-semibold">{isDE ? 'Fälle' : 'Cases'}</h2>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            {CASES.map((c) => (
+              <div key={c.label} className="rounded-xl border border-blue-100 bg-blue-50 p-4 text-sm dark:border-blue-800 dark:bg-blue-950/40">
+                <div className="font-bold text-blue-700 dark:text-blue-300">{c.label}</div>
+                <div className="mt-1 text-slate-600 dark:text-slate-300">{isDE ? c.de : c.en}</div>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
-      <div className={`${theme.panel.surface}`}>
+      {tab === 'bridge' && (
+        <div className="space-y-6">
+          {/* Section 1: Word Order SVO vs SOV vs V2 */}
+          <div className={theme.panel.surface}>
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+              {isDE ? 'Satzstellung: SVO vs. SOV' : 'Word Order: SVO vs SOV vs V2'}
+            </h2>
+            <p className="mt-1 text-sm text-slate-500">
+              {isDE
+                ? 'Vergleich der Satzstruktur zwischen Deutsch, Englisch und Nepali.'
+                : 'Comparing grammatical structures across German, English, and Nepali.'}
+            </p>
+
+            <div className="mt-4 grid gap-4 md:grid-cols-3">
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900">
+                <h3 className="font-bold text-blue-600 dark:text-blue-400">English (SVO)</h3>
+                <p className="mt-1 text-xs text-slate-500">Subject + Verb + Object</p>
+                <div className="mt-3 text-lg font-extrabold text-slate-800 dark:text-slate-100">
+                  I <span className="underline decoration-blue-500">eat</span> an apple.
+                </div>
+              </div>
+
+              {!isDE && (
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900">
+                  <h3 className="font-bold text-amber-600 dark:text-amber-400">Nepali (SOV)</h3>
+                  <p className="mt-1 text-xs text-slate-500">Subject + Object + Verb</p>
+                  <div className="mt-3 text-lg font-extrabold text-slate-800 dark:text-slate-100">
+                    म स्याउ <span className="underline decoration-amber-500">खान्छु</span>।
+                  </div>
+                  <p className="mt-1 text-xs italic text-slate-400">Ma syau khanchhu.</p>
+                </div>
+              )}
+
+              <div className="rounded-2xl border-2 border-green-200 bg-green-50/50 p-4 dark:border-green-800/40 dark:bg-green-950/20">
+                <h3 className="font-bold text-green-700 dark:text-green-400">German (V2 / Verb-Second)</h3>
+                <p className="mt-1 text-xs text-slate-500">Subject + Verb (Position 2) + Object</p>
+                <div className="mt-3 text-lg font-extrabold text-slate-800 dark:text-slate-100">
+                  Ich <span className="text-green-600 underline">esse</span> einen Apfel.
+                </div>
+                <div className="mt-2 h-px bg-green-200/50" />
+                <p className="mt-2 text-xs text-slate-500">Subordinate clauses push verb to the end:</p>
+                <div className="mt-1 text-sm font-semibold text-slate-700 dark:text-slate-300">
+                  ...weil ich einen Apfel <span className="text-green-600 underline">esse</span>.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Section 2: Formality map Timi/Tapai vs Du/Sie */}
+          <div className={theme.panel.surface}>
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+              {isDE ? 'Höflichkeit: Du vs. Sie' : 'Formality Map: Timi/Tapai ↔ Du/Sie'}
+            </h2>
+            <p className="mt-1 text-sm text-slate-500">
+              {isDE
+                ? 'Deutsche Du/Sie-Formen entsprechen perfekt तिमी/तपाईं im Nepali.'
+                : 'German informal du / formal Sie maps perfectly to Timi / Tapai in Nepali.'}
+            </p>
+
+            <div className="mt-4 grid gap-4 md:grid-cols-2">
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5 dark:border-slate-800 dark:bg-slate-900">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">🧑‍🤝‍🧑</span>
+                  <h3 className="font-bold text-slate-800 dark:text-slate-100">Informal — du (German) ↔ तिमी (Nepali)</h3>
+                </div>
+                <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+                  Used for friends, family, children, and peers.
+                </p>
+                <div className="mt-4 space-y-2 rounded-xl bg-white p-3 text-sm dark:bg-slate-950">
+                  <div className="flex justify-between">
+                    <span className="font-semibold text-blue-600">Wie geht es dir?</span>
+                    {!isDE && <span className="text-slate-500">तिमीलाई कस्तो छ?</span>}
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-semibold text-blue-600">Wie heißt du?</span>
+                    {!isDE && <span className="text-slate-500">तिमीलाई के भन्छन्?</span>}
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5 dark:border-slate-800 dark:bg-slate-900">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">💼</span>
+                  <h3 className="font-bold text-slate-800 dark:text-slate-100">Formal — Sie (German) ↔ तपाईं (Nepali)</h3>
+                </div>
+                <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+                  Used for strangers, teachers, doctors, and respected elders.
+                </p>
+                <div className="mt-4 space-y-2 rounded-xl bg-white p-3 text-sm dark:bg-slate-950">
+                  <div className="flex justify-between">
+                    <span className="font-semibold text-green-700">Wie geht es Ihnen?</span>
+                    {!isDE && <span className="text-slate-500">तपाईंलाई कस्तो छ?</span>}
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-semibold text-green-700">Wie heißen Sie?</span>
+                    {!isDE && <span className="text-slate-500">तपाईंको नाम के हो?</span>}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {tab !== 'bridge' && drills.length > 0 && (
+        <div className={`${theme.panel.surface}`}>
         <h2 className="text-lg font-semibold">{isDE ? 'Mini-Übung' : 'Mini-drill'} — {count}/{drills.length}</h2>
         <div className="mt-3 space-y-4">
           {drills.map((d, i) => (
@@ -97,8 +209,9 @@ export function GrammarPage() {
               {isDE ? `Ergebnis: ${score}/${drills.length}` : `Score: ${score}/${drills.length}`}
             </div>
           )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

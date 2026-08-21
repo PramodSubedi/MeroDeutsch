@@ -1,11 +1,22 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { alphabetData } from '../../data/sharedContent';
 import { speakLetter } from '../../hooks/useSpeech';
 import { useProgress } from '../../hooks/useProgress';
 import { useReviewQueue } from '../../hooks/useReviewQueue';
 import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts';
 import { useXp } from '../../hooks/useXp';
+import { drawWithoutReplacement } from '../../utils/questionGenerator';
 import type { AlphabetItem, LangMode } from '../../types';
+
+/** Fisher-Yates shuffle — stable, unbiased. */
+function shuffle<T>(arr: T[]): T[] {
+  const copy = [...arr];
+  for (let i = copy.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
 
 function pickOptions(correct: AlphabetItem): AlphabetItem[] {
   const opts = [correct];
@@ -13,14 +24,21 @@ function pickOptions(correct: AlphabetItem): AlphabetItem[] {
     const r = alphabetData[Math.floor(Math.random() * alphabetData.length)];
     if (!opts.find((o) => o.id === r.id)) opts.push(r);
   }
-  return opts.sort(() => Math.random() - 0.5);
+  return shuffle(opts);
 }
 
 export function AlphabetQuiz({ langMode }: { langMode: LangMode }) {
   const { progress, save, markPracticed } = useProgress();
   const { addWrongAnswer } = useReviewQueue();
   const { reportAnswer } = useXp();
-  const [item, setItem] = useState(() => alphabetData[Math.floor(Math.random() * alphabetData.length)]);
+  // Track shown letter ids so the same prompt isn't repeated until the whole
+  // alphabet pool has been cycled (sample without replacement).
+  const usedIdsRef = useRef<Set<string>>(new Set());
+  const [item, setItem] = useState<AlphabetItem>(() => {
+    const first = drawWithoutReplacement(alphabetData, usedIdsRef.current, (a) => a.id);
+    return first ?? alphabetData[0];
+  });
+  // Stable options — only rebuilt in `next()`, never on re-render.
   const [options, setOptions] = useState(() => pickOptions(item));
   const [sessionScore, setSessionScore] = useState(0);
   const [sessionTotal, setSessionTotal] = useState(0);
@@ -29,7 +47,8 @@ export function AlphabetQuiz({ langMode }: { langMode: LangMode }) {
   const [wrongId, setWrongId] = useState<string | null>(null);
 
   const next = () => {
-    const n = alphabetData[Math.floor(Math.random() * alphabetData.length)];
+    const n = drawWithoutReplacement(alphabetData, usedIdsRef.current, (a) => a.id);
+    if (!n) return;
     setItem(n);
     setOptions(pickOptions(n));
     setLocked(false);
@@ -105,7 +124,7 @@ export function AlphabetQuiz({ langMode }: { langMode: LangMode }) {
             key={o.id}
             type="button"
             onClick={() => check(o.id)}
-            className={`min-h-[44px] rounded-xl border-2 px-4 py-3 text-sm font-medium transition ${
+            className={`min-h-[44px] rounded-xl border-2 px-4 py-3 text-sm font-medium transition-colors ${
               locked && o.id === item.id
                 ? 'border-green-500 bg-green-100'
                 : locked && o.id === wrongId

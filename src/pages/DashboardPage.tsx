@@ -10,6 +10,7 @@ import { useMilestoneToast } from '../hooks/useMilestoneToast';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { theme } from '../config/theme';
 import { BrandMark } from '../components/BrandMark';
+import { useSearchParams } from 'react-router-dom';
 import { EmptyState } from '../components/EmptyState';
 import { SEO } from '../components/common/SEO';
 import { ActivityHeatmap } from '../components/ActivityHeatmap';
@@ -28,6 +29,8 @@ const numberFormatter = (locale: string) => new Intl.NumberFormat(locale);
 export function DashboardPage() {
   usePageTitle('Dashboard');
   const { user, isAuthenticated } = useAuth();
+  const [searchParams] = useSearchParams();
+  const isSprint = searchParams.get('sprint') === 'true';
   const { queue, dueQueue, markCorrect, markResolved, clearQueue } = useReviewQueue();
   const { progress } = useProgress();
   const { langMode } = useLang();
@@ -233,6 +236,8 @@ export function DashboardPage() {
           dueQueue={dueQueue}
           onMarkCorrect={markCorrect}
           embedded
+          limit={isSprint ? 10 : undefined}
+          autoStart={isSprint}
         />
 
         {queue.length === 0 ? (
@@ -256,13 +261,31 @@ export function DashboardPage() {
                         className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${item.moduleType === 'alphabet' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300' : item.moduleType === 'numbers' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300' : item.moduleType === 'calendar' ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300' : item.moduleType === 'articles' ? 'bg-pink-100 text-pink-700 dark:bg-pink-900/40 dark:text-pink-300' : item.moduleType === 'greetings' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300' : item.moduleType === 'grammar' ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300' : item.moduleType === 'pronunciation' ? 'bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300' : item.moduleType === 'dictation' ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300' : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300'}`}>
                         {item.moduleType}
                       </span>
+                      {item.errorTag && (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-red-50 px-2 py-0.5 text-[11px] font-semibold text-red-700 dark:bg-red-950/20 dark:text-red-300">
+                          🏷️ {item.errorTag}
+                        </span>
+                      )}
                       <span
                         className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold ${isDue(item) ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'}`}>
                         {isDue(item) ? dueLabel : scheduledLabel}
                       </span>
                     </div>
-                    <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
-                      {item.itemKey}
+                    <div className="flex min-w-0 items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+                      {/* Gender-colored dot when the item carries a German article. */}
+                      {(() => {
+                        const m = `${item.itemKey} ${item.correctAnswer}`.match(/\b(der|die|das)\b/i);
+                        if (!m) return null;
+                        const key = m[1].toLowerCase() === 'die' ? 'dieF' : m[1].toLowerCase();
+                        return (
+                          <span
+                            className={`h-2.5 w-2.5 shrink-0 rounded-full ${theme.gender[key as keyof typeof theme.gender].bg}`}
+                            title={m[1]}
+                            aria-hidden="true"
+                          />
+                        );
+                      })()}
+                      <span className="min-w-0 truncate">{item.itemKey}</span>
                       <MasteryIndicator boxLevel={item.boxLevel} />
                     </div>
                   </div>

@@ -25,6 +25,7 @@ export function HomeCommandStrip({ streakCount, reviewCount }: HomeCommandStripP
     <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm dark:border-slate-700 dark:bg-slate-950">
       <span className="text-sm font-semibold text-slate-900 dark:text-white">{greeting} 👋</span>
 
+      {/* "All clear" badge: emerald-800 on emerald-50 ≈ 7:1 contrast (≥ 4.5:1 WCAG AA). */}
       {reviewCount > 0 ? (
         <Link
           to="/dashboard"
@@ -36,7 +37,7 @@ export function HomeCommandStrip({ streakCount, reviewCount }: HomeCommandStripP
           </span>
         </Link>
       ) : (
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300">
           <span aria-hidden="true">✅</span>
           <span>{isDE ? 'Revier frei!' : 'All clear!'}</span>
         </span>

@@ -37,6 +37,9 @@ export interface GrammarItem {
   rows: [string, string][];
 }
 
+// Re-export content types for convenience
+export type { VocabularyEntity } from '../types/content';
+
 export interface CurriculumService {
   getAlphabet(): Promise<import('./index').AlphabetItem[]>;
   getNumbers(): Promise<import('./index').NumberItem[]>;

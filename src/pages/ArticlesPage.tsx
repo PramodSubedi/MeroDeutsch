@@ -7,18 +7,12 @@ import { useReviewQueue } from '../hooks/useReviewQueue';
 import { useXp } from '../hooks/useXp';
 import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
 import { useDailyQuests } from '../hooks/useDailyQuests';
-import { speakGerman } from '../utils/audioService';
 import { theme } from '../config/theme';
 import { curriculumService } from '../services';
+import { CompactAudioButton } from '../components/CompactAudioButton';
+import { pickRandom } from '../utils/questionGenerator';
 import type { ArticleItem } from '../types';
 import fallbackNouns from '../data/nouns.json';
-
-function randomArticleItem(pool: ArticleItem[], previous: string | null): ArticleItem | null {
-  if (pool.length === 0) return null;
-  const filtered = pool.filter((item) => item.noun !== previous);
-  const safePool = filtered.length > 0 ? filtered : pool;
-  return safePool[Math.floor(Math.random() * safePool.length)];
-}
 
 
 function formatTime(seconds: number) {
@@ -48,10 +42,9 @@ export function ArticlesPage() {
   const { langMode } = useLang();
   const { isDE, t } = useTranslation(langMode);
   const { quests, reportAccuracy, claimReward } = useDailyQuests();
+  const [mode, setMode] = useState<'learn' | 'quiz'>('quiz');
   const [articlesData, setArticlesData] = useState<ArticleItem[]>([]);
   const [currentItem, setCurrentItem] = useState<ArticleItem | null>(null);
-  const [guideOpen, setGuideOpen] = useState(false);
-  const [spokenKey, setSpokenKey] = useState<string | null>(null);
   const [articleScore, setArticleScore] = useState(0);
   const [articleTotal, setArticleTotal] = useState(0);
 
@@ -63,26 +56,23 @@ export function ArticlesPage() {
         // or slow, fall back to the bundled offline deck (src/data/nouns.json).
         const pool = data.length > 0 ? data : (fallbackNouns as ArticleItem[]);
         setArticlesData(pool);
-        setCurrentItem(randomArticleItem(pool, null));
+        setCurrentItem(pickRandom(pool));
       })
       .catch(() => {
         const pool = fallbackNouns as ArticleItem[];
         setArticlesData(pool);
-        setCurrentItem(randomArticleItem(pool, null));
+        setCurrentItem(pickRandom(pool));
       });
   }, []);
 
-  // Auto-speak the current article phrase on mount/change + report Accuracy Master quest.
+  // Report Accuracy Master quest on quiz completion (no auto-play).
+  // Auto-play was causing premature audio before user opened quiz.
+  // User can click CompactAudioButton to hear noun, or Full Phrase for article + noun.
   useEffect(() => {
-    if (!currentItem) return;
-    const phrase = `${currentItem.art} ${currentItem.noun}`;
-    if (spokenKey !== phrase) {
-      setSpokenKey(phrase);
-      speakGerman(phrase);
-      // Accuracy Master: feed the reviewer's accuracy ratio (session average).
-      reportAccuracy(articleTotal > 0 ? articleScore / articleTotal : 0.5);
-    }
-  }, [currentItem, spokenKey, articleScore, articleTotal, reportAccuracy]);
+    if (!currentItem || mode !== 'quiz') return;
+    // Only report accuracy, don't auto-play
+    reportAccuracy(articleTotal > 0 ? articleScore / articleTotal : 0.5);
+  }, [currentItem, mode, articleScore, articleTotal, reportAccuracy]);
 
   // Claim any completed-but-unclaimed daily quest rewards.
   useEffect(() => {
@@ -193,11 +183,11 @@ export function ArticlesPage() {
     }
   }, [recording]);
 
-    const nextItem = useCallback(() => {
+  const nextItem = useCallback(() => {
     if (articlesData.length > 0) {
       setCurrentItem((prev: ArticleItem | null) => {
-        if (!prev) return randomArticleItem(articlesData, null);
-        return randomArticleItem(articlesData, prev.noun);
+        if (!prev) return pickRandom(articlesData);
+        return pickRandom(articlesData, (item) => item.noun === prev.noun);
       });
       setFeedback('');
       setLocked(false);
@@ -427,28 +417,47 @@ export function ArticlesPage() {
     ? 'Lerne deutsche Substantive zusammen with ihrem Artikel.'
     : sharedTextDatabase.articles.description;
 
-  if (!currentItem) return <div className={theme.page.container}>Loading...</div>;
-
   return (
     <div className={theme.page.container}>
 
       <div className={theme.panel.surface}>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-xl font-bold">{title}</h1>
             <p className="mt-2 text-sm text-slate-500">{description}</p>
           </div>
-          <button
-            type="button"
-            onClick={() => setGuideOpen((open) => !open)}
-            className={theme.button.secondary}
-          >
-            {isDE ? '💡 Schnellhilfe' : '💡 Quick Guide'} {guideOpen ? '▲' : '▼'}
-          </button>
+          <div className="flex flex-col gap-2 sm:items-end">
+            {/* Mode Toggle: Learn vs Quiz */}
+            <div className="flex gap-2 rounded-full border border-slate-300 bg-slate-100 p-1 dark:border-slate-600 dark:bg-slate-800">
+              <button
+                type="button"
+                onClick={() => setMode('learn')}
+                className={`px-4 py-2 rounded-full font-semibold text-sm transition-all ${
+                  mode === 'learn'
+                    ? 'bg-white text-blue-600 shadow-sm dark:bg-slate-900 dark:text-blue-300'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                }`}
+              >
+                {isDE ? '📚 Lernen' : '📚 Learn'}
+              </button>
+              <button
+                type="button"
+                onClick={() => setMode('quiz')}
+                className={`px-4 py-2 rounded-full font-semibold text-sm transition-all ${
+                  mode === 'quiz'
+                    ? 'bg-white text-blue-600 shadow-sm dark:bg-slate-900 dark:text-blue-300'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                }`}
+              >
+                {isDE ? '⚡ Quiz' : '⚡ Quiz'}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
-      {guideOpen && (
+      {/* LEARN MODE: Study materials and rules */}
+      {mode === 'learn' && (
         <div className="mb-4 grid gap-4 lg:grid-cols-3">
           <div className={theme.panel.accent}>
             <div className="mb-2 text-sm font-semibold text-blue-700 dark:text-blue-300">DER</div>
@@ -461,7 +470,7 @@ export function ArticlesPage() {
             </div>
           </div>
           <div className={theme.panel.accent}>
-            <div className="mb-2 text-sm font-semibold text-pink-700 dark:text-pink-300">DIE</div>
+            <div className="mb-2 text-sm font-semibold text-red-700 dark:text-red-300">DIE</div>
             <div className="text-3xl font-bold text-slate-900 dark:text-white">Feminine</div>
             <div className="mt-3 text-sm text-slate-700 dark:text-slate-300">{isDE ? 'स्त्रीलिङ्ग' : 'Feminine'}</div>
             <div className="mt-4 space-y-2 text-sm leading-6 text-slate-600 dark:text-slate-300">
@@ -471,7 +480,7 @@ export function ArticlesPage() {
             </div>
           </div>
           <div className={theme.panel.accent}>
-            <div className="mb-2 text-sm font-semibold text-emerald-700 dark:text-emerald-300">DAS</div>
+            <div className="mb-2 text-sm font-semibold text-green-700 dark:text-green-300">DAS</div>
             <div className="text-3xl font-bold text-slate-900 dark:text-white">Neuter</div>
             <div className="mt-3 text-sm text-slate-700 dark:text-slate-300">{isDE ? 'नपुंसकलिङ्ग' : 'Neuter'}</div>
             <div className="mt-4 space-y-2 text-sm leading-6 text-slate-600 dark:text-slate-300">
@@ -483,15 +492,37 @@ export function ArticlesPage() {
         </div>
       )}
 
-      <div className="grid gap-4 xl:grid-cols-[1.4fr_0.8fr]">
+      {/* QUIZ MODE: Interactive trainer */}
+      {mode === 'quiz' && !currentItem && (
+        <div className={theme.page.container}>
+          <div className="text-center text-slate-500 dark:text-slate-400">
+            {isDE ? 'Wörter werden geladen…' : 'Loading words...'}
+          </div>
+        </div>
+      )}
+
+      {mode === 'quiz' && currentItem && (
+        <div className="grid gap-4 xl:grid-cols-[1.4fr_0.8fr]">
         <div className={theme.panel.surface}>
           <div className="mb-4 text-sm uppercase tracking-wider text-slate-500">{isDE ? 'Trainer' : 'Trainer'}</div>
           <div className={`${theme.panel.muted} text-center`}> 
-            <div className="text-4xl font-bold text-slate-900 dark:text-white">{currentItem.noun}</div>
+            <div className="flex items-center justify-center gap-3">
+              <div className="text-4xl font-bold text-slate-900 dark:text-white">{currentItem.noun}</div>
+              <CompactAudioButton 
+                word={currentItem.noun}
+                ariaLabel={`Hear pronunciation of ${currentItem.noun}`}
+              />
+            </div>
             <div className="mt-2 text-sm text-slate-500 dark:text-slate-400">{currentItem.meaning}</div>
             {currentItem.sentence && (
               <div className="mt-3 flex flex-col items-center gap-2">
-                <div className="text-base font-medium text-blue-700 dark:text-blue-300">{currentItem.sentence}</div>
+                {/* Hide article in displayed sentence to prevent spoiling the answer */}
+                <div className="text-base font-medium text-blue-700 dark:text-blue-300">
+                  {currentItem.sentence.replace(
+                    new RegExp(`^(${['der', 'die', 'das'].join('|')})\\s`, 'i'),
+                    '_____ '
+                  )}
+                </div>
                 <button
                   type="button"
                   onClick={() => speakText(currentItem.sentence as string, 0.85)}
@@ -509,8 +540,9 @@ export function ArticlesPage() {
               type="button"
               onClick={() => speakWord(targetPhrase)}
               className={`${theme.button.primary} flex-1 min-w-[140px]`}
+              title="Hear the article + noun together (e.g., 'der Tisch')"
             >
-              🔊 {t(sharedTranslations.common.hear)}
+              🔊 {isDE ? 'Vollständig hören' : 'Full Phrase'}
             </button>
             <button
               type="button"
@@ -567,12 +599,8 @@ export function ArticlesPage() {
 
           <div className="mt-6 grid gap-3 sm:grid-cols-3">
             {(['der', 'die', 'das'] as const).map((choice) => {
-              const buttonClass =
-                choice === 'der'
-                  ? 'bg-blue-600 text-white'
-                  : choice === 'die'
-                  ? 'bg-pink-600 text-white'
-                  : 'bg-emerald-600 text-white';
+              // Global gender color tokens: der=blue, die=red, das=green.
+              const buttonClass = `${theme.gender[choice === 'die' ? 'dieF' : choice].bg} text-white`;
               const selected = choice === lastChoice;
               return (
                 <button
@@ -586,6 +614,26 @@ export function ArticlesPage() {
                 </button>
               );
             })}
+          </div>
+
+          {/* Gender color legend — global tokens: der=blue, die=red, das=green, Pl=amber */}
+          <div className="mt-3 flex flex-wrap items-center gap-3 text-xs font-medium text-slate-500 dark:text-slate-400">
+            <span className="inline-flex items-center gap-1">
+              <span className={`h-2.5 w-2.5 rounded-full ${theme.gender.der.bg}`} aria-hidden="true" />
+              der
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <span className={`h-2.5 w-2.5 rounded-full ${theme.gender.dieF.bg}`} aria-hidden="true" />
+              die
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <span className={`h-2.5 w-2.5 rounded-full ${theme.gender.das.bg}`} aria-hidden="true" />
+              das
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <span className={`h-2.5 w-2.5 rounded-full ${theme.gender.diePl.bg}`} aria-hidden="true" />
+              {isDE ? 'Pl.' : 'Plural'}
+            </span>
           </div>
 
           {feedback && (
@@ -621,6 +669,8 @@ export function ArticlesPage() {
           </div>
         </div>
       </div>
+      )}
     </div>
   );
 }
+
