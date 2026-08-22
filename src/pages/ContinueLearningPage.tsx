@@ -3,7 +3,7 @@ import { useLang } from '../hooks/useLang';
 import { useLastModule } from '../hooks/useLastModule';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { DailyChallenge } from '../components/DailyChallenge';
-import { LearningPath } from '../components/learning/LearningPath';
+import { UnitSpine } from '../components/path/UnitSpine';
 import { PracticeToolsGrid } from '../components/PracticeToolsGrid';
 import { theme } from '../config/theme';
 
@@ -66,8 +66,8 @@ export function ContinueLearningPage() {
       {/* B. Word of the Day — reuses existing DailyChallenge component */}
       <DailyChallenge />
 
-      {/* C. A1 Learning Path — reuses extracted component */}
-      <LearningPath />
+      {/* C. A1 campaign spine — linear units with 80% checkpoint gates */}
+      <UnitSpine />
 
       {/* D. Learning tools — full grid with anchor for home compact links */}
       <section className={`${theme.panel.surface} mb-8`} id="practice">

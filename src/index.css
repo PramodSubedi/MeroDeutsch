@@ -8,6 +8,12 @@
   --color-brand: #2563eb;
   --color-mero-red: #dc2626;
   --color-accent-gold: #f59e0b;
+  /* German gender color tokens (locked hexes per .clinerules Part E1).
+     Enables semantic utilities: bg-gender-der / text-gender-die / etc. */
+  --color-gender-der: #2563eb;
+  --color-gender-die: #e11d48;
+  --color-gender-das: #059669;
+  --color-gender-pl: #d97706;
 }
 
 html {

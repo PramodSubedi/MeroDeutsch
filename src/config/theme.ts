@@ -18,9 +18,12 @@ export const theme = {
    * variants stay consistent across Articles, Glossary, Blitz, review rows.
    */
   gender: {
+    // Locked hexes per .clinerules Part E1: der #2563eb, die #e11d48,
+    // das #059669, pl #d97706. Tailwind classes map 1:1 (red-600 = #e11d48,
+    // emerald-600 = #059669) so light/dark stay consistent everywhere.
     der: { hex: '#2563eb', text: 'text-blue-600', bg: 'bg-blue-600', border: 'border-blue-600', darkText: 'dark:text-blue-400' },
-    dieF: { hex: '#dc2626', text: 'text-red-600', bg: 'bg-red-600', border: 'border-red-600', darkText: 'dark:text-red-400' },
-    das: { hex: '#16a34a', text: 'text-green-600', bg: 'bg-green-600', border: 'border-green-600', darkText: 'dark:text-green-400' },
+    dieF: { hex: '#e11d48', text: 'text-red-600', bg: 'bg-red-600', border: 'border-red-600', darkText: 'dark:text-red-400' },
+    das: { hex: '#059669', text: 'text-emerald-600', bg: 'bg-emerald-600', border: 'border-emerald-600', darkText: 'dark:text-emerald-400' },
     diePl: { hex: '#d97706', text: 'text-amber-600', bg: 'bg-amber-600', border: 'border-amber-600', darkText: 'dark:text-amber-400' },
   } as const,
   page: {

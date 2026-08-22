@@ -10,6 +10,7 @@ import { useProgress } from '../../hooks/useProgress';
 import { useReviewQueue } from '../../hooks/useReviewQueue';
 import { useStreak } from '../../hooks/useStreak';
 import { useXp } from '../../hooks/useXp';
+import { A1DailyLoop } from '../path/A1DailyLoop';
 
 const PRACTICE_ITEM_STYLES = [
   {
@@ -168,6 +169,9 @@ export function HomeLayoutA() {
           </div>
         </div>
       </section>
+
+      {/* Daily loop: Warm-up (due SRS) -> Push (next path node) -> Challenge (Blitz) */}
+      <A1DailyLoop />
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <div className="rounded-[24px] border border-slate-200 bg-white p-4 shadow-sm sm:p-5 dark:border-slate-700 dark:bg-slate-950">

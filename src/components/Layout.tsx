@@ -19,6 +19,7 @@ import { Breadcrumb } from './Breadcrumb';
 import { UserMenu } from './UserMenu';
 import { LevelUpModal } from './LevelUpModal';
 import { useMilestoneToast } from '../hooks/useMilestoneToast';
+import { A1PathVisitTracker } from './path/A1PathVisitTracker';
 
 /** Top nav + shell — branding/layout only; features live in pages/ */
 export function Layout() {
@@ -42,6 +43,7 @@ export function Layout() {
   const isActiveQuizRoute =
     pathname.includes('/rapid-fire') ||
     pathname.includes('/rapid-blitz') ||
+    pathname.startsWith('/checkpoint') || // A1 unit checkpoint = active quiz
     pathname.endsWith('/quiz') ||
     pathname.includes('/dictation') ||
     pathname.includes('/pronunciation');
@@ -109,6 +111,9 @@ export function Layout() {
           </button>
         </div>
       )}
+
+      {/* A1 path visit tracking (lesson-complete rule A) — renders nothing */}
+      <A1PathVisitTracker />
 
       {/* Skip to main content link for keyboard navigation */}
       <a href="#main-content" className="skip-to-main">

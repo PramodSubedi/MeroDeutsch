@@ -195,7 +195,7 @@ export function DailyChallenge() {
               <button
                 type="button"
                 onClick={() => setShowTranslation(true)}
-                className="text-xs text-slate-500 underline decoration-dotted underline-offset-1 hover:text-slate-700 dark:hover:text-slate-300"
+                className="inline-flex min-h-[44px] items-center text-xs font-medium text-slate-600 underline decoration-dotted underline-offset-2 transition hover:text-slate-800 active:scale-95 dark:text-slate-300 dark:hover:text-slate-100"
               >
                 {isDE ? 'Bedeutung anzeigen' : 'Reveal meaning'}
               </button>

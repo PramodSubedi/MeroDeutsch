@@ -32,6 +32,7 @@ const PrivacyPage = lazy(() => import('./pages/PrivacyPage').then(m => ({ defaul
 const TermsPage = lazy(() => import('./pages/TermsPage').then(m => ({ default: m.TermsPage })));
 const HelpPage = lazy(() => import('./pages/HelpPage').then(m => ({ default: m.HelpPage })));
 const FeedbackPage = lazy(() => import('./pages/FeedbackPage').then(m => ({ default: m.FeedbackPage })));
+const A1CheckpointPage = lazy(() => import('./pages/A1CheckpointPage').then(m => ({ default: m.A1CheckpointPage })));
 
 /** Routes only — do not put feature logic here */
 export default function App() {
@@ -57,6 +58,8 @@ export default function App() {
               <Route path="roleplay" element={<RoleplayPage />} />
               <Route path="dashboard" element={<DashboardPage />} />
               <Route path="learn" element={<ContinueLearningPage />} />
+              {/* A1 unit checkpoint — additive route; soft-locked by unit unlock */}
+              <Route path="checkpoint/:unitIndex" element={<A1CheckpointPage />} />
               <Route path="practice" element={<PracticeHubPage />} />
               <Route path="rapid-fire" element={<RapidBlitzPage />} />
               <Route path="rapid-blitz" element={<RapidBlitzPage />} />

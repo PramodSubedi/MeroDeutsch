@@ -21,7 +21,7 @@ export function Footer() {
               Explore
             </h4>
             <ul className="space-y-0.5 text-xs text-slate-600 dark:text-slate-400 font-medium">
-              <li><Link to="/" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Dashboard</Link></li>
+              <li><Link to="/dashboard" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Dashboard</Link></li>
               <li><Link to="/alphabet" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Alphabet & Sounds</Link></li>
               <li><Link to="/articles" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Article Trainer</Link></li>
               <li><Link to="/glossary" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Glossary & Words</Link></li>
@@ -44,9 +44,9 @@ export function Footer() {
         <div className="mt-4 pt-3 flex flex-col sm:flex-row justify-between items-center text-xs text-slate-500 dark:text-slate-400 px-2 gap-3">
           <p>© {new Date().getFullYear()} MeroDeutsch. Designed for seamless multilingual learning.</p>
           <div className="flex space-x-4 font-medium">
-            <span className="hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer transition-colors">Privacy</span>
-            <span className="hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer transition-colors">Terms</span>
-            <span className="hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer transition-colors">Support</span>
+            <Link to="/privacy" className="inline-flex min-h-[44px] items-center hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Privacy</Link>
+            <Link to="/terms" className="inline-flex min-h-[44px] items-center hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Terms</Link>
+            <Link to="/help" className="inline-flex min-h-[44px] items-center hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Support</Link>
           </div>
         </div>
       </div>
