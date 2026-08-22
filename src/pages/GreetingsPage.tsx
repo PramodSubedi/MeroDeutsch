@@ -1,18 +1,37 @@
-import { useEffect, useRef, useState } from 'react';
-import { MessageCircle, Sparkles } from 'lucide-react';
+/**
+ * src/pages/GreetingsPage.tsx
+ *
+ * Unit 1 — Greetings. Learn list + engine-driven Listen & Type quiz
+ * (`useExerciseSession` + `<ListenAndType>`). The quiz draws a finite deck of
+ * 10 unique greetings per round (without replacement via pickNUnique); a fresh
+ * round reshuffles on "Play again". XP/SRS reporting is owned entirely by the
+ * Lesson Engine session.
+ */
+
+import { useEffect, useMemo, useState } from 'react';
+import { MessageCircle, Sparkles, Shuffle } from 'lucide-react';
 import { sharedTextDatabase } from '../data/sharedContent';
 import { useLang } from '../hooks/useLang';
 import { usePageTitle } from '../hooks/usePageTitle';
-import { useReviewQueue } from '../hooks/useReviewQueue';
-import { useXp } from '../hooks/useXp';
 import { speakWord } from '../hooks/useSpeech';
 import { StandardStudyCard } from '../components/StandardStudyCard';
 import { SectionGrid } from '../components/SectionGrid';
 import { TabGroup } from '../components/TabGroup';
 import { theme } from '../config/theme';
 import { curriculumService } from '../services';
-import { drawWithoutReplacement } from '../utils/questionGenerator';
+import { pickNUnique } from '../utils/questionGenerator';
+import {
+  useExerciseSession,
+  type ExerciseQuestion,
+} from '../hooks/useExerciseSession';
+import { ListenAndType } from '../components/exercises/ListenAndType';
+import { MatchPairs, type MatchPair } from '../components/exercises/MatchPairs';
 import type { GreetingItem } from '../types';
+
+/** Engine-compatible greeting question (audio prompt = the word itself). */
+interface GreetingQuestion extends ExerciseQuestion {}
+
+const DECK_SIZE = 10;
 
 function normalize(input: string): string {
   return input.trim().toLowerCase().replace(/\s+/g, ' ');
@@ -22,68 +41,74 @@ export function GreetingsPage() {
   usePageTitle('Greetings');
   const { langMode } = useLang();
   const isDE = langMode === 'german';
-  const { addWrongAnswer } = useReviewQueue();
-  const { reportAnswer } = useXp();
-  const [mode, setMode] = useState<'learn' | 'quiz'>('learn');
+  const [mode, setMode] = useState<'learn' | 'quiz' | 'match'>('learn');
   const [greetings, setGreetings] = useState<GreetingItem[]>([]);
-  const [quizItem, setQuizItem] = useState<GreetingItem | null>(null);
-  const [quizInput, setQuizInput] = useState('');
-  const [quizStatus, setQuizStatus] = useState<'idle' | 'correct' | 'wrong'>('idle');
-  const [quizScore, setQuizScore] = useState(0);
-  const [quizTotal, setQuizTotal] = useState(0);
-  const quizInputRef = useRef<HTMLInputElement>(null);
-  // Track shown greeting keys so the same prompt isn't repeated until the pool cycles.
-  const usedQuizKeysRef = useRef<Set<string>>(new Set());
+  const [loaded, setLoaded] = useState(false);
+  /** Increments to reshuffle a fresh quiz deck. */
+  const [runId, setRunId] = useState(0);
 
   useEffect(() => {
-    curriculumService.getGreetings().then(data => {
-      setGreetings(data);
-      if (data.length > 0) {
-        setQuizItem(data[0]);
-        // Register the initial item so the first nextQuiz() cannot redraw it.
-        usedQuizKeysRef.current.add(data[0].de);
-      }
-    });
+    curriculumService
+      .getGreetings()
+      .then((data) => {
+        setGreetings(data);
+        setLoaded(true);
+      })
+      .catch(() => setLoaded(true));
   }, []);
+
+  // Finite without-replacement deck per round (Lesson Engine contract).
+  const deck = useMemo<GreetingQuestion[]>(
+    () =>
+      pickNUnique({ items: greetings, count: Math.min(DECK_SIZE, greetings.length), getKey: (g) => g.de }).map(
+        (g) => ({
+          key: g.de,
+          correctAnswer: g.de,
+          speakPrompt: g.de,
+        })
+      ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [greetings, runId]
+  );
+
+  const session = useExerciseSession<GreetingQuestion>({
+    questions: deck,
+    module: 'greetings',
+    matches: (input, q) => normalize(input) === normalize(q.correctAnswer),
+  });
+
+  // Unit 1 split-screen matching: first 6 greetings as DE↔EN pairs.
+  const matchPairs = useMemo<MatchPair[]>(
+    () =>
+      greetings.slice(0, 6).map((g) => ({
+        id: g.de,
+        de: g.de,
+        en: g.en,
+      })),
+    [greetings]
+  );
 
   const title = isDE ? 'Begrüßungen' : sharedTextDatabase.greetings.title;
   const description = isDE
     ? 'Lerne gängige deutsche Begrüßungen'
     : sharedTextDatabase.greetings.description;
 
-  const nextQuiz = () => {
-    if (greetings.length === 0) return;
-    const next = drawWithoutReplacement(greetings, usedQuizKeysRef.current, (item) => item.de);
-    if (!next) return;
-    setQuizItem(next);
-    setQuizInput('');
-    setQuizStatus('idle');
-    speakWord(next.de);
-    quizInputRef.current?.focus();
-  };
-
-  const checkQuiz = () => {
-    if (!quizInput.trim() || !quizItem) return;
-    setQuizTotal((t) => t + 1);
-    const correct = normalize(quizInput) === normalize(quizItem.de);
-    if (correct) {
-      setQuizStatus('correct');
-      setQuizScore((s) => s + 1);
-      // +10 XP for a correct quiz answer
-      reportAnswer({ correct: true, module: 'greetings' });
-    } else {
-      setQuizStatus('wrong');
-      addWrongAnswer({
-        moduleType: 'greetings',
-        itemKey: quizItem.de,
-        userAnswer: quizInput.trim(),
-        correctAnswer: quizItem.de,
-      });
-    }
-  };
-
-  if (greetings.length === 0 || !quizItem) {
+  if (!loaded) {
     return <div className={theme.page.container}>Loading...</div>;
+  }
+
+  // Pool empty (not seeded yet / offline before first fetch) — friendly state.
+  if (greetings.length === 0) {
+    return (
+      <div className={theme.page.container}>
+        <h1 className={theme.page.heading}>{title}</h1>
+        <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">
+          {isDE
+            ? 'Inhalte werden noch geladen — verbinde dich einmal mit dem Internet.'
+            : 'Content is still loading — connect to the internet once to populate it.'}
+        </p>
+      </div>
+    );
   }
 
   return (
@@ -95,6 +120,7 @@ export function GreetingsPage() {
         tabs={[
           { id: 'learn', label: isDE ? 'Lernliste' : 'Learn List', icon: MessageCircle },
           { id: 'quiz', label: isDE ? 'Hören & Tippen' : 'Listen & Type', icon: Sparkles },
+          { id: 'match', label: isDE ? 'Paare' : 'Match', icon: Shuffle },
         ]}
         activeTab={mode}
         onTabChange={setMode}
@@ -120,64 +146,46 @@ export function GreetingsPage() {
       )}
 
       {mode === 'quiz' && (
-        <div className={`${theme.panel.surface} mx-auto max-w-lg text-center`}>
-          <h3 className="mb-2 font-bold">{isDE ? 'Hören & Tippen' : 'Listen & Type'}</h3>
-          <p className="mb-3 text-sm text-slate-500 dark:text-slate-400">
-            {isDE
-              ? 'Höre die Begrüßung und tippe sie.'
-              : 'Hear the greeting and type it.'}
-          </p>
-          <div className="mb-3 flex items-center justify-center gap-3">
-            <button type="button" onClick={() => speakWord(quizItem.de)} className={theme.button.primary}>
-              🔊 {isDE ? 'Abspielen' : 'Play'}
-            </button>
-            <span className="text-sm text-slate-500">
-              {isDE ? 'Punkte' : 'Score'}: <b>{quizScore}</b> / {quizTotal}
-            </span>
-          </div>
-          <div className="mb-3 flex h-16 items-center justify-center rounded-2xl border border-dashed border-blue-300 bg-blue-50/60 text-lg font-semibold text-blue-700 dark:border-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
-            {quizStatus === 'idle' ? (
-              <span className="text-sm font-medium text-blue-600/70 dark:text-blue-300/70">
-                {isDE ? '🎧 Höre genau zu' : '🎧 Listen carefully'}
-              </span>
-            ) : quizStatus === 'correct' ? (
-              <span className="text-green-600 dark:text-green-400">🎉 {isDE ? 'Richtig!' : 'Correct!'}</span>
-            ) : (
-              <span className="text-red-600 dark:text-red-400">
-                ❌ {isDE ? `Richtig: ${quizItem.de}` : `Correct: ${quizItem.de}`}
-              </span>
-            )}
-          </div>
-          <input
-            ref={quizInputRef}
-            type="text"
-            value={quizInput}
-            onChange={(event) => {
-              setQuizInput(event.target.value);
-              if (quizStatus === 'correct' || quizStatus === 'wrong') setQuizStatus('idle');
-            }}
-            onKeyDown={(event) => {
-              if (event.key === 'Enter') {
-                if (quizStatus === 'correct' || quizStatus === 'wrong') nextQuiz();
-                else checkQuiz();
-              }
-            }}
+        <div className="mx-auto max-w-lg">
+          <ListenAndType
+            session={session}
+            onPlayPrompt={(q) => speakWord(q.correctAnswer)}
             placeholder={isDE ? 'Tippe die Begrüßung…' : 'Type the greeting…'}
-            className={theme.input}
-            aria-label="Listen and type"
-            disabled={quizStatus === 'correct'}
+            hideFooter
           />
-          <div className="mt-4 flex justify-center gap-3">
-            {quizStatus === 'correct' || quizStatus === 'wrong' ? (
-              <button type="button" onClick={nextQuiz} className={theme.button.primary}>
-                {isDE ? 'Weiter →' : 'Next →'}
+          {/* Round footer: next/finish + play again */}
+          <div className="mt-3 flex justify-center gap-3">
+            {session.locked && (
+              <button type="button" onClick={session.next} className={theme.button.primary}>
+                {session.index >= session.total - 1
+                  ? isDE ? 'Fertig' : 'Finish'
+                  : isDE ? 'Weiter →' : 'Next →'}
               </button>
-            ) : (
-              <button type="button" onClick={checkQuiz} className={theme.button.primary}>
-                {isDE ? 'Prüfen' : 'Check'}
+            )}
+            {!session.locked && session.answered > 0 && session.index >= session.total && (
+              <button
+                type="button"
+                onClick={() => setRunId((r) => r + 1)}
+                className={theme.button.secondary}
+              >
+                {isDE ? 'Neue Runde 🔄' : 'Play again 🔄'}
               </button>
             )}
           </div>
+          {session.index >= session.total && session.total > 0 && (
+            <p className="mt-3 text-center text-sm font-semibold text-slate-600 dark:text-slate-300">
+              {isDE
+                ? `Runde beendet — ${session.score}/${session.total} richtig.`
+                : `Round complete — ${session.score}/${session.total} correct.`}
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* Unit 1 matching mechanic (Lesson Engine MatchPairs primitive). */}
+      {mode === 'match' && matchPairs.length > 0 && (
+        <div className="mx-auto max-w-lg">
+          <MatchPairs pairs={matchPairs} module="greetings" />
         </div>
       )}
     </div>

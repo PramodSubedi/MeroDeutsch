@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLang } from '../hooks/useLang';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { theme } from '../config/theme';
-import { microStories, type MicroStory, type StorySentence, type StoryWord } from '../data/stories';
+import { curriculumService } from '../services';
+import type { MicroStory, StorySentence, StoryWord } from '../types/curriculum';
 
 /**
  * Interactive word tooltip component
@@ -52,7 +53,7 @@ function SentenceCard({ sentence }: { sentence: StorySentence }) {
   };
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+    <div className="rounded-xl bg-white p-4 shadow-sm dark:bg-slate-900">
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 space-y-2">
           {/* German text with interactive words */}
@@ -102,7 +103,7 @@ function StoryCard({ story, onSelect }: { story: MicroStory; onSelect: () => voi
     <button
       type="button"
       onClick={onSelect}
-      className="w-full text-left rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-blue-400 hover:shadow-md dark:border-slate-700 dark:bg-slate-800 dark:hover:border-blue-500"
+      className="w-full text-left rounded-xl bg-white p-5 shadow-sm transition hover:shadow-md dark:bg-slate-900"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1">
@@ -128,12 +129,38 @@ function StoryCard({ story, onSelect }: { story: MicroStory; onSelect: () => voi
 }
 
 /**
- * Micro-Stories Page - Interactive German stories with word-level translations
+ * Micro-Stories Page - Interactive German stories with word-level translations.
+ * Data is DYNAMIC: fetched via curriculumService.getStories() (content_items pool).
  */
 export function StoriesPage() {
   usePageTitle('Stories');
   const { langMode } = useLang();
   const [selectedStory, setSelectedStory] = useState<MicroStory | null>(null);
+  // Dynamic stories — fetched via the service layer (no static import).
+  const [stories, setStories] = useState<MicroStory[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    curriculumService
+      .getStories()
+      .then((data) => {
+        if (!cancelled) {
+          setStories(data);
+          setLoading(false);
+        }
+      })
+      .catch((e) => {
+        if (!cancelled) {
+          setError(e instanceof Error ? e.message : 'Failed to load stories');
+          setLoading(false);
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const handleBackToList = () => {
     setSelectedStory(null);
@@ -153,7 +180,7 @@ export function StoriesPage() {
                 ? 'Kurze Geschichten auf A1-Niveau mit interaktiven Wortübersetzungen'
                 : 'Short A1-level German stories with interactive word translations'}
             </p>
-            
+
             <div className={theme.panel.info}>
               <p className="text-sm">
                 💡 <strong>{langMode === 'german' ? 'Tipp:' : 'Tip:'}</strong>{' '}
@@ -163,15 +190,33 @@ export function StoriesPage() {
               </p>
             </div>
 
-            <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {microStories.map((story) => (
-                <StoryCard
-                  key={story.id}
-                  story={story}
-                  onSelect={() => setSelectedStory(story)}
-                />
-              ))}
-            </div>
+            {loading ? (
+              <div className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
+                {langMode === 'german' ? 'Geschichten werden geladen…' : 'Loading stories…'}
+              </div>
+            ) : error ? (
+              <div className="mt-6 rounded-xl bg-amber-50 p-4 text-sm text-amber-800 dark:bg-amber-950/40 dark:text-amber-200">
+                {langMode === 'german'
+                  ? `Fehler beim Laden: ${error}.`
+                  : `Load error: ${error}.`}
+              </div>
+            ) : stories.length === 0 ? (
+              <div className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
+                {langMode === 'german'
+                  ? 'Noch keine Geschichten verfügbar. Verbinde dich mit dem Internet.'
+                  : 'No stories available yet. Go online once to load them.'}
+              </div>
+            ) : (
+              <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {stories.map((story) => (
+                  <StoryCard
+                    key={story.id}
+                    story={story}
+                    onSelect={() => setSelectedStory(story)}
+                  />
+                ))}
+              </div>
+            )}
           </>
         ) : (
           // Story reading view

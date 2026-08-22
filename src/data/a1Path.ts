@@ -339,6 +339,7 @@ export const A1_LEARN_NODES: PathNode[] = [
 
 /** Bonus chips — optional, never gates the next unit. */
 export const A1_BONUS_NODES: PathNode[] = [
+  { id: 'u2-sentence', unitIndex: 1, kind: 'bonus', label: lbl('Sentence Builder', 'Satzbau'), to: '/sentence-builder', bonus: true },
   { id: 'u4-stories', unitIndex: 3, kind: 'bonus', label: lbl('Stories', 'Geschichten'), to: '/stories', bonus: true },
   { id: 'u5-pronunciation', unitIndex: 4, kind: 'bonus', label: lbl('Pronunciation', 'Aussprache'), to: '/pronunciation', bonus: true },
 ];

@@ -7,7 +7,6 @@ import { useAuth } from './useAuth';
 import { getItem, setItem } from '../utils/safeStorage';
 import { scopedKey } from '../utils/userStorage';
 import { pickRandom } from '../utils/questionGenerator';
-import fallbackNouns from '../data/nouns.json';
 
 const STORAGE_KEY_BASE = 'meroDeutschArticleGame';
 
@@ -70,25 +69,24 @@ export function useArticleGame() {
     setStreak(persisted.streak);
   }, [storageKey]);
 
-  // Load article nouns from the curriculum service, falling back to the
-  // bundled offline deck (src/data/nouns.json) when the dynamic source
-  // returns an empty set or fails — so the trainer never renders blank.
+  // Load article nouns from the curriculum service. Offline-first:
+  // RPC -> table SELECT -> Dexie cache (populated by a prior online fetch).
+  // On a cold offline start the pool may be empty — the page shows an empty
+  // state instead of a bundled JSON deck.
   useEffect(() => {
     let cancelled = false;
     curriculumService
       .getArticles()
       .then((data) => {
         if (cancelled) return;
-        const pool = data.length > 0 ? data : (fallbackNouns as ArticleItem[]);
-        setArticlesData(pool);
-        setCurrentItem(pickRandom(pool));
+        setArticlesData(data);
+        if (data.length > 0) setCurrentItem(pickRandom(data));
         setLoading(false);
       })
       .catch(() => {
         if (cancelled) return;
-        const pool = fallbackNouns as ArticleItem[];
-        setArticlesData(pool);
-        setCurrentItem(pickRandom(pool));
+        setArticlesData([]);
+        setCurrentItem(null);
         setLoading(false);
       });
     return () => {

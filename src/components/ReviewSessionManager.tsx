@@ -133,7 +133,7 @@ export function ReviewSessionManager({
   // ── Summary view ──────────────────────────────────────────────
   if (showSummary) {
     return (
-      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-6 shadow-sm text-center space-y-4 max-w-md mx-auto">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm text-center space-y-4 max-w-md mx-auto">
         <div className="w-16 h-16 bg-blue-50 dark:bg-blue-950/50 text-blue-600 rounded-full flex items-center justify-center mx-auto text-2xl">
           🎉
         </div>
@@ -191,7 +191,7 @@ export function ReviewSessionManager({
   if (sessionActive && sessionItems.length > 0) {
     const currentItem = sessionItems[currentIndex];
     return (
-      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-6 shadow-sm max-w-xl mx-auto space-y-6">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm max-w-xl mx-auto space-y-6">
         <div className="flex justify-between items-center text-xs text-slate-400 font-medium">
           <span>
             {isDE ? 'Fortschritt' : 'Progress'}: {currentIndex + 1} / {sessionItems.length}
@@ -254,8 +254,8 @@ export function ReviewSessionManager({
   ];
 
   return (
-    <div className={embedded ? 'space-y-4' : 'bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-6 shadow-sm space-y-4'}>
-      {embedded && <div className="h-px bg-slate-200 dark:bg-slate-700" aria-hidden="true" />}
+    <div className={embedded ? 'space-y-4' : 'bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm space-y-4'}>
+      {embedded && <div className="h-px bg-slate-100 dark:bg-slate-800" aria-hidden="true" />}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
           <h3 className="text-base font-bold text-slate-800 dark:text-slate-100">

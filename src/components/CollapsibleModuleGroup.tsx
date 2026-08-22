@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { NavLink } from 'react-router-dom';
 import { ChevronDown, ChevronUp, type LucideIcon } from 'lucide-react';
 import { theme } from '../config/theme';
@@ -37,6 +37,21 @@ export function CollapsibleModuleGroup({
     return stored !== null ? stored === 'true' : defaultExpanded;
   });
 
+  // Measure the real content height so the expand animation never clips
+  // wrapping rows (the old `modules.length * 48` formula assumed one row per
+  // module while the actual layout is a wrapping horizontal flex).
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [contentHeight, setContentHeight] = useState(0);
+
+  useEffect(() => {
+    const measure = () => setContentHeight(contentRef.current?.scrollHeight ?? 0);
+    measure();
+    // Re-measure when the label visibility changes across the sm breakpoint.
+    const mq = window.matchMedia('(min-width: 640px)');
+    mq.addEventListener('change', measure);
+    return () => mq.removeEventListener('change', measure);
+  }, []);
+
   useEffect(() => {
     localStorage.setItem(storageKey, String(isExpanded));
   }, [isExpanded, storageKey]);
@@ -74,11 +89,11 @@ export function CollapsibleModuleGroup({
         id={`${storageKey}-content`}
         className="overflow-hidden transition-all duration-300 ease-in-out"
         style={{
-          maxHeight: isExpanded ? `${modules.length * 48}px` : '0px',
+          maxHeight: isExpanded ? `${contentHeight || modules.length * 48}px` : '0px',
           opacity: isExpanded ? 1 : 0,
         }}
       >
-        <div className="inline-flex flex-wrap gap-1">
+        <div ref={contentRef} className="inline-flex flex-wrap gap-1">
           {modules.map((module) => {
             const Icon = module.icon;
             const label = isDE ? module.labelDE : module.label;

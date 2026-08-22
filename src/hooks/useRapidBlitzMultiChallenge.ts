@@ -5,8 +5,9 @@
  * vocabulary, audio, articles, numbers, verbs, pronunciation.
  *
  * The game is organised into 6 sections (one per challenge type), each with
- * exactly 4 questions.  Questions for each section come from the static pools
- * defined in `src/data/rapidFireSections.ts`.
+ * exactly 4 questions. Questions for each section come from the DYNAMIC
+ * `content_items` pool via curriculumService.getRapidFireSections() — no
+ * bundled static data.
  *
  * For the **Mixed** mode the 6 sections are played in order (CHALLENGE_MODES),
  * with the questions inside each section shuffled on every run.
@@ -25,15 +26,8 @@ import { useAuth } from './useAuth';
 import { getItem, setItem } from '../utils/safeStorage';
 import { scopedKey } from '../utils/userStorage';
 import { shuffleArray } from '../utils/shuffleArray';
+import { curriculumService } from '../services';
 import type { ChallengeType, RapidBlitzChallenge } from '../types/rapidBlitz';
-import {
-  VOCAB_TRANSLATION_QUESTIONS,
-  AUDIO_COMPREHENSION_QUESTIONS,
-  ARTICLE_PRECISION_QUESTIONS,
-  NUMBER_CONVERSION_QUESTIONS,
-  VERB_CONJUGATION_QUESTIONS,
-  PRONUNCIATION_READING_QUESTIONS,
-} from '../data/rapidFireSections';
 
 const RAPID_BLITZ_DURATION = 60; // seconds per round
 const HIGH_SCORE_KEY_BASE = 'rapidBlitzMultiChallenge';
@@ -49,15 +43,8 @@ const CHALLENGE_MODES = [
   'pronunciation-reading',
 ] as const;
 
-/** Map of challenge type -> the 4 static questions for that section. */
-const SECTION_POOLS: Record<ChallengeType, RapidBlitzChallenge[]> = {
-  'vocabulary-translation': VOCAB_TRANSLATION_QUESTIONS as RapidBlitzChallenge[],
-  'audio-comprehension': AUDIO_COMPREHENSION_QUESTIONS as RapidBlitzChallenge[],
-  'article-precision': ARTICLE_PRECISION_QUESTIONS as RapidBlitzChallenge[],
-  'number-conversion': NUMBER_CONVERSION_QUESTIONS as RapidBlitzChallenge[],
-  'verb-conjugation': VERB_CONJUGATION_QUESTIONS as RapidBlitzChallenge[],
-  'pronunciation-reading': PRONUNCIATION_READING_QUESTIONS as RapidBlitzChallenge[],
-};
+/** Empty pool map used until the dynamic pools load. */
+const EMPTY_POOLS: Record<string, RapidBlitzChallenge[]> = {};
 
 export interface AnswerRecord {
   challengeType: string;
@@ -106,19 +93,22 @@ function shuffleChallengeOptions(challenge: RapidBlitzChallenge): RapidBlitzChal
 }
 
 /**
- * Build the flat challenge list for a given mode.
- * Mixed mode => 6 sections, each section's 4 questions shuffled locally.
- * Focused mode => just the 4 questions for that section.
+ * Build the flat challenge list for a given mode from the DYNAMIC pools.
+ * Mixed mode => 6 sections, each section's questions shuffled locally.
+ * Focused mode => just the questions for that section.
  *
  * Each question's options are shuffled exactly once here (at run start), so
  * the correct answer lands on a random position and stays fixed for the rest
  * of the run (no re-shuffle on re-render).
  */
-function buildChallengeList(mode: ChallengeType | undefined): RapidBlitzChallenge[] {
+function buildChallengeList(
+  mode: ChallengeType | undefined,
+  pools: Record<string, RapidBlitzChallenge[]>
+): RapidBlitzChallenge[] {
   if (mode) {
-    return [...(SECTION_POOLS[mode] ?? [])].map(shuffleChallengeOptions);
+    return [...(pools[mode] ?? [])].map(shuffleChallengeOptions);
   }
-  return CHALLENGE_MODES.flatMap((m) => shuffleArray(SECTION_POOLS[m])).map(shuffleChallengeOptions);
+  return CHALLENGE_MODES.flatMap((m) => shuffleArray(pools[m] ?? [])).map(shuffleChallengeOptions);
 }
 
 /**
@@ -132,6 +122,8 @@ export function useRapidBlitzMultiChallenge(mode?: ChallengeType) {
 
   const [status, setStatus] = useState<'idle' | 'preRound' | 'countdown' | 'sectionInfo' | 'playing' | 'finished'>('idle');
   const [challenges, setChallenges] = useState<RapidBlitzChallenge[]>([]);
+  /** Dynamic section pools — fetched once via the service layer. */
+  const [sectionPools, setSectionPools] = useState<Record<string, RapidBlitzChallenge[]>>(EMPTY_POOLS);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
   const [secondsLeft, setSecondsLeft] = useState(RAPID_BLITZ_DURATION);
@@ -156,14 +148,35 @@ export function useRapidBlitzMultiChallenge(mode?: ChallengeType) {
 
   const totalSections = useMemo(() => Math.max(1, Math.ceil(challenges.length / QUESTIONS_PER_SECTION)), [challenges.length]);
 
-  // ── Build challenge pools from static section data ───────────────
+  // ── Load dynamic section pools via the service layer ─────────────
+  useEffect(() => {
+    let cancelled = false;
+    curriculumService
+      .getRapidFireSections()
+      .then((raw) => {
+        if (cancelled) return;
+        const pools: Record<string, RapidBlitzChallenge[]> = {};
+        for (const [type, questions] of Object.entries(raw)) {
+          pools[type] = questions as RapidBlitzChallenge[];
+        }
+        setSectionPools(pools);
+      })
+      .catch(() => {
+        /* pools stay empty -> game shows zero-question state */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // ── Build challenge list whenever mode or pools change ───────────
   useEffect(() => {
     let cancelled = false;
     if (!cancelled) {
-      setChallenges(buildChallengeList(mode));
+      setChallenges(buildChallengeList(mode, sectionPools));
     }
     return () => { cancelled = true; };
-  }, [mode]);
+  }, [mode, sectionPools]);
 
   // ── Session timer (only runs while actively playing) ─────────────
   useEffect(() => {

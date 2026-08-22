@@ -70,17 +70,26 @@ const tools: ToolItem[] = [
   },
 ];
 
-export function PracticeToolsGrid() {
+interface PracticeToolsGridProps {
+  /** Show only the first N tools (quick-access mode, e.g. on /learn). */
+  limit?: number;
+  /** Append a "See all tools" link to /practice (used with limit). */
+  footerLink?: boolean;
+}
+
+export function PracticeToolsGrid({ limit, footerLink = false }: PracticeToolsGridProps) {
+  const visible = limit ? tools.slice(0, limit) : tools;
   return (
+    <div>
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10">
-      {tools.map((tool, index) => (
+      {visible.map((tool, index) => (
         <Link
           key={index}
           to={tool.href}
-          className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-6 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between group cursor-pointer"
+          className="bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between group cursor-pointer"
         >
           <div>
-            <div className={`w-12 h-12 rounded-2xl border flex items-center justify-center mb-4 group-hover:scale-105 transition-transform`}>
+            <div className={`w-12 h-12 rounded-2xl border flex items-center justify-center mb-4 group-hover:scale-105 transition-transform ${tool.wellClass}`}>
               <tool.icon className={`w-5 h-5 ${tool.iconColor}`} strokeWidth={2} aria-hidden="true" />
             </div>
             <h3 className="text-base font-bold text-slate-900 dark:text-white">{tool.title}</h3>
@@ -95,6 +104,15 @@ export function PracticeToolsGrid() {
           </div>
         </Link>
       ))}
+    </div>
+    {footerLink && limit && limit < tools.length && (
+      <Link
+        to="/practice"
+        className="inline-flex min-h-[44px] items-center gap-1 text-sm font-semibold text-blue-600 transition hover:text-blue-800 active:scale-95 dark:text-blue-300"
+      >
+        {`See all tools (${tools.length})`} <span aria-hidden="true">→</span>
+      </Link>
+    )}
     </div>
   );
 }

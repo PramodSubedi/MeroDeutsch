@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
-import { BookText, Check, RefreshCw, Layout, Globe } from 'lucide-react';
+import { BookText, Check, RefreshCw, Layout, Globe, GitBranch } from 'lucide-react';
 import { useLang } from '../hooks/useLang';
 import { usePageTitle } from '../hooks/usePageTitle';
-import { useReviewQueue } from '../hooks/useReviewQueue';
-import { useXp } from '../hooks/useXp';
+import { useAnswerReporter } from '../hooks/useExerciseSession';
 import { TabGroup } from '../components/TabGroup';
 import { theme } from '../config/theme';
 import { curriculumService } from '../services';
 import type { GrammarDrill } from '../types/curriculum';
+import { GrammarFlowchart, NOMINATIVE_ACCUSATIVE_FLOW } from '../components/exercises/GrammarFlowchart';
 
 const CASES = [
   { label: 'Nominativ', de: 'Wer? (subject)', en: 'The subject of the sentence' },
@@ -18,15 +18,15 @@ export function GrammarPage() {
   usePageTitle('Grammar');
   const { langMode } = useLang();
   const isDE = langMode === 'german';
-  const { addWrongAnswer } = useReviewQueue();
-  const { reportAnswer } = useXp();
-  const [tab, setTab] = useState<'sein' | 'haben' | 'weakVerb' | 'cases' | 'bridge'>('sein');
+  // Lesson Engine integration: XP + SRS reporting via the shared reporter.
+  const reportResult = useAnswerReporter();
+  const [tab, setTab] = useState<'sein' | 'haben' | 'weakVerb' | 'cases' | 'accusative' | 'bridge'>('sein');
   const [answers, setAnswers] = useState<Record<number, string>>({});
 
   const [drills, setDrills] = useState<GrammarDrill[]>([]);
 
   useEffect(() => {
-    if (tab === 'bridge') {
+    if (tab === 'bridge' || tab === 'accusative') {
       setDrills([]);
     } else {
       curriculumService.getGrammarDrills(tab).then(setDrills);
@@ -38,14 +38,17 @@ export function GrammarPage() {
   const score = drills.filter((d, i) => answers[i] === d.correct).length;
 
   const choose = (qi: number, opt: string) => {
+    if (answers[qi] !== undefined) return; // locked after first selection
     const next = { ...answers, [qi]: opt };
     setAnswers(next);
-    if (opt === drills[qi].correct) {
-      // +10 XP for a correct grammar drill answer (first selection only)
-      if (answers[qi] !== opt) reportAnswer({ correct: true, module: 'grammar' });
-    } else {
-      addWrongAnswer({ moduleType: 'grammar', itemKey: drills[qi].prompt, userAnswer: opt, correctAnswer: drills[qi].correct });
-    }
+    // Single-point gamification/SRS reporting (Lesson Engine reporter).
+    reportResult({
+      correct: opt === drills[qi].correct,
+      module: 'grammar',
+      itemKey: drills[qi].prompt,
+      userAnswer: opt,
+      correctAnswer: drills[qi].correct,
+    });
   };
 
   return (
@@ -61,6 +64,7 @@ export function GrammarPage() {
           { id: 'haben', label: 'haben', icon: Check },
           { id: 'weakVerb', label: 'machen', icon: RefreshCw },
           { id: 'cases', label: isDE ? 'Fälle' : 'Cases', icon: Layout },
+          { id: 'accusative', label: isDE ? 'Nominativ → Akkusativ' : 'Nom → Acc', icon: GitBranch },
           { id: 'bridge', label: isDE ? 'Grammatik-Brücke' : 'Grammar Bridge', icon: Globe },
         ]}
         activeTab={tab}
@@ -81,6 +85,17 @@ export function GrammarPage() {
         </div>
       )}
 
+      {/* P1: Nominativ → Akkusativ explainer (der → den) as an interactive
+          decision tree — static reference content, no engine required. */}
+      {tab === 'accusative' && (
+        <div className="mb-6">
+          <GrammarFlowchart
+            flow={NOMINATIVE_ACCUSATIVE_FLOW}
+            title={isDE ? 'Nominativ → Akkusativ (der → den)' : 'Nominative → Accusative (der → den)'}
+          />
+        </div>
+      )}
+
       {tab === 'bridge' && (
         <div className="space-y-6">
           {/* Section 1: Word Order SVO vs SOV vs V2 */}
@@ -95,7 +110,7 @@ export function GrammarPage() {
             </p>
 
             <div className="mt-4 grid gap-4 md:grid-cols-3">
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900">
+              <div className="rounded-2xl bg-slate-50 p-4 dark:bg-slate-800/60">
                 <h3 className="font-bold text-blue-600 dark:text-blue-400">English (SVO)</h3>
                 <p className="mt-1 text-xs text-slate-500">Subject + Verb + Object</p>
                 <div className="mt-3 text-lg font-extrabold text-slate-800 dark:text-slate-100">
@@ -104,7 +119,7 @@ export function GrammarPage() {
               </div>
 
               {!isDE && (
-                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900">
+                <div className="rounded-2xl bg-slate-50 p-4 dark:bg-slate-800/60">
                   <h3 className="font-bold text-amber-600 dark:text-amber-400">Nepali (SOV)</h3>
                   <p className="mt-1 text-xs text-slate-500">Subject + Object + Verb</p>
                   <div className="mt-3 text-lg font-extrabold text-slate-800 dark:text-slate-100">
@@ -141,7 +156,7 @@ export function GrammarPage() {
             </p>
 
             <div className="mt-4 grid gap-4 md:grid-cols-2">
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5 dark:border-slate-800 dark:bg-slate-900">
+              <div className="rounded-2xl bg-slate-50 p-5 dark:bg-slate-800/60">
                 <div className="flex items-center gap-2">
                   <span className="text-lg">🧑‍🤝‍🧑</span>
                   <h3 className="font-bold text-slate-800 dark:text-slate-100">Informal — du (German) ↔ तिमी (Nepali)</h3>
@@ -161,7 +176,7 @@ export function GrammarPage() {
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5 dark:border-slate-800 dark:bg-slate-900">
+              <div className="rounded-2xl bg-slate-50 p-5 dark:bg-slate-800/60">
                 <div className="flex items-center gap-2">
                   <span className="text-lg">💼</span>
                   <h3 className="font-bold text-slate-800 dark:text-slate-100">Formal — Sie (German) ↔ तपाईं (Nepali)</h3>

@@ -4,8 +4,6 @@ import { theme } from '../config/theme';
 import { getModuleRoutes } from '../config/modules';
 import { useDarkMode } from '../hooks/useDarkMode';
 import { useLang } from '../hooks/useLang';
-import { useTranslation } from '../hooks/useTranslation';
-import { sharedTranslations } from '../data/sharedContent';
 import { useAuth } from '../hooks/useAuth';
 import { useOnlineStatus } from '../hooks/useOnlineStatus';
 import { useLastModule } from '../hooks/useLastModule';
@@ -27,7 +25,6 @@ export function Layout() {
   const { dark, toggle: toggleDark } = useDarkMode();
   const { langMode, toggle: toggleLang } = useLang();
   const { user } = useAuth();
-  const { t } = useTranslation(langMode);
   const { isOnline } = useOnlineStatus();
   const { rememberModule } = useLastModule();
   const { rank, onLevelUp } = useXp();
@@ -46,7 +43,8 @@ export function Layout() {
     pathname.startsWith('/checkpoint') || // A1 unit checkpoint = active quiz
     pathname.endsWith('/quiz') ||
     pathname.includes('/dictation') ||
-    pathname.includes('/pronunciation');
+    pathname.includes('/pronunciation') ||
+    pathname.includes('/sentence-builder');
 
   // Global level-up listener — any module that awards XP can trigger the modal.
   useEffect(() => {
@@ -104,9 +102,9 @@ export function Layout() {
 
       {/* Global non-blocking milestone/level-up toast */}
       {toast && (
-        <div className="fixed top-16 left-1/2 z-50 -translate-x-1/2 flex items-center gap-3 rounded-2xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm font-bold text-blue-800 shadow-lg animate-bounce dark:border-blue-800 dark:bg-blue-950 dark:text-blue-200">
+        <div className="fixed top-20 left-1/2 z-[60] -translate-x-1/2 flex items-center gap-3 rounded-xl bg-slate-900 px-4 py-3 text-sm font-bold text-white shadow-lg animate-bounce dark:bg-white dark:text-slate-900">
           <span>{toast.icon} {toast.message}</span>
-          <button type="button" onClick={dismissToast} className="text-blue-500 hover:text-blue-700 font-bold" aria-label="Dismiss">
+          <button type="button" onClick={dismissToast} className="text-white/70 hover:text-white dark:text-slate-500 dark:hover:text-slate-900 font-bold" aria-label="Dismiss">
             ×
           </button>
         </div>
@@ -123,22 +121,27 @@ export function Layout() {
       <header className={theme.layout.header} role="banner">
         <div className={theme.layout.headerInner}>
           {/* Logo is a link → Home */}
-          <Link to="/" aria-label="MeroDeutsch – Home" className="inline-flex min-h-[44px] items-center transition duration-200 hover:opacity-90 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none focus-visible:ring-offset-2 rounded">
+          <Link to="/" aria-label="MeroDeutsch – Home" className="inline-flex h-9 items-center transition duration-200 hover:opacity-90 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none focus-visible:ring-offset-2 rounded-lg">
             <Logo size="sm" variant="navbar" />
           </Link>
           <nav className={`${theme.layout.nav} hidden md:flex`}>
             {link('/', 'Home')}
             {user && link('/dashboard', 'Dashboard')}
             {user ? link('/learn', 'Learn') : link('/auth', 'Sign in')}
+            {/* Two-state language switch — highlighted side = CURRENT mode */}
             <button
               type="button"
               onClick={toggleLang}
-              className={theme.layout.toggleButton}
-              aria-label={langMode === 'normal' ? 'Switch to German' : 'Switch to English'}
+              aria-label={langMode === 'normal' ? 'Switch to German only' : 'Switch to bilingual mode'}
+              aria-pressed={langMode === 'german'}
+              className={theme.layout.langSwitch.track}
             >
-              {langMode === 'normal'
-                ? t(sharedTranslations.navigation.toggleGerman)
-                : t(sharedTranslations.navigation.toggleNormal)}
+              <span className={langMode === 'normal' ? theme.layout.langSwitch.optionActive : theme.layout.langSwitch.optionInactive}>
+                EN
+              </span>
+              <span className={langMode === 'german' ? theme.layout.langSwitch.optionActive : theme.layout.langSwitch.optionInactive}>
+                DE
+              </span>
             </button>
             <button
               type="button"
@@ -164,13 +167,20 @@ export function Layout() {
           </nav>
           {/* Mobile-only controls — nav is hidden below md */}
           <div className="flex items-center gap-2 md:hidden">
+            {/* Two-state language switch (mobile) — highlighted side = CURRENT mode */}
             <button
               type="button"
               onClick={toggleLang}
-              className={theme.layout.toggleButton}
-              aria-label={langMode === 'normal' ? 'Switch to German (DE)' : 'Switch to English (EN)'}
+              aria-label={langMode === 'normal' ? 'Switch to German only' : 'Switch to bilingual mode'}
+              aria-pressed={langMode === 'german'}
+              className={theme.layout.langSwitch.track}
             >
-              {langMode === 'normal' ? 'DE' : 'EN'}
+              <span className={langMode === 'normal' ? theme.layout.langSwitch.optionActive : theme.layout.langSwitch.optionInactive}>
+                EN
+              </span>
+              <span className={langMode === 'german' ? theme.layout.langSwitch.optionActive : theme.layout.langSwitch.optionInactive}>
+                DE
+              </span>
             </button>
             <button
               type="button"

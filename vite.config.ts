@@ -50,6 +50,30 @@ export default defineConfig({
         cleanupOutdatedCaches: true,
         navigateFallback: '/index.html',
         navigateFallbackDenylist: [/^\/api\//],
+        // Offline-first AUDIO caching: dictation/TTS audio blobs are fetched
+        // once, then served instantly from the Cache Storage API on every
+        // later visit (including fully offline) — matching the reliability of
+        // our Dexie text data. CacheFirst: audio files are immutable content;
+        // a 30-entry / 30-day LRU keeps storage bounded.
+        runtimeCaching: [
+          {
+            // Match same- and cross-origin audio by request destination OR
+            // file extension (covers bundled assets and CDN-hosted clips).
+            urlPattern: ({ request, url }) =>
+              request.destination === 'audio' ||
+              /\.(mp3|wav|ogg|m4a)$/i.test(url.pathname),
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'md-audio-v1',
+              expiration: {
+                maxEntries: 30,
+                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+                purgeOnQuotaError: true,
+              },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+        ],
       },
       manifest: {
         name: 'MeroDeutsch',

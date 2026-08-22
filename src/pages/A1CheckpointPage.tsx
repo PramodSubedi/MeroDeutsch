@@ -1,45 +1,41 @@
 /**
  * src/pages/A1CheckpointPage.tsx
  *
- * A1 unit checkpoint quiz (10-15 items), additive. Locked rules (C/D):
+ * A1 unit checkpoint quiz (10-15 items), driven by the shared Lesson Engine
+ * (`useExerciseSession` + `<MultipleChoice>`). Locked rules (C/D):
  *  - 10-15 items drawn from the unit's real curriculumService loaders.
  *  - pickNUnique -> no repeats until the pool cycles (without replacement).
- *  - Options shuffled AT creation; stable after the question locks.
+ *  - Options shuffled AT creation AND re-shuffled once at session mount;
+ *    stable after the question locks (engine guarantee).
  *  - >=80% passes (advances unlockedUnitIndex, persists best score).
  *  - <80%: score shown, Retry (anytime, no cooldown), Back to map.
- *  - Misses queued via the REAL addWrongAnswer (moduleType 'a1-checkpoint').
+ *  - Misses queued via the REAL addWrongAnswer (moduleType 'a1-checkpoint')
+ *    — routed through the engine's single integration point.
  *  - Correct answers award XP via reportAnswer (existing XpContext -> toast).
  *  - TTS safety (C6): "Hear" speaks ONLY the prompt before the question locks;
- *    the answer is spoken only AFTER the answer is locked.
+ *    the answer is spoken only AFTER the answer is locked (MultipleChoice).
  *  - Level-ups render as non-blocking toasts (Layout treats /checkpoint as a
  *    quiz route).
  */
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
 import { useLang } from '../hooks/useLang';
 import { useA1Path } from '../hooks/useA1Path';
-import { useReviewQueue } from '../hooks/useReviewQueue';
-import { useXp } from '../hooks/useXp';
-import { speakText } from '../hooks/useSpeech';
 import { curriculumService } from '../services';
 import { CHECKPOINT_PASS_THRESHOLD, A1_UNITS, type CheckpointSource, type Article } from '../data/a1Path';
 import { pickNUnique } from '../utils/questionGenerator';
 import { shuffleArray } from '../utils/shuffleArray';
-import type { AlphabetItem, ArticleItem, CalendarItem, GreetingItem, NumberItem, VocabEntry } from '../types';
-import type { GrammarDrill } from '../types/curriculum';
+import { useExerciseSession, type ExerciseQuestion } from '../hooks/useExerciseSession';
+import { MultipleChoice } from '../components/exercises/MultipleChoice';
 import { theme } from '../config/theme';
 import { GenderBadge } from '../components/ui/GenderBadge';
+import type { AlphabetItem, ArticleItem, CalendarItem, GreetingItem, NumberItem, VocabEntry } from '../types';
+import type { GrammarDrill } from '../types/curriculum';
 
-export interface CheckpointQuestion {
-  key: string;
+/** Engine-compatible checkpoint question. */
+interface CheckpointQuestion extends ExerciseQuestion {
   prompt: string;
-  /** TTS-safe prompt text (never the answer) — spoken before the question locks. */
-  speakPrompt: string;
-  /** What to speak after the answer is locked (the full answer). */
-  speakAfter: string;
-  options: string[];
-  correctAnswer: string;
   source: CheckpointSource;
   article?: Article; // only for article-precision rendering
 }
@@ -57,7 +53,7 @@ interface LoadedData {
 function buildOptions(correct: string, decoyPool: string[], count: number): string[] {
   const uniqueDecoys = Array.from(new Set(decoyPool.filter((d) => d !== correct)));
   const chosen = uniqueDecoys.slice(0, count - 1);
-  return shuffleArray([correct, ...chosen]);
+  return [correct, ...chosen]; // final shuffle happens once at session mount
 }
 
 function buildQuestions(
@@ -117,7 +113,7 @@ function buildQuestions(
             prompt: a.noun, // noun WITHOUT article -> TTS safe before lock (C6)
             speakPrompt: a.noun,
             speakAfter: `${a.art} ${a.noun}`,
-            options: buildOptions(a.art, ['der', 'die', 'das'], 3),
+            options: ['der', 'die', 'das'],
             correctAnswer: a.art,
             source: 'article-precision',
             article: a.art,
@@ -132,7 +128,7 @@ function buildQuestions(
             prompt: g.prompt,
             speakPrompt: g.prompt,
             speakAfter: g.correct,
-            options: shuffleArray([...g.options]),
+            options: [...g.options],
             correctAnswer: g.correct,
             source: 'grammar-drill',
           })
@@ -182,23 +178,38 @@ export function A1CheckpointPage() {
 
   const { langMode } = useLang();
   const isDE = langMode === 'german';
-  const navigate = useNavigate();
-  const { addWrongAnswer } = useReviewQueue();
-  const { reportAnswer } = useXp();
   const { markCheckpointResult, isUnitUnlocked, isCheckpointComplete } = useA1Path();
 
   const unit = A1_UNITS[unitIndex];
   const unlocked = isUnitUnlocked(unitIndex);
   const alreadyPassed = isCheckpointComplete(unitIndex);
 
-  const [phase, setPhase] = useState<'loading' | 'ready' | 'playing' | 'finished'>('loading');
+  const [phase, setPhase] = useState<'loading' | 'ready' | 'playing'>('loading');
   const [questions, setQuestions] = useState<CheckpointQuestion[]>([]);
-  const [idx, setIdx] = useState(0);
-  const [selected, setSelected] = useState<string | null>(null);
-  const [answers, setAnswers] = useState<Record<number, string>>({});
-  const [score, setScore] = useState(0);
   /** Increments on retry so the deck-build effect re-runs with a fresh draw. */
   const [runId, setRunId] = useState(0);
+
+  // ---- Lesson Engine session (owns lock/score/reporting) ----
+  const session = useExerciseSession<CheckpointQuestion>({
+    questions,
+    module: 'a1-checkpoint',
+    getOptions: (q) => q.options,
+  });
+  const { index, answered, score, results } = session;
+
+  // Guard so markCheckpointResult fires exactly once per run.
+  const recordedRef = useRef(false);
+  useEffect(() => {
+    if (
+      phase === 'playing' &&
+      questions.length > 0 &&
+      answered >= questions.length &&
+      !recordedRef.current
+    ) {
+      recordedRef.current = true;
+      markCheckpointResult(unitIndex, questions.length > 0 ? score / questions.length : 0);
+    }
+  }, [phase, answered, questions.length, score, unitIndex, markCheckpointResult]);
 
   useEffect(() => {
     if (!unlocked) {
@@ -239,58 +250,31 @@ export function A1CheckpointPage() {
     };
   }, [unlocked, unitIndex, unit.checkpoint.specs, runId]);
 
-  const finish = useCallback(() => {
-    const total = questions.length;
-    const fraction = total > 0 ? score / total : 0;
-    markCheckpointResult(unitIndex, fraction);
-    setPhase('finished');
-  }, [questions, score, unitIndex, markCheckpointResult]);
+  const startRun = useCallback(() => {
+    recordedRef.current = false;
+    setPhase('playing');
+  }, []);
 
-  useEffect(() => {
-    if (phase === 'playing' && idx >= questions.length && questions.length > 0) {
-      finish();
-    }
-  }, [phase, idx, questions, finish]);
-
-  const handleAnswer = useCallback(
-    (q: CheckpointQuestion, choice: string) => {
-      if (selected !== null) return;
-      const correct = choice === q.correctAnswer;
-      setSelected(choice);
-      setAnswers((prev) => ({ ...prev, [idx]: choice }));
-      if (correct) {
-        setScore((s) => s + 1);
-        reportAnswer({ correct: true, module: 'a1-checkpoint' });
-      } else {
-        addWrongAnswer({
-          moduleType: 'a1-checkpoint',
-          itemKey: q.key,
-          userAnswer: choice,
-          correctAnswer: q.correctAnswer,
-        });
-      }
-    },
-    [selected, idx, reportAnswer, addWrongAnswer]
-  );
-
-  const next = useCallback(() => {
-    setSelected(null);
-    setIdx((i) => i + 1);
+  const retry = useCallback(() => {
+    setQuestions([]);
+    setPhase('loading');
+    setRunId((r) => r + 1); // fresh without-replacement draw
   }, []);
 
   const total = questions.length;
   const percent = total > 0 ? Math.round((score / total) * 100) : 0;
   const passed = percent >= Math.round(CHECKPOINT_PASS_THRESHOLD * 100);
+  const finished = phase === 'playing' && total > 0 && answered >= total;
 
-  const missedItems = Object.entries(answers)
-    .map(([k, v]) => {
-      const q = questions[Number(k)];
-      return q && v !== q.correctAnswer ? { i: Number(k), q, userAnswer: v } : null;
-    })
-    .filter(Boolean) as { i: number; q: CheckpointQuestion; userAnswer: string }[];
-
-  const onStart = () => setPhase('playing');
-  const current = questions[idx];
+  const missedItems = useMemo(
+    () =>
+      questions
+        .map((q) => ({ q, correct: results[q.key] }))
+        .filter((entry): entry is { q: CheckpointQuestion; correct: boolean } =>
+          entry.correct === false
+        ),
+    [questions, results]
+  );
 
   // ---- Locked (soft-lock) screen ----
   if (!unlocked) {
@@ -359,7 +343,7 @@ export function A1CheckpointPage() {
           )}
           <button
             type="button"
-            onClick={onStart}
+            onClick={startRun}
             className={`${theme.button.primary} mt-6 w-full text-lg`}
           >
             {isDE ? 'Puffer starten' : 'Start checkpoint'}
@@ -373,7 +357,7 @@ export function A1CheckpointPage() {
   }
 
   // ---- Finished / result ----
-  if (phase === 'finished') {
+  if (finished) {
     return (
       <div className={theme.page.container}>
         <div className={theme.panel.surface}>
@@ -400,16 +384,13 @@ export function A1CheckpointPage() {
               <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 {isDE ? 'Fehleranalyse' : 'Mistakes to review'}
               </h2>
-              {missedItems.map(({ q, userAnswer }) => (
+              {missedItems.map(({ q }) => (
                 <div
                   key={q.key}
-                  className="rounded-lg border border-red-200 bg-red-50 p-3 text-xs dark:border-red-900/50 dark:bg-red-950/30"
+                  className="rounded-lg bg-red-50 p-3 text-xs dark:bg-red-950/30"
                 >
                   <div className="font-medium text-slate-700 dark:text-slate-300">
                     {q.prompt} → {q.correctAnswer}
-                  </div>
-                  <div className="text-slate-500 dark:text-slate-400">
-                    {isDE ? 'Deine Antwort' : 'Your answer'}: {userAnswer}
                   </div>
                 </div>
               ))}
@@ -417,19 +398,7 @@ export function A1CheckpointPage() {
           )}
 
           <div className="mt-6 grid gap-2">
-            <button
-              type="button"
-              onClick={() => {
-                setPhase('loading');
-                setIdx(0);
-                setSelected(null);
-                setAnswers({});
-                setScore(0);
-                setQuestions([]);
-                setRunId((r) => r + 1); // fresh without-replacement draw
-              }}
-              className={`${theme.button.primary} w-full`}
-            >
+            <button type="button" onClick={retry} className={`${theme.button.primary} w-full`}>
               {isDE ? 'Erneut versuchen' : 'Retry'}
             </button>
             <Link to="/learn" className={`${theme.button.secondary} w-full text-center`}>
@@ -441,110 +410,33 @@ export function A1CheckpointPage() {
     );
   }
 
-  // ---- Playing ----
-  if (!current) {
-    return null;
-  }
-  const locked = selected !== null;
-  const isCorrect = locked && selected === current.correctAnswer;
-
+  // ---- Playing (engine-driven) ----
   return (
     <div className={theme.page.container}>
-      <div className={theme.panel.surface}>
-        <div className="mb-4 flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
-          <span>
-            {isDE ? 'Frage' : 'Question'} {idx + 1} / {total}
-          </span>
-          <span>
-            {isDE ? 'Punkte' : 'Score'}: {score}
-          </span>
-        </div>
-
-        <div className="mb-6 flex items-center justify-between">
-          <div>
-            <div className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-              {isDE ? 'Stimme' : 'Prompt'}
-            </div>
-            <div className="mt-1 break-words text-2xl font-bold text-slate-900 dark:text-white">
-              {current.prompt}
-              {current.source === 'article-precision' && (
-                <span className="ml-2 align-top">
-                  <GenderBadge article={current.article ?? 'der'} dot labeled={false} />
-                </span>
-              )}
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={() => speakText(current.speakPrompt, 0.9)}
-            className={theme.button.icon}
-            aria-label={isDE ? 'Aussprache des Prompts' : 'Hear the prompt'}
-            title={isDE ? 'Prompt (nicht die Antwort)' : 'Prompt only — not the answer'}
-          >
-            🔊
-          </button>
-        </div>
-
-        <div className="mt-4 grid gap-2 sm:grid-cols-2">
-          {current.options.map((opt) => {
-            const chosen = locked && selected === opt;
-            const isAnswer = opt === current.correctAnswer;
-            const bg =
-              locked && isAnswer
-                ? 'border-emerald-300 bg-emerald-100 text-emerald-900 dark:border-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-300'
-                : chosen
-                  ? 'border-red-300 bg-red-100 text-red-900 dark:border-red-800 dark:bg-red-950/30 dark:text-red-300'
-                  : 'border-slate-200 bg-white text-slate-800 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200';
-            return (
-              <button
-                key={opt}
-                type="button"
-                disabled={locked}
-                onClick={() => handleAnswer(current, opt)}
-                className={`min-h-[44px] rounded-xl border px-4 py-3 text-left text-sm font-semibold transition active:scale-95 disabled:opacity-70 ${bg}`}
-              >
-                {opt}
-              </button>
-            );
-          })}
-        </div>
-
-        {locked && (
-          <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm dark:border-slate-700 dark:bg-slate-900">
-            {isCorrect
-              ? isDE
-                ? '🎉 Richtig!'
-                : '🎉 Correct!'
-              : isDE
-                ? '✅ Richtig: '
-                : '✅ Correct: '}
-            {locked && !isCorrect ? current.correctAnswer : null}
-            <button
-              type="button"
-              onClick={() => speakText(current.speakAfter, 0.85)}
-              className={theme.button.icon + ' mt-2'}
-              aria-label={isDE ? 'Antwort anhören' : 'Hear the answer'}
-            >
-              🔊 {isDE ? 'Antwort' : 'Answer'}
-            </button>
-          </div>
+      <MultipleChoice
+        session={session}
+        renderPrompt={(q) => (
+          <>
+            {q.prompt}
+            {q.source === 'article-precision' && (
+              <span className="ml-2 align-top">
+                <GenderBadge article={q.article ?? 'der'} dot labeled={false} />
+              </span>
+            )}
+          </>
         )}
-
-        <div className="mt-6 flex justify-between gap-2">
-          <button type="button" onClick={() => navigate('/learn')} className={theme.button.secondary}>
-            {isDE ? 'Zurück' : 'Back'}
+        hideFooter
+      />
+      {/* Footer with Back + engine-driven Next/Finish */}
+      <div className="mx-auto mt-3 flex max-w-3xl justify-between gap-2 px-1">
+        <Link to="/learn" className={theme.button.secondary}>
+          {isDE ? 'Zurück' : 'Back'}
+        </Link>
+        {session.locked && (
+          <button type="button" onClick={session.next} className={theme.button.primary}>
+            {index >= total - 1 ? (isDE ? 'Fertig' : 'Finish') : isDE ? 'Weiter' : 'Next'}
           </button>
-          {locked && idx < total - 1 && (
-            <button type="button" onClick={next} className={theme.button.primary}>
-              {isDE ? 'Weiter' : 'Next'}
-            </button>
-          )}
-          {locked && idx === total - 1 && (
-            <button type="button" onClick={finish} className={theme.button.primary}>
-              {isDE ? 'Fertig' : 'Finish'}
-            </button>
-          )}
-        </div>
+        )}
       </div>
     </div>
   );

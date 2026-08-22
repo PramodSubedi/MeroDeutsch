@@ -7,7 +7,7 @@ export function XpWidget() {
   const isDE = langMode === 'german';
 
   return (
-    <div className="rounded-[28px] border border-slate-200 bg-gradient-to-br from-purple-50 to-blue-50 p-6 shadow-sm transition duration-300 hover:shadow-xl dark:border-slate-700 dark:from-slate-900 dark:to-slate-950">
+    <div className="rounded-[28px] bg-gradient-to-br from-purple-50 to-blue-50 p-6 shadow-sm transition duration-300 hover:shadow-xl dark:from-slate-900 dark:to-slate-950">
       <div className="flex items-center justify-between">
         <div className="text-sm uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">
           {isDE ? 'Level & XP' : 'Level & XP'}

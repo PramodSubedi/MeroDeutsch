@@ -30,17 +30,15 @@ export function A1DailyLoop() {
   const pushNode = getPushNode();
 
   return (
-    <section className="rounded-[24px] border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-950">
+    <section className="rounded-[24px] bg-white p-4 shadow-sm dark:bg-slate-900">
       <div className="mb-3 flex items-center justify-between gap-3">
         <h2 className="text-lg font-semibold text-slate-950 dark:text-white">
           {isDE ? 'Dein Tagesablauf' : 'Your daily loop'}
         </h2>
-        <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500 dark:text-slate-400">
-          {isDE ? `Einheit ${unlockedUnitIndex + 1} freigeschaltet` : `Unit ${unlockedUnitIndex + 1} unlocked`}
-        </span>
       </div>
 
-      <div className="grid gap-2 sm:grid-cols-3">
+      {/* items-start keeps all three columns top-aligned now that Push carries a caption */}
+      <div className="grid items-start gap-2 sm:grid-cols-3">
         {/* 1. Warm-up — only when due items exist; else hidden (falls back to Push) */}
         {dueCount > 0 && (
           <button
@@ -55,17 +53,23 @@ export function A1DailyLoop() {
           </button>
         )}
 
-        {/* 2. Push — next unlocked incomplete node */}
+        {/* 2. Push — next unlocked incomplete node. The unit-unlocked caption
+            sits directly ABOVE the button it describes (was an orphan header tag). */}
         {pushNode ? (
-          <Link
-            to={pushNode.to}
-            className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-2xl bg-blue-600 px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-blue-700 active:scale-95"
-          >
-            🚀 {isDE ? 'Weiter' : 'Push'}
-            <span className="truncate text-xs font-medium opacity-90">
-              {isDE ? pushNode.label.de : pushNode.label.en}
+          <div className="flex flex-col gap-1">
+            <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
+              🔓 {isDE ? `Einheit ${unlockedUnitIndex + 1} freigeschaltet` : `Unit ${unlockedUnitIndex + 1} unlocked`}
             </span>
-          </Link>
+            <Link
+              to={pushNode.to}
+              className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-2xl bg-blue-600 px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-blue-700 active:scale-95"
+            >
+              🚀 {isDE ? 'Weiter' : 'Push'}
+              <span className="truncate text-xs font-medium opacity-90">
+                {isDE ? pushNode.label.de : pushNode.label.en}
+              </span>
+            </Link>
+          </div>
         ) : (
           <span className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-800 dark:border-emerald-900/50 dark:bg-emerald-950/30 dark:text-emerald-300">
             ✅ {isDE ? 'Alles erledigt!' : 'All caught up!'}

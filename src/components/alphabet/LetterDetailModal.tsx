@@ -1,7 +1,8 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { AlphabetItem, LangMode } from '../../types';
 import { speakLetter, speakWord } from '../../hooks/useSpeech';
-import { pronunciationTips } from '../../data/pronunciationTips';
+import { curriculumService } from '../../services';
+import type { PronunciationTip } from '../../types/curriculum';
 import { theme } from '../../config/theme';
 
 interface Props {
@@ -13,6 +14,25 @@ interface Props {
 export function LetterDetailModal({ item, langMode, onClose }: Props) {
   const dialogRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  // Dynamic pronunciation tips — fetched via the service layer (no static import).
+  const [tips, setTips] = useState<Record<string, PronunciationTip>>({});
+
+  // Fetch tips once when the modal first opens.
+  useEffect(() => {
+    if (!item || Object.keys(tips).length > 0) return;
+    let cancelled = false;
+    curriculumService
+      .getPronunciationTips()
+      .then((data) => {
+        if (!cancelled) setTips(data);
+      })
+      .catch(() => {
+        /* tips stay empty -> tip block simply not rendered */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [item, tips]);
 
   // Handle Escape key to close modal
   useEffect(() => {
@@ -34,6 +54,7 @@ export function LetterDetailModal({ item, langMode, onClose }: Props) {
 
   if (!item) return null;
   const isDE = langMode === 'german';
+  const tip = tips[item.id];
 
   return (
     <div className={theme.modal.overlay} onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="modal-title">
@@ -68,11 +89,11 @@ export function LetterDetailModal({ item, langMode, onClose }: Props) {
             <div className="mb-1 text-xs font-bold text-blue-500">{isDE ? 'Beispiel' : 'Example'}</div>
             <div className="font-bold">{isDE ? item.example : item.exampleFull}</div>
           </div>
-          {pronunciationTips[item.id] && (
+          {tip && (
             <div className="mb-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-left dark:border-amber-800 dark:bg-amber-900/30">
               <div className="mb-1 text-xs font-bold text-amber-600 dark:text-amber-400">💡 {isDE ? 'Aussprache-Tipp' : 'Pronunciation Tip'}</div>
               <div className="text-sm">
-                {isDE ? pronunciationTips[item.id].ne : pronunciationTips[item.id].en}
+                {isDE ? tip.ne : tip.en}
               </div>
             </div>
           )}

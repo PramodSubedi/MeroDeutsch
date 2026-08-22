@@ -16,9 +16,10 @@ const RESET_SCOPED_KEYS = [
   'meroDeutschAchievements',
   'meroDeutschWrongAnswers',
   'mero_deutsch_xp',
+  'meroDeutschA1Path',
 ];
 
-const RESET_TABLES: { table: string; column: string; reset?: boolean }[] = [
+const RESET_TABLES: { table: string; column: string }[] = [
   { table: 'user_progress', column: 'user_id' },
   { table: 'user_streaks', column: 'user_id' },
   { table: 'user_achievements', column: 'user_id' },
@@ -56,17 +57,17 @@ export function SettingsPage() {
     // Also clear unscoped XP key in case it was written before scoping.
     removeItem('mero_deutsch_xp');
 
-    // 2. Best-effort cloud clear for the current user.
+    // 2. Best-effort cloud clear for the current user. Track failures so we
+    //    never claim success when cloud rows survived (they would re-sync and
+    //    silently undo the reset on next login).
+    let cloudFailures = 0;
     if (userId) {
       for (const t of RESET_TABLES) {
         try {
-          if (t.reset) {
-            await supabase.from(t.table).update({}).eq(t.column, userId);
-          } else {
-            await supabase.from(t.table).delete().eq(t.column, userId);
-          }
+          const { error } = await supabase.from(t.table).delete().eq(t.column, userId);
+          if (error) cloudFailures += 1;
         } catch {
-          // best-effort — ignore failures so the local reset still applies
+          cloudFailures += 1;
         }
       }
     }
@@ -74,7 +75,13 @@ export function SettingsPage() {
     setResetting(false);
     setConfirmReset(false);
     setResetMessage(
-      isDE ? 'Dein Fortschritt wurde zurückgesetzt.' : 'Your progress has been reset.'
+      cloudFailures > 0
+        ? isDE
+          ? 'Lokaler Fortschritt gelöscht. Einige Cloud-Daten konnten nicht entfernt werden — bitte erneut versuchen.'
+          : 'Local progress cleared. Some cloud data could not be removed — please try again.'
+        : isDE
+          ? 'Dein Fortschritt wurde zurückgesetzt.'
+          : 'Your progress has been reset.'
     );
     // Force a reload so all hooks re-read the cleared keys.
     window.setTimeout(() => window.location.reload(), 800);

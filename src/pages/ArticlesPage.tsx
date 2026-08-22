@@ -12,7 +12,6 @@ import { curriculumService } from '../services';
 import { CompactAudioButton } from '../components/CompactAudioButton';
 import { pickRandom } from '../utils/questionGenerator';
 import type { ArticleItem } from '../types';
-import fallbackNouns from '../data/nouns.json';
 
 
 function formatTime(seconds: number) {
@@ -52,16 +51,14 @@ export function ArticlesPage() {
     curriculumService
       .getArticles()
       .then((data) => {
-        // Defensive: never render a blank card. If the dynamic source is empty
-        // or slow, fall back to the bundled offline deck (src/data/nouns.json).
-        const pool = data.length > 0 ? data : (fallbackNouns as ArticleItem[]);
-        setArticlesData(pool);
-        setCurrentItem(pickRandom(pool));
+        // Dynamic + offline-first: RPC -> table SELECT -> Dexie cache.
+        // No bundled JSON fallback — an empty pool renders a friendly state.
+        setArticlesData(data);
+        if (data.length > 0) setCurrentItem(pickRandom(data));
       })
       .catch(() => {
-        const pool = fallbackNouns as ArticleItem[];
-        setArticlesData(pool);
-        setCurrentItem(pickRandom(pool));
+        setArticlesData([]);
+        setCurrentItem(null);
       });
   }, []);
 
@@ -428,7 +425,7 @@ export function ArticlesPage() {
           </div>
           <div className="flex flex-col gap-2 sm:items-end">
             {/* Mode Toggle: Learn vs Quiz */}
-            <div className="flex gap-2 rounded-full border border-slate-300 bg-slate-100 p-1 dark:border-slate-600 dark:bg-slate-800">
+            <div className="flex gap-2 rounded-full bg-slate-100 p-1 dark:bg-slate-800">
               <button
                 type="button"
                 onClick={() => setMode('learn')}

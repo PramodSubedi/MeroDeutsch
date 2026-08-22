@@ -4,7 +4,7 @@ import { speakWord } from '../hooks/useSpeech';
 import { useLang } from '../hooks/useLang';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { useMilestoneToast } from '../hooks/useMilestoneToast';
-import { useXp } from '../hooks/useXp';
+import { useAnswerReporter } from '../hooks/useExerciseSession';
 import { theme } from '../config/theme';
 import { curriculumService } from '../services';
 import type { RoleplayScenario, RoleplayOption } from '../types/curriculum';
@@ -23,7 +23,8 @@ export function RoleplayPage() {
   const { langMode } = useLang();
   const isDE = langMode === 'german';
   const { toast, showToast, dismissToast } = useMilestoneToast();
-  const { reportAnswer } = useXp();
+  // Lesson Engine integration: XP + SRS reporting via the shared reporter.
+  const reportResult = useAnswerReporter();
   const [scenarioIdx, setScenarioIdx] = useState(0);
   const [stepIdx, setStepIdx] = useState(0);
   const [status, setStatus] = useState<'idle' | 'correct' | 'wrong'>('idle');
@@ -47,11 +48,18 @@ export function RoleplayPage() {
 
   const choose = (opt: RoleplayOption) => {
     if (status !== 'idle') return;
+    const correctOption = step.options.find((o) => o.ok);
+    // Single-point gamification/SRS reporting (Lesson Engine reporter).
+    reportResult({
+      correct: opt.ok,
+      module: 'roleplay',
+      itemKey: `${scenario.id}:step${stepIdx}`,
+      userAnswer: opt.text,
+      correctAnswer: correctOption?.text ?? '',
+    });
     if (opt.ok) {
       setStatus('correct');
       setCorrectCount((c) => c + 1);
-      // +10 XP for a correct roleplay response
-      reportAnswer({ correct: true, module: 'roleplay' });
       if (isLastStep && isLastScenario) {
         showToast({ message: isDE ? 'Alle Szenarien geschafft! 🎉' : 'All scenarios complete! 🎉', icon: '🏅' });
       }

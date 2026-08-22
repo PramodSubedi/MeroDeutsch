@@ -3,8 +3,16 @@
  *
  * A1 learning-path state — single source of truth for the linear campaign.
  *
- * Persisted per-user under the NEW, isolated storage key:
- *   `meroDeutschA1Path:<userId>`   (guest -> `meroDeutschA1Path:guest`)
+ * Storage architecture (cross-device sync upgrade):
+ *   PRIMARY   : Dexie (IndexedDB) table `a1PathState`, keyed by userId
+ *               ('guest' included) — offline-first, every write lands here first.
+ *   CLOUD     : Supabase table `a1_path_state` — debounced upsert when
+ *               authenticated; failed/offline writes are queued via
+ *               syncService.queueA1PathPush and replayed on reconnect.
+ *   HYDRATION : Dexie row → (if empty & authed) Supabase row → (if still
+ *               empty) one-time migration from the LEGACY localStorage key
+ *               `meroDeutschA1Path:<userId>`, which is removed after a
+ *               successful copy so no existing learner loses progress.
  *
  * This key NEVER touches the existing progress / review-queue / XP keys
  * (mero_deutsch_progress / review_queue / mero_deutsch_xp / user_progress /
@@ -37,7 +45,11 @@ import {
   type ReactNode,
 } from 'react';
 import { useAuth } from './useAuth';
-import { getItem, setItem } from '../utils/safeStorage';
+import { db } from '../lib/db';
+import type { A1PathStateRow } from '../lib/db';
+import { userDataService } from '../services/userDataService';
+import { queueA1PathPush } from '../services/syncService';
+import { getItem, removeItem } from '../utils/safeStorage';
 import { scopedKey } from '../utils/userStorage';
 import {
   A1_CURRICULUM,
@@ -47,8 +59,11 @@ import {
   type PathNode,
 } from '../data/a1Path';
 
-const STORAGE_BASE = 'meroDeutschA1Path';
-const DEBOUNCE_MS = 400;
+/** Legacy localStorage base key — read-only, migrated into Dexie once. */
+const LEGACY_STORAGE_BASE = 'meroDeutschA1Path';
+
+/** Debounce window for the Supabase cloud mirror (ms). */
+const CLOUD_DEBOUNCE_MS = 600;
 
 export interface A1PathState {
   completedNodeIds: string[];
@@ -62,27 +77,48 @@ const DEFAULT_STATE: A1PathState = {
   checkpointBestByUnit: {},
 };
 
-function loadState(key: string): A1PathState {
+/** True when a state object carries any real progress worth hydrating/migrating. */
+function hasProgress(s: Partial<A1PathState>): boolean {
+  return (
+    (Array.isArray(s.completedNodeIds) && s.completedNodeIds.length > 0) ||
+    (typeof s.unlockedUnitIndex === 'number' && s.unlockedUnitIndex > 0) ||
+    Boolean(
+      s.checkpointBestByUnit && Object.keys(s.checkpointBestByUnit).length > 0
+    )
+  );
+}
+
+/** Clamp/normalize any partial state into a valid A1PathState. */
+function normalizeState(raw: Partial<A1PathState>): A1PathState {
+  const unlockedRaw =
+    typeof raw.unlockedUnitIndex === 'number' ? raw.unlockedUnitIndex : 0;
+  return {
+    completedNodeIds: Array.isArray(raw.completedNodeIds)
+      ? raw.completedNodeIds.filter((id): id is string => typeof id === 'string')
+      : [],
+    unlockedUnitIndex: Math.max(0, Math.min(unlockedRaw, A1_UNIT_COUNT - 1)),
+    checkpointBestByUnit:
+      raw.checkpointBestByUnit &&
+      typeof raw.checkpointBestByUnit === 'object'
+        ? raw.checkpointBestByUnit
+        : {},
+  };
+}
+
+/** Write-through to Dexie (the offline-first primary store). Never throws. */
+async function persistToDexie(userId: string, state: A1PathState): Promise<void> {
+  if (!db) return;
+  const row: A1PathStateRow = {
+    userId,
+    unlockedUnitIndex: state.unlockedUnitIndex,
+    completedNodeIds: state.completedNodeIds,
+    checkpointBestByUnit: state.checkpointBestByUnit,
+    updatedAt: new Date().toISOString(),
+  };
   try {
-    const raw = getItem(key);
-    if (!raw) return DEFAULT_STATE;
-    const parsed = JSON.parse(raw) as Partial<A1PathState>;
-    const unlocked = Math.max(
-      0,
-      Math.min(
-        typeof parsed.unlockedUnitIndex === 'number' ? parsed.unlockedUnitIndex : 0,
-        A1_UNIT_COUNT - 1
-      )
-    );
-    const completed = Array.isArray(parsed.completedNodeIds) ? parsed.completedNodeIds : [];
-    const best = parsed.checkpointBestByUnit ?? {};
-    return {
-      completedNodeIds: completed,
-      unlockedUnitIndex: unlocked,
-      checkpointBestByUnit: best,
-    };
-  } catch {
-    return DEFAULT_STATE;
+    await db.a1PathState.put(row);
+  } catch (err) {
+    console.warn('[a1Path] Dexie persist failed:', err);
   }
 }
 
@@ -117,73 +153,157 @@ interface A1PathProviderProps {
 }
 
 export function A1PathProvider({ children }: A1PathProviderProps) {
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const userId = user?.userId ?? 'guest';
-  const key = useMemo(() => scopedKey(STORAGE_BASE, userId), [userId]);
+  const legacyKey = useMemo(() => scopedKey(LEGACY_STORAGE_BASE, userId), [userId]);
 
   const [state, setState] = useState<A1PathState>(DEFAULT_STATE);
   const [hydrated, setHydrated] = useState(false);
-  const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Load per-user state when the user/identity changes.
+  // Ref mirroring latest state so async hydration/cloud callbacks never read
+  // a stale render-closure value.
+  const stateRef = useRef(state);
   useEffect(() => {
-    setState(loadState(key));
-    setHydrated(true);
-  }, [key]);
+    stateRef.current = state;
+  }, [state]);
 
-  // Cross-tab sync: if another tab writes, reload this user's state.
+  /* ────────────────────────────────────────────────────────────
+   * Hydration: Dexie → Supabase (authed) → legacy localStorage.
+   * Runs once per identity change.
+   * ──────────────────────────────────────────────────────────── */
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const handler = (e: StorageEvent) => {
-      if (e.key === key && e.newValue) {
+    let cancelled = false;
+
+    const load = async () => {
+      setHydrated(false);
+      let next: A1PathState = DEFAULT_STATE;
+
+      // 1. Primary: local Dexie row.
+      if (db) {
         try {
-          setState(JSON.parse(e.newValue) as A1PathState);
-        } catch {
-          /* ignore */
+          const row = await db.a1PathState.get(userId);
+          if (row) next = normalizeState(row);
+        } catch (err) {
+          console.warn('[a1Path] Dexie read failed:', err);
         }
       }
-    };
-    window.addEventListener('storage', handler);
-    return () => window.removeEventListener('storage', handler);
-  }, [key]);
 
-  const clearPendingSave = () => {
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current);
-      saveTimeoutRef.current = null;
-    }
-  };
-
-  // Debounced persist to localStorage.
-  const persist = useCallback(
-    (next: A1PathState) => {
-      clearPendingSave();
-      saveTimeoutRef.current = setTimeout(() => {
+      // 2. Cloud fallback: authenticated user with no local progress yet
+      //    (e.g. first login on a new device) pulls the cloud row.
+      if (!hasProgress(next) && isAuthenticated && user?.userId === userId) {
         try {
-          setItem(key, JSON.stringify(next));
+          const cloud = await userDataService.getA1PathState(userId);
+          if (cloud && hasProgress(cloud)) {
+            next = normalizeState(cloud);
+            void persistToDexie(userId, next); // seed local from cloud
+          }
         } catch (err) {
-          console.warn('[a1Path] persist failed:', err);
+          console.warn('[a1Path] cloud hydration failed:', err);
         }
-      }, DEBOUNCE_MS);
-    },
-    [key]
-  );
+      }
 
-  // Clear pending debounced save on unmount.
+      // 3. Legacy localStorage one-time migration (pre-Dexie installs).
+      if (!hasProgress(next)) {
+        const raw = getItem(legacyKey);
+        if (raw) {
+          try {
+            const parsed = JSON.parse(raw) as Partial<A1PathState>;
+            if (hasProgress(parsed)) {
+              next = normalizeState(parsed);
+              void persistToDexie(userId, next);
+              removeItem(legacyKey); // migrated — retire the legacy key
+            } else {
+              removeItem(legacyKey); // empty legacy shell — clean up
+            }
+          } catch {
+            removeItem(legacyKey); // malformed — clean up
+          }
+        }
+      }
+
+      if (!cancelled) {
+        setState(next);
+        setHydrated(true);
+      }
+    };
+
+    void load();
+    return () => {
+      cancelled = true;
+    };
+  }, [userId, isAuthenticated, user?.userId, legacyKey]);
+
+  /* ────────────────────────────────────────────────────────────
+   * Cloud mirror: debounced Supabase upsert when authenticated.
+   * Offline/failed pushes are queued for replay by executeSync().
+   * ──────────────────────────────────────────────────────────── */
+  const cloudTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
-    return () => clearPendingSave();
-  }, []);
+    if (!hydrated || !isAuthenticated || !user) return;
+
+    if (cloudTimeoutRef.current) clearTimeout(cloudTimeoutRef.current);
+    cloudTimeoutRef.current = setTimeout(() => {
+      userDataService
+        .saveA1PathState(user.userId, stateRef.current)
+        .catch((err) => {
+          console.warn('[a1Path] cloud push failed (queued):', err);
+          queueA1PathPush(user.userId);
+        });
+    }, CLOUD_DEBOUNCE_MS);
+
+    return () => {
+      if (cloudTimeoutRef.current) clearTimeout(cloudTimeoutRef.current);
+    };
+  }, [state, hydrated, isAuthenticated, user]);
+
+  /* ────────────────────────────────────────────────────────────
+   * Cross-tab freshness: after any write, notify other tabs; they
+   * re-read the Dexie row (single-writer-per-tab, Dexie is shared).
+   * ──────────────────────────────────────────────────────────── */
+  const channelRef = useRef<BroadcastChannel | null>(null);
+  useEffect(() => {
+    if (typeof BroadcastChannel === 'undefined') return;
+    const channel = new BroadcastChannel('meroDeutschA1Path');
+    channel.onmessage = (event: MessageEvent<{ userId?: string }>) => {
+      if (event.data?.userId !== userId || !db) return;
+      void db.a1PathState
+        .get(userId)
+        .then((row) => {
+          if (row) setState(normalizeState(row));
+        })
+        .catch(() => {
+          /* ignore */
+        });
+    };
+    channelRef.current = channel;
+    return () => {
+      channel.close();
+      channelRef.current = null;
+    };
+  }, [userId]);
+
+  const broadcast = useCallback(() => {
+    channelRef.current?.postMessage({ userId });
+  }, [userId]);
+
+  /* ────────────────────────────────────────────────────────────
+   * Mutations — setState + immediate Dexie write (offline-first).
+   * ──────────────────────────────────────────────────────────── */
 
   const completeNode = useCallback(
     (id: string) => {
       setState((prev) => {
         if (prev.completedNodeIds.includes(id)) return prev;
-        const next: A1PathState = { ...prev, completedNodeIds: [...prev.completedNodeIds, id] };
-        persist(next);
+        const next: A1PathState = {
+          ...prev,
+          completedNodeIds: [...prev.completedNodeIds, id],
+        };
+        void persistToDexie(userId, next);
+        broadcast();
         return next;
       });
     },
-    [persist]
+    [userId, broadcast]
   );
 
   const markCheckpointResult = useCallback(
@@ -214,17 +334,25 @@ export function A1PathProvider({ children }: A1PathProviderProps) {
           unlockedUnitIndex,
           checkpointBestByUnit: { ...prev.checkpointBestByUnit, [safeUnit]: best },
         };
-        persist(next);
+        void persistToDexie(userId, next);
+        broadcast();
         return next;
       });
     },
-    [persist]
+    [userId, broadcast]
   );
 
   const resetPath = useCallback(() => {
     setState(DEFAULT_STATE);
-    persist(DEFAULT_STATE);
-  }, [persist]);
+    void persistToDexie(userId, DEFAULT_STATE);
+    if (isAuthenticated && user) {
+      // Best-effort cloud reset so other devices converge.
+      userDataService
+        .saveA1PathState(user.userId, DEFAULT_STATE)
+        .catch(() => queueA1PathPush(user.userId));
+    }
+    broadcast();
+  }, [userId, isAuthenticated, user, broadcast]);
 
   const isCheckpointComplete = useCallback(
     (unitIndex: number) => {
@@ -309,13 +437,6 @@ export function A1PathProvider({ children }: A1PathProviderProps) {
       resetPath,
     ]
   );
-
-  // Persist any state change (debounced). hydrated guards against writing the
-  // pre-load default on first render.
-  useEffect(() => {
-    if (!hydrated) return;
-    persist(state);
-  }, [state, hydrated, persist]);
 
   return <A1PathContext.Provider value={value}>{children}</A1PathContext.Provider>;
 }

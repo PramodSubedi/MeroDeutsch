@@ -17,7 +17,7 @@ export function HomePracticeLinks() {
       </span>
       <Link
         to="/learn#practice"
-        className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-blue-600 transition hover:border-blue-300 hover:text-blue-700 dark:border-slate-700 dark:bg-slate-950 dark:text-blue-400 dark:hover:border-blue-500"
+        className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-blue-600 shadow-sm transition hover:bg-blue-50 hover:text-blue-700 dark:bg-slate-900 dark:text-blue-400 dark:hover:bg-blue-950/40"
       >
         <span aria-hidden="true">🎯</span>
         <span>{isDE ? 'Alle Tools auf Learn' : 'All tools on Learn'}</span>

@@ -17,7 +17,7 @@ export function SkeletonLoader() {
         {[...Array(6)].map((_, i) => (
           <div
             key={i}
-            className="animate-pulse rounded-[24px] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-950"
+            className="animate-pulse rounded-[24px] bg-white p-6 shadow-sm dark:bg-slate-900"
           >
             <div className="h-6 w-3/4 rounded bg-slate-200 dark:bg-slate-700"></div>
             <div className="mt-3 h-4 w-full rounded bg-slate-200 dark:bg-slate-700"></div>

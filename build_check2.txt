@@ -1,0 +1,51 @@
+
+> mero-deutsch@0.1.0 build
+> tsc -b && vite build
+
+[36mvite v8.2.1 [32mbuilding client environment for production...[36m[39m
+[2Ktransforming...✓ 2556 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/registerSW.js                              0.13 kB
+dist/manifest.webmanifest                       0.45 kB
+dist/index.html                                 2.24 kB │ gzip:   0.80 kB
+dist/assets/index-D_4ted2I.css                 99.41 kB │ gzip:  15.46 kB
+dist/assets/rotate-ccw-C-9E9tw7.js              0.26 kB │ gzip:   0.20 kB
+dist/assets/safeStorage-CII3DkqM.js             0.49 kB │ gzip:   0.28 kB
+dist/assets/GenderBadge-DPCPzHBC.js             0.61 kB │ gzip:   0.39 kB
+dist/assets/PracticeHubPage-0zqVyL2x.js         0.82 kB │ gzip:   0.50 kB
+dist/assets/preload-helper-Czpn1I53.js          1.19 kB │ gzip:   0.67 kB
+dist/assets/useAuth-o8t-NR8W.js                 1.53 kB │ gzip:   0.79 kB
+dist/assets/FeedbackPage-Jk9FCCNG.js            2.42 kB │ gzip:   1.25 kB
+dist/assets/TermsPage-109CCoSi.js               2.94 kB │ gzip:   1.39 kB
+dist/assets/HelpPage-B4vQFwLE.js                3.47 kB │ gzip:   1.72 kB
+dist/assets/PracticeToolsGrid-CzCAwP24.js       3.83 kB │ gzip:   1.47 kB
+dist/assets/DictationPage-Bch-D_WE.js           4.50 kB │ gzip:   1.84 kB
+dist/assets/RoleplayPage-CaeABkCE.js            4.77 kB │ gzip:   2.06 kB
+dist/assets/PronunciationPage-YZYffDJH.js       4.86 kB │ gzip:   1.94 kB
+dist/assets/ImportDeck-CVvkqREX.js              5.09 kB │ gzip:   2.10 kB
+dist/assets/PrivacyPage-Ac0gNh-2.js             5.76 kB │ gzip:   1.57 kB
+dist/assets/SettingsPage-CfjGsdrz.js            6.51 kB │ gzip:   2.23 kB
+dist/assets/StoriesPage-Bu6K9VsG.js             6.69 kB │ gzip:   2.22 kB
+dist/assets/SentenceBuilderPage-BVZUKqr7.js     7.70 kB │ gzip:   3.00 kB
+dist/assets/A1CheckpointPage-C0Ht7TTf.js        8.17 kB │ gzip:   2.80 kB
+dist/assets/useReviewQueue-1qDtXwGV.js         12.32 kB │ gzip:   3.98 kB
+dist/assets/jsx-runtime-TjFGnwtq.js            14.49 kB │ gzip:   4.76 kB
+dist/assets/GrammarPage-Cnw7B3t9.js            15.45 kB │ gzip:   4.54 kB
+dist/assets/ContinueLearningPage-D28JliAb.js   20.11 kB │ gzip:   6.17 kB
+dist/assets/GlossaryPage-_h81BgSp.js           27.85 kB │ gzip:   8.73 kB
+dist/assets/RapidBlitzPage-DifXhjed.js         33.37 kB │ gzip:   7.69 kB
+dist/assets/DashboardPage-PFQXgz8B.js          57.20 kB │ gzip:  15.98 kB
+dist/assets/Analytics-B0ixRPso.js              78.44 kB │ gzip:  20.76 kB
+dist/assets/db-Bz2tWLU0.js                    306.93 kB │ gzip:  86.00 kB
+dist/assets/ActivityHeatmap-Bg_Rklxa.js       310.63 kB │ gzip:  92.67 kB
+dist/assets/index-BrjnFb5z.js                 416.08 kB │ gzip: 126.71 kB
+
+[32m✓ built in 791ms[39m
+
+PWA v1.3.0
+mode      generateSW
+precache  43 entries (1495.02 KiB)
+files generated
+  dist/sw.js
+  dist/workbox-835c8c05.js

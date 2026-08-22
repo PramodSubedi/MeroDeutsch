@@ -2,8 +2,7 @@ import { useCallback, useMemo, useState, useEffect, useRef } from 'react';
 import { speakWord } from '../hooks/useSpeech';
 import { useLang } from '../hooks/useLang';
 import { usePageTitle } from '../hooks/usePageTitle';
-import { useReviewQueue } from '../hooks/useReviewQueue';
-import { useXp } from '../hooks/useXp';
+import { useAnswerReporter } from '../hooks/useExerciseSession';
 import { useSpeechRecognition, isSpeechRecognitionSupported } from '../hooks/useSpeechRecognition';
 import { drawWithoutReplacement } from '../utils/questionGenerator';
 import { theme } from '../config/theme';
@@ -22,8 +21,8 @@ export function PronunciationPage() {
   usePageTitle('Pronunciation');
   const { langMode } = useLang();
   const isDE = langMode === 'german';
-  const { addWrongAnswer } = useReviewQueue();
-  const { reportAnswer } = useXp();
+  // Lesson Engine integration: XP + SRS reporting via the shared reporter.
+  const reportResult = useAnswerReporter();
   const [word, setWord] = useState<any>(null);
   const [score, setScore] = useState(0);
   const [total, setTotal] = useState(0);
@@ -56,8 +55,8 @@ export function PronunciationPage() {
       if (isMatch) {
         setResult('correct');
         setScore((s) => s + 1);
-        // +10 XP for a correct pronunciation answer
-        reportAnswer({ correct: true, module: 'pronunciation' });
+        // +10 XP for a correct pronunciation answer (shared reporter)
+        reportResult({ correct: true, module: 'pronunciation' });
       } else {
         // Loosely check: does the spoken transcript contain a word close to target?
         const wordMatch = spoken.length > 3 && word.de.split(' ').some((part: string) => spoken.includes(normalizeForCompare(part)));
@@ -65,8 +64,9 @@ export function PronunciationPage() {
           setResult('partial');
         } else {
           setResult('wrong');
-          addWrongAnswer({
-            moduleType: 'pronunciation',
+          reportResult({
+            correct: false,
+            module: 'pronunciation',
             itemKey: word.de,
             userAnswer: transcript,
             correctAnswer: word.de,
@@ -74,7 +74,7 @@ export function PronunciationPage() {
         }
       }
     },
-    [addWrongAnswer, reportAnswer, word]
+    [reportResult, word]
   );
 
   const { listening, status, start } = useSpeechRecognition({

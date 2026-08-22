@@ -22,7 +22,7 @@ export function HomeCommandStrip({ streakCount, reviewCount }: HomeCommandStripP
     : (isDE ? 'Willkommen' : 'Welcome');
 
   return (
-    <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm dark:border-slate-700 dark:bg-slate-950">
+    <div className="flex flex-wrap items-center gap-2 rounded-2xl bg-white px-4 py-3 shadow-sm dark:bg-slate-900">
       <span className="text-sm font-semibold text-slate-900 dark:text-white">{greeting} 👋</span>
 
       {/* "All clear" badge: emerald-800 on emerald-50 ≈ 7:1 contrast (≥ 4.5:1 WCAG AA). */}

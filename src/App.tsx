@@ -33,6 +33,7 @@ const TermsPage = lazy(() => import('./pages/TermsPage').then(m => ({ default: m
 const HelpPage = lazy(() => import('./pages/HelpPage').then(m => ({ default: m.HelpPage })));
 const FeedbackPage = lazy(() => import('./pages/FeedbackPage').then(m => ({ default: m.FeedbackPage })));
 const A1CheckpointPage = lazy(() => import('./pages/A1CheckpointPage').then(m => ({ default: m.A1CheckpointPage })));
+const SentenceBuilderPage = lazy(() => import('./pages/SentenceBuilderPage').then(m => ({ default: m.SentenceBuilderPage })));
 
 /** Routes only — do not put feature logic here */
 export default function App() {
@@ -60,6 +61,8 @@ export default function App() {
               <Route path="learn" element={<ContinueLearningPage />} />
               {/* A1 unit checkpoint — additive route; soft-locked by unit unlock */}
               <Route path="checkpoint/:unitIndex" element={<A1CheckpointPage />} />
+              {/* Unit 2 optional practice — bonus node on the /learn spine */}
+              <Route path="sentence-builder" element={<SentenceBuilderPage />} />
               <Route path="practice" element={<PracticeHubPage />} />
               <Route path="rapid-fire" element={<RapidBlitzPage />} />
               <Route path="rapid-blitz" element={<RapidBlitzPage />} />

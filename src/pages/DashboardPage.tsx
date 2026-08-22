@@ -14,10 +14,12 @@ import { useSearchParams } from 'react-router-dom';
 import { EmptyState } from '../components/EmptyState';
 import { SEO } from '../components/common/SEO';
 import { ActivityHeatmap } from '../components/ActivityHeatmap';
+import { SkillRadarChart } from '../components/SkillRadarChart';
 import { ReviewSessionManager } from '../components/ReviewSessionManager';
 import { MasteryIndicator } from '../components/MasteryIndicator';
 import { SRSReviewWidget } from '../components/SRSReviewWidget';
 import { DailyQuestsWidget } from '../components/DailyQuestsWidget';
+import { StatTile } from '../components/ui/StatTile';
 import { useDailyQuests } from '../hooks/useDailyQuests';
 import { useAchievements } from '../hooks/useAchievements';
 import { Link } from 'react-router-dom';
@@ -67,7 +69,9 @@ export function DashboardPage() {
     return <Navigate to="/auth" replace />;
   }
 
-  const quizPct = progress.quizTotal ? Math.round((progress.quizCorrect / progress.quizTotal) * 100) : 0;
+  // Overall score = genuine blend across alphabet, quiz & spelling. Previously
+  // this duplicated quiz accuracy under two different labels on the same page.
+  const overallScore = Math.round((lettersPct + quizPctBar + spellingPct) / 3);
   const greeting = isDE ? 'Willkommen zurück' : 'Welcome back';
   const dashboardTitle = isDE ? 'Dashboard' : 'Dashboard';
   const reviewTitle = isDE ? 'Review-Warteschlange' : 'Review queue';
@@ -75,8 +79,7 @@ export function DashboardPage() {
   const clearAllLabel = isDE ? 'Alle löschen' : 'Clear all';
   const dueCount = dueQueue.length;
   const resolvedLabel = isDE ? 'Erledigt' : 'Resolved';
-  const overallScore = isDE ? 'Gesamtpunktzahl' : 'Overall score';
-  const quizAccuracy = isDE ? 'Quiz-Genauigkeit beim Alphabet-Training.' : 'Quiz accuracy across alphabet practice.';
+  const overallScoreLabel = isDE ? 'Gesamtpunktzahl' : 'Overall score';
   const streakLabel = isDE ? 'Serie' : 'Streak';
   const streakSubtitle = isDE ? 'Aktuelle Serie und längste Rekord-Serie' : 'Current and longest streak';
   const progressLabel = isDE ? 'Fortschritt' : 'Progress';
@@ -130,63 +133,54 @@ export function DashboardPage() {
         </div>
       )}
 
-      {/* Compact stats grid — 2 columns on mobile, 4 on desktop */}
+      {/* Compact stats grid — shared StatTile component (same as Home) */}
       <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-950">
-          <div className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">{isDE ? 'Alphabet' : 'Alphabet'}</div>
-          <div className="mt-2 flex items-end justify-between">
-            <div className="text-2xl font-bold text-slate-950 dark:text-white">{lettersPct}%</div>
-            <div className="text-xs text-slate-500">{progress.practiced.length}/26</div>
-          </div>
-          <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
-            <div className="h-full rounded-full bg-blue-600 transition-all duration-500" style={{ width: `${lettersPct}%` }} />
-          </div>
-        </div>
-        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-950">
-          <div className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">{isDE ? 'Quiz' : 'Quiz'}</div>
-          <div className="mt-2 flex items-end justify-between">
-            <div className="text-2xl font-bold text-slate-950 dark:text-white">{quizPctBar}%</div>
-            <div className="text-xs text-slate-500">{progress.quizCorrect}/{progress.quizTotal}</div>
-          </div>
-          <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
-            <div className="h-full rounded-full bg-emerald-500 transition-all duration-500" style={{ width: `${quizPctBar}%` }} />
-          </div>
-        </div>
-        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-950">
-          <div className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">{isDE ? 'Rechtschreibung' : 'Spelling'}</div>
-          <div className="mt-2 flex items-end justify-between">
-            <div className="text-2xl font-bold text-slate-950 dark:text-white">{spellingPct}%</div>
-            <div className="text-xs text-slate-500">{progress.spellCompleted}/10</div>
-          </div>
-          <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
-            <div className="h-full rounded-full bg-amber-500 transition-all duration-500" style={{ width: `${spellingPct}%` }} />
-          </div>
-        </div>
-        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-950">
-          <div className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">{overallScore}</div>
-          <div className="mt-2 flex items-end justify-between">
-            <div className="text-2xl font-bold text-blue-600">{formatCount.format(quizPct)}%</div>
-          </div>
-          <div className="mt-2 text-xs text-slate-500 dark:text-slate-400">{quizAccuracy}</div>
-        </div>
+        <StatTile
+          label={isDE ? 'Alphabet' : 'Alphabet'}
+          value={`${lettersPct}%`}
+          subValue={`${progress.practiced.length}/26`}
+          progressPct={lettersPct}
+          color="blue"
+        />
+        <StatTile
+          label={isDE ? 'Quiz' : 'Quiz'}
+          value={`${quizPctBar}%`}
+          subValue={`${progress.quizCorrect}/${progress.quizTotal}`}
+          progressPct={quizPctBar}
+          color="emerald"
+        />
+        <StatTile
+          label={isDE ? 'Rechtschreibung' : 'Spelling'}
+          value={`${spellingPct}%`}
+          subValue={`${progress.spellCompleted}/10`}
+          progressPct={spellingPct}
+          color="amber"
+        />
+        <StatTile
+          label={overallScoreLabel}
+          value={`${formatCount.format(overallScore)}%`}
+          caption={isDE ? 'Über Alphabet, Quiz & Rechtschreibung.' : 'Across alphabet, quiz & spelling.'}
+          color="blue"
+        />
       </div>
 
       {/* Streak + Progress details — wider cards */}
       <div className="mb-4 grid gap-4 lg:grid-cols-2">
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-950">
-          <div className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">{streakLabel}</div>
-          <div className="mt-2 flex items-baseline gap-3">
-            <div className="text-3xl font-bold text-emerald-600">{formatCount.format(streakCount)}</div>
-            <div className="text-sm text-slate-500 dark:text-slate-400">
+        {/* Same vertical rhythm as StatTile: label → mt-3 bold value → mt-3 detail. */}
+        <div className="rounded-2xl bg-white p-5 shadow-sm dark:bg-slate-900">
+          <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">{streakLabel}</div>
+          <div className="mt-3 flex items-baseline gap-3">
+            <div className="text-3xl font-bold leading-none text-emerald-600">{formatCount.format(streakCount)}</div>
+            <div className="pb-0.5 text-sm font-medium text-slate-500 dark:text-slate-400">
               {isDE ? 'Längste' : 'Longest'}: {formatCount.format(longestStreak)}
             </div>
           </div>
-          <div className="mt-1 text-sm text-slate-600 dark:text-slate-300">{streakSubtitle}</div>
+          <div className="mt-3 text-sm text-slate-600 dark:text-slate-300">{streakSubtitle}</div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-950">
-          <div className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">{progressLabel}</div>
-          <div className="mt-2 space-y-1.5 text-sm text-slate-600 dark:text-slate-300">
+        <div className="rounded-2xl bg-white p-5 shadow-sm dark:bg-slate-900">
+          <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">{progressLabel}</div>
+          <div className="mt-3 space-y-1.5 text-sm text-slate-600 dark:text-slate-300">
             <div>{lettersPracticed}: {formatCount.format(progress.practiced.length)}/26</div>
             <div>{spellingRounds}: {formatCount.format(progress.spellCompleted)}</div>
             <div>{quizAttempts}: {formatCount.format(progress.quizTotal)}</div>
@@ -194,9 +188,14 @@ export function DashboardPage() {
         </div>
       </div>
 
-      {/* Activity Heatmap */}
+      {/* Activity Heatmap (intensity tiers + XP tooltips) */}
       <div className="mt-4">
         <ActivityHeatmap activities={activities} />
+      </div>
+
+      {/* Tactical skill radar — accuracy across Grammar/Vocab/Listening/Spelling */}
+      <div className="mt-4">
+        <SkillRadarChart />
       </div>
 
       {/* Daily quests hub + compact SRS due-now widget */}
@@ -205,7 +204,7 @@ export function DashboardPage() {
 
       <div
         id="review-queue-section"
-        className="mt-4 rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm transition-[transform,box-shadow,border-color] duration-300 hover:border-blue-300 hover:shadow-xl dark:border-slate-700 dark:bg-slate-950 dark:hover:border-blue-500"
+        className="mt-4 rounded-2xl bg-white p-6 shadow-sm transition-shadow duration-300 hover:shadow-md dark:bg-slate-900"
       >
         <div className="mb-4 flex items-center justify-between gap-3">
           <div>
@@ -253,7 +252,7 @@ export function DashboardPage() {
         ) : (
           <div className="space-y-3">
             {queue.map((item) => (
-              <div key={item.id} className="rounded-2xl border border-slate-200 bg-slate-50 p-4 transition duration-300 hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md dark:border-slate-700 dark:bg-slate-900 dark:hover:border-blue-500">
+              <div key={item.id} className="rounded-xl bg-slate-50 p-4 transition duration-300 hover:shadow-md dark:bg-slate-800/60">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
                     <div className="flex flex-wrap items-center gap-2">

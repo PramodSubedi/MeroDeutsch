@@ -100,7 +100,7 @@ export function AnalyticsPage() {
       <p className={theme.page.description}>{description}</p>
 
       {!hasAnyData ? (
-        <div className="mt-8 rounded-xl border border-slate-200 bg-slate-50 p-8 text-center dark:border-slate-700 dark:bg-slate-800">
+        <div className="mt-8 rounded-xl bg-slate-50 p-8 text-center dark:bg-slate-800/60">
           <div className="mb-4 text-5xl">📊</div>
           <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
             {isDE ? 'Noch keine Daten' : 'No data yet'}

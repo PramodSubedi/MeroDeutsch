@@ -69,12 +69,13 @@ export function ContinueLearningPage() {
       {/* C. A1 campaign spine — linear units with 80% checkpoint gates */}
       <UnitSpine />
 
-      {/* D. Learning tools — full grid with anchor for home compact links */}
+      {/* D. Quick-access tools (3) + link to the full hub on /practice — keeps
+          this page distinct from /practice, which shows all six tools. */}
       <section className={`${theme.panel.surface} mb-8`} id="practice">
         <h2 className="mb-4 text-xl font-bold text-slate-950 dark:text-white">
-          {isDE ? 'Lern-Übungs-Tools' : 'Practice Tools'}
+          {isDE ? 'Schnellzugriff' : 'Quick practice'}
         </h2>
-        <PracticeToolsGrid />
+        <PracticeToolsGrid limit={3} footerLink />
       </section>
     </div>
   );

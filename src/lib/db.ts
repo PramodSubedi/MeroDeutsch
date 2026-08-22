@@ -9,6 +9,13 @@
  *   vocab          -> VocabCard (static German items; seeded at boot)
  *   userProgress   -> UserProgress (per-user Leitner 4-Box SRS state)
  *   moduleProgress -> aggregate Progress per user/module (e.g. alphabet stats)
+ *   sentences      -> SentenceRow  (dynamic curriculum cache; Unit 2 practice)
+ *   contentItems   -> ContentItemRow (generic content pool cache; migration 011)
+ *
+ * version(2) adds moduleProgress; version(4) adds the `sentences` cache table
+ * for the dynamic curriculum pipeline; version(5) adds the generic content
+ * pool table so offline mode keeps working after static src/data files are
+ * removed.
  */
 import Dexie from 'dexie';
 import type { Table } from 'dexie';
@@ -21,6 +28,37 @@ import type {
 } from '../types';
 import { getItem, removeItem, setItem } from '../utils/safeStorage';
 import { scopedKey } from '../utils/userStorage';
+
+/**
+ * Local Dexie row for the A1 learning-path campaign state (`useA1Path`).
+ * One row per user identity (`userId` is the primary key, 'guest' included).
+ * Dexie is the PRIMARY store; Supabase `a1_path_state` is the cloud mirror.
+ */
+export interface A1PathStateRow {
+  userId: string;
+  unlockedUnitIndex: number;
+  completedNodeIds: string[];
+  checkpointBestByUnit: Record<number, number>;
+  updatedAt: string;
+}
+
+/** Cached row for the dynamic `sentences` pipeline (offline fallback). */
+export interface SentenceRow {
+  id: string;
+  phraseDe: string;
+  expectedArray: string[];
+  distractorsArray: string[];
+  grammarFocus: string;
+  tags: string[];
+}
+
+/** Cached row for a generic content pool (migration 011 write-through cache). */
+export interface ContentItemRow {
+  id: string;
+  contentType: string;
+  payload: unknown;
+  sortOrder: number;
+}
 
 /** Name used both by Dexie and visible in the browser's Application panel. */
 const DB_NAME = 'MeroDeutsch';
@@ -44,13 +82,19 @@ export const LEITNER_INTERVALS = [1, 3, 7, 14];
  * `userProgress` indexes: cardId, box, dueAt, lapses, lastReviewedAt
  *                          (+ userId, [userId+cardId] for multi-user queries/upserts)
  * `moduleProgress` indexes: id, userId, module, updatedAt
- *
- * version(2) adds moduleProgress; existing v1 tables are unchanged.
+ * `sentences` indexes:    id, grammarFocus, *tags   (dynamic curriculum cache)
+ * `contentItems` indexes: id, contentType, sortOrder (generic pool cache)
  */
 export class MeroDeutschDB extends Dexie {
   vocab!: Table<VocabCard, string>;
   userProgress!: Table<UserProgress, string>;
   moduleProgress!: Table<ModuleProgressRow, string>;
+  /** A1 campaign state per user (Phase: cross-device sync). */
+  a1PathState!: Table<A1PathStateRow, string>;
+  /** Offline cache for dynamic sentence exercises (Unit 2 practice). */
+  sentences!: Table<SentenceRow, string>;
+  /** Offline cache for generic content pools (alphabet, numbers, stories…). */
+  contentItems!: Table<ContentItemRow, string>;
 
   constructor() {
     super(DB_NAME);
@@ -64,6 +108,24 @@ export class MeroDeutschDB extends Dexie {
       userProgress:
         'id, cardId, box, dueAt, lapses, lastReviewedAt, userId, [userId+cardId]',
       moduleProgress: 'id, userId, module, updatedAt',
+    });
+    // version(3) adds the A1 path state table; existing v1/v2 tables unchanged.
+    this.version(3).stores({
+      vocab: 'id, cefrLevel, *tags, lemma, partOfSpeech',
+      userProgress:
+        'id, cardId, box, dueAt, lapses, lastReviewedAt, userId, [userId+cardId]',
+      moduleProgress: 'id, userId, module, updatedAt',
+      a1PathState: 'userId',
+    });
+    // version(4) adds the `sentences` cache table for the dynamic curriculum
+    // pipeline (offline-first fallback for Unit 2 sentence exercises).
+    this.version(4).stores({
+      sentences: 'id, grammarFocus, *tags',
+    });
+    // version(5) adds the generic content-pool cache table (write-through from
+    // the Supabase get_content_items RPC so offline mode keeps working).
+    this.version(5).stores({
+      contentItems: 'id, contentType, sortOrder',
     });
   }
 }
@@ -303,4 +365,41 @@ export async function seedVocab(cards: VocabCard[]): Promise<number> {
   return cards.length;
 }
 
+/** Convenience: cache dynamic sentence exercises offline (idempotent via bulkPut). */
+export async function seedSentences(cards: SentenceRow[]): Promise<number> {
+  const store = openDb();
+  if (!store || cards.length === 0) return 0;
+  await store.sentences.bulkPut(cards);
+  return cards.length;
+}
+
+/** Convenience: cache a generic content pool offline (idempotent via bulkPut). */
+export async function seedContentItems(
+  contentType: string,
+  rows: { id: string; payload: unknown; sort?: number }[]
+): Promise<number> {
+  const store = openDb();
+  if (!store || rows.length === 0) return 0;
+  const items: ContentItemRow[] = rows.map((r, i) => ({
+    id: r.id,
+    contentType,
+    payload: r.payload,
+    sortOrder: r.sort ?? i,
+  }));
+  await store.contentItems.bulkPut(items);
+  return items.length;
+}
+
+/** Query cached content pool by type (ordered by sort). Returns [] when empty. */
+export async function getCachedContent<T>(contentType: string): Promise<T[]> {
+  const store = openDb();
+  if (!store) return [];
+  const rows = await store.contentItems
+    .where('contentType')
+    .equals(contentType)
+    .sortBy('sortOrder');
+  return rows.map((r) => r.payload as T);
+}
+
 export type { ModuleProgressRow as ProgressRow };
+export type { SentenceRow as SentenceCacheRow };

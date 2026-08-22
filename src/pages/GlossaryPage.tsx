@@ -1,7 +1,7 @@
 import { useMemo, useState, useRef, useEffect } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { curriculumService } from '../services';
-import { microStories } from '../data/stories';
+import type { MicroStory } from '../types/curriculum';
 import type { VocabEntry, AlphabetItem, NumberItem, CalendarItem, GreetingItem, ArticleItem } from '../types';
 import { speakWord } from '../hooks/useSpeech';
 import { useLang } from '../hooks/useLang';
@@ -31,18 +31,20 @@ export function GlossaryPage() {
   const [greetingsData, setGreetingsData] = useState<GreetingItem[]>([]);
   const [articlesData, setArticlesData] = useState<ArticleItem[]>([]);
   const [vocabularyData, setVocabularyData] = useState<VocabEntry[]>([]);
+  const [storiesData, setStoriesData] = useState<MicroStory[]>([]);
   const [dataLoaded, setDataLoaded] = useState(false);
-  
+
   // Fetch data from curriculumService
   useEffect(() => {
     const loadData = async () => {
-      const [alpha, nums, cal, greet, art, vocab] = await Promise.all([
+      const [alpha, nums, cal, greet, art, vocab, stories] = await Promise.all([
         curriculumService.getAlphabet(),
         curriculumService.getNumbers(),
         curriculumService.getCalendar(),
         curriculumService.getGreetings(),
         curriculumService.getArticles(),
         curriculumService.getVocabulary(),
+        curriculumService.getStories(),
       ]);
       setAlphabetData(alpha);
       setNumbersData(nums);
@@ -50,9 +52,10 @@ export function GlossaryPage() {
       setGreetingsData(greet);
       setArticlesData(art);
       setVocabularyData(vocab);
+      setStoriesData(stories);
       setDataLoaded(true);
     };
-    loadData();
+    loadData().catch(() => setDataLoaded(true));
   }, []);
   
   const glossary = useMemo(() => {
@@ -98,8 +101,8 @@ export function GlossaryPage() {
       entries.push({ de: item.de, en: item.en, ne: item.ne, source: item.tags[0] ?? 'Vocabulary' });
     });
 
-    // Stories - flatten all words from all stories
-    microStories.forEach((story) => {
+    // Stories - flatten all words from all stories (dynamic pool)
+    storiesData.forEach((story) => {
       story.sentences.forEach((sentence) => {
         sentence.words.forEach((word) => {
           // Avoid duplicates by checking if word already exists
@@ -119,7 +122,7 @@ export function GlossaryPage() {
     });
 
     return entries;
-  }, [dataLoaded, alphabetData, numbersData, calendarData, greetingsData, articlesData, vocabularyData]);
+  }, [dataLoaded, alphabetData, numbersData, calendarData, greetingsData, articlesData, vocabularyData, storiesData]);
   
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -210,7 +213,7 @@ export function GlossaryPage() {
                     transform: `translateY(${virtualRow.start}px)`,
                   }}
                 >
-                  <div className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-lg dark:border-slate-700 dark:bg-slate-950 dark:hover:border-blue-500 mb-3">
+                  <div className="rounded-2xl bg-white p-5 shadow-sm transition duration-300 hover:shadow-md dark:bg-slate-900 mb-3">
                     <div className="flex items-start justify-between gap-3">
                       <div>
                         {/* Gender-colored article prefix (der=blue, die=red, das=green). */}

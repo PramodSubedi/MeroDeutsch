@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { theme } from '../../config/theme';
 import { LearningPath } from '../learning/LearningPath';
-import { useAchievements } from '../../hooks/useAchievements';
+import { useAchievements, ALL_BADGES } from '../../hooks/useAchievements';
 import { useAuth } from '../../hooks/useAuth';
 import { useLang } from '../../hooks/useLang';
 import { useLastModule } from '../../hooks/useLastModule';
@@ -11,6 +11,7 @@ import { useReviewQueue } from '../../hooks/useReviewQueue';
 import { useStreak } from '../../hooks/useStreak';
 import { useXp } from '../../hooks/useXp';
 import { A1DailyLoop } from '../path/A1DailyLoop';
+import { StatTile } from '../ui/StatTile';
 
 const PRACTICE_ITEM_STYLES = [
   {
@@ -48,7 +49,6 @@ export function HomeLayoutA() {
   const { totalXp, level, xpProgress } = useXp();
   const { unlockedBadges, checkAndUnlock } = useAchievements();
   const { getLastModule } = useLastModule();
-  const navigate = useNavigate();
   const isDE = langMode === 'german';
 
   useEffect(() => {
@@ -63,10 +63,6 @@ export function HomeLayoutA() {
     ? Math.min(100, Math.max(0, Math.round(((progress.quizCorrect ?? 0) / progress.quizTotal) * 100)))
     : 0;
   
-  // Phase B: Filter review queue to due items only
-  const dueItems = queue?.filter((item) => !item.dueAt || item.dueAt <= new Date().toISOString()) ?? [];
-  const dueCount = dueItems.length;
-
   const reviewCount = queue?.length ?? 0;
   const displayName = user?.username || (isAuthenticated ? 'Learner' : 'MeroDeutsch learner');
   const greeting = isAuthenticated
@@ -103,7 +99,7 @@ export function HomeLayoutA() {
 
   return (
     <div className={`${theme.page.container} w-full space-y-6 pb-8`}>
-      <section className="overflow-hidden rounded-[30px] border border-slate-200 bg-gradient-to-br from-white via-slate-50 to-blue-50 p-4 shadow-sm dark:border-slate-700 dark:from-slate-950 dark:via-slate-950 dark:to-slate-900 sm:p-5 md:p-8">
+      <section className="overflow-hidden rounded-[30px] bg-gradient-to-br from-white via-slate-50 to-blue-50 p-4 shadow-sm dark:from-slate-950 dark:via-slate-950 dark:to-slate-900 sm:p-5 md:p-8">
         <div className="flex flex-col gap-5">
           <div className="flex flex-wrap items-center gap-2">
             {isAuthenticated && streakCount > 0 && (
@@ -143,28 +139,8 @@ export function HomeLayoutA() {
               >
                 {isDE ? 'Weiterlernen' : 'Continue learning'}
               </Link>
-              {dueCount > 0 ? (
-                // 3-min Daily Refresh CTA targeting up to 10 due items automatically on mount
-                <button
-                  type="button"
-                  onClick={() => navigate('/dashboard?sprint=true')}
-                  className="inline-flex min-h-[48px] items-center justify-center rounded-2xl border-2 border-amber-300 bg-amber-50/50 px-5 py-3 text-base font-bold text-amber-800 transition hover:bg-amber-100 hover:text-amber-900 dark:border-amber-800 dark:bg-amber-950/20 dark:text-amber-300 dark:hover:bg-amber-950/40"
-                >
-                  ⚡ {isDE ? '3-Minuten-Auffrischung' : '3-Min Daily Refresh'}
-                  <span className="ml-2 inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-amber-600 px-1.5 text-xs font-bold text-white">
-                    {dueCount}
-                  </span>
-                </button>
-              ) : (
-                // Fallback to Practice Blitz if 0 items are due (prevent empty session)
-                <button
-                  type="button"
-                  onClick={() => navigate('/rapid-fire')}
-                  className="inline-flex min-h-[48px] items-center justify-center rounded-2xl border border-slate-300 bg-white px-5 py-3 text-base font-semibold text-slate-700 transition hover:border-blue-400 hover:text-blue-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
-                >
-                  🎯 {isDE ? 'Schnell-Quiz starten' : 'Practice Blitz'}
-                </button>
-              )}
+              {/* Daily actions (Warm-up / Push / Challenge) live in A1DailyLoop
+                  directly below — no duplicate CTA here. One primary action per screen. */}
             </div>
           </div>
         </div>
@@ -173,60 +149,36 @@ export function HomeLayoutA() {
       {/* Daily loop: Warm-up (due SRS) -> Push (next path node) -> Challenge (Blitz) */}
       <A1DailyLoop />
 
+      {/* Shared StatTile component — same source of truth as DashboardPage */}
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <div className="rounded-[24px] border border-slate-200 bg-white p-4 shadow-sm sm:p-5 dark:border-slate-700 dark:bg-slate-950">
-          <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500 dark:text-slate-400">
-            {isDE ? 'Fortschritt' : 'Progress'}
-          </div>
-          <div className="mt-4 flex items-end justify-between gap-3">
-            <span className="text-3xl font-semibold text-slate-950 dark:text-white">{progressPct}%</span>
-            <span className="text-sm text-slate-500 dark:text-slate-400">{progressCount}/26</span>
-          </div>
-          <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800">
-            <div className="h-full rounded-full bg-blue-600" style={{ width: `${progressPct}%` }} />
-          </div>
-        </div>
-
-        <div className="rounded-[24px] border border-slate-200 bg-white p-4 shadow-sm sm:p-5 dark:border-slate-700 dark:bg-slate-950">
-          <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500 dark:text-slate-400">
-            {isDE ? 'Genauigkeit' : 'Accuracy'}
-          </div>
-          <div className="mt-4 flex items-end justify-between gap-3">
-            <span className="text-3xl font-semibold text-slate-950 dark:text-white">{quizPct}%</span>
-            <span className="text-sm text-slate-500 dark:text-slate-400">Quiz</span>
-          </div>
-          <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800">
-            <div className="h-full rounded-full bg-emerald-500" style={{ width: `${quizPct}%` }} />
-          </div>
-        </div>
-
-        <Link
+        <StatTile
+          label={isDE ? 'Fortschritt' : 'Progress'}
+          value={`${progressPct}%`}
+          subValue={`${progressCount}/26`}
+          progressPct={progressPct}
+          color="blue"
+        />
+        <StatTile
+          label={isDE ? 'Genauigkeit' : 'Accuracy'}
+          value={`${quizPct}%`}
+          subValue="Quiz"
+          progressPct={quizPct}
+          color="emerald"
+        />
+        <StatTile
+          label={isDE ? 'Review' : 'Review queue'}
+          value={String(reviewCount)}
+          subValue={isDE ? 'Wartend' : 'Queued'}
           to="/dashboard"
-          className="rounded-[24px] border border-slate-200 bg-white p-4 shadow-sm transition hover:border-blue-300 hover:shadow-md sm:p-5 dark:border-slate-700 dark:bg-slate-950"
-        >
-          <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500 dark:text-slate-400">
-            {isDE ? 'Review' : 'Review queue'}
-          </div>
-          <div className="mt-4 flex items-end justify-between gap-3">
-            <span className={`text-3xl font-semibold ${reviewCount > 0 ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400 dark:text-slate-500'}`}>
-              {reviewCount}
-            </span>
-            <span className="text-sm text-slate-500 dark:text-slate-400">{isDE ? 'Wartend' : 'Queued'}</span>
-          </div>
-        </Link>
-
-        <div className="rounded-[24px] border border-slate-200 bg-white p-4 shadow-sm sm:p-5 dark:border-slate-700 dark:bg-slate-950">
-          <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500 dark:text-slate-400">
-            {isDE ? 'Level & XP' : 'Level & XP'}
-          </div>
-          <div className="mt-4 flex items-end justify-between gap-3">
-            <span className="text-2xl font-semibold text-slate-950 dark:text-white">{level}</span>
-            <span className="text-sm text-slate-500 dark:text-slate-400">{totalXp} XP</span>
-          </div>
-          <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800">
-            <div className="h-full rounded-full bg-violet-500" style={{ width: `${xpProgress}%` }} />
-          </div>
-        </div>
+          color="blue"
+        />
+        <StatTile
+          label={isDE ? 'Level & XP' : 'Level & XP'}
+          value={String(level)}
+          subValue={`${totalXp} XP`}
+          progressPct={xpProgress}
+          color="violet"
+        />
       </section>
 
       <section className="grid gap-4 md:grid-cols-3">
@@ -234,13 +186,17 @@ export function HomeLayoutA() {
           <Link
             key={title}
             to={to}
-            className={`block rounded-[24px] border p-4 transition hover:-translate-y-0.5 sm:p-5 ${styles.card} ${styles.hover}`}
+            className={`group block rounded-[24px] border p-4 transition hover:-translate-y-0.5 sm:p-5 ${styles.card} ${styles.hover}`}
           >
             <div className={`mb-4 inline-flex h-10 w-10 items-center justify-center rounded-xl text-lg font-bold ${styles.badge}`}>
               {title.charAt(0)}
             </div>
             <h2 className="text-lg font-semibold text-slate-950 dark:text-white">{title}</h2>
             <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{description}</p>
+            {/* Visible click affordance — matches LearningPath.tsx "Start →" */}
+            <div className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-blue-600 transition group-hover:text-blue-800 dark:text-blue-300">
+              {isDE ? 'Starten' : 'Start'} →
+            </div>
           </Link>
         ))}
       </section>
@@ -249,7 +205,7 @@ export function HomeLayoutA() {
           core learning modules are discoverable from Home without /learn. */}
       <LearningPath />
 
-      <section className="rounded-[24px] border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-950">
+      <section className="rounded-[24px] bg-white p-4 shadow-sm dark:bg-slate-900">
         <div className="mb-3 flex items-center justify-between gap-3">
           <h2 className="text-xl font-semibold text-slate-950 dark:text-white">
             {isDE ? 'Errungenschaften' : 'Achievements'}
@@ -270,6 +226,19 @@ export function HomeLayoutA() {
                 {badge.label}
               </Link>
             ))}
+            {/* Next locked badges — grayscale + lock so progression reads at a glance */}
+            {ALL_BADGES.filter((b) => !unlockedBadges.some((u) => u.id === b.id))
+              .slice(0, 3)
+              .map((badge) => (
+                <span
+                  key={badge.id}
+                  title={badge.requirement}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-400 grayscale dark:border-slate-700 dark:bg-slate-900 dark:text-slate-500"
+                >
+                  <span aria-hidden="true">🔒</span>
+                  {badge.label}
+                </span>
+              ))}
           </div>
         ) : (
           <p className="text-sm text-slate-500 dark:text-slate-400">

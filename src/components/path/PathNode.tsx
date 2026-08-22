@@ -40,7 +40,7 @@ export function PathNodeItem({ node, unitPhase }: PathNodeProps) {
   if (!unlocked) {
     return (
       <div
-        className="pointer-events-none inline-flex min-h-[44px] min-w-[44px] cursor-not-allowed items-center gap-2 rounded-xl border border-slate-200 bg-slate-100 px-3 py-2 text-sm text-slate-400 opacity-60 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-500"
+        className="pointer-events-none inline-flex min-h-[44px] min-w-[44px] cursor-not-allowed items-center gap-2 rounded-xl bg-slate-100 px-3 py-2 text-sm text-slate-400 opacity-60 dark:bg-slate-800 dark:text-slate-500"
         aria-label={isDE ? `${node.label.de} (gesperrt)` : `${node.label.en} (locked)`}
       >
         <span aria-hidden="true">🔒</span>
@@ -50,14 +50,15 @@ export function PathNodeItem({ node, unitPhase }: PathNodeProps) {
   }
 
   const base =
-    'inline-flex min-h-[44px] min-w-[44px] items-center gap-2 rounded-xl border px-3 py-2 text-sm font-semibold transition active:scale-95';
+    'inline-flex min-h-[44px] min-w-[44px] items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold transition active:scale-95';
+  // State via surface tint + shadow, not rigid outlines.
   const variant: string = isCheckpoint
     ? complete
-      ? 'border-emerald-200 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 dark:border-emerald-900/50 dark:bg-emerald-950/30 dark:text-emerald-300'
-      : 'border-blue-600 bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-700'
+      ? 'bg-emerald-50 text-emerald-800 shadow-sm hover:bg-emerald-100 dark:bg-emerald-950/30 dark:text-emerald-300'
+      : 'bg-blue-600 text-white shadow-sm hover:bg-blue-700 dark:bg-blue-700'
     : complete
-      ? 'border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-900/50 dark:bg-emerald-950/30'
-      : 'border-blue-200 bg-blue-50 text-blue-800 hover:bg-blue-100 dark:border-blue-900/50 dark:bg-blue-950/30 dark:text-blue-300';
+      ? 'bg-emerald-50 text-emerald-800 shadow-sm dark:bg-emerald-950/30 dark:text-emerald-300'
+      : 'bg-blue-50 text-blue-800 shadow-sm hover:bg-blue-100 dark:bg-blue-950/30 dark:text-blue-300';
 
   const handleClick = () => {
     // Visit-completion for learn/practice (rule A). Idempotent. Checkpoint

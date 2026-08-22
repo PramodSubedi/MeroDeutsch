@@ -13,13 +13,13 @@
  * Uses `userDataService` (adapters already wired to Supabase) as the mapper
  * from local entities to Postgres table structures.
  */
-import { userDataService } from './userDataService';
+import { userDataService, type A1PathState } from './userDataService';
 import { openDb } from '../lib/db';
 import type { Progress, VocabCard, UserProgress } from '../types';
 
 /** Queued offline mutation — replayed when connectivity/auth returns. */
 interface PendingSyncOp {
-  kind: 'progress' | 'review' | 'achievement' | 'generic';
+  kind: 'progress' | 'review' | 'achievement' | 'a1path' | 'generic';
   userId: string;
   payload?: unknown;
   at: string;
@@ -107,6 +107,25 @@ async function pushReviewQueue(userId: string): Promise<void> {
   await userDataService.saveReviewQueue(userId, items);
 }
 
+/**
+ * Adapter: Dexie `a1PathState` row → `a1_path_state` Postgres row.
+ * Local Dexie is primary; this pushes the latest local campaign state up.
+ */
+async function pushA1PathState(userId: string): Promise<void> {
+  const store = openDb();
+  if (!store) return;
+
+  const row = await store.a1PathState.get(userId);
+  if (!row) return;
+
+  const state: A1PathState = {
+    unlockedUnitIndex: row.unlockedUnitIndex,
+    completedNodeIds: row.completedNodeIds ?? [],
+    checkpointBestByUnit: row.checkpointBestByUnit ?? {},
+  };
+  await userDataService.saveA1PathState(userId, state);
+}
+
 /** Adapter local moduleProgress → `user_progress.` Uses max/union merge. */
 async function pushProgress(userId: string): Promise<void> {
   const store = openDb();
@@ -152,8 +171,15 @@ export async function executeSync(userId: string): Promise<string[]> {
     errors.push(`progress:${e instanceof Error ? e.message : String(e)}`);
   }
 
-  // 3. Replay queued offline mutations (achievements etc. come through hooks
-  //    directly — the queue catches anything enqueued during offline time).
+  // 3. A1 campaign path state (a1PathState → a1_path_state)
+  try {
+    await pushA1PathState(userId);
+  } catch (e) {
+    errors.push(`a1path:${e instanceof Error ? e.message : String(e)}`);
+  }
+
+  // 4. Replay queued offline mutations (achievements / explicit a1path pushes
+  //    enqueued during offline time; progress/review flush live above).
   const pending = loadQueue().filter(
     (op) => op.userId === userId || op.kind === 'generic'
   );
@@ -161,6 +187,8 @@ export async function executeSync(userId: string): Promise<string[]> {
     try {
       if (op.kind === 'achievement' && typeof op.payload === 'string') {
         await userDataService.unlockAchievement(userId, op.payload);
+      } else if (op.kind === 'a1path') {
+        await pushA1PathState(userId);
       }
     } catch (e) {
       errors.push(`${op.kind}:${e instanceof Error ? e.message : String(e)}`);
@@ -180,6 +208,18 @@ export function queueAchievementUnlock(userId: string, badgeId: string): void {
     kind: 'achievement',
     userId,
     payload: badgeId,
+    at: new Date().toISOString(),
+  });
+}
+
+/**
+ * Convenience: enqueue an A1 path push for the next successful sync.
+ * Called by `useA1Path` when a Supabase write fails while offline.
+ */
+export function queueA1PathPush(userId: string): void {
+  enqueueSync({
+    kind: 'a1path',
+    userId,
     at: new Date().toISOString(),
   });
 }

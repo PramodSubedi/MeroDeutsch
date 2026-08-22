@@ -27,7 +27,7 @@ export function GrammarComparisonTable({ title, rows }: GrammarComparisonTablePr
   const showHelpers = !isDE; // hide EN/NE in Nur-DE mode
 
   return (
-    <div className="mt-4 overflow-x-auto rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-900">
+    <div className="mt-4 overflow-x-auto rounded-2xl bg-white p-4 shadow-sm dark:bg-slate-900">
       <div className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
         {isDE ? title.de : title.en}
       </div>
@@ -35,21 +35,22 @@ export function GrammarComparisonTable({ title, rows }: GrammarComparisonTablePr
         <thead>
           <tr>
             {showHelpers && (
-              <th className="text-left font-semibold text-slate-600 dark:text-slate-300">{isDE ? '' : 'EN'}</th>
+              <th className="pb-2 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">{isDE ? '' : 'EN'}</th>
             )}
             {showHelpers && (
-              <th className="text-left font-semibold text-slate-600 dark:text-slate-300">{isDE ? '' : 'NE'}</th>
+              <th className="pb-2 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">{isDE ? '' : 'NE'}</th>
             )}
-            <th className="text-left font-semibold text-blue-700 dark:text-blue-300">DE</th>
+            <th className="pb-2 text-left text-xs font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-300">DE</th>
           </tr>
         </thead>
         <tbody>
           {rows.map((row, i) => (
-            <tr key={i} className="border-t border-slate-200 dark:border-slate-700">
-              {showHelpers && <td className="py-1.5 text-slate-600 dark:text-slate-300">{row.language.en}</td>}
-              {showHelpers && <td className="py-1.5 text-slate-600 dark:text-slate-300">{row.language.ne}</td>}
-              <td className="py-1.5 text-slate-600 dark:text-slate-300">{row.order.de}</td>
-              <td className="py-1.5 font-medium text-slate-900 dark:text-white">{row.example.de}</td>
+            // Zebra striping instead of hard divider lines between rows.
+            <tr key={i} className={i % 2 === 1 ? 'even:bg-slate-50 rounded-lg dark:bg-slate-800/40' : ''}>
+              {showHelpers && <td className="rounded-l-lg py-2 pl-2 pr-3 text-slate-600 dark:text-slate-300">{row.language.en}</td>}
+              {showHelpers && <td className="px-3 py-2 text-slate-600 dark:text-slate-300">{row.language.ne}</td>}
+              <td className="px-3 py-2 text-slate-600 dark:text-slate-300">{row.order.de}</td>
+              <td className={`py-2 pr-2 font-medium text-slate-900 dark:text-white ${!showHelpers ? 'pl-2' : ''}`}>{row.example.de}</td>
             </tr>
           ))}
         </tbody>

@@ -28,7 +28,14 @@ export function ModuleSwitcher() {
       aria-label="Module navigation"
       className="py-1"
     >
-      <div className="flex flex-nowrap items-start gap-3 overflow-x-auto no-scrollbar sm:flex-wrap sm:overflow-visible sm:gap-4">
+      <div className="relative">
+        {/* Right-edge fade — signals more content off-screen on mobile (<sm).
+            Hidden on sm+ where the groups wrap instead of scrolling. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-y-0 right-0 z-10 w-8 bg-gradient-to-l from-slate-50 to-transparent sm:hidden dark:from-slate-950"
+        />
+        <div className="flex flex-nowrap items-start gap-3 overflow-x-auto no-scrollbar sm:flex-wrap sm:overflow-visible sm:gap-4">
         {/* A1 Learning Modules Group */}
         <CollapsibleModuleGroup
           title="A1 Learning"
@@ -50,6 +57,7 @@ export function ModuleSwitcher() {
           storageKey="nav-group-practice"
           isDE={isDE}
         />
+        </div>
       </div>
     </nav>
   );

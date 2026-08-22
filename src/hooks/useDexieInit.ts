@@ -2,24 +2,24 @@
  * useDexieInit — Phase 2.1 runtime bootstrap for the Dexie data layer.
  *
  * Runs once on the client (SSR-safe via openDb()). Responsibilities:
- *   1. Seed `db.vocab` from static vocabulary if the table is empty.
+ *   1. Seed `db.vocab` from DYNAMIC sources if the table is empty.
  *      Preference order:
  *        a) `public/data/enriched-vocab.json` (full VocabCard schema, produced by
  *           `npm run enrich`) — preferred when present.
- *        b) `vocabularyData` (legacy VocabEntry[]) adapted to VocabCard — always
- *           available as a fallback so the app is never empty.
+ *        b) curriculumService.getVocabulary() (dynamic content_items pool via
+ *           the service layer) adapted to VocabCard — no bundled static data.
  *
  * Seeding is idempotent (guarded by `db.vocab.count() === 0`), so repeated
  * mounts or hot-reloads never duplicate rows.
  */
 import { useEffect, useState } from 'react';
 import { openDb, seedVocab } from '../lib/db';
-import { vocabularyData } from '../data/loadVocabulary';
-import type { VocabEntry } from '../data/loadVocabulary';
+import { curriculumService } from '../services';
+import type { VocabEntry } from '../types';
 import type { VocabCard } from '../types';
 
-/** Map a legacy VocabEntry onto the enriched VocabCard schema (lossy: no
- * phonetics/article/plural exist in the legacy data). Used only until
+/** Map a dynamic VocabEntry onto the enriched VocabCard schema (lossy: no
+ * phonetics/article/plural exist in the pool payload). Used only until
  * `npm run enrich` produces public/data/enriched-vocab.json. */
 function adaptLegacyVocab(v: VocabEntry): VocabCard {
   const pos = v.tags.includes('verb')
@@ -65,7 +65,7 @@ export function useDexieInit(): boolean {
       const count = await store.vocab.count();
       if (count === 0) {
         // (a) Prefer fully-enriched cards when the pipeline has been run.
-        let cards: VocabCard[] = vocabularyData.map(adaptLegacyVocab);
+        let cards: VocabCard[] = [];
         try {
           const resp = await fetch('/data/enriched-vocab.json', { cache: 'no-store' });
           if (resp.ok) {
@@ -76,9 +76,23 @@ export function useDexieInit(): boolean {
             }
           }
         } catch {
-          // Enriched file absent/not run yet — keep the legacy-derived fallback.
+          // Enriched file absent/not run yet — fall through to the dynamic pool.
         }
-        await seedVocab(cards);
+
+        // (b) Dynamic fallback: fetch the vocab pool via the service layer
+        //     (content_items table -> RPC -> Dexie). No bundled static data.
+        if (cards.length === 0) {
+          try {
+            const entries = await curriculumService.getVocabulary();
+            cards = entries.map(adaptLegacyVocab);
+          } catch {
+            cards = [];
+          }
+        }
+
+        if (cards.length > 0) {
+          await seedVocab(cards);
+        }
       }
       if (!cancelled) setReady(true);
     };

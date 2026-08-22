@@ -1,13 +1,31 @@
-import { useEffect, useRef, useState } from 'react';
+/**
+ * src/pages/DictationPage.tsx
+ *
+ * Audio-to-text dictation driven by the shared Lesson Engine
+ * (`useExerciseSession` + `<DictationInput>`). Draws a finite deck of 10
+ * unique words per round; "Play again" reshuffles. The +50 XP dictation tier
+ * and SRS miss-queueing are owned by the engine session (xpAmount config).
+ */
+
+import { useEffect, useMemo, useState } from 'react';
 import { speakWord } from '../hooks/useSpeech';
 import { useLang } from '../hooks/useLang';
 import { usePageTitle } from '../hooks/usePageTitle';
-import { useReviewQueue } from '../hooks/useReviewQueue';
-import { useXp, XP_REWARDS } from '../hooks/useXp';
+import { XP_REWARDS } from '../hooks/useXp';
 import { theme } from '../config/theme';
 import { curriculumService } from '../services';
-import { drawWithoutReplacement } from '../utils/questionGenerator';
+import { pickNUnique } from '../utils/questionGenerator';
+import {
+  useExerciseSession,
+  type ExerciseQuestion,
+} from '../hooks/useExerciseSession';
+import { DictationInput } from '../components/exercises/DictationInput';
 import type { DictationWord } from '../types/curriculum';
+
+/** Engine-compatible dictation question (audio prompt = the word itself). */
+interface DictationQuestion extends ExerciseQuestion {}
+
+const DECK_SIZE = 10;
 
 function normalize(input: string): string {
   return input.trim().toLowerCase();
@@ -17,139 +35,106 @@ export function DictationPage() {
   usePageTitle('Dictation');
   const { langMode } = useLang();
   const isDE = langMode === 'german';
-  const { addWrongAnswer } = useReviewQueue();
-  const { reportAnswer } = useXp();
-  const [word, setWord] = useState<DictationWord | null>(null);
   const [dictationWords, setDictationWords] = useState<DictationWord[]>([]);
-  const [attempt, setAttempt] = useState('');
-  const [status, setStatus] = useState<'idle' | 'correct' | 'wrong'>('idle');
-  const [score, setScore] = useState(0);
-  const [total, setTotal] = useState(0);
-  const inputRef = useRef<HTMLInputElement>(null);
-  // Track shown word keys so the same prompt isn't repeated until the pool cycles.
-  const usedWordKeysRef = useRef<Set<string>>(new Set());
+  const [loaded, setLoaded] = useState(false);
+  /** Increments to reshuffle a fresh deck. */
+  const [runId, setRunId] = useState(0);
 
   useEffect(() => {
-    curriculumService.getDictationWords().then(data => {
-      setDictationWords(data);
-      if (data.length > 0) {
-        setWord(data[Math.min(0, data.length - 1)]);
-        usedWordKeysRef.current.add(data[Math.min(0, data.length - 1)].word);
-      }
-    });
+    curriculumService
+      .getDictationWords()
+      .then((data) => {
+        setDictationWords(data);
+        setLoaded(true);
+      })
+      .catch(() => setLoaded(true));
   }, []);
 
-  if (!word) {
-    // Loading guard — avoid blank flash while dictation words load.
-    return <div className={theme.page.container}>Loading...</div>;
-  }
+  // Finite without-replacement deck per round (Lesson Engine contract).
+  const deck = useMemo<DictationQuestion[]>(
+    () =>
+      pickNUnique({
+        items: dictationWords,
+        count: Math.min(DECK_SIZE, dictationWords.length),
+        getKey: (w) => w.word,
+      }).map((w) => ({
+        key: w.word,
+        correctAnswer: w.word,
+        speakPrompt: w.word,
+      })),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [dictationWords, runId]
+  );
 
-  const play = () => speakWord(word.word);
-
-  const next = () => {
-    const n = drawWithoutReplacement(dictationWords, usedWordKeysRef.current, (item) => item.word);
-    if (!n) return;
-    setWord(n);
-    setAttempt('');
-    setStatus('idle');
-    inputRef.current?.focus();
-  };
-
-  const check = () => {
-    if (!attempt.trim()) return;
-    setTotal((t) => t + 1);
-    const correct = normalize(attempt) === normalize(word.word);
-    if (correct) {
-      setStatus('correct');
-      setScore((s) => s + 1);
-      // Award +50 XP for completing a Dictation drill (single, centralized award)
-      reportAnswer({ correct: true, module: 'dictation', amount: XP_REWARDS.dictation });
-    } else {
-      setStatus('wrong');
-      addWrongAnswer({
-        moduleType: 'dictation',
-        itemKey: word.word,
-        userAnswer: attempt.trim(),
-        correctAnswer: word.word,
-      });
-    }
-  };
+  const session = useExerciseSession<DictationQuestion>({
+    questions: deck,
+    module: 'dictation',
+    xpAmount: XP_REWARDS.dictation, // +50 XP dictation tier
+    matches: (input, q) => normalize(input) === normalize(q.correctAnswer),
+  });
 
   const title = isDE ? 'Diktat' : 'Dictation';
   const subtitle = isDE
     ? 'Höre das Wort und tippe, was du gehört hast.'
     : 'Listen to the German word, then type what you heard.';
-  const placeholder = isDE ? 'Tippe das Wort…' : 'Type the word…';
-  const hearAgain = isDE ? '🔊 Nochmal hören' : '🔊 Hear again';
-  const checkLabel = isDE ? 'Prüfen' : 'Check';
-  const nextWord = isDE ? 'Nächstes Wort →' : 'Next Word →';
-  const scoreLabel = isDE ? 'Punkte' : 'Score';
-  const correctMsg = isDE ? '🎉 Richtig!' : '🎉 Correct!';
-  const wrongMsg = (correct: string) =>
-    isDE ? `❌ Falsch. Richtig war: ${correct}` : `❌ Wrong. Correct: ${correct}`;
 
-  return (
-    <>
+  if (!loaded) {
+    // Loading guard — avoid blank flash while dictation words load.
+    return <div className={theme.page.container}>Loading...</div>;
+  }
+
+  // Pool empty (not seeded yet / offline before first fetch) — friendly state.
+  if (dictationWords.length === 0) {
+    return (
       <div className={theme.page.container}>
         <h1 className="text-2xl font-semibold tracking-tight text-slate-950 dark:text-white">{title}</h1>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{subtitle}</p>
+        <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">
+          {isDE
+            ? 'Inhalte werden noch geladen — verbinde dich einmal mit dem Internet.'
+            : 'Content is still loading — connect to the internet once to populate it.'}
+        </p>
+      </div>
+    );
+  }
 
-      <div className="mx-auto mt-6 max-w-xl rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-950">
-        <div className="mb-4 flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
-          <span>{scoreLabel}: <b className="text-slate-900 dark:text-white">{score}</b> / {total}</span>
-          <button type="button" onClick={play} className={theme.button.primary}>
-            {isDE ? '🔊 Wort abspielen' : '🔊 Play word'}
-          </button>
-        </div>
+  return (
+    <div className={theme.page.container}>
+      <h1 className="text-2xl font-semibold tracking-tight text-slate-950 dark:text-white">{title}</h1>
+      <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{subtitle}</p>
 
-        <div className="mb-4 flex h-20 items-center justify-center rounded-2xl border border-dashed border-blue-300 bg-blue-50/60 text-3xl font-bold text-blue-700 dark:border-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
-          {status === 'idle' ? (
-            <span className="text-base font-medium text-blue-600/70 dark:text-blue-300">
-              {isDE ? '🎧 Höre genau zu' : '🎧 Listen carefully'}
-            </span>
-          ) : status === 'correct' ? (
-            <span className="text-green-600 dark:text-green-400">{correctMsg}</span>
-          ) : (
-            <span className="text-lg text-red-600 dark:text-red-400">{wrongMsg(word.word)}</span>
-          )}
-        </div>
-
-        <input
-          ref={inputRef}
-          type="text"
-          value={attempt}
-          onChange={(event) => {
-            setAttempt(event.target.value);
-            if (status === 'correct' || status === 'wrong') setStatus('idle');
-          }}
-          onKeyDown={(event) => {
-            if (event.key === 'Enter') {
-              if (status === 'correct' || status === 'wrong') next();
-              else check();
-            }
-          }}
-          placeholder={placeholder}
-          className={theme.input}
-          aria-label={placeholder}
-          disabled={status === 'correct'}
+      <div className="mx-auto mt-6 max-w-xl">
+        <DictationInput
+          session={session}
+          onPlayAudio={(q) => speakWord(q.correctAnswer)}
+          hideFooter
         />
-
-        <div className="mt-4 flex flex-wrap justify-center gap-3">
-          <button type="button" onClick={play} className={theme.button.secondary}>
-            {hearAgain}
-          </button>
-          {status === 'correct' || status === 'wrong' ? (
-            <button type="button" onClick={next} className={theme.button.primary}>
-              {nextWord}
+        {/* Round footer: next/finish + play again */}
+        <div className="mt-3 flex justify-center gap-3">
+          {session.locked && (
+            <button type="button" onClick={session.next} className={theme.button.primary}>
+              {session.index >= session.total - 1
+                ? isDE ? 'Fertig' : 'Finish'
+                : isDE ? 'Nächstes Wort →' : 'Next Word →'}
             </button>
-          ) : (
-            <button type="button" onClick={check} className={theme.button.primary}>
-              {checkLabel}
+          )}
+          {!session.locked && session.answered > 0 && session.index >= session.total && (
+            <button
+              type="button"
+              onClick={() => setRunId((r) => r + 1)}
+              className={theme.button.secondary}
+            >
+              {isDE ? 'Neue Runde 🔄' : 'Play again 🔄'}
             </button>
           )}
         </div>
+        {session.index >= session.total && session.total > 0 && (
+          <p className="mt-3 text-center text-sm font-semibold text-slate-600 dark:text-slate-300">
+            {isDE
+              ? `Runde beendet — ${session.score}/${session.total} richtig.`
+              : `Round complete — ${session.score}/${session.total} correct.`}
+          </p>
+        )}
       </div>
     </div>
-    </>
   );
 }

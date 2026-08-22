@@ -25,8 +25,8 @@ export const Logo: React.FC<LogoProps> = ({
     lg: 'text-3xl',
   };
 
-  // Strictly 2 Themes: On Dark (Header) vs On Light (Hero & Footer)
-    const isOnDark = variant === 'on-dark' || variant === 'navbar';
+  // Strictly 2 Themes: On Dark (dark surfaces) vs On Light (navbar, hero & footer)
+    const isOnDark = variant === 'on-dark';
     // "Mero" = bold primary (white on dark backgrounds)
     const meroColor = isOnDark ? 'text-white font-black' : 'text-red-600 font-black';
     // "Deutsch" = charcoal on light, crisp WHITE in dark mode (Hero/Footer/navbar)

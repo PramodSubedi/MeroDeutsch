@@ -3,9 +3,9 @@ import { Logo } from './common/Logo';
 
 export function Footer() {
   return (
-    <footer className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-6 mt-12 transition-colors">
+    <footer className="bg-white dark:bg-slate-900 shadow-[0_-4px_16px_rgba(15,23,42,0.06)] py-6 mt-12 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 bg-slate-50 dark:bg-slate-950/50 border border-slate-100 dark:border-slate-800/80 rounded-2xl p-6 shadow-xs">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 bg-slate-50 dark:bg-slate-950/50 rounded-2xl p-6">
 
           {/* Brand Column */}
           <div className="space-y-2 md:col-span-2">
@@ -44,9 +44,9 @@ export function Footer() {
         <div className="mt-4 pt-3 flex flex-col sm:flex-row justify-between items-center text-xs text-slate-500 dark:text-slate-400 px-2 gap-3">
           <p>© {new Date().getFullYear()} MeroDeutsch. Designed for seamless multilingual learning.</p>
           <div className="flex space-x-4 font-medium">
-            <Link to="/privacy" className="inline-flex min-h-[44px] items-center hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Privacy</Link>
-            <Link to="/terms" className="inline-flex min-h-[44px] items-center hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Terms</Link>
-            <Link to="/help" className="inline-flex min-h-[44px] items-center hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Support</Link>
+            <Link to="/privacy" className="inline-flex h-9 items-center hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Privacy</Link>
+            <Link to="/terms" className="inline-flex h-9 items-center hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Terms</Link>
+            <Link to="/help" className="inline-flex h-9 items-center hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Support</Link>
           </div>
         </div>
       </div>

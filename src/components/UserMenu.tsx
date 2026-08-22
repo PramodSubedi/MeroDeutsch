@@ -56,7 +56,7 @@ export function UserMenu({ user }: UserMenuProps) {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex min-h-[44px] items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-sm hover:bg-white/20 transition focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none focus-visible:ring-offset-2"
+        className="flex h-9 items-center gap-2 rounded-full px-2 text-sm text-slate-600 transition hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none dark:text-slate-300 dark:hover:bg-slate-800"
         aria-expanded={isOpen}
         aria-haspopup="true"
       >
@@ -64,10 +64,10 @@ export function UserMenu({ user }: UserMenuProps) {
           <img
             src={user.avatarUrl}
             alt=""
-            className="w-7 h-7 rounded-full bg-white/20"
+            className="w-7 h-7 rounded-full bg-slate-200 dark:bg-slate-700"
           />
         ) : (
-          <div className="flex items-center justify-center w-7 h-7 rounded-full bg-white/20 text-white font-medium text-sm">
+          <div className="flex items-center justify-center w-7 h-7 rounded-full bg-slate-200 text-slate-700 font-medium text-sm dark:bg-slate-700 dark:text-slate-200">
             {initials}
           </div>
         )}
@@ -84,7 +84,7 @@ export function UserMenu({ user }: UserMenuProps) {
 
       {isOpen && (
         <div className="absolute right-0 mt-2 w-48 origin-top-right rounded-xl bg-white shadow-lg ring-1 ring-black/5 animate-in fade-in-0 zoom-in-95 dark:bg-slate-800 dark:ring-white/10">
-          <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-700">
+          <div className="px-4 py-3">
             <p className="text-sm font-medium text-slate-900 dark:text-white">{displayName}</p>
             <p className="text-xs text-slate-500 dark:text-slate-400 truncate">Signed in</p>
           </div>

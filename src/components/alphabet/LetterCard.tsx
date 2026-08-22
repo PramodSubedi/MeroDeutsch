@@ -30,13 +30,11 @@ export function LetterCard({ item, practiced, langMode, onPracticed, onOpenDetai
 
   return (
     <div
-      className={`relative h-[160px] cursor-pointer [perspective:1200px] z-[1] hover:z-20 ${flipped ? 'z-20' : ''}`}
+      className={`relative h-[160px] cursor-pointer rounded-xl [perspective:1200px] z-[1] hover:z-20 focus-visible:z-20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950 ${flipped ? 'z-20' : ''}`}
       onClick={flip}
       role="button"
       tabIndex={0}
       onKeyDown={(e) => e.key === 'Enter' && flip()}
-      onFocus={() => setFlipped(true)}
-      onBlur={() => setFlipped(false)}
     >
       <div
         className={`relative h-full w-full transition-transform duration-400 [transform-style:preserve-3d] ${

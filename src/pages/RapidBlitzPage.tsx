@@ -179,28 +179,34 @@ export function RapidBlitzPage() {
               <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white">Rapid Blitz</h1>
               <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">60 seconds of mixed challenges</p>
 
-              <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700 dark:border-slate-700 dark:bg-slate-900">
+              <div className="mt-4 rounded-2xl bg-slate-50 p-4 text-sm text-slate-700 dark:bg-slate-800/60">
                 <div className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">Mode: Mixed (all 6 types)</div>
               </div>
 
               <div className="mt-4 grid grid-cols-2 gap-3">
-                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-900">
+                <div className="rounded-2xl bg-slate-50 p-4 dark:bg-slate-800/60">
                   <div className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">Best Score</div>
                   <div className="mt-1 text-2xl font-bold text-blue-600">{bestScore}</div>
                 </div>
-                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-900">
+                <div className="rounded-2xl bg-slate-50 p-4 dark:bg-slate-800/60">
                   <div className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">Score</div>
                   <div className="mt-1 text-2xl font-bold text-emerald-600">{score}</div>
                 </div>
               </div>
 
-              <button
-                type="button"
-                onClick={startGame}
-                className={`${theme.button.primary} mt-6 w-full text-lg`}
-              >
-                ⚡ Start Blitz
-              </button>
+              {challenges.length === 0 ? (
+                <p className="mt-6 rounded-xl bg-amber-50 p-3 text-center text-sm font-medium text-amber-800 dark:bg-amber-950/40 dark:text-amber-200">
+                  Loading questions… connect to the internet once to populate them.
+                </p>
+              ) : (
+                <button
+                  type="button"
+                  onClick={startGame}
+                  className={`${theme.button.primary} mt-6 w-full text-lg`}
+                >
+                  ⚡ Start Blitz
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -279,23 +285,29 @@ export function RapidBlitzPage() {
 
               {/* Score / Best */}
               <div className="mt-4 grid grid-cols-2 gap-3">
-                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-900">
+                <div className="rounded-2xl bg-slate-50 p-4 dark:bg-slate-800/60">
                   <div className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">Best Score</div>
                   <div className="mt-1 text-2xl font-bold text-blue-600">{bestScore}</div>
                 </div>
-                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-900">
+                <div className="rounded-2xl bg-slate-50 p-4 dark:bg-slate-800/60">
                   <div className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">Score</div>
                   <div className="mt-1 text-2xl font-bold text-emerald-600">{score}</div>
                 </div>
               </div>
 
-              <button
-                type="button"
-                onClick={startGame}
-                className={`${theme.button.primary} mt-6 w-full text-lg`}
-              >
-                {selectedMode ? `⚡ Start ${modeLabel.title}` : '⚡ Start Blitz (Mixed)'}
-              </button>
+              {challenges.length === 0 ? (
+                <p className="mt-6 rounded-xl bg-amber-50 p-3 text-center text-sm font-medium text-amber-800 dark:bg-amber-950/40 dark:text-amber-200">
+                  Loading questions… connect to the internet once to populate them.
+                </p>
+              ) : (
+                <button
+                  type="button"
+                  onClick={startGame}
+                  className={`${theme.button.primary} mt-6 w-full text-lg`}
+                >
+                  ⚡ Start Blitz
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -352,13 +364,19 @@ export function RapidBlitzPage() {
             </div>
 
             {/* Timer is paused here — Continue starts the countdown + timer */}
-            <button
-              type="button"
-              onClick={continuePreRound}
-              className={`${theme.button.primary} w-full text-lg`}
-            >
-              {isSectionInfo ? `▶ Continue — Section ${currentSection}` : selectedMode ? `⚡ Start ${info.title}` : '⚡ Start Blitz (Mixed)'}
-            </button>
+            {challenges.length === 0 ? (
+              <p className="mt-6 rounded-xl bg-amber-50 p-3 text-center text-sm font-medium text-amber-800 dark:bg-amber-950/40 dark:text-amber-200">
+                Loading questions… connect to the internet once to populate them.
+              </p>
+            ) : (
+              <button
+                type="button"
+                onClick={continuePreRound}
+                className={`${theme.button.primary} w-full text-lg`}
+              >
+                {isSectionInfo ? `▶ Continue — Section ${currentSection}` : selectedMode ? `⚡ Start ${info.title}` : '⚡ Start Blitz (Mixed)'}
+              </button>
+            )}
           </div>
         </div>
       </div>

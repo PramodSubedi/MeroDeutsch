@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { alphabetData, spellingWords } from '../../data/sharedContent';
 import { speakLetter, speakWord } from '../../hooks/useSpeech';
 import { useProgress } from '../../hooks/useProgress';
 import { useReviewQueue } from '../../hooks/useReviewQueue';
 import { useXp } from '../../hooks/useXp';
-import type { LangMode } from '../../types';
+import { curriculumService } from '../../services';
+import type { AlphabetItem, LangMode, SpellingWord } from '../../types';
 
 const MISSING_LETTER_FALLBACKS: Record<string, string> = {
   SCH: 'Sch',
@@ -32,12 +32,42 @@ export function SpellingPractice({ langMode }: { langMode: LangMode }) {
   const { addWrongAnswer } = useReviewQueue();
   const { reportAnswer } = useXp();
   const [difficulty, setDifficulty] = useState<'easy' | 'medium'>('easy');
-  const [word, setWord] = useState(() => spellingWords.easy[0]);
+
+  // Dynamic data pools — fetched via the service layer (no static imports).
+  const [alphabetData, setAlphabetData] = useState<AlphabetItem[]>([]);
+  const [spellingWords, setSpellingWords] = useState<Record<'easy' | 'medium', SpellingWord[]>>({ easy: [], medium: [] });
+  const [word, setWord] = useState<SpellingWord | null>(null);
   const [idx, setIdx] = useState(0);
   const [score, setScore] = useState(0);
   const [done, setDone] = useState(false);
   const [feedback, setFeedback] = useState('');
   const timeoutRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      try {
+        const [alphabet, spelling] = await Promise.all([
+          curriculumService.getAlphabet(),
+          curriculumService.getSpelling(),
+        ]);
+        if (cancelled) return;
+        setAlphabetData(alphabet);
+        setSpellingWords(spelling);
+        // Seed the first word once pools arrive.
+        const pool = spelling.easy;
+        if (pool.length > 0 && !word) {
+          setWord(pool[Math.floor(Math.random() * pool.length)]);
+        }
+      } catch {
+        /* pools stay empty -> friendly empty state */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -49,29 +79,29 @@ export function SpellingPractice({ langMode }: { langMode: LangMode }) {
 
   const start = (diff: 'easy' | 'medium' = difficulty) => {
     const pool = spellingWords[diff];
+    if (pool.length === 0) return;
     setWord(pool[Math.floor(Math.random() * pool.length)]);
     setIdx(0);
     setDone(false);
     setFeedback('');
   };
 
-  const target = word.letters[idx];
-  const correct = alphabetData.find((d) => d.id === target);
+  const target = word?.letters[idx];
+  const correct = target ? alphabetData.find((d) => d.id === target) : undefined;
 
   // Stable, memoized options — rebuilt only when the target letter changes, never on re-render.
   const options = useMemo(() => {
-    if (!correct) return [];
+    if (!correct || alphabetData.length === 0) return [];
     const opts = [correct];
-    while (opts.length < 4) {
+    while (opts.length < 4 && opts.length < alphabetData.length) {
       const r = alphabetData[Math.floor(Math.random() * alphabetData.length)];
       if (r.category === 'standard' && !opts.find((o) => o.id === r.id)) opts.push(r);
     }
     return shuffle(opts);
-  }, [correct]);
+  }, [correct, alphabetData]);
 
   const check = (id: string) => {
-    if (done) return;
-    if (!correct) return;
+    if (done || !word || !correct) return;
     if (id === target) {
       const next = idx + 1;
       if (next >= word.letters.length) {
@@ -93,7 +123,7 @@ export function SpellingPractice({ langMode }: { langMode: LangMode }) {
       // Add to review queue for wrong answers
       addWrongAnswer({
         moduleType: 'spelling',
-        itemKey: target,
+        itemKey: target ?? '',
         userAnswer: id,
         correctAnswer: correct.gerPhonetic || correct.id,
       });
@@ -104,8 +134,19 @@ export function SpellingPractice({ langMode }: { langMode: LangMode }) {
     }
   };
 
+  if (!word) {
+    return (
+      <div className="mx-auto max-w-xl rounded-xl bg-white p-5 text-center shadow-sm dark:bg-slate-900">
+        <h2 className="text-2xl font-bold">{langMode === 'german' ? 'Rechtschreibung' : 'Spelling Practice'}</h2>
+        <p className="mt-3 text-sm text-slate-500">
+          {langMode === 'german' ? 'Wörter werden geladen…' : 'Loading words…'}
+        </p>
+      </div>
+    );
+  }
+
   return (
-    <div className="mx-auto max-w-xl rounded-xl border border-slate-200 bg-white p-5 text-center shadow dark:border-slate-700 dark:bg-slate-800">
+    <div className="mx-auto max-w-xl rounded-xl bg-white p-5 text-center shadow-sm dark:bg-slate-900">
       <h2 className="text-2xl font-bold">{langMode === 'german' ? 'Rechtschreibung' : 'Spelling Practice'}</h2>
       <div className="mb-3 mt-2 flex justify-center gap-2">
         {(['easy', 'medium'] as const).map((d) => (

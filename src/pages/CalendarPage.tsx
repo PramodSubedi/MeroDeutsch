@@ -1,18 +1,35 @@
-import { useEffect, useRef, useState } from 'react';
+/**
+ * src/pages/CalendarPage.tsx
+ *
+ * Unit 3 — Days & Months. Learn list (days/months tabs) + engine-driven
+ * Listen & Type quiz (`useExerciseSession` + `<ListenAndType>`). The quiz
+ * draws a finite deck of 10 unique items per round; "Play again" reshuffles.
+ * XP/SRS reporting is owned entirely by the Lesson Engine session.
+ */
+
+import { useEffect, useMemo, useState } from 'react';
 import { BookOpen, Sparkles, Calendar, CalendarDays } from 'lucide-react';
 import { sharedTextDatabase } from '../data/sharedContent';
 import { useLang } from '../hooks/useLang';
 import { usePageTitle } from '../hooks/usePageTitle';
-import { useReviewQueue } from '../hooks/useReviewQueue';
-import { useXp } from '../hooks/useXp';
 import { speakWord } from '../hooks/useSpeech';
 import { StandardStudyCard } from '../components/StandardStudyCard';
 import { SectionGrid } from '../components/SectionGrid';
 import { TabGroup } from '../components/TabGroup';
 import { theme } from '../config/theme';
 import { curriculumService } from '../services';
-import { drawWithoutReplacement } from '../utils/questionGenerator';
+import { pickNUnique } from '../utils/questionGenerator';
+import {
+  useExerciseSession,
+  type ExerciseQuestion,
+} from '../hooks/useExerciseSession';
+import { ListenAndType } from '../components/exercises/ListenAndType';
 import type { CalendarItem } from '../types';
+
+/** Engine-compatible calendar question (audio prompt = the word itself). */
+interface CalendarQuestion extends ExerciseQuestion {}
+
+const DECK_SIZE = 10;
 
 function normalize(input: string): string {
   return input.trim().toLowerCase().replace(/\s+/g, ' ');
@@ -22,71 +39,66 @@ export function CalendarPage() {
   usePageTitle('Calendar');
   const { langMode } = useLang();
   const isDE = langMode === 'german';
-  const { addWrongAnswer } = useReviewQueue();
-  const { reportAnswer } = useXp();
   const [tab, setTab] = useState<'days' | 'months'>('days');
   const [mode, setMode] = useState<'learn' | 'quiz'>('learn');
   const [calendar, setCalendar] = useState<CalendarItem[]>([]);
-  const [quizItem, setQuizItem] = useState<CalendarItem | null>(null);
-  const [quizInput, setQuizInput] = useState('');
-  const [quizStatus, setQuizStatus] = useState<'idle' | 'correct' | 'wrong'>('idle');
-  const [quizScore, setQuizScore] = useState(0);
-  const [quizTotal, setQuizTotal] = useState(0);
-  const quizInputRef = useRef<HTMLInputElement>(null);
-  // Track shown calendar keys so the same prompt isn't repeated until the pool cycles.
-  const usedQuizKeysRef = useRef<Set<string>>(new Set());
+  const [loaded, setLoaded] = useState(false);
+  /** Increments to reshuffle a fresh quiz deck. */
+  const [runId, setRunId] = useState(0);
 
   useEffect(() => {
-    curriculumService.getCalendar().then(data => {
-      setCalendar(data);
-      if (data.length > 0) {
-        setQuizItem(data[0]);
-        // Register the initial item so the first nextQuiz() cannot redraw it.
-        usedQuizKeysRef.current.add(data[0].de);
-      }
-    });
+    curriculumService
+      .getCalendar()
+      .then((data) => {
+        setCalendar(data);
+        setLoaded(true);
+      })
+      .catch(() => setLoaded(true));
   }, []);
 
   const data = tab === 'days' ? calendar.slice(0, 7) : calendar.slice(7);
+
+  // Finite without-replacement deck per round (Lesson Engine contract).
+  const deck = useMemo<CalendarQuestion[]>(
+    () =>
+      pickNUnique({ items: calendar, count: Math.min(DECK_SIZE, calendar.length), getKey: (c) => c.de }).map(
+        (c) => ({
+          key: c.de,
+          correctAnswer: c.de,
+          speakPrompt: c.de,
+        })
+      ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [calendar, runId]
+  );
+
+  const session = useExerciseSession<CalendarQuestion>({
+    questions: deck,
+    module: 'calendar',
+    matches: (input, q) => normalize(input) === normalize(q.correctAnswer),
+  });
 
   const title = isDE ? 'Tage & Monate' : sharedTextDatabase.calendar.title;
   const description = isDE
     ? 'Lerne die Wochentage und Monate'
     : sharedTextDatabase.calendar.description;
 
-  const nextQuiz = () => {
-    if (calendar.length === 0) return;
-    const next = drawWithoutReplacement(calendar, usedQuizKeysRef.current, (item) => item.de);
-    if (!next) return;
-    setQuizItem(next);
-    setQuizInput('');
-    setQuizStatus('idle');
-    speakWord(next.de);
-    quizInputRef.current?.focus();
-  };
-
-  const checkQuiz = () => {
-    if (!quizInput.trim() || !quizItem) return;
-    setQuizTotal((t) => t + 1);
-    const correct = normalize(quizInput) === normalize(quizItem.de);
-    if (correct) {
-      setQuizStatus('correct');
-      setQuizScore((s) => s + 1);
-      // +10 XP for a correct quiz answer
-      reportAnswer({ correct: true, module: 'calendar' });
-    } else {
-      setQuizStatus('wrong');
-      addWrongAnswer({
-        moduleType: 'calendar',
-        itemKey: quizItem.de,
-        userAnswer: quizInput.trim(),
-        correctAnswer: quizItem.de,
-      });
-    }
-  };
-
-  if (calendar.length === 0 || !quizItem) {
+  if (!loaded) {
     return <div className={theme.page.container}>Loading...</div>;
+  }
+
+  // Pool empty (not seeded yet / offline before first fetch) — friendly state.
+  if (calendar.length === 0) {
+    return (
+      <div className={theme.page.container}>
+        <h1 className={theme.page.heading}>{title}</h1>
+        <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">
+          {isDE
+            ? 'Inhalte werden noch geladen — verbinde dich einmal mit dem Internet.'
+            : 'Content is still loading — connect to the internet once to populate it.'}
+        </p>
+      </div>
+    );
   }
 
   return (
@@ -132,64 +144,39 @@ export function CalendarPage() {
       )}
 
       {mode === 'quiz' && (
-        <div className={`${theme.panel.surface} mx-auto max-w-lg text-center`}>
-          <h3 className="mb-2 font-bold">{isDE ? 'Hören & Tippen' : 'Listen & Type'}</h3>
-          <p className="mb-3 text-sm text-slate-500 dark:text-slate-400">
-            {isDE
-              ? 'Höre das deutsche Wort und tippe es.'
-              : 'Hear the German word and type it.'}
-          </p>
-          <div className="mb-3 flex items-center justify-center gap-3">
-            <button type="button" onClick={() => speakWord(quizItem.de)} className={theme.button.primary}>
-              🔊 {isDE ? 'Abspielen' : 'Play'}
-            </button>
-            <span className="text-sm text-slate-500">
-              {isDE ? 'Punkte' : 'Score'}: <b>{quizScore}</b> / {quizTotal}
-            </span>
-          </div>
-          <div className="mb-3 flex h-16 items-center justify-center rounded-2xl border border-dashed border-blue-300 bg-blue-50/60 text-lg font-semibold text-blue-700 dark:border-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
-            {quizStatus === 'idle' ? (
-              <span className="text-sm font-medium text-blue-600/70 dark:text-blue-300/70">
-                {isDE ? '🎧 Höre genau zu' : '🎧 Listen carefully'}
-              </span>
-            ) : quizStatus === 'correct' ? (
-              <span className="text-green-600 dark:text-green-400">🎉 {isDE ? 'Richtig!' : 'Correct!'}</span>
-            ) : (
-              <span className="text-red-600 dark:text-red-400">
-                ❌ {isDE ? `Richtig: ${quizItem.de}` : `Correct: ${quizItem.de}`}
-              </span>
-            )}
-          </div>
-          <input
-            ref={quizInputRef}
-            type="text"
-            value={quizInput}
-            onChange={(event) => {
-              setQuizInput(event.target.value);
-              if (quizStatus === 'correct' || quizStatus === 'wrong') setQuizStatus('idle');
-            }}
-            onKeyDown={(event) => {
-              if (event.key === 'Enter') {
-                if (quizStatus === 'correct' || quizStatus === 'wrong') nextQuiz();
-                else checkQuiz();
-              }
-            }}
+        <div className="mx-auto max-w-lg">
+          <ListenAndType
+            session={session}
+            onPlayPrompt={(q) => speakWord(q.correctAnswer)}
             placeholder={isDE ? 'Tippe das deutsche Wort…' : 'Type the German word…'}
-            className={theme.input}
-            aria-label="Listen and type"
-            disabled={quizStatus === 'correct'}
+            hideFooter
           />
-          <div className="mt-4 flex justify-center gap-3">
-            {quizStatus === 'correct' || quizStatus === 'wrong' ? (
-              <button type="button" onClick={nextQuiz} className={theme.button.primary}>
-                {isDE ? 'Weiter →' : 'Next →'}
+          {/* Round footer: next/finish + play again */}
+          <div className="mt-3 flex justify-center gap-3">
+            {session.locked && (
+              <button type="button" onClick={session.next} className={theme.button.primary}>
+                {session.index >= session.total - 1
+                  ? isDE ? 'Fertig' : 'Finish'
+                  : isDE ? 'Weiter →' : 'Next →'}
               </button>
-            ) : (
-              <button type="button" onClick={checkQuiz} className={theme.button.primary}>
-                {isDE ? 'Prüfen' : 'Check'}
+            )}
+            {!session.locked && session.answered > 0 && session.index >= session.total && (
+              <button
+                type="button"
+                onClick={() => setRunId((r) => r + 1)}
+                className={theme.button.secondary}
+              >
+                {isDE ? 'Neue Runde 🔄' : 'Play again 🔄'}
               </button>
             )}
           </div>
+          {session.index >= session.total && session.total > 0 && (
+            <p className="mt-3 text-center text-sm font-semibold text-slate-600 dark:text-slate-300">
+              {isDE
+                ? `Runde beendet — ${session.score}/${session.total} richtig.`
+                : `Round complete — ${session.score}/${session.total} correct.`}
+            </p>
+          )}
         </div>
       )}
     </div>

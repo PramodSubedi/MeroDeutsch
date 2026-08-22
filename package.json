@@ -10,6 +10,8 @@
     "enrich": "tsx scripts/enrich-cards.ts",
     "extract-vocab": "tsx scripts/extract-vocab.ts",
     "seed-vocab": "tsx scripts/seedVocab.ts",
+    "seed-curriculum": "tsx scripts/seedCurriculum.ts",
+    "seed-content-pools": "tsx scripts/seedContentPools.ts",
     "preview": "vite preview",
     "import-csv": "tsx scripts/import-csv.ts"
   },
@@ -21,6 +23,8 @@
     "canvas-confetti": "^1.9.4",
     "dexie": "^4.4.4",
     "dexie-react-hooks": "^4.4.0",
+    "framer-motion": "^13.1.1",
+    "headroom-ai": "^0.36.4",
     "lucide-react": "^1.31.0",
     "pdf-parse": "^2.4.5",
     "react": "^19.2.8",

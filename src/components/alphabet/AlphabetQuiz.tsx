@@ -1,10 +1,10 @@
-import { useRef, useState } from 'react';
-import { alphabetData } from '../../data/sharedContent';
+import { useEffect, useRef, useState } from 'react';
 import { speakLetter } from '../../hooks/useSpeech';
 import { useProgress } from '../../hooks/useProgress';
 import { useReviewQueue } from '../../hooks/useReviewQueue';
 import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts';
 import { useXp } from '../../hooks/useXp';
+import { curriculumService } from '../../services';
 import { drawWithoutReplacement } from '../../utils/questionGenerator';
 import type { AlphabetItem, LangMode } from '../../types';
 
@@ -18,10 +18,10 @@ function shuffle<T>(arr: T[]): T[] {
   return copy;
 }
 
-function pickOptions(correct: AlphabetItem): AlphabetItem[] {
+function pickOptions(correct: AlphabetItem, pool: AlphabetItem[]): AlphabetItem[] {
   const opts = [correct];
-  while (opts.length < 4) {
-    const r = alphabetData[Math.floor(Math.random() * alphabetData.length)];
+  while (opts.length < 4 && opts.length < pool.length) {
+    const r = pool[Math.floor(Math.random() * pool.length)];
     if (!opts.find((o) => o.id === r.id)) opts.push(r);
   }
   return shuffle(opts);
@@ -31,33 +31,54 @@ export function AlphabetQuiz({ langMode }: { langMode: LangMode }) {
   const { progress, save, markPracticed } = useProgress();
   const { addWrongAnswer } = useReviewQueue();
   const { reportAnswer } = useXp();
+
+  // Dynamic data pool — fetched via the service layer (no static import).
+  const [pool, setPool] = useState<AlphabetItem[]>([]);
   // Track shown letter ids so the same prompt isn't repeated until the whole
   // alphabet pool has been cycled (sample without replacement).
   const usedIdsRef = useRef<Set<string>>(new Set());
-  const [item, setItem] = useState<AlphabetItem>(() => {
-    const first = drawWithoutReplacement(alphabetData, usedIdsRef.current, (a) => a.id);
-    return first ?? alphabetData[0];
-  });
+  const [item, setItem] = useState<AlphabetItem | null>(null);
   // Stable options — only rebuilt in `next()`, never on re-render.
-  const [options, setOptions] = useState(() => pickOptions(item));
+  const [options, setOptions] = useState<AlphabetItem[]>([]);
   const [sessionScore, setSessionScore] = useState(0);
   const [sessionTotal, setSessionTotal] = useState(0);
   const [locked, setLocked] = useState(false);
   const [feedback, setFeedback] = useState('');
   const [wrongId, setWrongId] = useState<string | null>(null);
 
+  useEffect(() => {
+    let cancelled = false;
+    curriculumService
+      .getAlphabet()
+      .then((data) => {
+        if (cancelled || data.length === 0) return;
+        setPool(data);
+        const first = drawWithoutReplacement(data, usedIdsRef.current, (a) => a.id);
+        if (first) {
+          setItem(first);
+          setOptions(pickOptions(first, data));
+        }
+      })
+      .catch(() => {
+        /* pool stays empty -> friendly loading/empty state */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const next = () => {
-    const n = drawWithoutReplacement(alphabetData, usedIdsRef.current, (a) => a.id);
+    const n = drawWithoutReplacement(pool, usedIdsRef.current, (a) => a.id);
     if (!n) return;
     setItem(n);
-    setOptions(pickOptions(n));
+    setOptions(pickOptions(n, pool));
     setLocked(false);
     setFeedback('');
     setWrongId(null);
   };
 
   const check = (id: string) => {
-    if (locked) return;
+    if (locked || !item) return;
     setLocked(true);
     const total = sessionTotal + 1;
     setSessionTotal(total);
@@ -87,7 +108,9 @@ export function AlphabetQuiz({ langMode }: { langMode: LangMode }) {
 
   // Desktop keyboard shortcuts: Space = hear letter, 1-4 = pick option, Enter = next.
   useKeyboardShortcuts({
-    onAudioPlay: () => speakLetter(item.speak),
+    onAudioPlay: () => {
+      if (item) speakLetter(item.speak);
+    },
     onSelectOption: (index) => {
       if (!locked && options[index]) check(options[index].id);
     },
@@ -98,8 +121,18 @@ export function AlphabetQuiz({ langMode }: { langMode: LangMode }) {
 
   const pct = sessionTotal ? Math.round((sessionScore / sessionTotal) * 100) : 0;
 
+  if (!item) {
+    return (
+      <div className="mx-auto max-w-xl rounded-xl bg-white p-5 text-center shadow-sm dark:bg-slate-900">
+        <p className="text-sm text-slate-500">
+          {langMode === 'german' ? 'Quiz wird geladen…' : 'Loading quiz…'}
+        </p>
+      </div>
+    );
+  }
+
   return (
-    <div className="mx-auto max-w-xl rounded-xl border border-slate-200 bg-white p-5 text-center shadow dark:border-slate-700 dark:bg-slate-800">
+    <div className="mx-auto max-w-xl rounded-xl bg-white p-5 text-center shadow-sm dark:bg-slate-900">
       <h2 className="text-2xl font-bold">{langMode === 'german' ? 'Alphabet-Quiz' : 'Alphabet Quiz'}</h2>
       <p className="mb-3 text-sm text-slate-500">
         {langMode === 'german' ? 'Wie wird dieser Buchstabe ausgesprochen?' : 'How is this letter pronounced?'}

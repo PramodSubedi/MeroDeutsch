@@ -249,7 +249,7 @@ Hund,dog,कुत्ता,Animals`}
             )}
           </div>
 
-          <div className="mt-4 rounded-lg border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-950">
+          <div className="mt-4 rounded-lg bg-white p-4 shadow-sm dark:bg-slate-900">
             <h3 className="mb-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
               {isDE ? 'Nächste Schritte' : 'Next Steps'}
             </h3>

@@ -1,11 +1,20 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+/**
+ * src/pages/NumbersPage.tsx
+ *
+ * Numbers module driven by the shared Lesson Engine:
+ *  - "Hören & Tippen"  -> useExerciseSession + <ListenAndType> (accepts digit OR word)
+ *  - "Zahlen-Quiz"     -> useExerciseSession + <MultipleChoice> (digit prompt, word options)
+ * Both draw finite without-replacement decks of 10 per round; desktop keyboard
+ * shortcuts are preserved for the MCQ (Space = hear, 1-4 = pick, Enter = next).
+ * XP/SRS reporting is owned entirely by the engine sessions.
+ */
+
+import { useEffect, useMemo, useState } from 'react';
 import { List, Headphones } from 'lucide-react';
 import { speakWord } from '../hooks/useSpeech';
 import { useLang } from '../hooks/useLang';
 import { usePageTitle } from '../hooks/usePageTitle';
-import { useReviewQueue } from '../hooks/useReviewQueue';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
-import { useXp } from '../hooks/useXp';
 import type { NumberItem, NumberRange } from '../types';
 import { Card } from '../components/Card';
 import { SectionGrid } from '../components/SectionGrid';
@@ -13,7 +22,13 @@ import { TabGroup, type Tab } from '../components/TabGroup';
 import { theme } from '../config/theme';
 import { sharedTextDatabase } from '../data/sharedContent';
 import { curriculumService } from '../services';
-import { buildMcq, drawWithoutReplacement } from '../utils/questionGenerator';
+import { buildMcq, pickNUnique } from '../utils/questionGenerator';
+import {
+  useExerciseSession,
+  type ExerciseQuestion,
+} from '../hooks/useExerciseSession';
+import { ListenAndType } from '../components/exercises/ListenAndType';
+import { MultipleChoice } from '../components/exercises/MultipleChoice';
 
 const ranges: { id: NumberRange; label: string }[] = [
   { id: '0-12', label: '0 – 12' },
@@ -42,47 +57,41 @@ function normalize(input: string): string {
   return input.trim().toLowerCase().replace(/\s+/g, ' ');
 }
 
+/** Engine question for the listen-and-type mode. */
+interface NumberListenQuestion extends ExerciseQuestion {}
+
+/** Engine question for the MCQ mode (options are German words). */
+interface NumberMcqQuestion extends ExerciseQuestion {
+  n: number;
+}
+
+const DECK_SIZE = 10;
+
 export function NumbersPage() {
   usePageTitle('Numbers');
   const { langMode } = useLang();
   const isDE = langMode === 'german';
-  const { addWrongAnswer } = useReviewQueue();
-  const { reportAnswer } = useXp();
   const [range, setRange] = useState<NumberRange>('0-12');
   const [mode, setMode] = useState<'learn' | 'listen'>('learn');
   const [numbersData, setNumbersData] = useState<NumberItem[]>([]);
-  const [quiz, setQuiz] = useState<NumberItem | null>(null);
-  const [opts, setOpts] = useState<NumberItem[]>([]);
-  const [fb, setFb] = useState('');
-  const [listenItem, setListenItem] = useState<NumberItem | null>(null);
-  const [listenInput, setListenInput] = useState('');
-  const [listenStatus, setListenStatus] = useState<'idle' | 'correct' | 'wrong'>('idle');
-  const [listenScore, setListenScore] = useState(0);
-  const [listenTotal, setListenTotal] = useState(0);
-  const listenInputRef = useRef<HTMLInputElement>(null);
-  // Track shown number keys so the same prompt isn't repeated until the pool cycles.
-  const usedQuizKeysRef = useRef<Set<string>>(new Set());
-  const usedListenKeysRef = useRef<Set<string>>(new Set());
+  const [loaded, setLoaded] = useState(false);
+  /** Increments to reshuffle fresh decks. */
+  const [runId, setRunId] = useState(0);
 
   useEffect(() => {
-    curriculumService.getNumbers().then(data => {
-      setNumbersData(data);
-      if (data.length > 0) {
-        const initial = data[Math.min(1, data.length - 1)];
-        setQuiz(initial);
-        setListenItem(initial);
-        // Register the initial items so the first next()/nextListen() cannot
-        // redraw them (without-replacement guarantee).
-        usedQuizKeysRef.current.add(initial.de);
-        usedListenKeysRef.current.add(initial.de);
-      }
-    });
+    curriculumService
+      .getNumbers()
+      .then((data) => {
+        setNumbersData(data);
+        setLoaded(true);
+      })
+      .catch(() => setLoaded(true));
   }, []);
 
-  const getItemsByRange = (range: NumberRange): NumberItem[] => {
-    if (range === '0-12') return numbersData.filter((item) => item.n <= 12);
-    if (range === '13-19') return numbersData.filter((item) => item.n >= 13 && item.n <= 19);
-    if (range === '20-99') return numbersData.filter((item) => item.n >= 20 && item.n <= 99);
+  const getItemsByRange = (r: NumberRange): NumberItem[] => {
+    if (r === '0-12') return numbersData.filter((item) => item.n <= 12);
+    if (r === '13-19') return numbersData.filter((item) => item.n >= 13 && item.n <= 19);
+    if (r === '20-99') return numbersData.filter((item) => item.n >= 20 && item.n <= 99);
     return numbersData.filter((item) => item.n >= 100);
   };
 
@@ -98,90 +107,97 @@ export function NumbersPage() {
     { id: 'listen', label: isDE ? 'Hören & Tippen' : 'Listen & Type', icon: Headphones },
   ];
 
-  const nextQuiz = useCallback(() => {
-    if (numbersData.length === 0) return;
-    const q = drawWithoutReplacement(numbersData, usedQuizKeysRef.current, (x) => x.de);
-    if (!q) return;
-    const options = buildMcq({
-      correctItem: q,
-      allItems: numbersData,
-      getKey: (x) => x.de,
-      count: 4,
-    });
-    setQuiz(q);
-    setOpts(options);
-    setFb('');
-  }, [numbersData]);
+  // ---- Session A: Hören & Tippen (finite deck per round) ----
+  const listenDeck = useMemo<NumberListenQuestion[]>(
+    () =>
+      pickNUnique({
+        items: numbersData,
+        count: Math.min(DECK_SIZE, numbersData.length),
+        getKey: (x) => x.de,
+      }).map((x) => ({
+        key: x.de,
+        correctAnswer: x.de,
+        speakPrompt: x.de,
+      })),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [numbersData, runId]
+  );
 
-  const nextQuizCallback = useCallback(() => {
-    if (numbersData.length > 0) nextQuiz();
-  }, [numbersData, nextQuiz]);
+  const listenSession = useExerciseSession<NumberListenQuestion>({
+    questions: listenDeck,
+    module: 'numbers',
+    // Accept either the digit form or the German word.
+    matches: (input, q) => {
+      const norm = normalize(input);
+      if (norm === normalize(q.correctAnswer)) return true;
+      const item = numbersData.find((x) => x.de === q.correctAnswer);
+      return item !== undefined && norm === String(item.n);
+    },
+  });
 
-  useEffect(() => {
-    nextQuizCallback();
-  }, [nextQuizCallback]);
+  // ---- Session B: Zahlen-Quiz MCQ (finite deck per round) ----
+  const mcqDeck = useMemo<NumberMcqQuestion[]>(
+    () =>
+      pickNUnique({
+        items: numbersData,
+        count: Math.min(DECK_SIZE, numbersData.length),
+        getKey: (x) => x.de,
+      }).map((q) => ({
+        key: q.de,
+        correctAnswer: q.de,
+        n: q.n,
+        speakPrompt: q.de,
+        // Raw option pool; the engine shuffles once at mount.
+        options: buildMcq({
+          correctItem: q,
+          allItems: numbersData,
+          getKey: (x) => x.de,
+          count: 4,
+        }).map((o) => o.de),
+      })),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [numbersData, runId]
+  );
 
-  const nextListen = () => {
-    if (numbersData.length === 0) return;
-    const next = drawWithoutReplacement(numbersData, usedListenKeysRef.current, (x) => x.de);
-    if (!next) return;
-    setListenItem(next);
-    setListenInput('');
-    setListenStatus('idle');
-    speakWord(next.de);
-    listenInputRef.current?.focus();
-  };
-
-  const checkListen = () => {
-    if (!listenInput.trim() || !listenItem) return;
-    setListenTotal((t) => t + 1);
-    const correct =
-      normalize(listenInput) === normalize(listenItem.de) ||
-      normalize(listenInput) === String(listenItem.n);
-    if (correct) {
-      setListenStatus('correct');
-      setListenScore((s) => s + 1);
-      // +10 XP for a correct listen-and-type answer
-      reportAnswer({ correct: true, module: 'numbers' });
-    } else {
-      setListenStatus('wrong');
-      addWrongAnswer({
-        moduleType: 'numbers',
-        itemKey: listenItem.de,
-        userAnswer: listenInput.trim(),
-        correctAnswer: listenItem.de,
-      });
-    }
-  };
-
-  const selectQuizOption = (o: NumberItem) => {
-    if (o.de === quiz?.de) {
-      setFb('🎉 Richtig!');
-      // +10 XP for a correct quiz answer
-      reportAnswer({ correct: true, module: 'numbers' });
-    } else {
-      setFb(`❌ ${quiz?.de}`);
-      addWrongAnswer({
-        moduleType: 'numbers',
-        itemKey: quiz?.de ?? '',
-        userAnswer: o.de,
-        correctAnswer: quiz?.de ?? '',
-      });
-    }
-    speakWord(quiz?.de ?? o.de);
-  };
+  const mcqSession = useExerciseSession<NumberMcqQuestion>({
+    questions: mcqDeck,
+    module: 'numbers',
+    getOptions: (q) => q.options,
+  });
 
   // Desktop keyboard shortcuts: Space = hear number, 1-4 = pick option, Enter = next.
   useKeyboardShortcuts({
-    onAudioPlay: () => speakWord(quiz?.de ?? ''),
-    onSelectOption: (index) => {
-      if (opts[index]) selectQuizOption(opts[index]);
+    onAudioPlay: () => {
+      const q = mcqSession.current;
+      if (q) speakWord(q.correctAnswer);
     },
-    onNext: () => nextQuiz(),
+    onSelectOption: (index) => {
+      const q = mcqSession.current;
+      if (!q || mcqSession.locked) return;
+      const opts = mcqSession.optionsFor(q);
+      if (opts[index]) mcqSession.select(opts[index]);
+    },
+    onNext: () => {
+      if (mcqSession.locked) mcqSession.next();
+    },
   });
 
-  if (numbersData.length === 0 || !quiz || !listenItem) {
+  if (!loaded) {
     return <div className={theme.page.container}>Loading...</div>;
+  }
+
+  // Pool empty (not seeded yet / offline before first fetch) — friendly state.
+  if (numbersData.length === 0) {
+    return (
+      <div className={theme.page.container}>
+        <h1 className={theme.page.heading}>{title}</h1>
+        <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">
+          {isDE
+            ? 'Inhalte werden noch geladen — verbinde dich einmal mit dem Internet.'
+            : 'Content is still loading — connect to the internet once to populate it.'}
+        </p>
+      </div>
+    );
   }
 
   return (
@@ -231,90 +247,56 @@ export function NumbersPage() {
       )}
 
       {mode === 'listen' && (
-        <div className={`${theme.panel.surface} mx-auto max-w-lg text-center`}>
-          <h3 className="mb-2 font-bold">{isDE ? 'Hören & Tippen' : 'Listen & Type'}</h3>
-          <p className="mb-3 text-sm text-slate-500 dark:text-slate-400">
-            {isDE
-              ? 'Höre die Zahl und tippe die Zahl oder das deutsche Wort.'
-              : 'Hear the number, then type the digit or the German word.'}
-          </p>
-          <div className="mb-3 flex items-center justify-center gap-3">
-            <button type="button" onClick={() => speakWord(listenItem.de)} className={theme.button.primary}>
-              🔊 {isDE ? 'Abspielen' : 'Play'}
-            </button>
-            <span className="text-sm text-slate-500">
-              {isDE ? 'Punkte' : 'Score'}: <b>{listenScore}</b> / {listenTotal}
-            </span>
-          </div>
-          <div className="mb-3 flex h-16 items-center justify-center rounded-2xl border border-dashed border-blue-300 bg-blue-50/60 text-lg font-semibold text-blue-700 dark:border-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
-            {listenStatus === 'idle' ? (
-              <span className="text-sm font-medium text-blue-600/70 dark:text-blue-300/70">
-                {isDE ? '🎧 Höre genau zu' : '🎧 Listen carefully'}
-              </span>
-            ) : listenStatus === 'correct' ? (
-              <span className="text-green-600 dark:text-green-400">🎉 {isDE ? 'Richtig!' : 'Correct!'}</span>
-            ) : (
-              <span className="text-red-600 dark:text-red-400">
-                ❌ {isDE ? `Richtig: ${listenItem.de}` : `Correct: ${listenItem.de}`}
-              </span>
-            )}
-          </div>
-          <input
-            ref={listenInputRef}
-            type="text"
-            value={listenInput}
-            onChange={(event) => {
-              setListenInput(event.target.value);
-              if (listenStatus === 'correct' || listenStatus === 'wrong') setListenStatus('idle');
-            }}
-            onKeyDown={(event) => {
-              if (event.key === 'Enter') {
-                if (listenStatus === 'correct' || listenStatus === 'wrong') nextListen();
-                else checkListen();
-              }
-            }}
+        <div className="mx-auto max-w-lg">
+          <ListenAndType
+            session={listenSession}
+            onPlayPrompt={(q) => speakWord(q.correctAnswer)}
             placeholder={isDE ? 'Tippe Zahl oder Wort…' : 'Type digit or word…'}
-            className={theme.input}
-            aria-label="Listen and type"
-            disabled={listenStatus === 'correct'}
+            hideFooter
           />
-          <div className="mt-4 flex justify-center gap-3">
-            {listenStatus === 'correct' || listenStatus === 'wrong' ? (
-              <button type="button" onClick={nextListen} className={theme.button.primary}>
-                {isDE ? 'Nächste Zahl →' : 'Next Number →'}
+          {/* Round footer: next/finish + play again */}
+          <div className="mt-3 flex justify-center gap-3">
+            {listenSession.locked && (
+              <button type="button" onClick={listenSession.next} className={theme.button.primary}>
+                {listenSession.index >= listenSession.total - 1
+                  ? isDE ? 'Fertig' : 'Finish'
+                  : isDE ? 'Nächste Zahl →' : 'Next Number →'}
               </button>
-            ) : (
-              <button type="button" onClick={checkListen} className={theme.button.primary}>
-                {isDE ? 'Prüfen' : 'Check'}
+            )}
+            {!listenSession.locked && listenSession.answered > 0 && listenSession.index >= listenSession.total && (
+              <button
+                type="button"
+                onClick={() => setRunId((r) => r + 1)}
+                className={theme.button.secondary}
+              >
+                {isDE ? 'Neue Runde 🔄' : 'Play again 🔄'}
               </button>
             )}
           </div>
         </div>
       )}
 
-      <div className={`${theme.panel.surface} mx-auto max-w-lg text-center`}>
-        <h3 className="mb-2 font-bold">{isDE ? 'Zahlen-Quiz' : 'Quick Number Quiz'}</h3>
-          <div className="mb-3 text-5xl font-bold text-blue-600 dark:text-blue-400">{quiz.n}</div>
-          <div className="mb-3 grid grid-cols-2 gap-2">
-            {(opts.length ? opts : [quiz]).map((o) => (
-              <button
-                key={o.de}
-                type="button"
-                className={theme.button.pill}
-                onClick={() => selectQuizOption(o)}
-              >
-                {o.de}
-              </button>
-            ))}
-          </div>
-        {fb && (
-          <div className={`mb-2 font-bold ${fb.includes('Richtig') ? 'text-green-600' : 'text-red-600'}`}>
-            {fb}
-          </div>
+      {/* Zahlen-Quiz — engine-driven MCQ */}
+      <MultipleChoice
+        session={mcqSession}
+        columns={2}
+        showSpeaker={false}
+        renderPrompt={(q) => (
+          <span className="text-5xl font-bold text-blue-600 dark:text-blue-400">{q.n}</span>
         )}
-        <button type="button" onClick={nextQuiz} className={theme.button.primary}>
-          {isDE ? 'Weiter' : 'Next'}
+        hideFooter
+      />
+      <div className="mx-auto mt-3 flex max-w-lg justify-between gap-2">
+        <button type="button" onClick={() => setRunId((r) => r + 1)} className={theme.button.secondary}>
+          {isDE ? 'Neue Runde 🔄' : 'New round 🔄'}
         </button>
+        {mcqSession.locked && (
+          <button type="button" onClick={mcqSession.next} className={theme.button.primary}>
+            {mcqSession.index >= mcqSession.total - 1
+              ? isDE ? 'Fertig' : 'Finish'
+              : isDE ? 'Weiter' : 'Next'}
+          </button>
+        )}
       </div>
     </div>
   );

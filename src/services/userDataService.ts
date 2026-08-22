@@ -1,6 +1,13 @@
 import { supabase } from '../lib/supabase';
 import type { Progress, UserAchievements, WrongAnswerItem } from '../types';
 
+/** Cloud mirror of the A1 campaign state (`useA1Path`). */
+export interface A1PathState {
+  unlockedUnitIndex: number;
+  completedNodeIds: string[];
+  checkpointBestByUnit: Record<number, number>;
+}
+
 /**
  * Service for syncing user data between localStorage and Supabase.
  * This allows offline-first behavior with cloud sync.
@@ -222,6 +229,50 @@ export const userDataService = {
         });
       if (insertError) throw insertError;
     }
+  },
+
+  // --- A1 Path State (cross-device campaign sync) ---
+
+  /** Fetch the user's A1 path state. Returns null when no row exists yet. */
+  async getA1PathState(userId: string): Promise<A1PathState | null> {
+    const { data, error } = await supabase
+      .from('a1_path_state')
+      .select('unlocked_unit_index, completed_node_ids, checkpoint_best_by_unit')
+      .eq('user_id', userId)
+      .maybeSingle();
+
+    if (error) {
+      console.warn('Failed to fetch A1 path state:', error);
+      return null;
+    }
+    if (!data) return null;
+
+    return {
+      unlockedUnitIndex: data.unlocked_unit_index ?? 0,
+      completedNodeIds: Array.isArray(data.completed_node_ids)
+        ? (data.completed_node_ids as string[])
+        : [],
+      checkpointBestByUnit:
+        data.checkpoint_best_by_unit && typeof data.checkpoint_best_by_unit === 'object'
+          ? (data.checkpoint_best_by_unit as Record<number, number>)
+          : {},
+    };
+  },
+
+  /**
+   * Upsert the user's A1 path state. Never deletes — a failed write cannot
+   * wipe cloud progress. Local Dexie remains the primary store.
+   */
+  async saveA1PathState(userId: string, state: A1PathState): Promise<void> {
+    const { error } = await supabase.from('a1_path_state').upsert({
+      user_id: userId,
+      unlocked_unit_index: state.unlockedUnitIndex,
+      completed_node_ids: state.completedNodeIds,
+      checkpoint_best_by_unit: state.checkpointBestByUnit,
+      updated_at: new Date().toISOString(),
+    });
+
+    if (error) throw error;
   },
 
   // --- Migration Helpers ---
