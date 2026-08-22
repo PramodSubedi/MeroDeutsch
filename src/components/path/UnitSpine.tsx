@@ -35,9 +35,18 @@ type PillState = 'completed' | 'active' | 'locked';
 function resolveNodes(unitIndex: number): PathNode[] {
   const unit = A1_UNITS[unitIndex];
   if (!unit) return [];
-  return unit.nodeIds
+  
+  // Main nodes (learn/practice/checkpoint) from unit.nodeIds
+  const mainNodes = unit.nodeIds
     .map((id) => A1_CURRICULUM.nodeMap[id])
     .filter((n): n is PathNode => Boolean(n));
+  
+  // Bonus nodes for this unit (from A1_CURRICULUM.nodes, filtered by unitIndex)
+  const bonusNodes = A1_CURRICULUM.nodes.filter(
+    (n) => n.kind === 'bonus' && n.unitIndex === unitIndex
+  );
+  
+  return [...mainNodes, ...bonusNodes];
 }
 
 /** Module pill styles — green completed vs solid blue active vs white locked. */
@@ -50,12 +59,16 @@ const PILL_STYLES: Record<PillState, string> = {
     'bg-white text-slate-400 shadow-sm dark:bg-slate-800 dark:text-slate-500',
 };
 
+import { ChevronDown, ChevronUp } from 'lucide-react';
+import { useState } from 'react';
+
 function UnitCard({ unitIndex }: { unitIndex: number }) {
   const { langMode } = useLang();
   const isDE = langMode === 'german';
   const { getUnitPhase, isCheckpointComplete, checkpointBestByUnit, isNodeUnlocked, isNodeComplete, completeNode } =
     useA1Path();
   const { isAuthenticated } = useAuth();
+  const [pedagogyOpen, setPedagogyOpen] = useState(false);
 
   const unit = A1_UNITS[unitIndex];
   if (!unit) return null;
@@ -80,7 +93,7 @@ function UnitCard({ unitIndex }: { unitIndex: number }) {
   // Card surface: elevated white when unlocked, compact tinted when locked.
   const cardTone =
     phase === 'locked'
-      ? 'rounded-2xl bg-slate-50 p-5 opacity-80 dark:bg-slate-800/60'
+      ? 'rounded-2xl bg-slate-50 p-5 dark:bg-slate-800/60'
       : 'rounded-2xl bg-white p-6 shadow-md dark:bg-slate-900';
 
   // Status pill tone.
@@ -152,60 +165,84 @@ function UnitCard({ unitIndex }: { unitIndex: number }) {
         </p>
 
         {/* Module pills — bonus chips excluded here; they render once below */}
-        <div className="flex flex-wrap gap-2.5">
-          {resolved
-            .filter((n) => n.kind !== 'bonus')
-            .map((node) => {
-              const state = pillStateFor(node);
-              const navigable = state !== 'locked';
-              const icon =
-                state === 'completed' ? (
-                  <CheckCircle className="h-4 w-4" aria-hidden="true" />
-                ) : state === 'active' ? (
-                  <Play className="h-4 w-4 fill-current" aria-hidden="true" />
-                ) : (
-                  <Lock className="h-3.5 w-3.5" aria-hidden="true" />
+        {phase !== 'locked' ? (
+          <div className="flex flex-wrap gap-2.5">
+            {resolved
+              .filter((n) => n.kind !== 'bonus')
+              .map((node) => {
+                const state = pillStateFor(node);
+                const navigable = state !== 'locked';
+                const icon =
+                  state === 'completed' ? (
+                    <CheckCircle className="h-4 w-4" aria-hidden="true" />
+                  ) : state === 'active' ? (
+                    <Play className="h-4 w-4 fill-current" aria-hidden="true" />
+                  ) : (
+                    <Lock className="h-3.5 w-3.5" aria-hidden="true" />
+                  );
+                const label = isDE ? node.label.de : node.label.en;
+
+                const inner = (
+                  <>
+                    {icon}
+                    <span className="truncate">{label}</span>
+                  </>
                 );
-              const label = isDE ? node.label.de : node.label.en;
+                const cls = `inline-flex min-h-[44px] items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors active:scale-95 ${PILL_STYLES[state]}`;
 
-              const inner = (
-                <>
-                  {icon}
-                  <span className="truncate">{label}</span>
-                </>
-              );
-              const cls = `inline-flex min-h-[44px] items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors active:scale-95 ${PILL_STYLES[state]}`;
-
-              if (!navigable) {
+                if (!navigable) {
+                  return (
+                    <div
+                      key={node.id}
+                      className={`${cls} cursor-not-allowed opacity-90`}
+                      aria-label={isDE ? `${label} (gesperrt)` : `${label} (locked)`}
+                    >
+                      {inner}
+                    </div>
+                  );
+                }
                 return (
-                  <div
+                  <Link
                     key={node.id}
-                    className={`${cls} cursor-not-allowed opacity-90`}
-                    aria-label={isDE ? `${label} (gesperrt)` : `${label} (locked)`}
+                    to={node.to}
+                    className={cls}
+                    onClick={() => {
+                      // Visit-completion for learn/practice (rule A). Idempotent.
+                      if (node.kind === 'learn' || node.kind === 'practice') {
+                        completeNode(node.id);
+                      }
+                    }}
                   >
                     {inner}
-                  </div>
+                  </Link>
                 );
-              }
-              return (
-                <Link
-                  key={node.id}
-                  to={node.to}
-                  className={cls}
-                  onClick={() => {
-                    // Visit-completion for learn/practice (rule A). Idempotent.
-                    if (node.kind === 'learn' || node.kind === 'practice') {
-                      completeNode(node.id);
-                    }
-                  }}
-                >
-                  {inner}
-                </Link>
-              );
-            })}
-        </div>
+              })}
+          </div>
+        ) : (
+          <div className="space-y-2">
+            <div className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+              {isDE ? 'Vorschau der Module:' : 'Module preview:'}
+            </div>
+            <div className="flex flex-wrap gap-2.5">
+              {resolved
+                .filter((n) => n.kind !== 'bonus')
+                .map((node) => {
+                  const label = isDE ? node.label.de : node.label.en;
+                  return (
+                    <div
+                      key={node.id}
+                      className="inline-flex min-h-[44px] items-center gap-1.5 rounded-lg bg-slate-100 text-slate-400 px-3 py-1.5 text-sm font-medium dark:bg-slate-800/40 dark:text-slate-500 cursor-not-allowed opacity-60"
+                    >
+                      <Lock className="h-3.5 w-3.5" aria-hidden="true" />
+                      <span className="truncate">{label}</span>
+                    </div>
+                  );
+                })}
+            </div>
+          </div>
+        )}
 
-        {/* Bonus chips — never gate */}
+        {/* Bonus chips — never gate. Only shown in unlocked units */}
         {phase !== 'locked' &&
           resolved
             .filter((n) => n.kind === 'bonus')
@@ -219,40 +256,53 @@ function UnitCard({ unitIndex }: { unitIndex: number }) {
               </Link>
             ))}
 
-        {/* Pedagogy bridges */}
+        {/* Pedagogy bridges — default collapsed accordion */}
         {phase !== 'locked' && unit.pedagogy && (
-          <div className="mt-5 space-y-3">
-            {unit.pedagogy.honorifics && (
-              <HonorificsTable title={unit.pedagogy.honorifics.title} rows={unit.pedagogy.honorifics.rows} />
-            )}
-            {unit.pedagogy.genderLegend && (
-              <div className="rounded-2xl bg-slate-50 p-3 dark:bg-slate-800/60">
-                <div className="mb-2 flex flex-wrap items-center gap-2">
-                  <GenderBadge article="der" />
-                  <GenderBadge article="die" />
-                  <GenderBadge article="das" />
-                  <GenderBadge article="plural" />
-                </div>
-                <p className="text-xs text-slate-600 dark:text-slate-300">
-                  {isDE ? unit.pedagogy.genderLegend.de : unit.pedagogy.genderLegend.en}
-                </p>
+          <div className="mt-5 border-t border-slate-100 pt-4 dark:border-slate-850">
+            <button
+              type="button"
+              onClick={() => setPedagogyOpen((o) => !o)}
+              className="flex w-full items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+              aria-expanded={pedagogyOpen}
+            >
+              <span>📚 {isDE ? 'Einheitstipps & Erklärungen' : 'Unit Tips & Explanations'}</span>
+              {pedagogyOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+            </button>
+            {pedagogyOpen && (
+              <div className="mt-3 space-y-3">
+                {unit.pedagogy.honorifics && (
+                  <HonorificsTable title={unit.pedagogy.honorifics.title} rows={unit.pedagogy.honorifics.rows} />
+                )}
+                {unit.pedagogy.genderLegend && (
+                  <div className="rounded-2xl bg-slate-50 p-3 dark:bg-slate-800/60">
+                    <div className="mb-2 flex flex-wrap items-center gap-2">
+                      <GenderBadge article="der" />
+                      <GenderBadge article="die" />
+                      <GenderBadge article="das" />
+                      <GenderBadge article="plural" />
+                    </div>
+                    <p className="text-xs text-slate-600 dark:text-slate-300">
+                      {isDE ? unit.pedagogy.genderLegend.de : unit.pedagogy.genderLegend.en}
+                    </p>
+                  </div>
+                )}
+                {unit.pedagogy.umlautCallout && (
+                  <p className="rounded-xl bg-amber-50 p-3 text-xs text-amber-900 dark:bg-amber-950/30 dark:text-amber-200">
+                    💡 {isDE ? unit.pedagogy.umlautCallout.de : unit.pedagogy.umlautCallout.en}
+                  </p>
+                )}
+                {unit.pedagogy.suffixNote && (
+                  <p className="rounded-xl bg-slate-50 p-3 text-xs text-slate-600 dark:bg-slate-800/60 dark:text-slate-300">
+                    📝 {isDE ? unit.pedagogy.suffixNote.de : unit.pedagogy.suffixNote.en}
+                  </p>
+                )}
+                {unit.pedagogy.grammarComparison && (
+                  <GrammarComparisonTable
+                    title={unit.pedagogy.grammarComparison.title}
+                    rows={unit.pedagogy.grammarComparison.rows}
+                  />
+                )}
               </div>
-            )}
-            {unit.pedagogy.umlautCallout && (
-              <p className="rounded-xl bg-amber-50 p-3 text-xs text-amber-900 dark:bg-amber-950/30 dark:text-amber-200">
-                💡 {isDE ? unit.pedagogy.umlautCallout.de : unit.pedagogy.umlautCallout.en}
-              </p>
-            )}
-            {unit.pedagogy.suffixNote && (
-              <p className="rounded-xl bg-slate-50 p-3 text-xs text-slate-600 dark:bg-slate-800/60 dark:text-slate-300">
-                📝 {isDE ? unit.pedagogy.suffixNote.de : unit.pedagogy.suffixNote.en}
-              </p>
-            )}
-            {unit.pedagogy.grammarComparison && (
-              <GrammarComparisonTable
-                title={unit.pedagogy.grammarComparison.title}
-                rows={unit.pedagogy.grammarComparison.rows}
-              />
             )}
           </div>
         )}

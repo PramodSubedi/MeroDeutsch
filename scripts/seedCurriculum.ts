@@ -1,17 +1,14 @@
 /**
- * scripts/seedCurriculum.ts
+ * scripts/seedCurriculum.enriched.ts
  *
- * One-time migration of the former hardcoded curriculum sources into Supabase:
- *   - src/data/nouns.json        -> public.vocabulary   (part_of_speech='noun')
- *   - src/data/unit2Sentences.ts -> public.sentences
- *
- * The datasets are EMBEDDED below so this script remains runnable after the
- * hardcoded files are deleted from src/ (no accidental re-coupling).
+ * Extended curriculum seed data for A1 Phase 1:
+ *   - 120+ nouns with articles (organized by categories)
+ *   - 45+ verbs (common A1 verbs including separable/modals)
+ *   - 40+ sentences with akkusativ and other grammar focus
  *
  * Usage:
- *   1. Apply supabase/migrations/010_dynamic_curriculum.sql in your project.
- *   2. Set SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY in .env (service role
- *      bypasses RLS; NEVER expose it to the client bundle).
+ *   1. Copy this file to seedCurriculum.ts (backup existing first)
+ *   2. Set SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY in .env
  *   3. Run: npm run seed-curriculum
  *
  * Idempotent: upserts on (word, part_of_speech) / sentences.id.
@@ -21,73 +18,257 @@ import 'dotenv/config';
 import { createClient } from '@supabase/supabase-js';
 
 /* ────────────────────────────────────────────────────────────
- * Dataset A — nouns (former src/data/nouns.json)
- * [noun, article, meaning "EN / NP", example sentence]
+ * Dataset A — NOUNS (120+ items organized by category)
+ * [noun, article, meaning "EN / NP", example sentence, tags]
  * ──────────────────────────────────────────────────────────── */
 
 type NounRow = [noun: string, art: string, meaning: string, sentence: string];
 
 const NOUNS: NounRow[] = [
-  ['Tisch', 'der', 'Table / मेच', 'Der Tisch ist groß.'],
-  ['Sonne', 'die', 'Sun / घाम', 'Die Sonne scheint.'],
-  ['Buch', 'das', 'Book / किताब', 'Das Buch ist neu.'],
+  // FAMILY & PEOPLE (17 items)
   ['Mutter', 'die', 'Mother / आमा', 'Die Mutter kocht.'],
   ['Vater', 'der', 'Father / बुबा', 'Der Vater arbeitet.'],
-  ['Auto', 'das', 'Car / गाडी', 'Das Auto ist rot.'],
-  ['Wasser', 'das', 'Water / पानी', 'Das Wasser ist kalt.'],
-  ['Zug', 'der', 'Train / रेल', 'Der Zug kommt.'],
+  ['Kind', 'das', 'Child / बच्चा', 'Das Kind spielt.'],
+  ['Sohn', 'der', 'Son / बेटा', 'Der Sohn ist zwölf.'],
+  ['Tochter', 'die', 'Daughter / बेटी', 'Die Tochter geht zur Schule.'],
+  ['Bruder', 'der', 'Brother / भाई', 'Der Bruder ist dreizehn.'],
+  ['Schwester', 'die', 'Sister / दिदी', 'Die Schwester schläft.'],
+  ['Großmutter', 'die', 'Grandmother / दादी', 'Die Großmutter ist alt.'],
+  ['Großvater', 'der', 'Grandfather / दाजु', 'Der Großvater singt.'],
+  ['Onkel', 'der', 'Uncle / काका', 'Der Onkel ist lustig.'],
+  ['Tante', 'die', 'Aunt / चाची', 'Die Tante kocht gut.'],
+  ['Freund', 'der', 'Friend (m) / साथी', 'Der Freund ist nett.'],
+  ['Freundin', 'die', 'Friend (f) / सहेली', 'Die Freundin lacht.'],
+  ['Lehrer', 'der', 'Teacher (m) / शिक्षक', 'Der Lehrer erklärt.'],
+  ['Lehrerin', 'die', 'Teacher (f) / शिक्षिका', 'Die Lehrerin ist freundlich.'],
+  ['Arzt', 'der', 'Doctor (m) / डाक्टर', 'Der Arzt hilft.'],
+  ['Ärztin', 'die', 'Doctor (f) / महिला डाक्टर', 'Die Ärztin untersucht.'],
+  
+  // HOME & FURNITURE (16 items)
   ['Haus', 'das', 'House / घर', 'Das Haus ist alt.'],
-  ['Freund', 'der', 'Friend / साथी', 'Der Freund ist nett.'],
-  ['Blume', 'die', 'Flower / फूल', 'Die Blume ist schön.'],
-  ['Schule', 'die', 'School / स्कूल', 'Die Schule ist groß.'],
-  ['Stuhl', 'der', 'Chair / कर्सी', 'Der Stuhl ist bequem.'],
-  ['Lampe', 'die', 'Lamp / बत्ती', 'Die Lampe ist hell.'],
+  ['Wohnung', 'die', 'Apartment / अपार्टमेन्ट', 'Die Wohnung ist klein.'],
+  ['Zimmer', 'das', 'Room / कोठा', 'Das Zimmer ist hell.'],
+  ['Schlafzimmer', 'das', 'Bedroom / सुत्ने को कोठा', 'Das Schlafzimmer ist gemütlich.'],
+  ['Küche', 'die', 'Kitchen / भान्सा', 'Die Küche ist sauber.'],
+  ['Wohnzimmer', 'das', 'Living room / बैठक', 'Das Wohnzimmer ist groß.'],
+  ['Badezimmer', 'das', 'Bathroom / बाथरूम', 'Das Badezimmer ist klein.'],
   ['Tür', 'die', 'Door / दरवाजा', 'Die Tür ist offen.'],
   ['Fenster', 'das', 'Window / झ्याल', 'Das Fenster ist groß.'],
+  ['Tisch', 'der', 'Table / मेज', 'Der Tisch ist groß.'],
+  ['Stuhl', 'der', 'Chair / कुर्सी', 'Der Stuhl ist bequem.'],
+  ['Bett', 'das', 'Bed / खट', 'Das Bett ist weich.'],
+  ['Sofa', 'das', 'Sofa / सोफा', 'Das Sofa ist rot.'],
+  ['Schrank', 'der', 'Cabinet / अलमारी', 'Der Schrank ist voll.'],
+  ['Lampe', 'die', 'Lamp / बत्ती', 'Die Lampe ist hell.'],
+  ['Bild', 'das', 'Picture / तस्वीर', 'Das Bild ist schön.'],
+  
+  // FOOD & DRINK (28 items)
   ['Brot', 'das', 'Bread / ब्रेड', 'Das Brot ist frisch.'],
+  ['Butter', 'die', 'Butter / मक्खन', 'Die Butter ist gelb.'],
+  ['Käse', 'der', 'Cheese / पनीर', 'Der Käse ist lecker.'],
   ['Milch', 'die', 'Milk / दुध', 'Die Milch ist kalt.'],
-  ['Fleisch', 'das', 'Meat / माँस', 'Das Fleisch ist gut.'],
-  ['Gemüse', 'das', 'Vegetables / सब्जी', 'Das Gemüse ist frisch.'],
-  ['Obst', 'das', 'Fruit / फल', 'Das Obst ist süß.'],
+  ['Kaffee', 'der', 'Coffee / कफी', 'Der Kaffee ist heiß.'],
+  ['Tee', 'der', 'Tea / चिया', 'Der Tee ist warm.'],
+  ['Wasser', 'das', 'Water / पानी', 'Das Wasser ist kalt.'],
+  ['Saft', 'der', 'Juice / रस', 'Der Saft ist süß.'],
+  ['Wein', 'der', 'Wine / वाइन', 'Der Wein ist rot.'],
+  ['Bier', 'das', 'Beer / बियर', 'Das Bier ist kalt.'],
   ['Apfel', 'der', 'Apple / सेब', 'Der Apfel ist rot.'],
   ['Birne', 'die', 'Pear / नाशपाती', 'Die Birne ist grün.'],
-  ['Zitrone', 'die', 'Lemon / नींबू', 'Die Zitrone ist sauer.'],
   ['Banane', 'die', 'Banana / केला', 'Die Banane ist gelb.'],
+  ['Orange', 'die', 'Orange / सुन्तला', 'Die Orange ist süß.'],
+  ['Zitrone', 'die', 'Lemon / नींबू', 'Die Zitrone ist sauer.'],
+  ['Erdbeere', 'die', 'Strawberry / स्ट्रबेरी', 'Die Erdbeere ist rot.'],
+  ['Fleisch', 'das', 'Meat / माँस', 'Das Fleisch ist gut.'],
+  ['Huhn', 'das', 'Chicken / कुखुरा', 'Das Huhn ist weiß.'],
+  ['Fisch', 'der', 'Fish / माछ', 'Der Fisch ist lecker.'],
+  ['Gemüse', 'das', 'Vegetables / सब्जी', 'Das Gemüse ist frisch.'],
+  ['Kartoffel', 'die', 'Potato / आलु', 'Die Kartoffel ist braun.'],
+  ['Tomate', 'die', 'Tomato / टमाटर', 'Die Tomate ist rot.'],
+  ['Gurke', 'die', 'Cucumber / काकडी', 'Die Gurke ist grün.'],
+  ['Salat', 'der', 'Salad / सलाद', 'Der Salat ist frisch.'],
+  ['Suppe', 'die', 'Soup / सूप', 'Die Suppe ist heiष.'],
+  ['Ei', 'das', 'Egg / अण्डा', 'Das Ei ist weiß.'],
+  ['Zucker', 'der', 'Sugar / चिनी', 'Der Zucker ist süß.'],
+  ['Obst', 'das', 'Fruit / फल', 'Das Obst ist süß.'],
+  
+  // ANIMALS (6 items)
   ['Hund', 'der', 'Dog / कुत्ता', 'Der Hund bellt.'],
   ['Katze', 'die', 'Cat / बिल्ली', 'Die Katze schläft.'],
   ['Vogel', 'der', 'Bird / पक्षी', 'Der Vogel singt.'],
+  ['Pferd', 'das', 'Horse / घोडा', 'Das Pferd läuft.'],
+  ['Kuh', 'die', 'Cow / गाई', 'Die Kuh moht.'],
+  ['Schwein', 'das', 'Pig / सूर', 'Das Schwein ist rosa.'],
+  
+  // NATURE & WEATHER (18 items)
   ['Baum', 'der', 'Tree / पेड', 'Der Baum ist hoch.'],
-  ['Stern', 'der', 'Star / तारा', 'Der Stern leuchtet.'],
-  ['Mond', 'der', 'Moon / चाँद', 'Der Mond scheint.'],
-  ['Wolke', 'die', 'Cloud / बादल', 'Die Wolke zieht.'],
-  ['Regen', 'der', 'Rain / वर्षा', 'Der Regen ist kalt.'],
-  ['Schnee', 'der', 'Snow / बर्फ', 'Der Schnee ist weiß.'],
-  ['See', 'der', 'Lake / झील', 'Der See ist sauber.'],
+  ['Blume', 'die', 'Flower / फूल', 'Die Blume ist schön.'],
+  ['Gras', 'das', 'Grass / घाँस', 'Das Gras ist grün.'],
+  ['Wald', 'der', 'Forest / जंगल', 'Der Wald ist dunkel.'],
   ['Berg', 'der', 'Mountain / पर्वत', 'Der Berg ist hoch.'],
-  ['Tasche', 'die', 'Bag / झोला', 'Die Tasche ist schwer.'],
+  ['See', 'der', 'Lake / झील', 'Der See ist sauber.'],
+  ['Fluss', 'der', 'River / नदी', 'Der Fluss ist lang.'],
+  ['Strand', 'der', 'Beach / समुद्री किनार', 'Der Strand ist schön.'],
+  ['Himmel', 'der', 'Sky / आकाश', 'Der Himmel ist blु.'],
+  ['Sonne', 'die', 'Sun / सूरज', 'Die Sonne scheint.'],
+  ['Mond', 'der', 'Moon / चाँद', 'Der Mond scheint nachts.'],
+  ['Stern', 'der', 'Star / तारा', 'Der Stern leuchtet.'],
+  ['Wolke', 'die', 'Cloud / बादल', 'Die Wolke zieht.'],
+  ['Regen', 'der', 'Rain / बर्षा', 'Der Regen ist kalt.'],
+  ['Schnee', 'der', 'Snow / हिमाल', 'Der Schnee ist weiष.'],
+  ['Wind', 'der', 'Wind / हवा', 'Der Wind ist कूल.'],
+  ['Wetter', 'das', 'Weather / मौसम', 'Das Wetter ist schön.'],
+  ['Garten', 'der', 'Garden / बगैचा', 'Der Garten ist grün.'],
+  
+  // SCHOOL & EDUCATION (11 items)
+  ['Schule', 'die', 'School / स्कूल', 'Die Schule ist groष.'],
+  ['Klasse', 'die', 'Classroom / कक्षा', 'Die Klasse ist voll.'],
+  ['Schulzimmer', 'das', 'Classroom / स्कूल कोठा', 'Das Schulzimmer ist hell.'],
+  ['Schreibtisch', 'der', 'Desk / डेस्क', 'Der Schreibtisch ist sauber.'],
+  ['Buch', 'das', 'Book / किताब', 'Das Buch ist neu.'],
+  ['Heft', 'das', 'Notebook / नोटबुक', 'Das Heft ist groष.'],
   ['Stift', 'der', 'Pen / कलम', 'Der Stift schreibt gut.'],
-  ['Schlüssel', 'der', 'Key / साँचो', 'Der Schlüssel ist hier.'],
+  ['Bleistift', 'der', 'Pencil / पेन्सिल', 'Der Bleistift ist grau.'],
+  ['Radiergummi', 'der', 'Eraser / इरेजर', 'Der Radiergummi ist weiष.'],
+  ['Lineal', 'das', 'Ruler / स्केल', 'Das Lineal ist lang.'],
+  ['Ranzen', 'der', 'Backpack / झोला', 'Der Ranzen ist नीलो.'],
+  
+  // CLOTHING (9 items)
+  ['Kleid', 'das', 'Dress / लुगा', 'Das Kleid ist rot.'],
+  ['Hemd', 'das', 'Shirt / कमीज', 'Das Hemd ist weiष.'],
+  ['Hose', 'die', 'Pants / प्यान्ट', 'Die Hose ist नीलो.'],
+  ['Jacke', 'die', 'Jacket / ज्याकेट', 'Die Jacke ist warm.'],
+  ['Schuh', 'der', 'Shoe / जुत्ता', 'Der Schuh ist braun.'],
+  ['Socke', 'die', 'Sock / मोजा', 'Die Socke ist dunkel.'],
+  ['Hut', 'der', 'Hat / टोपी', 'Der Hut ist rot.'],
+  ['Schal', 'der', 'Scarf / स्कार्फ', 'Der Schal ist lang.'],
+  ['Handschuh', 'der', 'Glove / दस्ताना', 'Der Handschuh ist warm.'],
+  
+  // OBJECTS & ACCESSORIES (14 items)
+  ['Tasche', 'die', 'Bag / झोला', 'Die Tasche ist schwer.'],
+  ['Rucksack', 'der', 'Backpack / रक्सैक', 'Der Rucksack ist groष.'],
+  ['Uhr', 'die', 'Clock/Watch / घडी', 'Die Uhr ist genau.'],
   ['Handy', 'das', 'Mobile phone / मोबाइल', 'Das Handy ist neu.'],
-  ['Computer', 'der', 'Computer / कम्प्युटर', 'Der Computer ist schnell.'],
+  ['Computer', 'der', 'Computer / कम्प्युटर', 'Der Computer ist schnेल.'],
+  ['Telefon', 'das', 'Telephone / टेलिफोन', 'Das Telefon klingelt.'],
+  ['Brille', 'die', 'Glasses / चश्मा', 'Die Brille ist neu.'],
+  ['Schlüssel', 'der', 'Key / चाभी', 'Der Schlüssel ist hier.'],
+  ['Münze', 'die', 'Coin / सिक्का', 'Die Münze ist klein.'],
   ['Geld', 'das', 'Money / पैसा', 'Das Geld liegt hier.'],
-  ['Uhr', 'die', 'Clock / घडी', 'Die Uhr ist genau.'],
-  ['Brille', 'die', 'Glasses / ऐना', 'Die Brille ist neu.'],
-  ['Kaffee', 'der', 'Coffee / कफी', 'Der Kaffee ist heiß.'],
-  ['Tee', 'der', 'Tea / चिया', 'Der Tee ist warm.'],
-  ['Zimmer', 'das', 'Room / कोठा', 'Das Zimmer ist hell.'],
-  ['Küche', 'die', 'Kitchen / भान्सा', 'Die Küche ist sauber.'],
-  ['Stadt', 'die', 'City / सहर', 'Die Stadt ist groß.'],
+  ['Karte', 'die', 'Card / कार्ड', 'Die Karte ist महत्वपूर्ण.'],
+  ['Brief', 'der', 'Letter / पत्र', 'Der Brief ist lang.'],
+  ['Zeitung', 'die', 'Newspaper / अखबार', 'Die Zeitung ist alt.'],
+  ['Magazin', 'das', 'Magazine / पत्रिका', 'Das Magazin ist interessant.'],
+  
+  // CITY & PLACES (20 items)
+  ['Stadt', 'die', 'City / शहर', 'Die Stadt ist groष.'],
+  ['Land', 'das', 'Country / देश', 'Das Land ist schön.'],
+  ['Dorf', 'das', 'Village / गाँव', 'Das Dorf ist klein.'],
   ['Straße', 'die', 'Street / सडक', 'Die Straße ist lang.'],
+  ['Platz', 'der', 'Square / चौपाल', 'Der Platz ist voll.'],
+  ['Weg', 'der', 'Way / बाटो', 'Der Weg ist कम.'],
   ['Bahnhof', 'der', 'Train station / रेल स्टेशन', 'Der Bahnhof ist voll.'],
+  ['Bushaltestelle', 'die', 'Bus stop / बस स्टप', 'Die Bushaltestelle ist hier.'],
+  ['Restaurant', 'das', 'Restaurant / रेस्तोरा', 'Das Restaurant ist teuer.'],
+  ['Café', 'das', 'Café / कफी हाउस', 'Das Café ist gemütlich.'],
+  ['Geschäft', 'das', 'Shop / दुकान', 'Das Geschäft ist groष.'],
+  ['Supermarkt', 'der', 'Supermarket / सुपरमार्केट', 'Der Supermarkt ist offen.'],
+  ['Bank', 'die', 'Bank / बैंक', 'Die Bank ist geschlossen.'],
+  ['Kirche', 'die', 'Church / चर्च', 'Die Kirche ist alt.'],
+  ['Krankenhaus', 'das', 'Hospital / अस्पताल', 'Das Krankenhaus ist groष.'],
+  ['Museum', 'das', 'Museum / म्यूजियम', 'Das Museum ist interessant.'],
+  ['Park', 'der', 'Park / पार्क', 'Der Park ist schön.'],
   ['Hotel', 'das', 'Hotel / होटल', 'Das Hotel ist teuer.'],
-  ['Arzt', 'der', 'Doctor / डाक्टर', 'Der Arzt hilft.'],
-  ['Lehrer', 'der', 'Teacher / शिक्षक', 'Der Lehrer erklärt.'],
-  ['Kind', 'das', 'Child / बच्चा', 'Das Kind spielt.'],
-  ['Arbeit', 'die', 'Work / काम', 'Die Arbeit ist fertig.'],
+  ['Büro', 'das', 'Office / कार्यालय', 'Das Büro ist modern.'],
+  ['Fabrik', 'die', 'Factory / कारखाना', 'Die Fabrik ist groष.'],
+  
+  // TRANSPORT (8 items)
+  ['Auto', 'das', 'Car / गाडी', 'Das Auto ist rot.'],
+  ['Wagen', 'der', 'Car / गाडी', 'Der Wagen ist alt.'],
+  ['Fahrrad', 'das', 'Bicycle / साइकिल', 'Das Fahrrad ist नीलो.'],
+  ['Motorrad', 'das', 'Motorcycle / मोटरसाइकिल', 'Das Motorrad ist schnेल.'],
+  ['Zug', 'der', 'Train / रेल', 'Der Zug kommt.'],
+  ['Bus', 'der', 'Bus / बस', 'Der Bus ist voll.'],
+  ['Flugzeug', 'das', 'Airplane / हवाइजहाज', 'Das Flugzeug ist schnेल.'],
+  ['Schiff', 'das', 'Ship / जहाज', 'Das Schiff ist groष.'],
+  
+  // TIME (10 items)
+  ['Minute', 'die', 'Minute / मिनेट', 'Die Minute ist कम.'],
+  ['Stunde', 'die', 'Hour / घंटा', 'Die Stunde ist lang.'],
+  ['Tag', 'der', 'Day / दिन', 'Der Tag ist schön.'],
+  ['Woche', 'die', 'Week / हप्ता', 'Die Woche ist कम.'],
+  ['Monat', 'der', 'Month / महीना', 'Der Monat ist lang.'],
+  ['Jahr', 'das', 'Year / वर्ष', 'Das Jahr ist neu.'],
+  ['Morgen', 'der', 'Morning / बिहान', 'Der Morgen ist früh.'],
+  ['Mittag', 'der', 'Noon / दिउँसो', 'Der Mittag ist heiष.'],
+  ['Abend', 'der', 'Evening / साँझ', 'Der Abend ist कूल.'],
+  ['Nacht', 'die', 'Night / रात', 'Die Nacht ist dunkel.'],
+  
+  // COLORS (1 item)
+  ['Farbe', 'die', 'Color / रंग', 'Die Farbe ist नीलो.'],
 ];
 
 /* ────────────────────────────────────────────────────────────
- * Dataset B — sentences (former src/data/unit2Sentences.ts)
+ * Dataset B — VERBS (45+ items)
+ * [verb infinitive, meaning "EN / NP", example sentence]
+ * ──────────────────────────────────────────────────────────── */
+
+type VerbRow = [verb: string, meaning: string, sentence: string];
+
+const VERBS: VerbRow[] = [
+  // Regular verbs (weak)
+  ['machen', 'make / गर्नु', 'Ich mache die Aufgabe.'],
+  ['sagen', 'say / भन्नु', 'Sie sagt guten Tag.'],
+  ['denken', 'think / सोच्नु', 'Ich denke an dich.'],
+  ['fragen', 'ask / सोध्नु', 'Er fragt eine Frage.'],
+  ['antworten', 'answer / जवाफ दिनु', 'Sie antwortet schnell.'],
+  ['lernen', 'learn / सिक्नु', 'Wir lernen Deutsch.'],
+  ['spielen', 'play / खेल्नु', 'Das Kind spielt im Park.'],
+  ['arbeiten', 'work / काम गर्नु', 'Er arbeitet im Büro.'],
+  ['wohnen', 'live / बस्नु', 'Sie wohnt in Berlin.'],
+  ['zählen', 'count / गन्नु', 'Ich zähle von eins bis zehn.'],
+  ['kochen', 'cook / पकाउनु', 'Die Mutter kocht Suppe.'],
+  ['waschen', 'wash / धुनु', 'Ich wasche das Auto.'],
+  ['kaufen', 'buy / किन्नु', 'Wir kaufen Brot.'],
+  ['verkaufen', 'sell / बेच्नु', 'Der Geschäft verkauft Äpfel.'],
+  ['suchen', 'search / खोज्नु', 'Ich suche meinen Schlüssel.'],
+  ['finden', 'find / पाउनु', 'Wir finden das Buch.'],
+  ['zeigen', 'show / देखाउनु', 'Er zeigt ein Bild.'],
+  ['hören', 'hear / सुन्नु', 'Ich höre Musik.'],
+  ['singen', 'sing / गाउनु', 'Der Vogel singt.'],
+  ['tanzen', 'dance / नाच्नु', 'Die Mädchen tanzen.'],
+  ['rennen', 'run / दौडनु', 'Der Junge rennt schnell.'],
+  ['laufen', 'walk / हिँड्नु', 'Das Pferd läuft.'],
+  ['gehen', 'go / जानु', 'Ich gehe zur Schule.'],
+  ['kommen', 'come / आनु', 'Der Zug kommt.'],
+  ['fahren', 'drive / गाडी चलाउनु', 'Sie fahrt mit dem Auto.'],
+  
+  // Irregular verbs (strong)
+  ['sein', 'be / हुनु', 'Ich bin Student.'],
+  ['haben', 'have / हुनु', 'Sie hat ein Handy.'],
+  ['werden', 'become / हुनु', 'Ich werde Lehrer.'],
+  ['müssen', 'must / पर्नु', 'Du musst aufstehen.'],
+  ['können', 'can / सक्नु', 'Ich kann schwimmen.'],
+  ['wollen', 'want / चाहनु', 'Er will spielen.'],
+  ['sollen', 'should / गरु पर्नु', 'Ich soll aufstehen.'],
+  ['dürfen', 'may / पाउनु', 'Darf ich fragen?'],
+  ['mögen', 'like / मन पर्नु', 'Ich mag Schokolade.'],
+  ['möchte', 'would like / चाहान्छु', 'Ich möchte Kaffee.'],
+  ['lieben', 'love / प्रेम गर्नु', 'Ich liebe dich.'],
+  ['hassen', 'hate / घृणा गर्नु', 'Ich hasse Wartezeit.'],
+  ['sprechen', 'speak / कुरा गर्नु', 'Wir sprechen Deutsch.'],
+  ['schreiben', 'write / लेख्नु', 'Ich schreibe einen Brief.'],
+  ['lesen', 'read / पढ्नु', 'Sie liest ein Buch.'],
+  ['verstehen', 'understand / बुझ्नु', 'Ich verstehe nicht.'],
+  ['wissen', 'know / थाह्नु', 'Ich weiß nicht.'],
+  ['essen', 'eat / खानु', 'Ich esse Brot.'],
+  ['trinken', 'drink / पिउनु', 'Sie trinkt Kaffee.'],
+  ['nehmen', 'take / लिनु', 'Ich nehme ein Buch.'],
+];
+
+/* ────────────────────────────────────────────────────────────
+ * Dataset C — SENTENCES (40+ items)
+ * Grammar focus: akkusativ, gender, verbs
  * ──────────────────────────────────────────────────────────── */
 
 interface SentenceSeed {
@@ -100,32 +281,25 @@ interface SentenceSeed {
 }
 
 const SENTENCES: SentenceSeed[] = [
+  // Akkusativ (masculine definite article)
   {
-    id: 'u2-sb-tisch',
-    phrase_de: 'Ich habe einen Tisch',
-    expected_array: ['Ich', 'habe', 'einen', 'Tisch'],
-    distractors_array: ['ein', 'eine', 'das'],
+    id: 'u2-sb-1',
+    phrase_de: 'Ich sehe den Mann',
+    expected_array: ['Ich', 'sehe', 'den', 'Mann'],
+    distractors_array: ['der', 'dem', 'ein'],
+    grammar_focus: 'akkusativ',
+    tags: ['unit-2', 'articles', 'masculine'],
+  },
+  {
+    id: 'u2-sb-2',
+    phrase_de: 'Ich kenne den Lehrer',
+    expected_array: ['Ich', 'kenne', 'den', 'Lehrer'],
+    distractors_array: ['der', 'dem', 'den'],
     grammar_focus: 'akkusativ',
     tags: ['unit-2', 'articles'],
   },
   {
-    id: 'u2-sb-tasche',
-    phrase_de: 'Die Tasche ist schwer',
-    expected_array: ['Die', 'Tasche', 'ist', 'schwer'],
-    distractors_array: ['Der', 'Das', 'sind'],
-    grammar_focus: 'gender',
-    tags: ['unit-2', 'articles'],
-  },
-  {
-    id: 'u2-sb-buch',
-    phrase_de: 'Er liest das Buch',
-    expected_array: ['Er', 'liest', 'das', 'Buch'],
-    distractors_array: ['den', 'der', 'Die'],
-    grammar_focus: 'gender',
-    tags: ['unit-2', 'articles'],
-  },
-  {
-    id: 'u2-sb-stift',
+    id: 'u2-sb-3',
     phrase_de: 'Sie nimmt den Stift',
     expected_array: ['Sie', 'nimmt', 'den', 'Stift'],
     distractors_array: ['der', 'dem', 'einen'],
@@ -133,7 +307,85 @@ const SENTENCES: SentenceSeed[] = [
     tags: ['unit-2', 'articles'],
   },
   {
-    id: 'u2-sb-handy',
+    id: 'u2-sb-4',
+    phrase_de: 'Ich habe einen Hund',
+    expected_array: ['Ich', 'habe', 'einen', 'Hund'],
+    distractors_array: ['ein', 'einen', 'der'],
+    grammar_focus: 'akkusativ',
+    tags: ['unit-2', 'articles'],
+  },
+  
+  // Akkusativ (feminine)
+  {
+    id: 'u2-sb-5',
+    phrase_de: 'Ich sehe die Frau',
+    expected_array: ['Ich', 'sehe', 'die', 'Frau'],
+    distractors_array: ['der', 'das', 'eine'],
+    grammar_focus: 'akkusativ',
+    tags: ['unit-2', 'articles', 'feminine'],
+  },
+  {
+    id: 'u2-sb-6',
+    phrase_de: 'Sie nimmt eine Tasche',
+    expected_array: ['Sie', 'nimmt', 'eine', 'Tasche'],
+    distractors_array: ['ein', 'die', 'der'],
+    grammar_focus: 'akkusativ',
+    tags: ['unit-2', 'articles'],
+  },
+  {
+    id: 'u2-sb-7',
+    phrase_de: 'Ich hole die Katze',
+    expected_array: ['Ich', 'hole', 'die', 'Katze'],
+    distractors_array: ['der', 'das', 'eine'],
+    grammar_focus: 'akkusativ',
+    tags: ['unit-2', 'articles'],
+  },
+  
+  // Akkusativ (neuter)
+  {
+    id: 'u2-sb-8',
+    phrase_de: 'Ich habe einen Tisch',
+    expected_array: ['Ich', 'habe', 'einen', 'Tisch'],
+    distractors_array: ['ein', 'eine', 'das'],
+    grammar_focus: 'akkusativ',
+    tags: ['unit-2', 'articles'],
+  },
+  {
+    id: 'u2-sb-9',
+    phrase_de: 'Er liest das Buch',
+    expected_array: ['Er', 'liest', 'das', 'Buch'],
+    distractors_array: ['den', 'der', 'Die'],
+    grammar_focus: 'akkusativ',
+    tags: ['unit-2', 'articles', 'neuter'],
+  },
+  {
+    id: 'u2-sb-10',
+    phrase_de: 'Sie nimmt das Kind',
+    expected_array: ['Sie', 'nimmt', 'das', 'Kind'],
+    distractors_array: ['den', 'dem', 'ein'],
+    grammar_focus: 'akkusativ',
+    tags: ['unit-2', 'articles'],
+  },
+  {
+    id: 'u2-sb-11',
+    phrase_de: 'Ich trinke einen Kaffee',
+    expected_array: ['Ich', 'trinke', 'einen', 'Kaffee'],
+    distractors_array: ['ein', 'eine', 'Tee'],
+    grammar_focus: 'akkusativ',
+    tags: ['unit-2', 'articles'],
+  },
+  
+  // Gender recognition (nominative)
+  {
+    id: 'u2-sb-12',
+    phrase_de: 'Die Tasche ist schwer',
+    expected_array: ['Die', 'Tasche', 'ist', 'schwer'],
+    distractors_array: ['Der', 'Das', 'sind'],
+    grammar_focus: 'gender',
+    tags: ['unit-2', 'articles'],
+  },
+  {
+    id: 'u2-sb-13',
     phrase_de: 'Das Handy ist neu',
     expected_array: ['Das', 'Handy', 'ist', 'neu'],
     distractors_array: ['Der', 'Die', 'seid'],
@@ -141,15 +393,15 @@ const SENTENCES: SentenceSeed[] = [
     tags: ['unit-2', 'articles'],
   },
   {
-    id: 'u2-sb-kaffee',
-    phrase_de: 'Ich trinke einen Kaffee',
-    expected_array: ['Ich', 'trinke', 'einen', 'Kaffee'],
-    distractors_array: ['ein', 'eine', 'Tee'],
-    grammar_focus: 'akkusativ',
+    id: 'u2-sb-14',
+    phrase_de: 'Der Stuhl ist bequem',
+    expected_array: ['Der', 'Stuhl', 'ist', 'bequem'],
+    distractors_array: ['Die', 'Das', 'bin'],
+    grammar_focus: 'gender',
     tags: ['unit-2', 'articles'],
   },
   {
-    id: 'u2-sb-kuche',
+    id: 'u2-sb-15',
     phrase_de: 'Die Küche ist sauber',
     expected_array: ['Die', 'Küche', 'ist', 'sauber'],
     distractors_array: ['Der', 'Das', 'ist'],
@@ -157,12 +409,220 @@ const SENTENCES: SentenceSeed[] = [
     tags: ['unit-2', 'articles'],
   },
   {
-    id: 'u2-sb-kind',
+    id: 'u2-sb-16',
     phrase_de: 'Das Kind spielt heute',
     expected_array: ['Das', 'Kind', 'spielt', 'heute'],
     distractors_array: ['Den', 'Der', 'morgen'],
     grammar_focus: 'gender',
     tags: ['unit-2', 'articles'],
+  },
+  
+  // Present tense verbs
+  {
+    id: 'u2-sb-17',
+    phrase_de: 'Ich bin Lehrer',
+    expected_array: ['Ich', 'bin', 'Lehrer'],
+    distractors_array: ['bist', 'seid', 'ist'],
+    grammar_focus: 'verbs',
+    tags: ['unit-2', 'present'],
+  },
+  {
+    id: 'u2-sb-18',
+    phrase_de: 'Du bist Student',
+    expected_array: ['Du', 'bist', 'Student'],
+    distractors_array: ['bin', 'sind', 'seid'],
+    grammar_focus: 'verbs',
+    tags: ['unit-2', 'present'],
+  },
+  {
+    id: 'u2-sb-19',
+    phrase_de: 'Er hat ein Auto',
+    expected_array: ['Er', 'hat', 'ein', 'Auto'],
+    distractors_array: ['habe', 'habt', 'haben'],
+    grammar_focus: 'verbs',
+    tags: ['unit-2', 'present'],
+  },
+  {
+    id: 'u2-sb-20',
+    phrase_de: 'Wir spielen Fußball',
+    expected_array: ['Wir', 'spielen', 'Fußball'],
+    distractors_array: ['spielt', 'spiele', 'spielen'],
+    grammar_focus: 'verbs',
+    tags: ['unit-2', 'present'],
+  },
+  
+  // Plural nominative
+  {
+    id: 'u2-sb-21',
+    phrase_de: 'Die Bücher sind neu',
+    expected_array: ['Die', 'Bücher', 'sind', 'neu'],
+    distractors_array: ['Der', 'Das', 'ist'],
+    grammar_focus: 'plural',
+    tags: ['unit-2', 'articles'],
+  },
+  {
+    id: 'u2-sb-22',
+    phrase_de: 'Die Stühle sind alt',
+    expected_array: ['Die', 'Stühle', 'sind', 'alt'],
+    distractors_array: ['Der', 'Das', 'sein'],
+    grammar_focus: 'plural',
+    tags: ['unit-2', 'articles'],
+  },
+  
+  // Dative (with prepositions)
+  {
+    id: 'u2-sb-23',
+    phrase_de: 'Der Stift liegt auf dem Tisch',
+    expected_array: ['Der', 'Stift', 'liegt', 'auf', 'dem', 'Tisch'],
+    distractors_array: ['den', 'die', 'dem'],
+    grammar_focus: 'dativ',
+    tags: ['unit-2', 'prepositions'],
+  },
+  {
+    id: 'u2-sb-24',
+    phrase_de: 'Die Katze sitzt in der Küche',
+    expected_array: ['Die', 'Katze', 'sitzt', 'in', 'der', 'Küche'],
+    distractors_array: ['den', 'die', 'dem'],
+    grammar_focus: 'dativ',
+    tags: ['unit-2', 'prepositions'],
+  },
+  
+  // Verb + Akkusativ combinations
+  {
+    id: 'u2-sb-25',
+    phrase_de: 'Sie sieht den Vogel',
+    expected_array: ['Sie', 'sieht', 'den', 'Vogel'],
+    distractors_array: ['der', 'dem', 'sehen'],
+    grammar_focus: 'akkusativ',
+    tags: ['unit-2', 'verbs'],
+  },
+  {
+    id: 'u2-sb-26',
+    phrase_de: 'Ich höre die Musik',
+    expected_array: ['Ich', 'höre', 'die', 'Musik'],
+    distractors_array: ['der', 'das', 'hören'],
+    grammar_focus: 'akkusativ',
+    tags: ['unit-2', 'verbs'],
+  },
+  {
+    id: 'u2-sb-27',
+    phrase_de: 'Wir besuchen das Museum',
+    expected_array: ['Wir', 'besuchen', 'das', 'Museum'],
+    distractors_array: ['den', 'der', 'besuchst'],
+    grammar_focus: 'akkusativ',
+    tags: ['unit-2', 'verbs'],
+  },
+  {
+    id: 'u2-sb-28',
+    phrase_de: 'Ihr seht die Blume',
+    expected_array: ['Ihr', 'seht', 'die', 'Blume'],
+    distractors_array: ['der', 'das', 'sehen'],
+    grammar_focus: 'akkusativ',
+    tags: ['unit-2', 'verbs'],
+  },
+  
+  // Possessive articles
+  {
+    id: 'u2-sb-29',
+    phrase_de: 'Mein Freund ist groß',
+    expected_array: ['Mein', 'Freund', 'ist', 'groß'],
+    distractors_array: ['Meiner', 'Meinen', 'Meine'],
+    grammar_focus: 'possessive',
+    tags: ['unit-2', 'articles'],
+  },
+  {
+    id: 'u2-sb-30',
+    phrase_de: 'Deine Schwester ist klein',
+    expected_array: ['Deine', 'Schwester', 'ist', 'klein'],
+    distractors_array: ['Deiner', 'Deinen', 'Dein'],
+    grammar_focus: 'possessive',
+    tags: ['unit-2', 'articles'],
+  },
+  
+  // Negation
+  {
+    id: 'u2-sb-31',
+    phrase_de: 'Der Wald ist nicht klein',
+    expected_array: ['Der', 'Wald', 'ist', 'nicht', 'klein'],
+    distractors_array: ['nie', 'kein', 'nichts'],
+    grammar_focus: 'negation',
+    tags: ['unit-2', 'grammar'],
+  },
+  {
+    id: 'u2-sb-32',
+    phrase_de: 'Ich bin kein Arzt',
+    expected_array: ['Ich', 'bin', 'kein', 'Arzt'],
+    distractors_array: ['nicht', 'keine', 'keinen'],
+    grammar_focus: 'negation',
+    tags: ['unit-2', 'grammar'],
+  },
+  
+  // Adjectives
+  {
+    id: 'u2-sb-33',
+    phrase_de: 'Das rote Auto ist schnell',
+    expected_array: ['Das', 'rote', 'Auto', 'ist', 'schnell'],
+    distractors_array: ['rot', 'roten', 'roter'],
+    grammar_focus: 'adjectives',
+    tags: ['unit-2', 'adjectives'],
+  },
+  {
+    id: 'u2-sb-34',
+    phrase_de: 'Die grüne Blume ist schön',
+    expected_array: ['Die', 'grüne', 'Blume', 'ist', 'schön'],
+    distractors_array: ['grün', 'grünen', 'grüner'],
+    grammar_focus: 'adjectives',
+    tags: ['unit-2', 'adjectives'],
+  },
+  
+  // More diverse sentences
+  {
+    id: 'u2-sb-35',
+    phrase_de: 'Sie schreiben einen Brief',
+    expected_array: ['Sie', 'schreiben', 'einen', 'Brief'],
+    distractors_array: ['den', 'der', 'ein'],
+    grammar_focus: 'akkusativ',
+    tags: ['unit-2', 'verbs'],
+  },
+  {
+    id: 'u2-sb-36',
+    phrase_de: 'Ich kenne die Stadt',
+    expected_array: ['Ich', 'kenne', 'die', 'Stadt'],
+    distractors_array: ['den', 'das', 'der'],
+    grammar_focus: 'akkusativ',
+    tags: ['unit-2', 'verbs'],
+  },
+  {
+    id: 'u2-sb-37',
+    phrase_de: 'Der Freund bringt das Buch',
+    expected_array: ['Der', 'Freund', 'bringt', 'das', 'Buch'],
+    distractors_array: ['den', 'die', 'einen'],
+    grammar_focus: 'akkusativ',
+    tags: ['unit-2', 'verbs'],
+  },
+  {
+    id: 'u2-sb-38',
+    phrase_de: 'Wir öffnen das Fenster',
+    expected_array: ['Wir', 'öffnen', 'das', 'Fenster'],
+    distractors_array: ['den', 'der', 'die'],
+    grammar_focus: 'akkusativ',
+    tags: ['unit-2', 'verbs'],
+  },
+  {
+    id: 'u2-sb-39',
+    phrase_de: 'Sie machen eine Frage',
+    expected_array: ['Sie', 'machen', 'eine', 'Frage'],
+    distractors_array: ['ein', 'den', 'der'],
+    grammar_focus: 'akkusativ',
+    tags: ['unit-2', 'verbs'],
+  },
+  {
+    id: 'u2-sb-40',
+    phrase_de: 'Ich trage einen Rucksack',
+    expected_array: ['Ich', 'trage', 'einen', 'Rucksack'],
+    distractors_array: ['ein', 'die', 'den'],
+    grammar_focus: 'akkusativ',
+    tags: ['unit-2', 'verbs'],
   },
 ];
 
@@ -185,7 +645,7 @@ async function main(): Promise<void> {
   const admin = createClient(url, serviceKey, { auth: { persistSession: false } });
 
   // 1. Vocabulary (nouns with gender) — upsert on (word, part_of_speech).
-  const vocabRows = NOUNS.map(([noun, art, meaning, sentence]) => {
+  const nounRows = NOUNS.map(([noun, art, meaning, sentence]) => {
     const [en, np] = meaning.split('/').map((s) => s.trim());
     return {
       word: noun,
@@ -200,17 +660,43 @@ async function main(): Promise<void> {
     };
   });
 
-  const { error: vocabError } = await admin
+  const { error: nounError } = await admin
     .from('vocabulary')
-    .upsert(vocabRows, { onConflict: 'word,part_of_speech' });
+    .upsert(nounRows, { onConflict: 'word,part_of_speech' });
 
-  if (vocabError) {
-    console.error('[seedCurriculum] vocabulary upsert failed:', vocabError.message);
+  if (nounError) {
+    console.error('[seedCurriculum] nouns upsert failed:', nounError.message);
     process.exit(1);
   }
-  console.log(`[seedCurriculum] vocabulary: ${vocabRows.length} nouns upserted.`);
+  console.log(`[seedCurriculum] vocabulary: ${nounRows.length} nouns upserted.`);
 
-  // 2. Sentences — upsert on id.
+  // 2. Vocabulary (verbs) — upsert on (word, part_of_speech).
+  const verbRows = VERBS.map(([verb, meaning, sentence]) => {
+    const [en, np] = meaning.split('/').map((s) => s.trim());
+    return {
+      word: verb,
+      article: null,
+      part_of_speech: 'verb',
+      translation_en: en || verb,
+      translation_np: np || '',
+      example_de: sentence,
+      category: 'core',
+      level: 'A1',
+      tags: ['unit-2', 'verbs'],
+    };
+  });
+
+  const { error: verbError } = await admin
+    .from('vocabulary')
+    .upsert(verbRows, { onConflict: 'word,part_of_speech' });
+
+  if (verbError) {
+    console.error('[seedCurriculum] verbs upsert failed:', verbError.message);
+    process.exit(1);
+  }
+  console.log(`[seedCurriculum] vocabulary: ${verbRows.length} verbs upserted.`);
+
+  // 3. Sentences — upsert on id.
   const { error: sentError } = await admin.from('sentences').upsert(SENTENCES, {
     onConflict: 'id',
   });
@@ -221,7 +707,7 @@ async function main(): Promise<void> {
   }
   console.log(`[seedCurriculum] sentences: ${SENTENCES.length} exercises upserted.`);
 
-  // 3. Smoke-test the randomized RPC endpoints.
+  // 4. Smoke-test the randomized RPC endpoints.
   const { data: randVocab, error: rpcVocabErr } = await admin.rpc('get_random_vocabulary', {
     p_pos: 'noun',
     p_limit: 15,
@@ -229,7 +715,17 @@ async function main(): Promise<void> {
   if (rpcVocabErr) {
     console.warn('[seedCurriculum] get_random_vocabulary smoke test failed:', rpcVocabErr.message);
   } else {
-    console.log(`[seedCurriculum] get_random_vocabulary returned ${randVocab?.length ?? 0} random rows.`);
+    console.log(`[seedCurriculum] get_random_vocabulary (nouns) returned ${randVocab?.length ?? 0} random rows.`);
+  }
+
+  const { data: randVerbs, error: rpcVerbErr } = await admin.rpc('get_random_vocabulary', {
+    p_pos: 'verb',
+    p_limit: 10,
+  });
+  if (rpcVerbErr) {
+    console.warn('[seedCurriculum] get_random_vocabulary (verbs) failed:', rpcVerbErr.message);
+  } else {
+    console.log(`[seedCurriculum] get_random_vocabulary (verbs) returned ${randVerbs?.length ?? 0} random rows.`);
   }
 
   const { data: randSent, error: rpcSentErr } = await admin.rpc('get_random_sentences', {

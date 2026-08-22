@@ -339,8 +339,13 @@ export const A1_LEARN_NODES: PathNode[] = [
 
 /** Bonus chips — optional, never gates the next unit. */
 export const A1_BONUS_NODES: PathNode[] = [
+  { id: 'u1-numbers-practice', unitIndex: 0, kind: 'bonus', label: lbl('Number Practice', 'Zahlen-Üben'), to: '/rapid-blitz?mode=number-conversion', bonus: true },
   { id: 'u2-sentence', unitIndex: 1, kind: 'bonus', label: lbl('Sentence Builder', 'Satzbau'), to: '/sentence-builder', bonus: true },
+  { id: 'u3-time-practice', unitIndex: 2, kind: 'bonus', label: lbl('Time Practice', 'Uhrzeit-Üben'), to: '/calendar', bonus: true },
+  { id: 'u3-separables', unitIndex: 2, kind: 'bonus', label: lbl('Separable Verbs', 'Trennbare Verben'), to: '/grammar', bonus: true },
+  { id: 'u4-vocab-drill', unitIndex: 3, kind: 'bonus', label: lbl('Vocab Drill', 'Wortschatz-Drill'), to: '/rapid-blitz?mode=vocabulary-translation', bonus: true },
   { id: 'u4-stories', unitIndex: 3, kind: 'bonus', label: lbl('Stories', 'Geschichten'), to: '/stories', bonus: true },
+  { id: 'u5-modals', unitIndex: 4, kind: 'bonus', label: lbl('Modal Drills', 'Modalverben'), to: '/grammar?tab=modals', bonus: true },
   { id: 'u5-pronunciation', unitIndex: 4, kind: 'bonus', label: lbl('Pronunciation', 'Aussprache'), to: '/pronunciation', bonus: true },
 ];
 

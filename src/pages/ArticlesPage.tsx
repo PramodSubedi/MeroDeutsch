@@ -10,6 +10,7 @@ import { useDailyQuests } from '../hooks/useDailyQuests';
 import { theme } from '../config/theme';
 import { curriculumService } from '../services';
 import { CompactAudioButton } from '../components/CompactAudioButton';
+import { GenderLegend } from '../components/ui/GenderBadge';
 import { pickRandom } from '../utils/questionGenerator';
 import type { ArticleItem } from '../types';
 
@@ -655,8 +656,15 @@ export function ArticlesPage() {
               {isDE ? 'Punkte: ' : 'Score: '} {articleScore} / {articleTotal}
             </div>
             <div>{isDE ? 'Trefferquote: ' : 'Accuracy: '} {articlePercent}%</div>
+          </div>          
+          {/* Gender Legend Reference */}
+          <div className={theme.panel.muted + ' rounded-xl p-3 mt-4'}>
+            <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-300">
+              {isDE ? 'Gender' : 'Genders'}
+            </div>
+            <GenderLegend />
           </div>
-          <div className={theme.panel.tip}>
+                    <div className={theme.panel.tip}>
             <p className="font-semibold">{isDE ? 'Tipp' : 'Tip'}:</p>
             <p className="mt-2 text-slate-600 dark:text-slate-300">
               {isDE

@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useLang } from '../hooks/useLang';
-import { useLastModule } from '../hooks/useLastModule';
+import { useA1Path } from '../hooks/useA1Path';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { DailyChallenge } from '../components/DailyChallenge';
 import { UnitSpine } from '../components/path/UnitSpine';
@@ -16,24 +16,17 @@ import { theme } from '../config/theme';
  *
  * Accessible to both guest and authenticated users.
  */
-const MODULE_LABELS: Record<string, { en: string; de: string }> = {
-  alphabet: { en: 'Alphabet', de: 'Alphabet' },
-  numbers: { en: 'Numbers', de: 'Zahlen' },
-  calendar: { en: 'Calendar', de: 'Kalender' },
-  articles: { en: 'Articles', de: 'Artikel' },
-  greetings: { en: 'Greetings', de: 'Grüße' },
-  dictation: { en: 'Dictation', de: 'Diktat' },
-  grammar: { en: 'Grammar', de: 'Grammatik' },
-};
 
 export function ContinueLearningPage() {
   usePageTitle('Learn');
   const { langMode } = useLang();
-  const { getLastModule } = useLastModule();
+  const { getPushNode } = useA1Path();
   const isDE = langMode === 'german';
-  const continuePath = getLastModule();
-  const moduleKey = continuePath.split('/').filter(Boolean)[0] ?? '';
-  const moduleLabel = MODULE_LABELS[moduleKey] ?? { en: 'Last Module', de: 'Letztes Modul' };
+
+  const nextNode = getPushNode();
+  const continuePath = nextNode?.to ?? '/';
+  const nextLabelEn = nextNode ? `Next: ${nextNode.label.en}` : 'Go to Home';
+  const nextLabelDe = nextNode ? `Weiter: ${nextNode.label.de}` : 'Zur Startseite';
 
   return (
     <div className={theme.page.container}>
@@ -57,14 +50,30 @@ export function ContinueLearningPage() {
         </div>
         <Link
           to={continuePath}
-          className={`${theme.button.primary} min-w-[160px] text-center`}
+          className={`${theme.button.primary} min-w-[160px] text-center inline-flex items-center justify-center`}
         >
-          {isDE ? moduleLabel.de : moduleLabel.en} →
+          {isDE ? nextLabelDe : nextLabelEn} →
         </Link>
       </header>
 
-      {/* B. Word of the Day — reuses existing DailyChallenge component */}
-      <DailyChallenge />
+      {/* Thin "Next up" strip above WOTD */}
+      {nextNode && (
+        <div className="mb-4 rounded-xl border border-blue-100 bg-blue-50/50 px-4 py-2 text-xs font-semibold text-blue-800 dark:border-blue-900/30 dark:bg-blue-950/20 dark:text-blue-300 flex items-center justify-between gap-2">
+          <span>
+            👉 {isDE ? 'Nächster Schritt auf deinem Pfad:' : 'Next step on your path:'}{' '}
+            <strong className="text-blue-950 dark:text-blue-100">{isDE ? nextNode.label.de : nextNode.label.en}</strong>
+          </span>
+          <Link
+            to={continuePath}
+            className="underline hover:text-blue-950 dark:hover:text-blue-100 transition active:scale-95"
+          >
+            {isDE ? 'Jetzt starten →' : 'Start now →'}
+          </Link>
+        </div>
+      )}
+
+      {/* B. Word of the Day — reuses existing DailyChallenge component with compact variant */}
+      <DailyChallenge variant="compact" />
 
       {/* C. A1 campaign spine — linear units with 80% checkpoint gates */}
       <UnitSpine />
@@ -73,7 +82,7 @@ export function ContinueLearningPage() {
           this page distinct from /practice, which shows all six tools. */}
       <section className={`${theme.panel.surface} mb-8`} id="practice">
         <h2 className="mb-4 text-xl font-bold text-slate-950 dark:text-white">
-          {isDE ? 'Schnellzugriff' : 'Quick practice'}
+          {isDE ? 'Zusatzwerkzeuge' : 'Extra tools'}
         </h2>
         <PracticeToolsGrid limit={3} footerLink />
       </section>
