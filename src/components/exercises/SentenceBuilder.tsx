@@ -32,6 +32,7 @@ import { playCorrectFx, playWrongFx, speakGerman } from '../../utils/audioServic
 import { XP_REWARDS } from '../../hooks/useXp';
 import { useAnswerReporter } from '../../hooks/useExerciseSession';
 import { useSpeechRecognition } from '../../hooks/useSpeechRecognition';
+import { getHint } from '../../data/hints';
 
 export interface SentenceItem {
   /** Stable id (SRS itemKey). */
@@ -78,6 +79,7 @@ export function SentenceBuilder({
   const [voiceInput, setVoiceInput] = useState('');
   const [wrongSlots, setWrongSlots] = useState<Set<number>>(() => new Set());
   const [feedback, setFeedback] = useState<{ isError: boolean; message: string } | null>(null);
+  const [hintReason, setHintReason] = useState<string | null>(null);
   const [solvedIds, setSolvedIds] = useState<Set<string>>(() => new Set());
   const [draggingTile, setDraggingTile] = useState<number | null>(null);
   const resetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -136,28 +138,38 @@ export function SentenceBuilder({
     return placed.length === item.words.length;
   }, [item, activeMode, typedInput, voiceInput, placed.length]);
 
-  // Contextual feedback analyzer for errors
-  const analyzeError = (attempt: string, expected: string[]): string => {
+  // Contextual feedback analyzer for errors — returns the message AND a hint
+  // reason keyed into the shared hint map (U4).
+  const analyzeError = (attempt: string, expected: string[]): { message: string; reason: string } => {
     const attemptWords = attempt.toLowerCase().split(/\s+/);
     const expectedWords = expected.map((w) => w.toLowerCase());
     const expectedStr = expected.join(' ');
 
     // Akkusativ check: der vs den
     if (expectedStr.toLowerCase().includes('den') && attemptWords.includes('der')) {
-      return isDE
-        ? 'Achtung im Akkusativ: "der" wird zu "den"!'
-        : 'Watch out for Akkusativ: "der" changes to "den"!';
+      return {
+        message: isDE
+          ? 'Achtung im Akkusativ: "der" wird zu "den"!'
+          : 'Watch out for Akkusativ: "der" changes to "den"!',
+        reason: 'akkusativ',
+      };
     }
 
     // Missing words check
     const missing = expectedWords.filter((w) => !attemptWords.includes(w));
     if (missing.length > 0) {
-      return isDE
-        ? `Fehlendes oder falsches Wort: "${missing[0]}"`
-        : `Missing or incorrect word: "${missing[0]}"`;
+      return {
+        message: isDE
+          ? `Fehlendes oder falsches Wort: "${missing[0]}"`
+          : `Missing or incorrect word: "${missing[0]}"`,
+        reason: 'missing-word',
+      };
     }
 
-    return isDE ? 'Wortstellung oder Schreibweise prüfen!' : 'Check word order or spelling!';
+    return {
+      message: isDE ? 'Wortstellung oder Schreibweise prüfen!' : 'Check word order or spelling!',
+      reason: 'word-order',
+    };
   };
 
   const check = () => {
@@ -193,6 +205,7 @@ export function SentenceBuilder({
           setTypedInput('');
           setVoiceInput('');
           setFeedback(null);
+          setHintReason(null);
           setWrongSlots(new Set());
           setIndex((i) => i + 1);
         }, 900);
@@ -203,8 +216,9 @@ export function SentenceBuilder({
     // Handle Wrong Answer
     playWrongFx();
     triggerHaptic('error');
-    const errorMsg = analyzeError(attempt, item.words);
+    const { message: errorMsg, reason } = analyzeError(attempt, item.words);
     setFeedback({ isError: true, message: errorMsg });
+    setHintReason(reason);
 
     if (activeMode === 'tiles') {
       const wrong = new Set<number>();
@@ -249,6 +263,7 @@ export function SentenceBuilder({
     setTypedInput('');
     setVoiceInput('');
     setFeedback(null);
+    setHintReason(null);
     setWrongSlots(new Set());
     setSolvedIds(new Set());
   };
@@ -460,7 +475,7 @@ export function SentenceBuilder({
               </div>
             )}
 
-            {/* Granular Feedback Callout */}
+            {/* Granular Feedback Callout + U4 micro-hint */}
             {feedback && (
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
@@ -472,6 +487,19 @@ export function SentenceBuilder({
                 }`}
               >
                 {feedback.message}
+                {feedback.isError && hintReason && (
+                  <div className="mt-2 border-t border-red-200 pt-2 text-xs font-medium text-red-800 dark:border-red-800/60 dark:text-red-200">
+                    {(() => {
+                      const hint = getHint('grammar', hintReason);
+                      return isDE ? hint.de : (
+                        <>
+                          <div>{hint.en}</div>
+                          <div className="mt-0.5 text-red-700/80 dark:text-red-300/80">{hint.ne}</div>
+                        </>
+                      );
+                    })()}
+                  </div>
+                )}
               </motion.div>
             )}
           </motion.div>

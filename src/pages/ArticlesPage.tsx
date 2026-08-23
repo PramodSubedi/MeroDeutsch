@@ -12,6 +12,7 @@ import { curriculumService } from '../services';
 import { CompactAudioButton } from '../components/CompactAudioButton';
 import { GenderLegend } from '../components/ui/GenderBadge';
 import { pickRandom } from '../utils/questionGenerator';
+import { getHint } from '../data/hints';
 import type { ArticleItem } from '../types';
 
 
@@ -81,6 +82,7 @@ export function ArticlesPage() {
   }, [quests, claimReward]);
 
   const [feedback, setFeedback] = useState('');
+  const [hint, setHint] = useState<{ en: string; ne: string; de: string } | null>(null);
   const [locked, setLocked] = useState(false);
   const [lastChoice, setLastChoice] = useState<'der' | 'die' | 'das' | null>(null);
   const [speechMessage, setSpeechMessage] = useState('');
@@ -188,6 +190,7 @@ export function ArticlesPage() {
         return pickRandom(articlesData, (item) => item.noun === prev.noun);
       });
       setFeedback('');
+      setHint(null);
       setLocked(false);
       setLastChoice(null);
       setSpeechMessage('');
@@ -253,6 +256,8 @@ export function ArticlesPage() {
           ? `❌ Falsch! Es ist ${targetPhrase}`
           : `❌ Wrong! It is ${targetPhrase}`
       );
+      // U4 micro-hint — one short teaching line (EN + NE), hidden in Nur DE.
+      setHint(getHint('articles', 'wrong-article'));
       addWrongAnswer({
         moduleType: 'articles',
         itemKey: targetPhrase,
@@ -637,6 +642,16 @@ export function ArticlesPage() {
           {feedback && (
             <div className={theme.panel.tip}>
               {feedback}
+              {hint && (
+                <div className="mt-2 border-t border-slate-200 pt-2 text-xs text-slate-600 dark:border-slate-700 dark:text-slate-300">
+                  {isDE ? hint.de : (
+                    <>
+                      <div>{hint.en}</div>
+                      <div className="mt-0.5 text-slate-500 dark:text-slate-400">{hint.ne}</div>
+                    </>
+                  )}
+                </div>
+              )}
             </div>
           )}
 

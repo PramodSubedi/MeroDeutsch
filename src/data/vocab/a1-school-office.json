@@ -1,0 +1,22 @@
+[
+  {
+    "word": "Note",
+    "article": "die",
+    "part_of_speech": "noun",
+    "translation_en": "grade",
+    "translation_np": "अंक",
+    "translation_ne_roman": "aṃka",
+    "category": "school-office",
+    "level": "A1"
+  },
+  {
+    "word": "Tafel",
+    "article": "die",
+    "part_of_speech": "noun",
+    "translation_en": "blackboard",
+    "translation_np": "ब्ल्याकबोर्ड",
+    "translation_ne_roman": "blyākabōrḍa",
+    "category": "school-office",
+    "level": "A1"
+  }
+]

@@ -17,6 +17,7 @@ import { GreetingsPage } from './pages/GreetingsPage';
 // Secondary pages - lazy loaded to reduce initial bundle size
 const DashboardPage = lazy(() => import('./pages/DashboardPage').then(m => ({ default: m.DashboardPage })));
 const GlossaryPage = lazy(() => import('./pages/GlossaryPage').then(m => ({ default: m.GlossaryPage })));
+const VocabTrainerPage = lazy(() => import('./pages/VocabTrainerPage').then(m => ({ default: m.VocabTrainerPage })));
 const DictationPage = lazy(() => import('./pages/DictationPage').then(m => ({ default: m.DictationPage })));
 const GrammarPage = lazy(() => import('./pages/GrammarPage').then(m => ({ default: m.GrammarPage })));
 const PronunciationPage = lazy(() => import('./pages/PronunciationPage').then(m => ({ default: m.PronunciationPage })));
@@ -53,6 +54,7 @@ export default function App() {
               <Route path="articles" element={<ArticlesPage />} />
               <Route path="greetings" element={<GreetingsPage />} />
               <Route path="glossary" element={<GlossaryPage />} />
+              <Route path="vocab-trainer" element={<VocabTrainerPage />} />
               <Route path="dictation" element={<DictationPage />} />
               <Route path="grammar" element={<GrammarPage />} />
               <Route path="pronunciation" element={<PronunciationPage />} />

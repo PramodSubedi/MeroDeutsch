@@ -21,6 +21,10 @@
  *                                key with a warning if absent.
  *   VITE_SUPABASE_ANON_KEY       (fallback read-only key)
  *
+ * Append-only by default: rows whose (word, part_of_speech) already exist in
+ * the database are SKIPPED so local files can never clobber live translations
+ * or example sentences. Set SEED_FORCE=1 to allow overwriting (explicit opt-in).
+ *
  * Usage:
  *   npm run seed-vocab
  */
@@ -33,6 +37,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createClient } from '@supabase/supabase-js';
+import { devanagariToRoman } from './devanagari';
 import type { VocabularyEntity } from '../src/types/content';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -44,6 +49,8 @@ interface LegacyVocabRow {
   de: string;
   en: string;
   ne: string;
+  /** Optional romanized Nepali (phonetic aid for EN speakers). */
+  neRoman?: string;
   tags?: string[];
   level?: string;
   exampleDe?: string;
@@ -65,6 +72,7 @@ function legacyToEntity(row: LegacyVocabRow): VocabularyEntity {
     part_of_speech: inferPartOfSpeech(categories),
     translation_en: row.en,
     translation_np: row.ne,
+    translation_ne_roman: row.neRoman,
     example_de: row.exampleDe,
     category: categories[0] ?? 'general',
     level: row.level ?? 'A1',
@@ -87,6 +95,12 @@ function entityToEntity(row: Record<string, unknown>): VocabularyEntity | null {
     part_of_speech: (row.part_of_speech as VocabularyEntity['part_of_speech']) ?? 'noun',
     translation_en: en,
     translation_np: np,
+    // Romanized Nepali: explicit value wins, otherwise derive locally so
+    // every seeded row gets a consistent phonetic aid for EN speakers.
+    translation_ne_roman:
+      (row.translation_ne_roman as string | undefined) ??
+      (row.neRoman as string | undefined) ??
+      devanagariToRoman(np),
     example_de: (row.example_de as string | undefined) ?? undefined,
     example_en: (row.example_en as string | undefined) ?? undefined,
     example_np: (row.example_np as string | undefined) ?? undefined,
@@ -108,6 +122,7 @@ function enrichedToEntity(card: Record<string, unknown>): VocabularyEntity | nul
     part_of_speech: allowed.has(partOfSpeech) ? (partOfSpeech as VocabularyEntity['part_of_speech']) : 'noun',
     translation_en: translation.en,
     translation_np: translation.np,
+    translation_ne_roman: card.translationNeRoman as string | undefined,
     example_de: examples[0]?.de,
     example_en: examples[0]?.en,
     example_np: examples[0]?.np,
@@ -137,15 +152,23 @@ async function loadEnriched(): Promise<VocabularyEntity[]> {
 
 async function main(): Promise<void> {
   const url = process.env.VITE_SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   const anonKey = process.env.VITE_SUPABASE_ANON_KEY;
-  if (!url || !anonKey) {
+  if (!url || (!serviceKey && !anonKey)) {
     console.error(
-      'Missing Supabase credentials. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in .env'
+      'Missing Supabase credentials. Set VITE_SUPABASE_URL plus ' +
+        'SUPABASE_SERVICE_ROLE_KEY (recommended) or VITE_SUPABASE_ANON_KEY in .env'
     );
     process.exit(1);
   }
+  if (!serviceKey) {
+    console.warn(
+      '⚠ SUPABASE_SERVICE_ROLE_KEY not set — falling back to anon key. ' +
+        '`vocabulary` is RLS-restricted, so writes will likely fail.',
+    );
+  }
 
-  const client = createClient(url, anonKey);
+  const client = createClient(url, serviceKey ?? anonKey!);
 
   const legacy = await Promise.all(
     (await fs.readdir(VOCAB_DIR))
@@ -174,7 +197,32 @@ async function main(): Promise<void> {
     uniqueEntities.push(e);
   }
 
-  const { error } = await client.from('vocabulary').upsert(uniqueEntities, {
+  // Append-only guard: skip rows that already exist unless SEED_FORCE=1.
+  const force = process.env.SEED_FORCE === '1';
+  let applied = uniqueEntities;
+  if (!force && serviceKey) {
+    const { data: existingRows, error: exErr } = await client
+      .from('vocabulary')
+      .select('word, part_of_speech');
+    if (exErr) {
+      console.error('Could not check existing rows:', exErr.message);
+      process.exit(1);
+    }
+    const existingKeys = new Set((existingRows ?? []).map((r) => `${r.word}|${r.part_of_speech}`));
+    const before = applied.length;
+    applied = applied.filter((e) => !existingKeys.has(`${e.word}|${e.part_of_speech}`));
+    console.log(
+      `Append-only: ${before - applied.length} row(s) already in DB and skipped` +
+        ` (set SEED_FORCE=1 to overwrite).`,
+    );
+  }
+
+  if (applied.length === 0) {
+    console.log('Nothing new to seed.');
+    return;
+  }
+
+  const { error } = await client.from('vocabulary').upsert(applied, {
     onConflict: 'word,part_of_speech',
   });
 
@@ -184,8 +232,9 @@ async function main(): Promise<void> {
   }
 
   console.log(
-    `✓ Seeded ${uniqueEntities.length} vocabulary rows into public.vocabulary` +
-      ` (filtered ${entities.length - uniqueEntities.length} duplicates)`,
+    `✓ Seeded ${applied.length} vocabulary rows into public.vocabulary` +
+      ` (filtered ${entities.length - uniqueEntities.length} duplicates)` +
+      `${force ? ' [FORCE: overwrites enabled]' : ''}`,
   );
 }
 

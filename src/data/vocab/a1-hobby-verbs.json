@@ -1,0 +1,155 @@
+[
+  {
+    "word": "feiern",
+    "part_of_speech": "verb",
+    "translation_en": "to celebrate",
+    "translation_np": "जश्न मनाउनु",
+    "translation_ne_roman": "jaśna manāunu",
+    "category": "hobby-verbs",
+    "level": "A1"
+  },
+  {
+    "word": "klettern",
+    "part_of_speech": "verb",
+    "translation_en": "to climb",
+    "translation_np": "चढ्नु",
+    "translation_ne_roman": "caḍhnu",
+    "category": "hobby-verbs",
+    "level": "A1"
+  },
+  {
+    "word": "wandern",
+    "part_of_speech": "verb",
+    "translation_en": "to hike",
+    "translation_np": "हाइकिङ गर्नु",
+    "translation_ne_roman": "hāikiṅa garnu",
+    "category": "hobby-verbs",
+    "level": "A1"
+  },
+  {
+    "word": "sammeln",
+    "part_of_speech": "verb",
+    "translation_en": "to collect",
+    "translation_np": "संग्रह गर्नु",
+    "translation_ne_roman": "saṃgraha garnu",
+    "category": "hobby-verbs",
+    "level": "A1"
+  },
+  {
+    "word": "basteln",
+    "part_of_speech": "verb",
+    "translation_en": "to do crafts",
+    "translation_np": "हस्तकला गर्नु",
+    "translation_ne_roman": "hastakalā garnu",
+    "category": "hobby-verbs",
+    "level": "A1"
+  },
+  {
+    "word": "malen",
+    "part_of_speech": "verb",
+    "translation_en": "to paint",
+    "translation_np": "चित्र बनाउनु",
+    "translation_ne_roman": "citra banāunu",
+    "category": "hobby-verbs",
+    "level": "A1"
+  },
+  {
+    "word": "zeichnen",
+    "part_of_speech": "verb",
+    "translation_en": "to draw",
+    "translation_np": "रेखा बनाउनु",
+    "translation_ne_roman": "rēkhā banāunu",
+    "category": "hobby-verbs",
+    "level": "A1"
+  },
+  {
+    "word": "fotografieren",
+    "part_of_speech": "verb",
+    "translation_en": "to photograph",
+    "translation_np": "फोटो खिच्नु",
+    "translation_ne_roman": "phōṭō khicnu",
+    "category": "hobby-verbs",
+    "level": "A1"
+  },
+  {
+    "word": "aufnehmen",
+    "part_of_speech": "verb",
+    "translation_en": "to record",
+    "translation_np": "रेकर्ड गर्नु",
+    "translation_ne_roman": "rēkarḍa garnu",
+    "category": "hobby-verbs",
+    "level": "A1"
+  },
+  {
+    "word": "herunterladen",
+    "part_of_speech": "verb",
+    "translation_en": "to download",
+    "translation_np": "डाउनलोड गर्नु",
+    "translation_ne_roman": "ḍāunalōḍa garnu",
+    "category": "hobby-verbs",
+    "level": "A1"
+  },
+  {
+    "word": "hochladen",
+    "part_of_speech": "verb",
+    "translation_en": "to upload",
+    "translation_np": "अपलोड गर्नु",
+    "translation_ne_roman": "apalōḍa garnu",
+    "category": "hobby-verbs",
+    "level": "A1"
+  },
+  {
+    "word": "teilen",
+    "part_of_speech": "verb",
+    "translation_en": "to share",
+    "translation_np": "सेयर गर्नु",
+    "translation_ne_roman": "sēyara garnu",
+    "category": "hobby-verbs",
+    "level": "A1"
+  },
+  {
+    "word": "drucken",
+    "part_of_speech": "verb",
+    "translation_en": "to print",
+    "translation_np": "छाप्नु",
+    "translation_ne_roman": "chāpnu",
+    "category": "hobby-verbs",
+    "level": "A1"
+  },
+  {
+    "word": "speichern",
+    "part_of_speech": "verb",
+    "translation_en": "to save",
+    "translation_np": "सेभ गर्नु",
+    "translation_ne_roman": "sēbha garnu",
+    "category": "hobby-verbs",
+    "level": "A1"
+  },
+  {
+    "word": "löschen",
+    "part_of_speech": "verb",
+    "translation_en": "to delete",
+    "translation_np": "मेट्नु",
+    "translation_ne_roman": "mēṭnu",
+    "category": "hobby-verbs",
+    "level": "A1"
+  },
+  {
+    "word": "trainieren",
+    "part_of_speech": "verb",
+    "translation_en": "to train",
+    "translation_np": "प्रशिक्षण गर्नु",
+    "translation_ne_roman": "praśikṣaṇa garnu",
+    "category": "hobby-verbs",
+    "level": "A1"
+  },
+  {
+    "word": "joggen",
+    "part_of_speech": "verb",
+    "translation_en": "to jog",
+    "translation_np": "जग्गिङ गर्नु",
+    "translation_ne_roman": "jaggiṅa garnu",
+    "category": "hobby-verbs",
+    "level": "A1"
+  }
+]

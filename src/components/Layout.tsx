@@ -18,6 +18,7 @@ import { UserMenu } from './UserMenu';
 import { LevelUpModal } from './LevelUpModal';
 import { useMilestoneToast } from '../hooks/useMilestoneToast';
 import { A1PathVisitTracker } from './path/A1PathVisitTracker';
+import { subscribeDailySessionActive } from '../lib/dailySessionSignal';
 
 /** Top nav + shell — branding/layout only; features live in pages/ */
 export function Layout() {
@@ -33,11 +34,18 @@ export function Layout() {
   const [audioEnabled, setAudioEnabledState] = useState(isAudioEnabled);
   const { toast, showToast, dismissToast } = useMilestoneToast();
   const [pendingLevelUp, setPendingLevelUp] = useState<number | null>(null);
+  const [dailySessionActive, setDailySessionActiveState] = useState(false);
 
   const isDE = langMode === 'german';
 
+  // U6: the daily review session runs on Home/Learn — not a "quiz route" by
+  // pathname. Subscribe to the module signal so level-ups mid-batch render as
+  // non-blocking toasts, never the full-screen modal.
+  useEffect(() => subscribeDailySessionActive(setDailySessionActiveState), []);
+
   // Check if current route is a quiz, blitz, or active training session (Phase D: TTS/Modal safety)
   const isActiveQuizRoute =
+    dailySessionActive || // Daily review batch active (U6)
     pathname.includes('/rapid-fire') ||
     pathname.includes('/rapid-blitz') ||
     pathname.startsWith('/checkpoint') || // A1 unit checkpoint = active quiz

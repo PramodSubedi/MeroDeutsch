@@ -1,0 +1,373 @@
+[
+  {
+    "word": "groß",
+    "part_of_speech": "adjective",
+    "translation_en": "big / tall",
+    "translation_np": "ठूलो",
+    "category": "unit3-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "klein",
+    "part_of_speech": "adjective",
+    "translation_en": "small",
+    "translation_np": "सानो",
+    "category": "unit3-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "gut",
+    "part_of_speech": "adjective",
+    "translation_en": "good",
+    "translation_np": "राम्रो",
+    "category": "unit3-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "schlecht",
+    "part_of_speech": "adjective",
+    "translation_en": "bad",
+    "translation_np": "नराम्रो",
+    "category": "unit3-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "neu",
+    "part_of_speech": "adjective",
+    "translation_en": "new",
+    "translation_np": "नयाँ",
+    "category": "unit3-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "alt",
+    "part_of_speech": "adjective",
+    "translation_en": "old",
+    "translation_np": "पुरानो",
+    "category": "unit3-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "schön",
+    "part_of_speech": "adjective",
+    "translation_en": "beautiful / nice",
+    "translation_np": "सुन्दर",
+    "category": "unit3-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "schnell",
+    "part_of_speech": "adjective",
+    "translation_en": "fast",
+    "translation_np": "छिटो",
+    "category": "unit3-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "langsam",
+    "part_of_speech": "adjective",
+    "translation_en": "slow",
+    "translation_np": "ढिलो",
+    "category": "unit3-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "heiß",
+    "part_of_speech": "adjective",
+    "translation_en": "hot",
+    "translation_np": "तातो",
+    "category": "unit3-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "kalt",
+    "part_of_speech": "adjective",
+    "translation_en": "cold",
+    "translation_np": "चिसो",
+    "category": "unit3-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "warm",
+    "part_of_speech": "adjective",
+    "translation_en": "warm",
+    "translation_np": "न्यानो",
+    "category": "unit3-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "teuer",
+    "part_of_speech": "adjective",
+    "translation_en": "expensive",
+    "translation_np": "महँगो",
+    "category": "unit3-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "billig",
+    "part_of_speech": "adjective",
+    "translation_en": "cheap",
+    "translation_np": "सस्तो",
+    "category": "unit3-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "leicht",
+    "part_of_speech": "adjective",
+    "translation_en": "easy / light",
+    "translation_np": "सजिलो",
+    "category": "unit3-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "schwer",
+    "part_of_speech": "adjective",
+    "translation_en": "difficult / heavy",
+    "translation_np": "गाह्रो",
+    "category": "unit3-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "lang",
+    "part_of_speech": "adjective",
+    "translation_en": "long",
+    "translation_np": "लामो",
+    "translation_ne_roman": "lāmō",
+    "category": "unit3-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "kurz",
+    "part_of_speech": "adjective",
+    "translation_en": "short",
+    "translation_np": "छोटो",
+    "translation_ne_roman": "chōṭō",
+    "category": "unit3-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "dick",
+    "part_of_speech": "adjective",
+    "translation_en": "thick / fat",
+    "translation_np": "मोटो",
+    "translation_ne_roman": "mōṭō",
+    "category": "unit3-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "dünn",
+    "part_of_speech": "adjective",
+    "translation_en": "thin",
+    "translation_np": "पातलो",
+    "translation_ne_roman": "pātalō",
+    "category": "unit3-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "stark",
+    "part_of_speech": "adjective",
+    "translation_en": "strong",
+    "translation_np": "बलियो",
+    "translation_ne_roman": "baliyō",
+    "category": "unit3-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "jung",
+    "part_of_speech": "adjective",
+    "translation_en": "young",
+    "translation_np": "जवानी",
+    "translation_ne_roman": "javānī",
+    "category": "unit3-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "frisch",
+    "part_of_speech": "adjective",
+    "translation_en": "fresh",
+    "translation_np": "ताजा",
+    "translation_ne_roman": "tājā",
+    "category": "unit3-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "sauber",
+    "part_of_speech": "adjective",
+    "translation_en": "clean",
+    "translation_np": "सफा",
+    "translation_ne_roman": "saphā",
+    "category": "unit3-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "laut",
+    "part_of_speech": "adjective",
+    "translation_en": "loud",
+    "translation_np": "धेरै आवाज",
+    "translation_ne_roman": "dhērai āvāja",
+    "category": "unit3-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "leise",
+    "part_of_speech": "adjective",
+    "translation_en": "quiet",
+    "translation_np": "शान्त",
+    "translation_ne_roman": "śānta",
+    "category": "unit3-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "hell",
+    "part_of_speech": "adjective",
+    "translation_en": "bright",
+    "translation_np": "उज्यालो",
+    "translation_ne_roman": "ujyālō",
+    "category": "unit3-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "dunkel",
+    "part_of_speech": "adjective",
+    "translation_en": "dark",
+    "translation_np": "अँध्यारो",
+    "translation_ne_roman": "aṃdhyārō",
+    "category": "unit3-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "richtig",
+    "part_of_speech": "adjective",
+    "translation_en": "correct / right",
+    "translation_np": "ठीक",
+    "translation_ne_roman": "ṭhīka",
+    "category": "unit3-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "falsch",
+    "part_of_speech": "adjective",
+    "translation_en": "wrong / incorrect",
+    "translation_np": "गलत",
+    "translation_ne_roman": "galata",
+    "category": "unit3-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "fertig",
+    "part_of_speech": "adjective",
+    "translation_en": "finished / ready",
+    "translation_np": "तयार",
+    "translation_ne_roman": "tayāra",
+    "category": "unit3-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "wichtig",
+    "part_of_speech": "adjective",
+    "translation_en": "important",
+    "translation_np": "महत्त्वपूर्ण",
+    "translation_ne_roman": "mahattvapūrṇa",
+    "category": "unit3-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "interessant",
+    "part_of_speech": "adjective",
+    "translation_en": "interesting",
+    "translation_np": "रोचक",
+    "translation_ne_roman": "rōcaka",
+    "category": "unit3-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "lustig",
+    "part_of_speech": "adjective",
+    "translation_en": "funny",
+    "translation_np": "मजेदार",
+    "translation_ne_roman": "majēdāra",
+    "category": "unit3-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "traurig",
+    "part_of_speech": "adjective",
+    "translation_en": "sad",
+    "translation_np": "दुःखी",
+    "translation_ne_roman": "duḥkhī",
+    "category": "unit3-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "glücklich",
+    "part_of_speech": "adjective",
+    "translation_en": "happy",
+    "translation_np": "खुशी",
+    "translation_ne_roman": "khuśī",
+    "category": "unit3-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "krank",
+    "part_of_speech": "adjective",
+    "translation_en": "sick",
+    "translation_np": "बिरामी",
+    "translation_ne_roman": "birāmī",
+    "category": "unit3-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "gesund",
+    "part_of_speech": "adjective",
+    "translation_en": "healthy",
+    "translation_np": "स्वस्थ",
+    "translation_ne_roman": "svastha",
+    "category": "unit3-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "hungrig",
+    "part_of_speech": "adjective",
+    "translation_en": "hungry",
+    "translation_np": "भोक लागेको",
+    "translation_ne_roman": "bhōka lāgēkō",
+    "category": "unit3-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "durstig",
+    "part_of_speech": "adjective",
+    "translation_en": "thirsty",
+    "translation_np": "तिर्खा",
+    "translation_ne_roman": "tirkhā",
+    "category": "unit3-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "voll",
+    "part_of_speech": "adjective",
+    "translation_en": "full",
+    "translation_np": "भरीएको",
+    "translation_ne_roman": "bharīēkō",
+    "category": "unit3-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "leer",
+    "part_of_speech": "adjective",
+    "translation_en": "empty",
+    "translation_np": "खाली",
+    "translation_ne_roman": "khālī",
+    "category": "unit3-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "offen",
+    "part_of_speech": "adjective",
+    "translation_en": "open",
+    "translation_np": "खुला",
+    "translation_ne_roman": "khulā",
+    "category": "unit3-adjectives",
+    "level": "A1"
+  }
+]

@@ -5,6 +5,7 @@ import type {
   GreetingItem,
   ArticleItem,
   VocabEntry,
+  VocabCard,
 } from '../types';
 import type {
   CurriculumService,
@@ -14,6 +15,8 @@ import type {
   SentenceExercise,
   MicroStory,
   PronunciationTip,
+  VocabularyFilter,
+  VocabularyFilterOptions,
 } from '../types/curriculum';
 import { openDb, getCachedContent } from '../lib/db';
 
@@ -60,6 +63,41 @@ export class LocalCurriculumService implements CurriculumService {
       meaning: `${v.translation.en}${v.translation.np ? ` / ${v.translation.np}` : ''}`,
       sentence: v.examples?.[0]?.de ?? undefined,
     }));
+  }
+
+  /** Filtered vocab cards from the offline Dexie cache (client-side filtering). */
+  async getVocabularyFiltered(filters: VocabularyFilter): Promise<VocabCard[]> {
+    const db = openDb();
+    if (!db) return [];
+    const cached = await db.vocab.toArray();
+    return cached.filter((c) => {
+      if (filters.pos && c.partOfSpeech !== filters.pos) return false;
+      if (filters.level && c.cefrLevel !== filters.level) return false;
+      if (filters.category && !c.tags.includes(filters.category)) return false;
+      return true;
+    });
+  }
+
+  /** Distinct level + category values from the offline Dexie cache. */
+  async getVocabFilterOptions(): Promise<VocabularyFilterOptions> {
+    const db = openDb();
+    if (!db) return { levels: [], categories: [] };
+    const cached = await db.vocab.toArray();
+    const levels = new Set<string>();
+    const categories = new Set<string>();
+    for (const c of cached) {
+      levels.add(c.cefrLevel);
+      for (const t of c.tags) {
+        // Skip POS tags — categories only.
+        if (!['noun', 'verb', 'adjective', 'phrase', 'expression', 'adverb', 'preposition'].includes(t)) {
+          categories.add(t);
+        }
+      }
+    }
+    return {
+      levels: Array.from(levels).sort((a, b) => (a < b ? -1 : 1)),
+      categories: Array.from(categories).sort((a, b) => (a < b ? -1 : 1)),
+    };
   }
 
   /**

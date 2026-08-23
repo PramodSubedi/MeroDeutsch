@@ -1,0 +1,92 @@
+[
+  {
+    "word": "Wie bitte?",
+    "part_of_speech": "phrase",
+    "translation_en": "Excuse me?",
+    "translation_np": "के भन्नु भयो?",
+    "translation_ne_roman": "kē bhannu bhayō?",
+    "category": "travel-questions",
+    "level": "A1"
+  },
+  {
+    "word": "Was kostet die Fahrkarte?",
+    "part_of_speech": "phrase",
+    "translation_en": "How much does the ticket cost?",
+    "translation_np": "टिकट कति पर्छ?",
+    "translation_ne_roman": "ṭikaṭa kati parcha?",
+    "category": "travel-questions",
+    "level": "A1"
+  },
+  {
+    "word": "Von wo bis wo fährt der Zug?",
+    "part_of_speech": "phrase",
+    "translation_en": "From where to where does the train run?",
+    "translation_np": "ट्रेन कहाँबाट कहाँसम्म चल्छ?",
+    "translation_ne_roman": "ṭrēna kahāṃbāṭa kahāṃsamma calcha?",
+    "category": "travel-questions",
+    "level": "A1"
+  },
+  {
+    "word": "Muss ich umsteigen?",
+    "part_of_speech": "phrase",
+    "translation_en": "Do I have to change trains?",
+    "translation_np": "के म उत्रेर अर्को ट्रेन लिनु पर्छ?",
+    "translation_ne_roman": "kē ma utrēra arkō ṭrēna linu parcha?",
+    "category": "travel-questions",
+    "level": "A1"
+  },
+  {
+    "word": "Wie lange dauert die Fahrt?",
+    "part_of_speech": "phrase",
+    "translation_en": "How long does the journey take?",
+    "translation_np": "यात्रा कति समय लिन्छ?",
+    "translation_ne_roman": "yātrā kati samaya lincha?",
+    "category": "travel-questions",
+    "level": "A1"
+  },
+  {
+    "word": "Gibt es eine Direktverbindung?",
+    "part_of_speech": "phrase",
+    "translation_en": "Is there a direct connection?",
+    "translation_np": "के सिधा यात्रा छ?",
+    "translation_ne_roman": "kē sidhā yātrā cha?",
+    "category": "travel-questions",
+    "level": "A1"
+  },
+  {
+    "word": "Wann kommt der nächste Bus?",
+    "part_of_speech": "phrase",
+    "translation_en": "When does the next bus arrive?",
+    "translation_np": "अगिल्लो बस कहिले आउँछ?",
+    "translation_ne_roman": "agillō basa kahilē āuṃcha?",
+    "category": "travel-questions",
+    "level": "A1"
+  },
+  {
+    "word": "Ist dieser Platz frei?",
+    "part_of_speech": "phrase",
+    "translation_en": "Is this seat free?",
+    "translation_np": "के यो सिट खाली छ?",
+    "translation_ne_roman": "kē yō siṭa khālī cha?",
+    "category": "travel-questions",
+    "level": "A1"
+  },
+  {
+    "word": "Können Sie mir den Weg zeigen?",
+    "part_of_speech": "phrase",
+    "translation_en": "Can you show me the way?",
+    "translation_np": "के तपाईं मलाई बाटो देखाउन सक्नुहुन्छ?",
+    "translation_ne_roman": "kē tapāīṃ malāī bāṭō dēkhāuna saknuhuncha?",
+    "category": "travel-questions",
+    "level": "A1"
+  },
+  {
+    "word": "Sind wir schon da?",
+    "part_of_speech": "phrase",
+    "translation_en": "Are we there yet?",
+    "translation_np": "हामी त्यहाँ पुगिसकेका छौं?",
+    "translation_ne_roman": "hāmī tyahāṃ pugisakēkā chauṃ?",
+    "category": "travel-questions",
+    "level": "A1"
+  }
+]

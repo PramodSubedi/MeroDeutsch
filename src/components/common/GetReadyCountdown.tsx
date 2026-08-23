@@ -1,8 +1,8 @@
 /**
  * components/common/GetReadyCountdown.tsx
  *
- * Shared "Get Ready" countdown overlay used by both RapidBlitzPage and
- * RapidFirePage. Shows a consistent 3 → 2 → 1 → GO! animation so every quiz
+ * Shared "Get Ready" countdown overlay used by RapidBlitzPage. Shows a
+ * consistent 3 → 2 → 1 → GO! animation so every quiz
  * type in the app has the same pre-game experience.
  *
  * Usage:

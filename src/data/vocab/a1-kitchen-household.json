@@ -1,0 +1,152 @@
+[
+  {
+    "word": "Löffel",
+    "article": "der",
+    "part_of_speech": "noun",
+    "translation_en": "spoon",
+    "translation_np": "चम्चा",
+    "translation_ne_roman": "camcā",
+    "category": "kitchen-household",
+    "level": "A1"
+  },
+  {
+    "word": "Gabel",
+    "article": "die",
+    "part_of_speech": "noun",
+    "translation_en": "fork",
+    "translation_np": "काँटा",
+    "translation_ne_roman": "kāṃṭā",
+    "category": "kitchen-household",
+    "level": "A1"
+  },
+  {
+    "word": "Messer",
+    "article": "das",
+    "part_of_speech": "noun",
+    "translation_en": "knife",
+    "translation_np": "छुरी",
+    "translation_ne_roman": "churī",
+    "category": "kitchen-household",
+    "level": "A1"
+  },
+  {
+    "word": "Teller",
+    "article": "der",
+    "part_of_speech": "noun",
+    "translation_en": "plate",
+    "translation_np": "थाली",
+    "translation_ne_roman": "thālī",
+    "category": "kitchen-household",
+    "level": "A1"
+  },
+  {
+    "word": "Tasse",
+    "article": "die",
+    "part_of_speech": "noun",
+    "translation_en": "cup",
+    "translation_np": "कप",
+    "translation_ne_roman": "kapa",
+    "category": "kitchen-household",
+    "level": "A1"
+  },
+  {
+    "word": "Topf",
+    "article": "der",
+    "part_of_speech": "noun",
+    "translation_en": "pot",
+    "translation_np": "भाँडो",
+    "translation_ne_roman": "bhāṃḍō",
+    "category": "kitchen-household",
+    "level": "A1"
+  },
+  {
+    "word": "Pfanne",
+    "article": "die",
+    "part_of_speech": "noun",
+    "translation_en": "pan",
+    "translation_np": "तवा",
+    "translation_ne_roman": "tavā",
+    "category": "kitchen-household",
+    "level": "A1"
+  },
+  {
+    "word": "Ofen",
+    "article": "der",
+    "part_of_speech": "noun",
+    "translation_en": "oven",
+    "translation_np": "ओभन",
+    "translation_ne_roman": "ōbhana",
+    "category": "kitchen-household",
+    "level": "A1"
+  },
+  {
+    "word": "Mikrowelle",
+    "article": "die",
+    "part_of_speech": "noun",
+    "translation_en": "microwave",
+    "translation_np": "माइक्रोवेभ",
+    "translation_ne_roman": "māikrōvēbha",
+    "category": "kitchen-household",
+    "level": "A1"
+  },
+  {
+    "word": "Kissen",
+    "article": "das",
+    "part_of_speech": "noun",
+    "translation_en": "pillow",
+    "translation_np": "तकीया",
+    "translation_ne_roman": "takīyā",
+    "category": "kitchen-household",
+    "level": "A1"
+  },
+  {
+    "word": "Decke",
+    "article": "die",
+    "part_of_speech": "noun",
+    "translation_en": "blanket",
+    "translation_np": "कम्बल",
+    "translation_ne_roman": "kambala",
+    "category": "kitchen-household",
+    "level": "A1"
+  },
+  {
+    "word": "Handtuch",
+    "article": "das",
+    "part_of_speech": "noun",
+    "translation_en": "towel",
+    "translation_np": "तौलिया",
+    "translation_ne_roman": "tauliyā",
+    "category": "kitchen-household",
+    "level": "A1"
+  },
+  {
+    "word": "Eimer",
+    "article": "der",
+    "part_of_speech": "noun",
+    "translation_en": "bucket",
+    "translation_np": "बाल्टी",
+    "translation_ne_roman": "bālṭī",
+    "category": "kitchen-household",
+    "level": "A1"
+  },
+  {
+    "word": "Besen",
+    "article": "der",
+    "part_of_speech": "noun",
+    "translation_en": "broom",
+    "translation_np": "झाडु",
+    "translation_ne_roman": "jhāḍu",
+    "category": "kitchen-household",
+    "level": "A1"
+  },
+  {
+    "word": "Mülleimer",
+    "article": "der",
+    "part_of_speech": "noun",
+    "translation_en": "trash can",
+    "translation_np": "कचरा डब्बा",
+    "translation_ne_roman": "kacarā ḍabbā",
+    "category": "kitchen-household",
+    "level": "A1"
+  }
+]

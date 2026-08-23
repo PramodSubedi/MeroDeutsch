@@ -16,6 +16,8 @@ import type {
   SentenceExercise,
   MicroStory,
   PronunciationTip,
+  VocabularyFilter,
+  VocabularyFilterOptions,
 } from '../types/curriculum';
 import { supabase } from '../lib/supabase';
 import { openDb, seedVocab, seedSentences, seedContentItems } from '../lib/db';
@@ -36,6 +38,7 @@ interface VocabRow {
   article: string | null;
   translation_en: string;
   translation_np?: string | null;
+  translation_ne_roman?: string | null;
   example_de?: string | null;
 }
 
@@ -70,6 +73,7 @@ function rowToVocabCard(row: VocabRow & { part_of_speech: string; level?: string
     partOfSpeech: row.part_of_speech as VocabCard['partOfSpeech'],
     cefrLevel: (row.level as VocabCard['cefrLevel']) ?? 'A1',
     translation: { en: row.translation_en, np: row.translation_np ?? '' },
+    translationNeRoman: row.translation_ne_roman ?? undefined,
     phonetics: { ipa: '', devanagari: '' },
     tags: row.category ? [row.category, row.part_of_speech] : [row.part_of_speech],
     examples: row.example_de
@@ -260,6 +264,89 @@ export class SupabaseCurriculumService implements CurriculumService {
     return this.fetchContentPool<VocabEntry>('vocab-item', true, () => this.localService.getVocabulary());
   }
 
+  /** Raw `vocabulary` row shape used by the filtered trainer fetch. */
+  private async fetchVocabRows(filters: VocabularyFilter): Promise<VocabCard[]> {
+    try {
+      if (!supabase) throw new Error('no client');
+      const { data, error } = await supabase.rpc('get_random_vocabulary', {
+        p_pos: filters.pos ?? null,
+        p_tag: null,
+        p_level: filters.level ?? null,
+        p_category: filters.category ?? null,
+        p_limit: filters.limit ?? 25,
+      });
+      if (error || !data || (data as unknown[]).length === 0) {
+        // Fallback: table SELECT with the same filters (online — can still cache).
+        let q = supabase
+          .from('vocabulary')
+          .select(
+            'word, article, translation_en, translation_np, translation_ne_roman, example_de, part_of_speech, level, category'
+          );
+        if (filters.pos) q = q.eq('part_of_speech', filters.pos);
+        if (filters.level) q = q.eq('level', filters.level);
+        if (filters.category) q = q.eq('category', filters.category);
+        const { data: fbData, error: fbError } = await q.limit(filters.limit ?? 25);
+        if (fbError || !fbData || fbData.length === 0) {
+          throw new Error('table fallback also empty');
+        }
+        const rows = fbData as (VocabRow & { part_of_speech: string; level?: string; category?: string })[];
+        void this.cacheVocab(rows);
+        return rows.map(rowToVocabCard);
+      }
+      const rows = (data as unknown) as (VocabRow & { part_of_speech: string; level?: string; category?: string })[];
+      void this.cacheVocab(rows);
+      return rows.map(rowToVocabCard);
+    } catch (err) {
+      console.warn('Supabase filtered vocab fetch failed, using Dexie cache:', err);
+      // Dexie offline fallback: filter cached VocabCards locally.
+      const db = openDb();
+      if (!db) return [];
+      try {
+        let coll = db.vocab.toCollection();
+        const cached = await coll.toArray();
+        return cached.filter((c) => {
+          if (filters.pos && c.partOfSpeech !== filters.pos) return false;
+          if (filters.level && c.cefrLevel !== filters.level) return false;
+          if (filters.category && !c.tags.includes(filters.category)) return false;
+          return true;
+        });
+      } catch {
+        return [];
+      }
+    }
+  }
+
+  async getVocabularyFiltered(filters: VocabularyFilter): Promise<VocabCard[]> {
+    return this.fetchVocabRows(filters);
+  }
+
+  async getVocabFilterOptions(): Promise<VocabularyFilterOptions> {
+    // Single source of truth: fetch a decent random sample, derive options
+    // from the rows actually present so stale categories never show.
+    try {
+      const options: VocabularyFilterOptions = { levels: [], categories: [] };
+      if (!supabase) return options;
+      const { data, error } = await supabase
+        .from('vocabulary')
+        .select('level, category');
+      if (error || !data) return options;
+      const levels = new Set<string>();
+      const categories = new Set<string>();
+      for (const r of data) {
+        if (r.level) levels.add(r.level);
+        if (r.category) categories.add(r.category);
+      }
+      options.levels = Array.from(levels)
+        .sort((a, b) => (a < b ? -1 : 1))
+        .filter((l) => ['A1', 'A2', 'B1', 'B2'].includes(l));
+      options.categories = Array.from(categories).sort((a, b) => (a < b ? -1 : 1));
+      return options;
+    } catch (err) {
+      console.warn('Supabase vocab options fetch failed:', err);
+      return { levels: [], categories: [] };
+    }
+  }
+
   async getGrammarDrills(category: string): Promise<GrammarDrill[]> {
     const all = await this.fetchContentPool<GrammarDrill & { category?: string }>(
       'grammar-drill',
@@ -277,9 +364,60 @@ export class SupabaseCurriculumService implements CurriculumService {
     return this.fetchContentPool<DictationWord>('dictation-word', true, () => this.localService.getDictationWords());
   }
 
-  /** Micro-stories rebuilt from the cached story-sentence pool. */
+  /**
+   * Micro-stories rebuilt from the story-sentence pool.
+   *
+   * Each `content_items` row of type 'story-sentence' carries ONE sentence
+   * wrapped as { storyId, title, titleNe, titleEn, level, sentence } — NOT a
+   * complete MicroStory. Rows must be GROUPED by storyId here (same as
+   * LocalCurriculumService.getStories), otherwise consumers crash on
+   * `story.sentences.length` / `.forEach` (Stories + Glossary pages).
+   */
   async getStories(): Promise<MicroStory[]> {
-    return this.fetchContentPool<MicroStory>('story-sentence', false, () => this.localService.getStories());
+    interface StoryRowPayload {
+      storyId?: string;
+      title?: string;
+      titleNe?: string;
+      titleEn?: string;
+      level?: 'A1';
+      sentence?: MicroStory['sentences'][number];
+    }
+    const rows = await this.fetchContentPool<StoryRowPayload>('story-sentence', false, async () => {
+      // Offline fallback: the local service already groups cached rows into
+      // full stories — flatten them back to row payloads so the single
+      // grouping path below handles both sources identically.
+      const stories = await this.localService.getStories();
+      return stories.flatMap((s) =>
+        s.sentences.map((sentence) => ({
+          storyId: s.id,
+          title: s.title,
+          titleNe: s.titleNe,
+          titleEn: s.titleEn,
+          level: s.level,
+          sentence,
+        }))
+      );
+    });
+
+    const stories = new Map<string, MicroStory>();
+    for (const row of rows) {
+      // Defensive: skip malformed rows instead of crashing the page.
+      if (!row?.storyId || !row.sentence || !row.title) continue;
+      let story = stories.get(row.storyId);
+      if (!story) {
+        story = {
+          id: row.storyId,
+          title: row.title,
+          titleNe: row.titleNe ?? '',
+          titleEn: row.titleEn ?? '',
+          level: row.level ?? 'A1',
+          sentences: [],
+        };
+        stories.set(row.storyId, story);
+      }
+      story.sentences.push(row.sentence);
+    }
+    return Array.from(stories.values());
   }
 
   /** Spelling word pools (easy/medium) from the cached spelling-word pool. */

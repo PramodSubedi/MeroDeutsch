@@ -146,8 +146,10 @@ export interface VocabCard {
   article: 'der' | 'die' | 'das' | null;
   plural: string | null;
   partOfSpeech: 'noun' | 'verb' | 'adjective' | 'adverb' | 'preposition' | 'phrase' | string;
-  cefrLevel: 'A1' | 'A2' | 'B1';
+  cefrLevel: 'A1' | 'A2' | 'B1' | 'B2';
   translation: { en: string; np: string };
+  /** Romanized Nepali pronunciation aid (DB column translation_ne_roman). */
+  translationNeRoman?: string;
   phonetics: { ipa: string; devanagari: string };
   tags: string[];
   examples: { de: string; en: string; np: string }[];

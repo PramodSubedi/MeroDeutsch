@@ -12,6 +12,9 @@
     "seed-vocab": "tsx scripts/seedVocab.ts",
     "seed-curriculum": "tsx scripts/seedCurriculum.ts",
     "seed-content-pools": "tsx scripts/seedContentPools.ts",
+    "backfill-unit1": "tsx scripts/backfillVocabClusters.ts",
+    "generate-a1": "tsx scripts/generateA1VocabClusters.ts",
+    "extract-pdf": "tsx scripts/extractPdfVocab.ts",
     "preview": "vite preview",
     "import-csv": "tsx scripts/import-csv.ts"
   },

@@ -214,10 +214,17 @@ export function DailyChallenge({ variant = 'normal' }: DailyChallengeProps) {
     <div className={`${isCompact ? 'rounded-2xl bg-white p-3 shadow-sm dark:bg-slate-900 mb-4' : `${theme.panel.surface} mb-6`}`}>
       <div className={`${isCompact ? 'flex flex-row items-center justify-between gap-3' : 'mb-4 flex flex-wrap items-start gap-4'}`}>
         <div className="flex-1">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <h2 className={`${isCompact ? 'text-sm font-bold text-slate-800 dark:text-slate-200' : 'text-lg font-semibold text-slate-950 dark:text-white mb-2'}`}>
               {isDE ? 'Wort des Tages' : 'Word of the Day'} 🗓️
             </h2>
+            {/* U6: persistent done-chip — visible even when collapsed, so a
+                returning user immediately sees the challenge is finished. */}
+            {challengeComplete && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
+                ✓ {isDE ? 'Heute erledigt' : 'Done for today'}
+              </span>
+            )}
             {isCompact && (
               <button
                 type="button"

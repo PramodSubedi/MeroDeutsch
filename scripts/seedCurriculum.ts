@@ -1,17 +1,24 @@
 /**
  * scripts/seedCurriculum.enriched.ts
  *
- * Extended curriculum seed data for A1 Phase 1:
- *   - 120+ nouns with articles (organized by categories)
- *   - 45+ verbs (common A1 verbs including separable/modals)
- *   - 40+ sentences with akkusativ and other grammar focus
+ * Extended curriculum seed data for A1 Phase 1 (U5 content depth):
+ *   - 150+ nouns with articles (organized by categories)
+ *     · TIME & CLOCK batch (12 items) tagged `time` (unit-3)
+ *   - 60+ verbs (common A1 verbs including separable/modals)
+ *     · ROUTINE & SEPARABLE batch (14 items) tagged `routine` (unit-3)
+ *   - 58 sentences with akkusativ and other grammar focus
+ *     · U5 Akkusativ depth batch (18 items) enriches the Sentence Builder pool
  *
- * Usage:
- *   1. Copy this file to seedCurriculum.ts (backup existing first)
- *   2. Set SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY in .env
- *   3. Run: npm run seed-curriculum
+ * Usage / re-seed:
+ *   1. Set SUPABASE_URL (or VITE_SUPABASE_URL) + SUPABASE_SERVICE_ROLE_KEY in .env
+ *      — the service-role key bypasses RLS for seeding. NEVER commit it.
+ *   2. Run: npm run seed-curriculum
+ *   3. Re-running is safe: idempotent upserts on
+ *      (word, part_of_speech) for vocabulary and sentences.id for sentences.
  *
- * Idempotent: upserts on (word, part_of_speech) / sentences.id.
+ * Required env vars:
+ *   SUPABASE_URL               — project URL (or VITE_SUPABASE_URL)
+ *   SUPABASE_SERVICE_ROLE_KEY  — service-role key (secret, never committed)
  */
 
 import 'dotenv/config';
@@ -206,6 +213,20 @@ const NOUNS: NounRow[] = [
   
   // COLORS (1 item)
   ['Farbe', 'die', 'Color / रंग', 'Die Farbe ist नीलो.'],
+
+  // TIME & CLOCK (12 items) — tag 'time'
+  ['Uhr', 'die', 'Clock / घडी', 'Die Uhr zeigt die Zeit.'],
+  ['Uhrzeit', 'die', 'Time (of day) / समय', 'Die Uhrzeit ist wichtig.'],
+  ['Viertel', 'das', 'Quarter / पाउ', 'Es ist Viertel nach acht.'],
+  ['Halb', 'das', 'Half / आधा', 'Es ist halb neun.'],
+  ['Stunde', 'die', 'Hour / घण्टा', 'Eine Stunde hat sechzig Minuten.'],
+  ['Minute', 'die', 'Minute / मिनेट', 'Die Minute ist kurz.'],
+  ['Sekunde', 'die', 'Second / सेकेन्ड', 'Eine Sekunde ist sehr kurz.'],
+  ['Morgen', 'der', 'Morning / बिहान', 'Am Morgen trinke ich Kaffee.'],
+  ['Mittag', 'der', 'Noon / दिउँसो', 'Am Mittag esse ich zu Mittag.'],
+  ['Nachmittag', 'der', 'Afternoon / अपराह्न', 'Am Nachmittag arbeite ich.'],
+  ['Abend', 'der', 'Evening / साँझ', 'Am Abend sehe ich fern.'],
+  ['Nacht', 'die', 'Night / रात', 'In der Nacht schlafe ich.'],
 ];
 
 /* ────────────────────────────────────────────────────────────
@@ -264,6 +285,22 @@ const VERBS: VerbRow[] = [
   ['essen', 'eat / खानु', 'Ich esse Brot.'],
   ['trinken', 'drink / पिउनु', 'Sie trinkt Kaffee.'],
   ['nehmen', 'take / लिनु', 'Ich nehme ein Buch.'],
+
+  // ROUTINE & SEPARABLE VERBS (14 items) — tag 'routine'
+  ['aufstehen', 'get up / उठ्नु', 'Ich stehe um sieben auf.'],
+  ['aufwachen', 'wake up / ब्युँझनु', 'Ich wache früh auf.'],
+  ['einkaufen', 'shop / किनमेल गर्नु', 'Wir kaufen am Samstag ein.'],
+  ['anfangen', 'begin / सुरु गर्नु', 'Der Kurs fängt um neun an.'],
+  ['mitkommen', 'come along / सँगै आउनु', 'Kommst du mit?'],
+  ['fernsehen', 'watch TV / टिभी हेर्नु', 'Am Abend sehe ich fern.'],
+  ['aufräumen', 'tidy up / सफा गर्नु', 'Ich räume das Zimmer auf.'],
+  ['anrufen', 'call / फोन गर्नु', 'Ich rufe dich an.'],
+  ['ausgehen', 'go out / बाहिर जानु', 'Wir gehen am Freitag aus.'],
+  ['zurückkommen', 'come back / फर्कनु', 'Er kommt um sechs zurück.'],
+  ['mitmachen', 'join in / सहभागी हुनु', 'Machst du mit?'],
+  ['aufhören', 'stop / रोक्नु', 'Der Regen hört auf.'],
+  ['anziehen', 'put on / लगाउनु', 'Ich ziehe die Jacke an.'],
+  ['ausziehen', 'take off / फुकाल्नु', 'Er zieht die Schuhe aus.'],
 ];
 
 /* ────────────────────────────────────────────────────────────
@@ -624,6 +661,152 @@ const SENTENCES: SentenceSeed[] = [
     grammar_focus: 'akkusativ',
     tags: ['unit-2', 'verbs'],
   },
+
+  // U5 — Akkusativ depth batch (18 items) — enriches the Sentence Builder pool.
+  {
+    id: 'u2-sb-41',
+    phrase_de: 'Ich kaufe einen Apfel',
+    expected_array: ['Ich', 'kaufe', 'einen', 'Apfel'],
+    distractors_array: ['ein', 'eine', 'der'],
+    grammar_focus: 'akkusativ',
+    tags: ['unit-2', 'verbs', 'akkusativ'],
+  },
+  {
+    id: 'u2-sb-42',
+    phrase_de: 'Er trinkt einen Saft',
+    expected_array: ['Er', 'trinkt', 'einen', 'Saft'],
+    distractors_array: ['ein', 'eine', 'der'],
+    grammar_focus: 'akkusativ',
+    tags: ['unit-2', 'verbs', 'akkusativ'],
+  },
+  {
+    id: 'u2-sb-43',
+    phrase_de: 'Wir suchen den Schlüssel',
+    expected_array: ['Wir', 'suchen', 'den', 'Schlüssel'],
+    distractors_array: ['der', 'dem', 'ein'],
+    grammar_focus: 'akkusativ',
+    tags: ['unit-2', 'verbs', 'akkusativ'],
+  },
+  {
+    id: 'u2-sb-44',
+    phrase_de: 'Ich finde den Bahnhof',
+    expected_array: ['Ich', 'finde', 'den', 'Bahnhof'],
+    distractors_array: ['der', 'dem', 'einen'],
+    grammar_focus: 'akkusativ',
+    tags: ['unit-2', 'verbs', 'akkusativ'],
+  },
+  {
+    id: 'u2-sb-45',
+    phrase_de: 'Sie braucht eine Lampe',
+    expected_array: ['Sie', 'braucht', 'eine', 'Lampe'],
+    distractors_array: ['ein', 'den', 'der'],
+    grammar_focus: 'akkusativ',
+    tags: ['unit-2', 'verbs', 'akkusativ'],
+  },
+  {
+    id: 'u2-sb-46',
+    phrase_de: 'Ich lese die Zeitung',
+    expected_array: ['Ich', 'lese', 'die', 'Zeitung'],
+    distractors_array: ['der', 'das', 'eine'],
+    grammar_focus: 'akkusativ',
+    tags: ['unit-2', 'verbs', 'akkusativ'],
+  },
+  {
+    id: 'u2-sb-47',
+    phrase_de: 'Er kocht eine Suppe',
+    expected_array: ['Er', 'kocht', 'eine', 'Suppe'],
+    distractors_array: ['ein', 'den', 'der'],
+    grammar_focus: 'akkusativ',
+    tags: ['unit-2', 'verbs', 'akkusativ'],
+  },
+  {
+    id: 'u2-sb-48',
+    phrase_de: 'Wir kaufen das Brot',
+    expected_array: ['Wir', 'kaufen', 'das', 'Brot'],
+    distractors_array: ['den', 'der', 'einen'],
+    grammar_focus: 'akkusativ',
+    tags: ['unit-2', 'verbs', 'akkusativ'],
+  },
+  {
+    id: 'u2-sb-49',
+    phrase_de: 'Ich wasche das Auto',
+    expected_array: ['Ich', 'wasche', 'das', 'Auto'],
+    distractors_array: ['den', 'der', 'ein'],
+    grammar_focus: 'akkusativ',
+    tags: ['unit-2', 'verbs', 'akkusativ'],
+  },
+  {
+    id: 'u2-sb-50',
+    phrase_de: 'Sie schließt das Fenster',
+    expected_array: ['Sie', 'schließt', 'das', 'Fenster'],
+    distractors_array: ['den', 'der', 'einen'],
+    grammar_focus: 'akkusativ',
+    tags: ['unit-2', 'verbs', 'akkusativ'],
+  },
+  {
+    id: 'u2-sb-51',
+    phrase_de: 'Ich sehe einen Film',
+    expected_array: ['Ich', 'sehe', 'einen', 'Film'],
+    distractors_array: ['ein', 'eine', 'der'],
+    grammar_focus: 'akkusativ',
+    tags: ['unit-2', 'verbs', 'akkusativ'],
+  },
+  {
+    id: 'u2-sb-52',
+    phrase_de: 'Er hat einen Bruder',
+    expected_array: ['Er', 'hat', 'einen', 'Bruder'],
+    distractors_array: ['ein', 'eine', 'der'],
+    grammar_focus: 'akkusativ',
+    tags: ['unit-2', 'verbs', 'akkusativ'],
+  },
+  {
+    id: 'u2-sb-53',
+    phrase_de: 'Wir besuchen die Oma',
+    expected_array: ['Wir', 'besuchen', 'die', 'Oma'],
+    distractors_array: ['der', 'das', 'eine'],
+    grammar_focus: 'akkusativ',
+    tags: ['unit-2', 'verbs', 'akkusativ'],
+  },
+  {
+    id: 'u2-sb-54',
+    phrase_de: 'Ich rufe den Arzt',
+    expected_array: ['Ich', 'rufe', 'den', 'Arzt'],
+    distractors_array: ['der', 'dem', 'einen'],
+    grammar_focus: 'akkusativ',
+    tags: ['unit-2', 'verbs', 'akkusativ'],
+  },
+  {
+    id: 'u2-sb-55',
+    phrase_de: 'Sie nimmt den Bus',
+    expected_array: ['Sie', 'nimmt', 'den', 'Bus'],
+    distractors_array: ['der', 'dem', 'ein'],
+    grammar_focus: 'akkusativ',
+    tags: ['unit-2', 'verbs', 'akkusativ'],
+  },
+  {
+    id: 'u2-sb-56',
+    phrase_de: 'Ich mag den Kaffee',
+    expected_array: ['Ich', 'mag', 'den', 'Kaffee'],
+    distractors_array: ['der', 'dem', 'einen'],
+    grammar_focus: 'akkusativ',
+    tags: ['unit-2', 'verbs', 'akkusativ'],
+  },
+  {
+    id: 'u2-sb-57',
+    phrase_de: 'Wir öffnen die Tür',
+    expected_array: ['Wir', 'öffnen', 'die', 'Tür'],
+    distractors_array: ['der', 'das', 'eine'],
+    grammar_focus: 'akkusativ',
+    tags: ['unit-2', 'verbs', 'akkusativ'],
+  },
+  {
+    id: 'u2-sb-58',
+    phrase_de: 'Er kauft einen Stuhl',
+    expected_array: ['Er', 'kauft', 'einen', 'Stuhl'],
+    distractors_array: ['ein', 'eine', 'der'],
+    grammar_focus: 'akkusativ',
+    tags: ['unit-2', 'verbs', 'akkusativ'],
+  },
 ];
 
 /* ────────────────────────────────────────────────────────────
@@ -645,20 +828,41 @@ async function main(): Promise<void> {
   const admin = createClient(url, serviceKey, { auth: { persistSession: false } });
 
   // 1. Vocabulary (nouns with gender) — upsert on (word, part_of_speech).
-  const nounRows = NOUNS.map(([noun, art, meaning, sentence]) => {
-    const [en, np] = meaning.split('/').map((s) => s.trim());
-    return {
-      word: noun,
-      article: art,
-      part_of_speech: 'noun',
-      translation_en: en || noun,
-      translation_np: np || '',
-      example_de: sentence,
-      category: 'core',
-      level: 'A1',
-      tags: ['unit-2', 'articles', `gender-${art}`],
-    };
-  });
+  // Time/clock nouns get the 'time' tag; all others keep the article tags.
+  // DEDUPE by word BEFORE upserting: Postgres rejects ON CONFLICT DO UPDATE
+  // when one statement hits the same conflict key twice ("ON CONFLICT DO
+  // UPDATE command cannot affect row a second time"). The TIME & CLOCK batch
+  // intentionally refreshes some existing time nouns — last occurrence wins
+  // so the newer example sentence + 'time' tag apply.
+  const TIME_NOUNS = new Set([
+    'Uhr', 'Uhrzeit', 'Viertel', 'Halb', 'Sekunde', 'Nachmittag',
+    'Stunde', 'Minute', 'Morgen', 'Mittag', 'Abend', 'Nacht',
+    'Tag', 'Woche', 'Monat', 'Jahr',
+  ]);
+  const nounRows = Array.from(
+    new Map(
+      NOUNS.map(([noun, art, meaning, sentence]) => {
+        const [en, np] = meaning.split('/').map((s) => s.trim());
+        const tags = TIME_NOUNS.has(noun)
+          ? ['unit-3', 'time', `gender-${art}`]
+          : ['unit-2', 'articles', `gender-${art}`];
+        return [
+          noun,
+          {
+            word: noun,
+            article: art,
+            part_of_speech: 'noun',
+            translation_en: en || noun,
+            translation_np: np || '',
+            example_de: sentence,
+            category: 'core',
+            level: 'A1',
+            tags,
+          },
+        ] as const;
+      })
+    ).values()
+  );
 
   const { error: nounError } = await admin
     .from('vocabulary')
@@ -671,20 +875,37 @@ async function main(): Promise<void> {
   console.log(`[seedCurriculum] vocabulary: ${nounRows.length} nouns upserted.`);
 
   // 2. Vocabulary (verbs) — upsert on (word, part_of_speech).
-  const verbRows = VERBS.map(([verb, meaning, sentence]) => {
-    const [en, np] = meaning.split('/').map((s) => s.trim());
-    return {
-      word: verb,
-      article: null,
-      part_of_speech: 'verb',
-      translation_en: en || verb,
-      translation_np: np || '',
-      example_de: sentence,
-      category: 'core',
-      level: 'A1',
-      tags: ['unit-2', 'verbs'],
-    };
-  });
+  // Separable/routine verbs get the 'routine' tag; all others keep 'verbs'.
+  // Same dedupe-by-word guard as nouns (see above).
+  const ROUTINE_VERBS = new Set([
+    'aufstehen', 'aufwachen', 'einkaufen', 'anfangen', 'mitkommen',
+    'fernsehen', 'aufräumen', 'anrufen', 'ausgehen', 'zurückkommen',
+    'mitmachen', 'aufhören', 'anziehen', 'ausziehen',
+  ]);
+  const verbRows = Array.from(
+    new Map(
+      VERBS.map(([verb, meaning, sentence]) => {
+        const [en, np] = meaning.split('/').map((s) => s.trim());
+        const tags = ROUTINE_VERBS.has(verb)
+          ? ['unit-3', 'routine', 'separable']
+          : ['unit-2', 'verbs'];
+        return [
+          verb,
+          {
+            word: verb,
+            article: null,
+            part_of_speech: 'verb',
+            translation_en: en || verb,
+            translation_np: np || '',
+            example_de: sentence,
+            category: 'core',
+            level: 'A1',
+            tags,
+          },
+        ] as const;
+      })
+    ).values()
+  );
 
   const { error: verbError } = await admin
     .from('vocabulary')

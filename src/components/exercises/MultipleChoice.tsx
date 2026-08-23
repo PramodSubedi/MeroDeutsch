@@ -15,6 +15,7 @@ import type { ReactNode } from 'react';
 import { useLang } from '../../hooks/useLang';
 import { speakText } from '../../hooks/useSpeech';
 import { theme } from '../../config/theme';
+import { getHint } from '../../data/hints';
 import type { ExerciseQuestion, ExerciseSession } from '../../hooks/useExerciseSession';
 
 interface MultipleChoiceProps<Q extends ExerciseQuestion> {
@@ -28,6 +29,8 @@ interface MultipleChoiceProps<Q extends ExerciseQuestion> {
   columns?: 1 | 2;
   /** Hide the built-in Next/Finish footer (page renders its own). */
   hideFooter?: boolean;
+  /** U4 micro-hint reason keyed into the shared hint map (e.g. 'article-precision'). */
+  hintReason?: string;
 }
 
 export function MultipleChoice<Q extends ExerciseQuestion>({
@@ -36,6 +39,7 @@ export function MultipleChoice<Q extends ExerciseQuestion>({
   showSpeaker = true,
   columns = 2,
   hideFooter = false,
+  hintReason,
 }: MultipleChoiceProps<Q>) {
   const { langMode } = useLang();
   const isDE = langMode === 'german';
@@ -101,7 +105,7 @@ export function MultipleChoice<Q extends ExerciseQuestion>({
         })}
       </div>
 
-      {/* Post-lock feedback + answer speaker */}
+      {/* Post-lock feedback + answer speaker + U4 micro-hint */}
       {locked && (
         <div className="mt-4 rounded-xl bg-slate-50 p-3 text-sm dark:bg-slate-800/60">
           {isCorrect
@@ -109,6 +113,19 @@ export function MultipleChoice<Q extends ExerciseQuestion>({
               ? '🎉 Richtig!'
               : '🎉 Correct!'
             : `${isDE ? '✅ Richtig:' : '✅ Correct:'} ${current.correctAnswer}`}
+          {!isCorrect && hintReason && (
+            <div className="mt-2 border-t border-slate-200 pt-2 text-xs text-slate-600 dark:border-slate-700 dark:text-slate-300">
+              {(() => {
+                const hint = getHint('a1-checkpoint', hintReason);
+                return isDE ? hint.de : (
+                  <>
+                    <div>{hint.en}</div>
+                    <div className="mt-0.5 text-slate-500 dark:text-slate-400">{hint.ne}</div>
+                  </>
+                );
+              })()}
+            </div>
+          )}
           {showSpeaker && current.speakAfter && (
             <button
               type="button"

@@ -16,6 +16,8 @@ export interface VocabularyEntity {
   translation_en: string;
   /** Nepali translation. */
   translation_np: string;
+  /** Romanized Nepali for EN speakers learning phonetic pronunciation (optional, backfilled per cluster). */
+  translation_ne_roman?: string;
   /** German example sentence. */
   example_de?: string;
   /** English example sentence. */

@@ -113,7 +113,7 @@ function buildRows(): ContentItemRow[] {
   });
 
   // Rapid-fire questions
-  Object.entries(RAPID_FIRE).forEach(([type, questions]) => {
+  Object.entries(RAPID_FIRE).forEach(([_type, questions]) => {
     questions.forEach((q, i) =>
       rows.push({
         id: `rapid-${(q as { id: string }).id}`,

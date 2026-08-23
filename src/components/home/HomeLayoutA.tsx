@@ -5,12 +5,12 @@ import { LearningPath } from '../learning/LearningPath';
 import { useAchievements, ALL_BADGES } from '../../hooks/useAchievements';
 import { useAuth } from '../../hooks/useAuth';
 import { useLang } from '../../hooks/useLang';
-import { useLastModule } from '../../hooks/useLastModule';
+import { useA1Path } from '../../hooks/useA1Path';
 import { useProgress } from '../../hooks/useProgress';
 import { useReviewQueue } from '../../hooks/useReviewQueue';
 import { useStreak } from '../../hooks/useStreak';
 import { useXp } from '../../hooks/useXp';
-import { A1DailyLoop } from '../path/A1DailyLoop';
+import { DailySession } from '../path/DailySession';
 import { StatTile } from '../ui/StatTile';
 
 const PRACTICE_ITEM_STYLES = [
@@ -44,11 +44,11 @@ export function HomeLayoutA() {
   const { langMode } = useLang();
   const { user, isAuthenticated } = useAuth();
   const { progress } = useProgress();
-  const { queue } = useReviewQueue();
+  const { queue, dueQueue } = useReviewQueue();
   const { streakCount } = useStreak();
   const { totalXp, level, xpProgress } = useXp();
   const { unlockedBadges, checkAndUnlock } = useAchievements();
-  const { getLastModule } = useLastModule();
+  const { getPushNode } = useA1Path();
   const isDE = langMode === 'german';
 
   useEffect(() => {
@@ -73,8 +73,15 @@ export function HomeLayoutA() {
       ? 'Willkommen bei MeroDeutsch'
       : 'Welcome to MeroDeutsch';
 
-  const continueTo = getLastModule();
-  const continueTarget = continueTo && continueTo !== '/alphabet' ? continueTo : '/learn';
+  const dueCount = dueQueue.length;
+  const pushNode = getPushNode();
+
+  // Resume CTA: when due items exist, route to the daily session (which starts
+  // with review — due-first, no bypass). Otherwise target the next incomplete
+  // path node (getPushNode prefers a checkpoint when it is next).
+  const continueTarget = dueCount > 0 ? '/learn#daily-session' : (pushNode?.to ?? '/learn');
+  const continueLabelEn = dueCount > 0 ? `Review ${dueCount}` : (pushNode ? `Next: ${pushNode.label.en}` : 'Go to path');
+  const continueLabelDe = dueCount > 0 ? `${dueCount} Review` : (pushNode ? `Weiter: ${pushNode.label.de}` : 'Zum Lernpfad');
 
   const practiceItems = [
     {
@@ -137,17 +144,17 @@ export function HomeLayoutA() {
                 to={continueTarget}
                 className="inline-flex min-h-[48px] items-center justify-center rounded-2xl bg-blue-600 px-5 py-3 text-base font-semibold text-white shadow-sm transition hover:bg-blue-700"
               >
-                {isDE ? 'Weiterlernen' : 'Continue learning'}
+                {isDE ? continueLabelDe : continueLabelEn} →
               </Link>
-              {/* Daily actions (Warm-up / Push / Challenge) live in A1DailyLoop
-                  directly below — no duplicate CTA here. One primary action per screen. */}
+              {/* Daily session (due reviews -> summary -> next path node) lives in
+                  DailySession directly below — no duplicate CTA here. One primary action per screen. */}
             </div>
           </div>
         </div>
       </section>
 
-      {/* Daily loop: Warm-up (due SRS) -> Push (next path node) -> Challenge (Blitz) */}
-      <A1DailyLoop />
+      {/* Daily session: due reviews first (max 8) -> summary -> next path node */}
+      <DailySession />
 
       {/* Shared StatTile component — same source of truth as DashboardPage */}
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">

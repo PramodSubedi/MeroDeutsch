@@ -1,0 +1,152 @@
+[
+  {
+    "word": "Ohr",
+    "article": "das",
+    "part_of_speech": "noun",
+    "translation_en": "ear",
+    "translation_np": "कान",
+    "translation_ne_roman": "kāna",
+    "category": "body-health",
+    "level": "A1"
+  },
+  {
+    "word": "Nase",
+    "article": "die",
+    "part_of_speech": "noun",
+    "translation_en": "nose",
+    "translation_np": "नाक",
+    "translation_ne_roman": "nāka",
+    "category": "body-health",
+    "level": "A1"
+  },
+  {
+    "word": "Zahn",
+    "article": "der",
+    "part_of_speech": "noun",
+    "translation_en": "tooth",
+    "translation_np": "दाँत",
+    "translation_ne_roman": "dāṃta",
+    "category": "body-health",
+    "level": "A1"
+  },
+  {
+    "word": "Arm",
+    "article": "der",
+    "part_of_speech": "noun",
+    "translation_en": "arm",
+    "translation_np": "बाँह",
+    "translation_ne_roman": "bāṃha",
+    "category": "body-health",
+    "level": "A1"
+  },
+  {
+    "word": "Bauch",
+    "article": "der",
+    "part_of_speech": "noun",
+    "translation_en": "belly",
+    "translation_np": "पेट",
+    "translation_ne_roman": "pēṭa",
+    "category": "body-health",
+    "level": "A1"
+  },
+  {
+    "word": "Rücken",
+    "article": "der",
+    "part_of_speech": "noun",
+    "translation_en": "back",
+    "translation_np": "पिठु",
+    "translation_ne_roman": "piṭhu",
+    "category": "body-health",
+    "level": "A1"
+  },
+  {
+    "word": "Herz",
+    "article": "das",
+    "part_of_speech": "noun",
+    "translation_en": "heart",
+    "translation_np": "दिल",
+    "translation_ne_roman": "dila",
+    "category": "body-health",
+    "level": "A1"
+  },
+  {
+    "word": "Finger",
+    "article": "der",
+    "part_of_speech": "noun",
+    "translation_en": "finger",
+    "translation_np": "औँला",
+    "translation_ne_roman": "auṃlā",
+    "category": "body-health",
+    "level": "A1"
+  },
+  {
+    "word": "Knie",
+    "article": "das",
+    "part_of_speech": "noun",
+    "translation_en": "knee",
+    "translation_np": "घुँटा",
+    "translation_ne_roman": "ghuṃṭā",
+    "category": "body-health",
+    "level": "A1"
+  },
+  {
+    "word": "Haut",
+    "article": "die",
+    "part_of_speech": "noun",
+    "translation_en": "skin",
+    "translation_np": "छाला",
+    "translation_ne_roman": "chālā",
+    "category": "body-health",
+    "level": "A1"
+  },
+  {
+    "word": "Stimme",
+    "article": "die",
+    "part_of_speech": "noun",
+    "translation_en": "voice",
+    "translation_np": "आवाज",
+    "translation_ne_roman": "āvāja",
+    "category": "body-health",
+    "level": "A1"
+  },
+  {
+    "word": "Kopfschmerzen",
+    "article": "die",
+    "part_of_speech": "noun",
+    "translation_en": "headache",
+    "translation_np": "टाउको दुखाइ",
+    "translation_ne_roman": "ṭāukō dukhāi",
+    "category": "body-health",
+    "level": "A1"
+  },
+  {
+    "word": "Fieber",
+    "article": "das",
+    "part_of_speech": "noun",
+    "translation_en": "fever",
+    "translation_np": "ज्वरो",
+    "translation_ne_roman": "jvarō",
+    "category": "body-health",
+    "level": "A1"
+  },
+  {
+    "word": "Husten",
+    "article": "der",
+    "part_of_speech": "noun",
+    "translation_en": "cough",
+    "translation_np": "खाँसी",
+    "translation_ne_roman": "khāṃsī",
+    "category": "body-health",
+    "level": "A1"
+  },
+  {
+    "word": "Schnupfen",
+    "article": "der",
+    "part_of_speech": "noun",
+    "translation_en": "cold (runny nose)",
+    "translation_np": "सर्दी",
+    "translation_ne_roman": "sardī",
+    "category": "body-health",
+    "level": "A1"
+  }
+]

@@ -1,0 +1,110 @@
+[
+  {
+    "word": "Ich stehe um 7 Uhr auf.",
+    "part_of_speech": "phrase",
+    "translation_en": "I get up at 7 o'clock.",
+    "translation_np": "म बिहान ७ बजे उठ्छु।",
+    "translation_ne_roman": "ma bihāna ७ bajē uṭhchu।",
+    "category": "daily-routine",
+    "level": "A1"
+  },
+  {
+    "word": "Ich frühstücke um halb acht.",
+    "part_of_speech": "phrase",
+    "translation_en": "I have breakfast at half past seven.",
+    "translation_np": "म सात बजेको आधा बेला नास्ता गर्छु।",
+    "translation_ne_roman": "ma sāta bajēkō ādhā bēlā nāstā garchu।",
+    "category": "daily-routine",
+    "level": "A1"
+  },
+  {
+    "word": "Ich fahre mit dem Bus zur Arbeit.",
+    "part_of_speech": "phrase",
+    "translation_en": "I go to work by bus.",
+    "translation_np": "म बसले काममा जान्छु।",
+    "translation_ne_roman": "ma basalē kāmamā jānchu।",
+    "category": "daily-routine",
+    "level": "A1"
+  },
+  {
+    "word": "Ich komme um 18 Uhr nach Hause.",
+    "part_of_speech": "phrase",
+    "translation_en": "I come home at 6 p.m.",
+    "translation_np": "म साँझ ६ बजे घर फर्कन्छु।",
+    "translation_ne_roman": "ma sāṃjha ६ bajē ghara pharkanchu।",
+    "category": "daily-routine",
+    "level": "A1"
+  },
+  {
+    "word": "Am Abend sehe ich fern.",
+    "part_of_speech": "phrase",
+    "translation_en": "In the evening I watch TV.",
+    "translation_np": "बेलुकी म टिभी हेर्छु।",
+    "translation_ne_roman": "bēlukī ma ṭibhī hērchu।",
+    "category": "daily-routine",
+    "level": "A1"
+  },
+  {
+    "word": "Ich gehe um 23 Uhr ins Bett.",
+    "part_of_speech": "phrase",
+    "translation_en": "I go to bed at 11 p.m.",
+    "translation_np": "म राती ११ बजे बिस्तरमा जान्छु।",
+    "translation_ne_roman": "ma rātī ११ bajē bistaramā jānchu।",
+    "category": "daily-routine",
+    "level": "A1"
+  },
+  {
+    "word": "Am Wochenende treffe ich Freunde.",
+    "part_of_speech": "phrase",
+    "translation_en": "On the weekend I meet friends.",
+    "translation_np": "सप्ताहन्तमा म साथीहरूलाई भेट्छु।",
+    "translation_ne_roman": "saptāhantamā ma sāthīharūlāī bhēṭchu।",
+    "category": "daily-routine",
+    "level": "A1"
+  },
+  {
+    "word": "Jeden Tag lerne ich Deutsch.",
+    "part_of_speech": "phrase",
+    "translation_en": "I learn German every day.",
+    "translation_np": "म हरेक दिन जर्मन भाषा सिक्छु।",
+    "translation_ne_roman": "ma harēka dina jarmana bhāṣā sikchu।",
+    "category": "daily-routine",
+    "level": "A1"
+  },
+  {
+    "word": "Normalerweise koche ich selbst.",
+    "part_of_speech": "phrase",
+    "translation_en": "I usually cook myself.",
+    "translation_np": "सामान्यतया म आफैँ खाना पकाउँछु।",
+    "translation_ne_roman": "sāmānyatayā ma āphaiṃ khānā pakāuṃchu।",
+    "category": "daily-routine",
+    "level": "A1"
+  },
+  {
+    "word": "Ich war gestern im Kino.",
+    "part_of_speech": "phrase",
+    "translation_en": "I was at the cinema yesterday.",
+    "translation_np": "म हिजो सिनेमा हलमा थिएँ।",
+    "translation_ne_roman": "ma hijō sinēmā halamā thiēṃ।",
+    "category": "daily-routine",
+    "level": "A1"
+  },
+  {
+    "word": "Morgen gehe ich einkaufen.",
+    "part_of_speech": "phrase",
+    "translation_en": "Tomorrow I go shopping.",
+    "translation_np": "भोलि म किनमेल गर्न जाँछु।",
+    "translation_ne_roman": "bhōli ma kinamēla garna jāṃchu।",
+    "category": "daily-routine",
+    "level": "A1"
+  },
+  {
+    "word": "Ich rufe meine Mutter an.",
+    "part_of_speech": "phrase",
+    "translation_en": "I call my mother.",
+    "translation_np": "म मेरी आमा लाई फोन गर्छु।",
+    "translation_ne_roman": "ma mērī āmā lāī phōna garchu।",
+    "category": "daily-routine",
+    "level": "A1"
+  }
+]

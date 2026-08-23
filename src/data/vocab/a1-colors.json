@@ -1,0 +1,101 @@
+[
+  {
+    "word": "rot",
+    "part_of_speech": "adjective",
+    "translation_en": "red",
+    "translation_np": "रातो",
+    "translation_ne_roman": "rātō",
+    "category": "colors",
+    "level": "A1"
+  },
+  {
+    "word": "blau",
+    "part_of_speech": "adjective",
+    "translation_en": "blue",
+    "translation_np": "निलो",
+    "translation_ne_roman": "nilō",
+    "category": "colors",
+    "level": "A1"
+  },
+  {
+    "word": "grün",
+    "part_of_speech": "adjective",
+    "translation_en": "green",
+    "translation_np": "हरियो",
+    "translation_ne_roman": "hariyō",
+    "category": "colors",
+    "level": "A1"
+  },
+  {
+    "word": "gelb",
+    "part_of_speech": "adjective",
+    "translation_en": "yellow",
+    "translation_np": "पहेंलो",
+    "translation_ne_roman": "pahēṃlō",
+    "category": "colors",
+    "level": "A1"
+  },
+  {
+    "word": "schwarz",
+    "part_of_speech": "adjective",
+    "translation_en": "black",
+    "translation_np": "कालो",
+    "translation_ne_roman": "kālō",
+    "category": "colors",
+    "level": "A1"
+  },
+  {
+    "word": "weiß",
+    "part_of_speech": "adjective",
+    "translation_en": "white",
+    "translation_np": "सेतो",
+    "translation_ne_roman": "sētō",
+    "category": "colors",
+    "level": "A1"
+  },
+  {
+    "word": "braun",
+    "part_of_speech": "adjective",
+    "translation_en": "brown",
+    "translation_np": "खैरो",
+    "translation_ne_roman": "khairō",
+    "category": "colors",
+    "level": "A1"
+  },
+  {
+    "word": "grau",
+    "part_of_speech": "adjective",
+    "translation_en": "grey",
+    "translation_np": "धूसर",
+    "translation_ne_roman": "dhūsara",
+    "category": "colors",
+    "level": "A1"
+  },
+  {
+    "word": "rosa",
+    "part_of_speech": "adjective",
+    "translation_en": "pink",
+    "translation_np": "गुलाबी",
+    "translation_ne_roman": "gulābī",
+    "category": "colors",
+    "level": "A1"
+  },
+  {
+    "word": "lila",
+    "part_of_speech": "adjective",
+    "translation_en": "purple",
+    "translation_np": "बैजनी",
+    "translation_ne_roman": "baijanī",
+    "category": "colors",
+    "level": "A1"
+  },
+  {
+    "word": "bunt",
+    "part_of_speech": "adjective",
+    "translation_en": "colorful",
+    "translation_np": "रङ्गीन",
+    "translation_ne_roman": "raṅgīna",
+    "category": "colors",
+    "level": "A1"
+  }
+]

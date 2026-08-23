@@ -1,0 +1,217 @@
+[
+  {
+    "word": "Ich möchte Wasser.",
+    "part_of_speech": "phrase",
+    "translation_en": "I would like water.",
+    "translation_np": "म पानी चाहन्छु।",
+    "category": "unit5-expressions",
+    "level": "A1"
+  },
+  {
+    "word": "Ich kann gut kochen.",
+    "part_of_speech": "phrase",
+    "translation_en": "I can cook well.",
+    "translation_np": "म राम्रोसँग पकाउन सक्छु।",
+    "category": "unit5-expressions",
+    "level": "A1"
+  },
+  {
+    "word": "Wie viel kostet das?",
+    "part_of_speech": "phrase",
+    "translation_en": "How much does it cost?",
+    "translation_np": "यो कति पर्छ?",
+    "category": "unit5-expressions",
+    "level": "A1"
+  },
+  {
+    "word": "Wo ist der Bahnhof?",
+    "part_of_speech": "phrase",
+    "translation_en": "Where is the train station?",
+    "translation_np": "रेलवे स्टेशन कहाँ छ?",
+    "category": "unit5-expressions",
+    "level": "A1"
+  },
+  {
+    "word": "Ich habe Hunger.",
+    "part_of_speech": "phrase",
+    "translation_en": "I am hungry.",
+    "translation_np": "मलाई भोक लागेको छ।",
+    "category": "unit5-expressions",
+    "level": "A1"
+  },
+  {
+    "word": "Ich bin müde.",
+    "part_of_speech": "phrase",
+    "translation_en": "I am tired.",
+    "translation_np": "म थकित छु।",
+    "category": "unit5-expressions",
+    "level": "A1"
+  },
+  {
+    "word": "Können Sie mir helfen?",
+    "part_of_speech": "phrase",
+    "translation_en": "Can you help me?",
+    "translation_np": "के तपाईं मलाई मद्दत गर्न सक्नुहुन्छ?",
+    "category": "unit5-expressions",
+    "level": "A1"
+  },
+  {
+    "word": "Ich verstehe nicht.",
+    "part_of_speech": "phrase",
+    "translation_en": "I don't understand.",
+    "translation_np": "म बुझ्दिनँ।",
+    "category": "unit5-expressions",
+    "level": "A1"
+  },
+  {
+    "word": "Sprechen Sie Englisch?",
+    "part_of_speech": "phrase",
+    "translation_en": "Do you speak English?",
+    "translation_np": "के तपाईं अंग्रेजी बोल्नुहुन्छ?",
+    "category": "unit5-expressions",
+    "level": "A1"
+  },
+  {
+    "word": "Wie spät ist es?",
+    "part_of_speech": "phrase",
+    "translation_en": "What time is it?",
+    "translation_np": "कति बज्यो?",
+    "category": "unit5-expressions",
+    "level": "A1"
+  },
+  {
+    "word": "Ich hätte gern einen Kaffee.",
+    "part_of_speech": "phrase",
+    "translation_en": "I would like a coffee, please.",
+    "translation_np": "म एक कफी चाहन्छु।",
+    "translation_ne_roman": "ma ēka kaphī cāhanchu।",
+    "category": "unit5-expressions",
+    "level": "A1"
+  },
+  {
+    "word": "Die Rechnung, bitte.",
+    "part_of_speech": "phrase",
+    "translation_en": "The bill, please.",
+    "translation_np": "बिल कृपया।",
+    "translation_ne_roman": "bila kṛpayā।",
+    "category": "unit5-expressions",
+    "level": "A1"
+  },
+  {
+    "word": "Wo finde ich eine Apotheke?",
+    "part_of_speech": "phrase",
+    "translation_en": "Where can I find a pharmacy?",
+    "translation_np": "म औषधालय कहाँ पाउन सक्छु?",
+    "translation_ne_roman": "ma auṣadhālaya kahāṃ pāuna sakchu?",
+    "category": "unit5-expressions",
+    "level": "A1"
+  },
+  {
+    "word": "Wie komme ich zum Flughafen?",
+    "part_of_speech": "phrase",
+    "translation_en": "How do I get to the airport?",
+    "translation_np": "म हवाईअड्डा कसरी पुग्न सक्छु?",
+    "translation_ne_roman": "ma havāīaḍḍā kasarī pugna sakchu?",
+    "category": "unit5-expressions",
+    "level": "A1"
+  },
+  {
+    "word": "Können Sie das bitte wiederholen?",
+    "part_of_speech": "phrase",
+    "translation_en": "Could you please repeat that?",
+    "translation_np": "के तपाईं कृपया त्यो दोहोर्याउन सक्नुहुन्छ?",
+    "translation_ne_roman": "kē tapāīṃ kṛpayā tyō dōhōryāuna saknuhuncha?",
+    "category": "unit5-expressions",
+    "level": "A1"
+  },
+  {
+    "word": "Was bedeutet das?",
+    "part_of_speech": "phrase",
+    "translation_en": "What does that mean?",
+    "translation_np": "त्यसको अर्थ के हो?",
+    "translation_ne_roman": "tyasakō artha kē hō?",
+    "category": "unit5-expressions",
+    "level": "A1"
+  },
+  {
+    "word": "Ich lerne Deutsch.",
+    "part_of_speech": "phrase",
+    "translation_en": "I am learning German.",
+    "translation_np": "म जर्मन भाषा सिक्दैछु।",
+    "translation_ne_roman": "ma jarmana bhāṣā sikdaichu।",
+    "category": "unit5-expressions",
+    "level": "A1"
+  },
+  {
+    "word": "Bis bald!",
+    "part_of_speech": "phrase",
+    "translation_en": "See you soon!",
+    "translation_np": "छिट्टै भेटौँ!",
+    "translation_ne_roman": "chiṭṭai bhēṭauṃ!",
+    "category": "unit5-expressions",
+    "level": "A1"
+  },
+  {
+    "word": "Viel Glück!",
+    "part_of_speech": "phrase",
+    "translation_en": "Good luck!",
+    "translation_np": "शुभकामना!",
+    "translation_ne_roman": "śubhakāmanā!",
+    "category": "unit5-expressions",
+    "level": "A1"
+  },
+  {
+    "word": "Alles klar.",
+    "part_of_speech": "phrase",
+    "translation_en": "All clear.",
+    "translation_np": "सबै ठिक छ।",
+    "translation_ne_roman": "sabai ṭhika cha।",
+    "category": "unit5-expressions",
+    "level": "A1"
+  },
+  {
+    "word": "Kein Problem.",
+    "part_of_speech": "phrase",
+    "translation_en": "No problem.",
+    "translation_np": "समस्या छैन।",
+    "translation_ne_roman": "samasyā chaina।",
+    "category": "unit5-expressions",
+    "level": "A1"
+  },
+  {
+    "word": "Wo ist die Toilette?",
+    "part_of_speech": "phrase",
+    "translation_en": "Where is the toilet?",
+    "translation_np": "शौचालय कहाँ छ?",
+    "translation_ne_roman": "śaucālaya kahāṃ cha?",
+    "category": "unit5-expressions",
+    "level": "A1"
+  },
+  {
+    "word": "Ich habe Durst.",
+    "part_of_speech": "phrase",
+    "translation_en": "I am thirsty.",
+    "translation_np": "मलाई प्यास लागेको छ।",
+    "translation_ne_roman": "malāī pyāsa lāgēkō cha।",
+    "category": "unit5-expressions",
+    "level": "A1"
+  },
+  {
+    "word": "Das ist zu teuer.",
+    "part_of_speech": "phrase",
+    "translation_en": "That is too expensive.",
+    "translation_np": "यो धेरै महँगो छ।",
+    "translation_ne_roman": "yō dhērai mahaṃgō cha।",
+    "category": "unit5-expressions",
+    "level": "A1"
+  },
+  {
+    "word": "Ich nehme das.",
+    "part_of_speech": "phrase",
+    "translation_en": "I'll take that.",
+    "translation_np": "म यो लिन्छु।",
+    "translation_ne_roman": "ma yō linchu।",
+    "category": "unit5-expressions",
+    "level": "A1"
+  }
+]

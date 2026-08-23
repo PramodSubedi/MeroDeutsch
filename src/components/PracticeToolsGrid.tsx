@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { BookOpen, Mic, FileText, MessageSquare, Volume2, Zap } from 'lucide-react';
+import { BookOpen, Mic, FileText, MessageSquare, Volume2, Zap, Layers } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 interface ToolItem {
@@ -67,6 +67,15 @@ const tools: ToolItem[] = [
     wellClass: 'bg-orange-50 dark:bg-orange-950/40 border-orange-100 dark:border-orange-900/50',
     href: '/rapid-blitz',
     buttonText: 'Choose Mode',
+  },
+  {
+    title: 'Vocab Trainer',
+    description: 'Leveled flashcards & quizzes from the full word pool',
+    icon: Layers,
+    iconColor: 'text-violet-600 dark:text-violet-400',
+    wellClass: 'bg-violet-50 dark:bg-violet-950/40 border-violet-100 dark:border-violet-900/50',
+    href: '/vocab-trainer',
+    buttonText: 'Start Training',
   },
 ];
 

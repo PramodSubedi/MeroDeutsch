@@ -93,6 +93,19 @@ export interface PronunciationTip {
 // Re-export content types for convenience
 export type { VocabularyEntity } from '../types/content';
 
+/** Filter params for the leveled/topical vocab trainer (Phase 3). */
+export interface VocabularyFilter {
+  pos?: 'noun' | 'verb' | 'adjective' | 'phrase';
+  level?: 'A1' | 'A2' | 'B1' | 'B2';
+  category?: string;
+  limit?: number;
+}
+
+export interface VocabularyFilterOptions {
+  levels: string[];
+  categories: string[];
+}
+
 export interface CurriculumService {
   getAlphabet(): Promise<import('./index').AlphabetItem[]>;
   getNumbers(): Promise<import('./index').NumberItem[]>;
@@ -100,6 +113,10 @@ export interface CurriculumService {
   getGreetings(): Promise<import('./index').GreetingItem[]>;
   getArticles(): Promise<import('./index').ArticleItem[]>;
   getVocabulary(): Promise<import('./index').VocabEntry[]>;
+  /** Filtered vocabulary rows from the live `vocabulary` table (RPC → filtered → Dexie). */
+  getVocabularyFiltered(filters: VocabularyFilter): Promise<import('./index').VocabCard[]>;
+  /** Distinct level + category values for the trainer filter UI. */
+  getVocabFilterOptions(): Promise<VocabularyFilterOptions>;
   getGrammarDrills(category: string): Promise<GrammarDrill[]>;
   getRoleplayScenarios(): Promise<RoleplayScenario[]>;
   getDictationWords(): Promise<DictationWord[]>;

@@ -426,6 +426,7 @@ export function A1CheckpointPage() {
           </>
         )}
         hideFooter
+        hintReason={session.current?.source}
       />
       {/* Footer with Back + engine-driven Next/Finish */}
       <div className="mx-auto mt-3 flex max-w-3xl justify-between gap-2 px-1">

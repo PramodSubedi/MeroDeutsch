@@ -1,0 +1,155 @@
+[
+  {
+    "word": "süß",
+    "part_of_speech": "adjective",
+    "translation_en": "sweet",
+    "translation_np": "मीठो",
+    "translation_ne_roman": "mīṭhō",
+    "category": "taste-texture-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "sauer",
+    "part_of_speech": "adjective",
+    "translation_en": "sour",
+    "translation_np": "खट्टा",
+    "translation_ne_roman": "khaṭṭā",
+    "category": "taste-texture-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "bitter",
+    "part_of_speech": "adjective",
+    "translation_en": "bitter",
+    "translation_np": "कडुवा",
+    "translation_ne_roman": "kaḍuvā",
+    "category": "taste-texture-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "salzig",
+    "part_of_speech": "adjective",
+    "translation_en": "salty",
+    "translation_np": "नुनिलो",
+    "translation_ne_roman": "nunilō",
+    "category": "taste-texture-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "lecker",
+    "part_of_speech": "adjective",
+    "translation_en": "tasty",
+    "translation_np": "स्वादिष्ट",
+    "translation_ne_roman": "svādiṣṭa",
+    "category": "taste-texture-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "trocken",
+    "part_of_speech": "adjective",
+    "translation_en": "dry",
+    "translation_np": "सुख्खा",
+    "translation_ne_roman": "sukhkhā",
+    "category": "taste-texture-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "nass",
+    "part_of_speech": "adjective",
+    "translation_en": "wet",
+    "translation_np": "भिजेको",
+    "translation_ne_roman": "bhijēkō",
+    "category": "taste-texture-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "weich",
+    "part_of_speech": "adjective",
+    "translation_en": "soft",
+    "translation_np": "नरम",
+    "translation_ne_roman": "narama",
+    "category": "taste-texture-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "hart",
+    "part_of_speech": "adjective",
+    "translation_en": "hard",
+    "translation_np": "कडा",
+    "translation_ne_roman": "kaḍā",
+    "category": "taste-texture-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "glatt",
+    "part_of_speech": "adjective",
+    "translation_en": "smooth",
+    "translation_np": "चिल्लो",
+    "translation_ne_roman": "cillō",
+    "category": "taste-texture-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "eng",
+    "part_of_speech": "adjective",
+    "translation_en": "narrow",
+    "translation_np": "साँघुरो",
+    "translation_ne_roman": "sāṃghurō",
+    "category": "taste-texture-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "weit",
+    "part_of_speech": "adjective",
+    "translation_en": "wide",
+    "translation_np": "फराक",
+    "translation_ne_roman": "pharāka",
+    "category": "taste-texture-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "tief",
+    "part_of_speech": "adjective",
+    "translation_en": "deep",
+    "translation_np": "गहिरो",
+    "translation_ne_roman": "gahirō",
+    "category": "taste-texture-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "flach",
+    "part_of_speech": "adjective",
+    "translation_en": "flat",
+    "translation_np": "समतल",
+    "translation_ne_roman": "samatala",
+    "category": "taste-texture-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "rund",
+    "part_of_speech": "adjective",
+    "translation_en": "round",
+    "translation_np": "गोल",
+    "translation_ne_roman": "gōla",
+    "category": "taste-texture-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "eckig",
+    "part_of_speech": "adjective",
+    "translation_en": "angular",
+    "translation_np": "कोणीय",
+    "translation_ne_roman": "kōṇīya",
+    "category": "taste-texture-adjectives",
+    "level": "A1"
+  },
+  {
+    "word": "frisch",
+    "part_of_speech": "adjective",
+    "translation_en": "fresh",
+    "translation_np": "ताजा",
+    "translation_ne_roman": "tājā",
+    "category": "taste-texture-adjectives",
+    "level": "A1"
+  }
+]

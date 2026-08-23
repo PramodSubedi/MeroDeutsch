@@ -1,0 +1,288 @@
+[
+  {
+    "word": "machen",
+    "part_of_speech": "verb",
+    "translation_en": "to do / to make",
+    "translation_np": "गर्नु",
+    "category": "unit3-verbs",
+    "level": "A1"
+  },
+  {
+    "word": "gehen",
+    "part_of_speech": "verb",
+    "translation_en": "to go",
+    "translation_np": "जानु",
+    "category": "unit3-verbs",
+    "level": "A1"
+  },
+  {
+    "word": "kommen",
+    "part_of_speech": "verb",
+    "translation_en": "to come",
+    "translation_np": "आउनु",
+    "category": "unit3-verbs",
+    "level": "A1"
+  },
+  {
+    "word": "fahren",
+    "part_of_speech": "verb",
+    "translation_en": "to drive / to travel",
+    "translation_np": "सवारी चलाउनु",
+    "category": "unit3-verbs",
+    "level": "A1"
+  },
+  {
+    "word": "essen",
+    "part_of_speech": "verb",
+    "translation_en": "to eat",
+    "translation_np": "खानु",
+    "category": "unit3-verbs",
+    "level": "A1"
+  },
+  {
+    "word": "trinken",
+    "part_of_speech": "verb",
+    "translation_en": "to drink",
+    "translation_np": "पिउनु",
+    "category": "unit3-verbs",
+    "level": "A1"
+  },
+  {
+    "word": "schlafen",
+    "part_of_speech": "verb",
+    "translation_en": "to sleep",
+    "translation_np": "सुत्नु",
+    "category": "unit3-verbs",
+    "level": "A1"
+  },
+  {
+    "word": "lesen",
+    "part_of_speech": "verb",
+    "translation_en": "to read",
+    "translation_np": "पढ्नु",
+    "category": "unit3-verbs",
+    "level": "A1"
+  },
+  {
+    "word": "schreiben",
+    "part_of_speech": "verb",
+    "translation_en": "to write",
+    "translation_np": "लेख्नु",
+    "category": "unit3-verbs",
+    "level": "A1"
+  },
+  {
+    "word": "sprechen",
+    "part_of_speech": "verb",
+    "translation_en": "to speak",
+    "translation_np": "बोल्नु",
+    "category": "unit3-verbs",
+    "level": "A1"
+  },
+  {
+    "word": "hören",
+    "part_of_speech": "verb",
+    "translation_en": "to hear / to listen",
+    "translation_np": "सुन्नु",
+    "category": "unit3-verbs",
+    "level": "A1"
+  },
+  {
+    "word": "sehen",
+    "part_of_speech": "verb",
+    "translation_en": "to see",
+    "translation_np": "हेर्नु",
+    "category": "unit3-verbs",
+    "level": "A1"
+  },
+  {
+    "word": "lernen",
+    "part_of_speech": "verb",
+    "translation_en": "to learn",
+    "translation_np": "सिक्नु",
+    "category": "unit3-verbs",
+    "level": "A1"
+  },
+  {
+    "word": "arbeiten",
+    "part_of_speech": "verb",
+    "translation_en": "to work",
+    "translation_np": "काम गर्नु",
+    "category": "unit3-verbs",
+    "level": "A1"
+  },
+  {
+    "word": "spielen",
+    "part_of_speech": "verb",
+    "translation_en": "to play",
+    "translation_np": "खेल्नु",
+    "category": "unit3-verbs",
+    "level": "A1"
+  },
+  {
+    "word": "kaufen",
+    "part_of_speech": "verb",
+    "translation_en": "to buy",
+    "translation_np": "किन्नु",
+    "category": "unit3-verbs",
+    "level": "A1"
+  },
+  {
+    "word": "kochen",
+    "part_of_speech": "verb",
+    "translation_en": "to cook",
+    "translation_np": "पकाउनु",
+    "category": "unit3-verbs",
+    "level": "A1"
+  },
+  {
+    "word": "wohnen",
+    "part_of_speech": "verb",
+    "translation_en": "to live / to reside",
+    "translation_np": "बस्नु",
+    "category": "unit3-verbs",
+    "level": "A1"
+  },
+  {
+    "word": "bleiben",
+    "part_of_speech": "verb",
+    "translation_en": "to stay",
+    "translation_np": "बसिरहनु",
+    "category": "unit3-verbs",
+    "level": "A1"
+  },
+  {
+    "word": "helfen",
+    "part_of_speech": "verb",
+    "translation_en": "to help",
+    "translation_np": "मद्दत गर्नु",
+    "category": "unit3-verbs",
+    "level": "A1"
+  },
+  {
+    "word": "geben",
+    "part_of_speech": "verb",
+    "translation_en": "to give",
+    "translation_np": "दिनु",
+    "translation_ne_roman": "dinu",
+    "category": "unit3-verbs",
+    "level": "A1"
+  },
+  {
+    "word": "bringen",
+    "part_of_speech": "verb",
+    "translation_en": "to bring",
+    "translation_np": "ल्याउनु",
+    "translation_ne_roman": "lyāunu",
+    "category": "unit3-verbs",
+    "level": "A1"
+  },
+  {
+    "word": "holen",
+    "part_of_speech": "verb",
+    "translation_en": "to fetch",
+    "translation_np": "ल्याउनु",
+    "translation_ne_roman": "lyāunu",
+    "category": "unit3-verbs",
+    "level": "A1"
+  },
+  {
+    "word": "sitzen",
+    "part_of_speech": "verb",
+    "translation_en": "to sit",
+    "translation_np": "बस्नु",
+    "translation_ne_roman": "basnu",
+    "category": "unit3-verbs",
+    "level": "A1"
+  },
+  {
+    "word": "stehen",
+    "part_of_speech": "verb",
+    "translation_en": "to stand",
+    "translation_np": "उभिनु",
+    "translation_ne_roman": "ubhinu",
+    "category": "unit3-verbs",
+    "level": "A1"
+  },
+  {
+    "word": "schwimmen",
+    "part_of_speech": "verb",
+    "translation_en": "to swim",
+    "translation_np": "पानीमा पौडिनु",
+    "translation_ne_roman": "pānīmā pauḍinu",
+    "category": "unit3-verbs",
+    "level": "A1"
+  },
+  {
+    "word": "erzählen",
+    "part_of_speech": "verb",
+    "translation_en": "to tell",
+    "translation_np": "भन्नु",
+    "translation_ne_roman": "bhannu",
+    "category": "unit3-verbs",
+    "level": "A1"
+  },
+  {
+    "word": "öffnen",
+    "part_of_speech": "verb",
+    "translation_en": "to open",
+    "translation_np": "खोल्नु",
+    "translation_ne_roman": "khōlnu",
+    "category": "unit3-verbs",
+    "level": "A1"
+  },
+  {
+    "word": "schließen",
+    "part_of_speech": "verb",
+    "translation_en": "to close",
+    "translation_np": "बन्द गर्नु",
+    "translation_ne_roman": "banda garnu",
+    "category": "unit3-verbs",
+    "level": "A1"
+  },
+  {
+    "word": "vergessen",
+    "part_of_speech": "verb",
+    "translation_en": "to forget",
+    "translation_np": "भुल्नु",
+    "translation_ne_roman": "bhulnu",
+    "category": "unit3-verbs",
+    "level": "A1"
+  },
+  {
+    "word": "versuchen",
+    "part_of_speech": "verb",
+    "translation_en": "to try",
+    "translation_np": "कोसिस गर्नु",
+    "translation_ne_roman": "kōsisa garnu",
+    "category": "unit3-verbs",
+    "level": "A1"
+  },
+  {
+    "word": "üben",
+    "part_of_speech": "verb",
+    "translation_en": "to practice",
+    "translation_np": "अभ्यास गर्नु",
+    "translation_ne_roman": "abhyāsa garnu",
+    "category": "unit3-verbs",
+    "level": "A1"
+  },
+  {
+    "word": "reisen",
+    "part_of_speech": "verb",
+    "translation_en": "to travel",
+    "translation_np": "यात्रा गर्नु",
+    "translation_ne_roman": "yātrā garnu",
+    "category": "unit3-verbs",
+    "level": "A1"
+  },
+  {
+    "word": "besuchen",
+    "part_of_speech": "verb",
+    "translation_en": "to visit",
+    "translation_np": "भेट गर्नु",
+    "translation_ne_roman": "bhēṭa garnu",
+    "category": "unit3-verbs",
+    "level": "A1"
+  }
+]

@@ -1,0 +1,137 @@
+[
+  {
+    "word": "Wie geht es dir?",
+    "part_of_speech": "phrase",
+    "translation_en": "How are you?",
+    "translation_np": "तिमीलाई कस्तो छ?",
+    "translation_ne_roman": "timīlāī kastō cha?",
+    "category": "smalltalk-phrases",
+    "level": "A1"
+  },
+  {
+    "word": "Mir geht es gut.",
+    "part_of_speech": "phrase",
+    "translation_en": "I am fine.",
+    "translation_np": "मलाई ठिक छ।",
+    "translation_ne_roman": "malāī ṭhika cha।",
+    "category": "smalltalk-phrases",
+    "level": "A1"
+  },
+  {
+    "word": "Woher kommst du?",
+    "part_of_speech": "phrase",
+    "translation_en": "Where are you from?",
+    "translation_np": "तिमी कहाँबाट आउँछौ?",
+    "translation_ne_roman": "timī kahāṃbāṭa āuṃchau?",
+    "category": "smalltalk-phrases",
+    "level": "A1"
+  },
+  {
+    "word": "Ich komme aus Nepal.",
+    "part_of_speech": "phrase",
+    "translation_en": "I come from Nepal.",
+    "translation_np": "म नेपालबाट आएको छु।",
+    "translation_ne_roman": "ma nēpālabāṭa āēkō chu।",
+    "category": "smalltalk-phrases",
+    "level": "A1"
+  },
+  {
+    "word": "Was machst du?",
+    "part_of_speech": "phrase",
+    "translation_en": "What are you doing?",
+    "translation_np": "तिमी के गर्दै छौ?",
+    "translation_ne_roman": "timī kē gardai chau?",
+    "category": "smalltalk-phrases",
+    "level": "A1"
+  },
+  {
+    "word": "Wie alt bist du?",
+    "part_of_speech": "phrase",
+    "translation_en": "How old are you?",
+    "translation_np": "तिमी कति उमेरको छौ?",
+    "translation_ne_roman": "timī kati umērakō chau?",
+    "category": "smalltalk-phrases",
+    "level": "A1"
+  },
+  {
+    "word": "Ich bin zwanzig Jahre alt.",
+    "part_of_speech": "phrase",
+    "translation_en": "I am twenty years old.",
+    "translation_np": "म बीस वर्षको छु।",
+    "translation_ne_roman": "ma bīsa varṣakō chu।",
+    "category": "smalltalk-phrases",
+    "level": "A1"
+  },
+  {
+    "word": "Hast du Geschwister?",
+    "part_of_speech": "phrase",
+    "translation_en": "Do you have siblings?",
+    "translation_np": "तिमीलाई दाजुभाइ-बहिनीहरू छन्?",
+    "translation_ne_roman": "timīlāī dājubhāi-bahinīharū chan?",
+    "category": "smalltalk-phrases",
+    "level": "A1"
+  },
+  {
+    "word": "Magst du Musik?",
+    "part_of_speech": "phrase",
+    "translation_en": "Do you like music?",
+    "translation_np": "तिमीलाई संगीत मन पर्छ?",
+    "translation_ne_roman": "timīlāī saṃgīta mana parcha?",
+    "category": "smalltalk-phrases",
+    "level": "A1"
+  },
+  {
+    "word": "Kannst du schwimmen?",
+    "part_of_speech": "phrase",
+    "translation_en": "Can you swim?",
+    "translation_np": "तिमी पौडन सक्छौ?",
+    "translation_ne_roman": "timī pauḍana sakchau?",
+    "category": "smalltalk-phrases",
+    "level": "A1"
+  },
+  {
+    "word": "Wann beginnt der Film?",
+    "part_of_speech": "phrase",
+    "translation_en": "When does the movie start?",
+    "translation_np": "फिल्म कहिले सुरु हुन्छ?",
+    "translation_ne_roman": "philma kahilē suru huncha?",
+    "category": "smalltalk-phrases",
+    "level": "A1"
+  },
+  {
+    "word": "Warum lernst du Deutsch?",
+    "part_of_speech": "phrase",
+    "translation_en": "Why are you learning German?",
+    "translation_np": "तिमी जर्मन किन सिक्दै छौ?",
+    "translation_ne_roman": "timī jarmana kina sikdai chau?",
+    "category": "smalltalk-phrases",
+    "level": "A1"
+  },
+  {
+    "word": "Weil ich in Deutschland studieren will.",
+    "part_of_speech": "phrase",
+    "translation_en": "Because I want to study in Germany.",
+    "translation_np": "किनकि म जर्मनीमा पढ्न चाहन्छु।",
+    "translation_ne_roman": "kinaki ma jarmanīmā paḍhna cāhanchu।",
+    "category": "smalltalk-phrases",
+    "level": "A1"
+  },
+  {
+    "word": "Was ist dein Hobby?",
+    "part_of_speech": "phrase",
+    "translation_en": "What is your hobby?",
+    "translation_np": "तिम्रो शौक के हो?",
+    "translation_ne_roman": "timrō śauka kē hō?",
+    "category": "smalltalk-phrases",
+    "level": "A1"
+  },
+  {
+    "word": "Mein Hobby ist Lesen.",
+    "part_of_speech": "phrase",
+    "translation_en": "My hobby is reading.",
+    "translation_np": "मेरो शौक पढ्नु हो।",
+    "translation_ne_roman": "mērō śauka paḍhnu hō।",
+    "category": "smalltalk-phrases",
+    "level": "A1"
+  }
+]
