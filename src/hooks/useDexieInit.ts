@@ -6,8 +6,10 @@
  *      Preference order:
  *        a) `public/data/enriched-vocab.json` (full VocabCard schema, produced by
  *           `npm run enrich`) — preferred when present.
- *        b) curriculumService.getVocabulary() (dynamic content_items pool via
- *           the service layer) adapted to VocabCard — no bundled static data.
+ *        b) curriculumService.getVocabularyFiltered({}) — the live `vocabulary`
+ *           table via RPC/table-SELECT with full VocabCard fidelity
+ *           (article / level / category preserved). No bundled static data,
+ *           no lossy legacy adapter.
  *
  * Seeding is idempotent (guarded by `db.vocab.count() === 0`), so repeated
  * mounts or hot-reloads never duplicate rows.
@@ -15,31 +17,7 @@
 import { useEffect, useState } from 'react';
 import { openDb, seedVocab } from '../lib/db';
 import { curriculumService } from '../services';
-import type { VocabEntry } from '../types';
 import type { VocabCard } from '../types';
-
-/** Map a dynamic VocabEntry onto the enriched VocabCard schema (lossy: no
- * phonetics/article/plural exist in the pool payload). Used only until
- * `npm run enrich` produces public/data/enriched-vocab.json. */
-function adaptLegacyVocab(v: VocabEntry): VocabCard {
-  const pos = v.tags.includes('verb')
-    ? 'verb'
-    : v.tags.includes('adjective')
-    ? 'adjective'
-    : 'noun';
-  return {
-    id: v.id,
-    lemma: v.de,
-    article: null,
-    plural: null,
-    partOfSpeech: pos,
-    cefrLevel: v.level === 'A1' ? 'A1' : 'A1',
-    translation: { en: v.en, np: v.ne },
-    phonetics: { ipa: '', devanagari: '' },
-    tags: v.tags,
-    examples: v.exampleDe ? [{ de: v.exampleDe, en: v.en, np: v.ne }] : [],
-  };
-}
 
 /** Lightweight shape check for fetched enriched vocab before seeding. */
 function isVocabCardLike(obj: unknown): obj is VocabCard {
@@ -76,15 +54,15 @@ export function useDexieInit(): boolean {
             }
           }
         } catch {
-          // Enriched file absent/not run yet — fall through to the dynamic pool.
+          // Enriched file absent/not run yet — fall through to the live table.
         }
 
-        // (b) Dynamic fallback: fetch the vocab pool via the service layer
-        //     (content_items table -> RPC -> Dexie). No bundled static data.
+        // (b) Live-table fallback: full-fidelity VocabCards straight from the
+        //     `vocabulary` table via the service fallback chain (RPC → SELECT
+        //     → Dexie). Article / level / category survive — no lossy adapter.
         if (cards.length === 0) {
           try {
-            const entries = await curriculumService.getVocabulary();
-            cards = entries.map(adaptLegacyVocab);
+            cards = await curriculumService.getVocabularyFiltered({});
           } catch {
             cards = [];
           }

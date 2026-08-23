@@ -18,5 +18,165 @@
     "translation_ne_roman": "blyākabōrḍa",
     "category": "school-office",
     "level": "A1"
+  },
+  {
+    "word": "Schere",
+    "article": "die",
+    "part_of_speech": "noun",
+    "translation_en": "scissors",
+    "translation_np": "काट्ने कैँची",
+    "translation_ne_roman": "kāṭnē kaīmcī",
+    "category": "school-office",
+    "level": "A1"
+  },
+  {
+    "word": "Spitzer",
+    "article": "der",
+    "part_of_speech": "noun",
+    "translation_en": "pencil sharpener",
+    "translation_np": "पेन्सिल घोट्ने",
+    "translation_ne_roman": "pēnsila ghōṭnē",
+    "category": "school-office",
+    "level": "A1"
+  },
+  {
+    "word": "Zirkel",
+    "article": "der",
+    "part_of_speech": "noun",
+    "translation_en": "compass",
+    "translation_np": "कम्पास",
+    "translation_ne_roman": "kampāsa",
+    "category": "school-office",
+    "level": "A1"
+  },
+  {
+    "word": "Kleber",
+    "article": "der",
+    "part_of_speech": "noun",
+    "translation_en": "glue",
+    "translation_np": "गम",
+    "translation_ne_roman": "gama",
+    "category": "school-office",
+    "level": "A1"
+  },
+  {
+    "word": "Ordner",
+    "article": "der",
+    "part_of_speech": "noun",
+    "translation_en": "binder",
+    "translation_np": "फोल्डर",
+    "translation_ne_roman": "phōlḍara",
+    "category": "school-office",
+    "level": "A1"
+  },
+  {
+    "word": "E-Mail",
+    "article": "die",
+    "part_of_speech": "noun",
+    "translation_en": "email",
+    "translation_np": "इमेल",
+    "translation_ne_roman": "imēla",
+    "category": "school-office",
+    "level": "A1"
+  },
+  {
+    "word": "Drucker",
+    "article": "der",
+    "part_of_speech": "noun",
+    "translation_en": "printer",
+    "translation_np": "प्रिन्टर",
+    "translation_ne_roman": "priṇṭara",
+    "category": "school-office",
+    "level": "A1"
+  },
+  {
+    "word": "Bildschirm",
+    "article": "der",
+    "part_of_speech": "noun",
+    "translation_en": "screen",
+    "translation_np": "स्क्रिन",
+    "translation_ne_roman": "skriṇa",
+    "category": "school-office",
+    "level": "A1"
+  },
+  {
+    "word": "Tastatur",
+    "article": "die",
+    "part_of_speech": "noun",
+    "translation_en": "keyboard",
+    "translation_np": "किबोर्ड",
+    "translation_ne_roman": "kibōrḍa",
+    "category": "school-office",
+    "level": "A1"
+  },
+  {
+    "word": "Termin",
+    "article": "der",
+    "part_of_speech": "noun",
+    "translation_en": "appointment",
+    "translation_np": "भेटघाट",
+    "translation_ne_roman": "bheṭaghāṭa",
+    "category": "school-office",
+    "level": "A1"
+  },
+  {
+    "word": "Unterricht",
+    "article": "der",
+    "part_of_speech": "noun",
+    "translation_en": "lesson",
+    "translation_np": "कक्षा",
+    "translation_ne_roman": "kakṣā",
+    "category": "school-office",
+    "level": "A1"
+  },
+  {
+    "word": "Hausaufgabe",
+    "article": "die",
+    "part_of_speech": "noun",
+    "translation_en": "homework",
+    "translation_np": "गृहकार्य",
+    "translation_ne_roman": "gṛhakārya",
+    "category": "school-office",
+    "level": "A1"
+  },
+  {
+    "word": "Ferien",
+    "article": "die",
+    "part_of_speech": "noun",
+    "translation_en": "school holidays",
+    "translation_np": "बिदा",
+    "translation_ne_roman": "bidā",
+    "category": "school-office",
+    "level": "A1"
+  },
+  {
+    "word": "Zeugnis",
+    "article": "das",
+    "part_of_speech": "noun",
+    "translation_en": "report card",
+    "translation_np": "प्रगतिपत्र",
+    "translation_ne_roman": "pragatipatra",
+    "category": "school-office",
+    "level": "A1"
+  },
+  {
+    "word": "Stundenplan",
+    "article": "der",
+    "part_of_speech": "noun",
+    "translation_en": "timetable",
+    "translation_np": "समय तालिका",
+    "translation_ne_roman": "samaya tālikā",
+    "category": "school-office",
+    "level": "A1"
+  },
+  {
+    "word": "Umschlag",
+    "article": "der",
+    "part_of_speech": "noun",
+    "translation_en": "envelope",
+    "translation_np": "खाम",
+    "translation_ne_roman": "khāma",
+    "category": "school-office",
+    "level": "A1"
   }
 ]

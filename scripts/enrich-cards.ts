@@ -31,7 +31,9 @@ import type { VocabCard } from '../src/types';
 // ---------------------------------------------------------------------------
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = path.resolve(__dirname, '..');
-const INPUT_FILE = path.join(PROJECT_ROOT, 'public', 'data', 'raw-words.json');
+// Input is a pipeline intermediate (NOT app data) — lives under scripts/.
+const INPUT_FILE = path.join(PROJECT_ROOT, 'scripts', 'data', 'raw-words.json');
+// Output IS consumed by the app (useDexieInit boot seed) — stays in public/.
 const OUTPUT_FILE = path.join(PROJECT_ROOT, 'public', 'data', 'enriched-vocab.json');
 
 const MODEL = process.env.OPENAI_MODEL || 'gpt-4o';

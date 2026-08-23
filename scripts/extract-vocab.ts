@@ -5,9 +5,10 @@
  * them into the legacy batch JSON shape used by `src/data/vocab/*.json`, which in
  * turn feeds `scripts/seedVocab.ts`.
  *
- * The script also appends the raw German lemmas to `public/data/raw-words.json`
- * so the existing `scripts/enrich-cards.ts` pipeline can enrich them with full
- * VocabCard records (phonetics, examples, Nepali translations …).
+ * The script also appends the raw German lemmas to `scripts/data/raw-words.json`
+ * (pipeline intermediate — NOT app data) so the existing
+ * `scripts/enrich-cards.ts` pipeline can enrich them with full VocabCard
+ * records (phonetics, examples, Nepali translations …).
  *
  * Per-PDF strategy:
  *  • `68532-vocabulary-list-by-topic.pdf`  — GCSE OCR two-column layout.
@@ -41,7 +42,8 @@ const OUTPUT_DIR = path.resolve(
   PROJECT_ROOT,
   process.env.EXTRACT_OUTPUT_DIR || 'src/data/vocab',
 );
-const RAW_WORDS_FILE = path.resolve(PROJECT_ROOT, 'public', 'data', 'raw-words.json');
+// Pipeline intermediate (NOT app data) — lives under scripts/, never public/.
+const RAW_WORDS_FILE = path.resolve(PROJECT_ROOT, 'scripts', 'data', 'raw-words.json');
 
 // CEFR level map — inferred from the filename.
 const LEVEL_MAP: Record<string, string> = {

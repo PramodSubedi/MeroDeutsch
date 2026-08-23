@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useReviewQueue } from '../hooks/useReviewQueue';
@@ -15,7 +15,7 @@ import { EmptyState } from '../components/EmptyState';
 import { SEO } from '../components/common/SEO';
 import { ActivityHeatmap } from '../components/ActivityHeatmap';
 import { SkillRadarChart } from '../components/SkillRadarChart';
-import { ReviewSessionManager } from '../components/ReviewSessionManager';
+import { ReviewSessionManager, filterReviewQueue } from '../components/ReviewSessionManager';
 import { MasteryIndicator } from '../components/MasteryIndicator';
 import { SRSReviewWidget } from '../components/SRSReviewWidget';
 import { DailyQuestsWidget } from '../components/DailyQuestsWidget';
@@ -35,6 +35,10 @@ export function DashboardPage() {
   const isSprint = searchParams.get('sprint') === 'true';
   const { queue, dueQueue, markCorrect, markResolved, clearQueue } = useReviewQueue();
   const { progress } = useProgress();
+  // Lifted filter state: the SAME rules drive both this item list and the
+  // ReviewSessionManager's Start Session pool (Bug A fix — one source of truth).
+  const [reviewFilter, setReviewFilter] = useState<string>('all');
+  const visibleItems = useMemo(() => filterReviewQueue(queue, reviewFilter), [queue, reviewFilter]);
   const { langMode } = useLang();
   const { streakCount, longestStreak } = useStreak();
   const { reportReview } = useDailyQuests();
@@ -220,7 +224,18 @@ export function DashboardPage() {
                     ? 'Sollen alle offenen Review-Einträge gelöscht werden? Dieser Schritt kann nicht rückgängig gemacht werden.'
                     : 'Clear all open review items? This cannot be undone.'
                 );
-                if (confirmed) clearQueue();
+                if (confirmed) {
+                  void clearQueue().then((ok) => {
+                    if (!ok) {
+                      showToast({
+                        message: isDE
+                          ? 'Cloud-Löschen fehlgeschlagen — lokale Einträge wurden entfernt.'
+                          : 'Cloud delete failed — local items were removed.',
+                        icon: '⚠️',
+                      });
+                    }
+                  });
+                }
               }}
               className={theme.button.secondary}
             >
@@ -237,6 +252,8 @@ export function DashboardPage() {
           embedded
           limit={isSprint ? 10 : undefined}
           autoStart={isSprint}
+          activeFilter={reviewFilter}
+          onActiveFilterChange={setReviewFilter}
         />
 
         {queue.length === 0 ? (
@@ -249,9 +266,16 @@ export function DashboardPage() {
             secondaryActionLabel={isDE ? 'Zahlen üben' : 'Practice Numbers'}
             secondaryActionTo="/numbers"
           />
+        ) : visibleItems.length === 0 ? (
+          /* Filter matched nothing (queue itself is non-empty). */
+          <p className="py-6 text-center text-sm text-slate-500 dark:text-slate-400">
+            {isDE
+              ? 'Keine Einträge für diesen Filter — wähle einen anderen Tab.'
+              : 'No items match this filter — try another tab.'}
+          </p>
         ) : (
           <div className="space-y-3">
-            {queue.map((item) => (
+            {visibleItems.map((item) => (
               <div key={item.id} className="rounded-xl bg-slate-50 p-4 transition duration-300 hover:shadow-md dark:bg-slate-800/60">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>

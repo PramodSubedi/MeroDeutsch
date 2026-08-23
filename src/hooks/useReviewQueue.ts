@@ -262,7 +262,30 @@ export function useReviewQueue() {
     localDb.userProgress.get(id).then((row) => {
       // Only mutate rows belonging to the current user.
       if (!row || row.userId !== userId) return;
-      const nextBox = Math.min((row.box ?? 1) + 1, 5);
+
+      const currentBox = row.box ?? 1;
+
+      // TRUE 4-BOX LEITNER: a correct answer at box 4 GRADUATES the card —
+      // it is retired from the queue entirely instead of advancing to an
+      // out-of-range box 5 (which previously produced LEITNER_INTERVALS[4]
+      // === undefined → Invalid Date → silent put failure, so mastered
+      // items could never leave the queue).
+      if (currentBox >= LEITNER_INTERVALS.length) {
+        localDb.userProgress.delete(id);
+        if (isAuthenticated) {
+          supabase
+            .from('review_queue')
+            .delete()
+            .eq('id', id)
+            .eq('user_id', userId)
+            .then(({ error }) => {
+              if (error) console.warn('Failed to retire graduated review item remotely:', error.message);
+            });
+        }
+        return;
+      }
+
+      const nextBox = currentBox + 1;
       const reps = (row.repetitions ?? 0) + 1;
       const interval = LEITNER_INTERVALS[nextBox - 1];
 
@@ -278,7 +301,7 @@ export function useReviewQueue() {
     });
 
     void recordActivity(1);
-  }, [userId, recordActivity]);
+  }, [userId, isAuthenticated, recordActivity]);
 
   const markResolved = useCallback((id: string) => {
     const localDb = db;
@@ -287,16 +310,37 @@ export function useReviewQueue() {
       // Only delete rows belonging to the current user.
       if (row && row.userId === userId) {
         localDb.userProgress.delete(id);
+        // Delete remotely too — otherwise the login merge re-inserts the row
+        // and "resolved" items resurrect after reload (Bug B fix).
+        if (isAuthenticated) {
+          supabase
+            .from('review_queue')
+            .delete()
+            .eq('id', id)
+            .eq('user_id', userId)
+            .then(({ error }) => {
+              if (error) console.warn('Failed to delete review item remotely:', error.message);
+            });
+        }
       }
     });
-  }, [userId]);
+  }, [userId, isAuthenticated]);
 
-  const clearQueue = useCallback(() => {
-    if (!db || !userId) return;
-    db.userProgress.where('userId').equals(userId).delete();
-    if (isAuthenticated) {
-      void supabase.from('review_queue').delete().eq('user_id', userId);
+  /** Clear ALL review items. Cloud delete is AWAITED first so a subsequent
+   *  login-merge cannot bulkPut the just-deleted remote rows back (Bug B).
+   *  Local Dexie rows are cleared for the current user only.
+   *  Resolves false when the cloud delete failed (caller should surface it). */
+  const clearQueue = useCallback(async (): Promise<boolean> => {
+    if (isAuthenticated && userId) {
+      const { error } = await supabase.from('review_queue').delete().eq('user_id', userId);
+      if (error) {
+        console.warn('Failed to clear review queue in Supabase:', error.message);
+        return false;
+      }
     }
+    if (!db || !userId) return true;
+    db.userProgress.where('userId').equals(userId).delete();
+    return true;
   }, [userId, isAuthenticated]);
 
   const sortedQueue = useMemo(() => {

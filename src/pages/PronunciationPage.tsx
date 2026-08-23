@@ -17,6 +17,40 @@ function normalizeForCompare(input: string): string {
     .replace(/ß/g, 'ss');
 }
 
+/** Classic Levenshtein edit distance (iterative, two-row DP). */
+function levenshtein(a: string, b: string): number {
+  if (a === b) return 0;
+  if (a.length === 0) return b.length;
+  if (b.length === 0) return a.length;
+  let prev = Array.from({ length: b.length + 1 }, (_, i) => i);
+  for (let i = 1; i <= a.length; i++) {
+    const curr = [i];
+    for (let j = 1; j <= b.length; j++) {
+      curr[j] = Math.min(
+        prev[j] + 1, // deletion
+        curr[j - 1] + 1, // insertion
+        prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1) // substitution
+      );
+    }
+    prev = curr;
+  }
+  return prev[b.length];
+}
+
+/**
+ * Fuzzy match tolerance tuned for Web Speech API transcription variance:
+ * ASR often transcribes correct-but-accented speech with 1–2 character
+ * differences ("haus" → "hauss"/"hous"). Exact equality alone produces
+ * false negatives that penalize CORRECT pronunciation.
+ * Tolerance: ≤1 edit for short words, ≤~20% of length for longer ones.
+ */
+function isCloseMatch(spoken: string, target: string): boolean {
+  if (spoken === target) return true;
+  if (spoken.length === 0 || target.length === 0) return false;
+  const maxDist = Math.max(1, Math.floor(Math.max(spoken.length, target.length) * 0.2));
+  return levenshtein(spoken, target) <= maxDist;
+}
+
 export function PronunciationPage() {
   usePageTitle('Pronunciation');
   const { langMode } = useLang();
@@ -51,27 +85,41 @@ export function PronunciationPage() {
       const target = normalizeForCompare(word.de);
       const spoken = normalizeForCompare(transcript);
       setTotal((t) => t + 1);
-      const isMatch = spoken === target;
-      if (isMatch) {
+
+      // Correct: exact OR near-exact (fuzzy) match — tolerant of ASR
+      // transcription variance so correct pronunciation isn't penalized.
+      if (isCloseMatch(spoken, target)) {
         setResult('correct');
         setScore((s) => s + 1);
         // +10 XP for a correct pronunciation answer (shared reporter)
         reportResult({ correct: true, module: 'pronunciation' });
+        return;
+      }
+
+      // Partial: any spoken WORD is close to any target word (word-level
+      // fuzzy match instead of brittle substring containment).
+      const targetTokens = target.split(/\s+/).filter(Boolean);
+      const spokenTokens = spoken.split(/\s+/).filter(Boolean);
+      const wordMatch =
+        spokenTokens.length > 0 &&
+        spokenTokens.some((st) =>
+          targetTokens.some((tt) => {
+            const tol = Math.max(1, Math.floor(tt.length * 0.25));
+            return levenshtein(st, tt) <= tol;
+          })
+        );
+
+      if (wordMatch) {
+        setResult('partial');
       } else {
-        // Loosely check: does the spoken transcript contain a word close to target?
-        const wordMatch = spoken.length > 3 && word.de.split(' ').some((part: string) => spoken.includes(normalizeForCompare(part)));
-        if (wordMatch) {
-          setResult('partial');
-        } else {
-          setResult('wrong');
-          reportResult({
-            correct: false,
-            module: 'pronunciation',
-            itemKey: word.de,
-            userAnswer: transcript,
-            correctAnswer: word.de,
-          });
-        }
+        setResult('wrong');
+        reportResult({
+          correct: false,
+          module: 'pronunciation',
+          itemKey: word.de,
+          userAnswer: transcript,
+          correctAnswer: word.de,
+        });
       }
     },
     [reportResult, word]

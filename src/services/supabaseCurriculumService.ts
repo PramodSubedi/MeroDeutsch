@@ -82,6 +82,20 @@ function rowToVocabCard(row: VocabRow & { part_of_speech: string; level?: string
   };
 }
 
+/** Maps a rich VocabCard onto the legacy VocabEntry shape consumed by
+ *  Pronunciation / Glossary / checkpoints / DailyChallenge / useDexieInit. */
+function cardToLegacyEntry(c: VocabCard): VocabEntry {
+  return {
+    id: c.id,
+    de: c.lemma,
+    en: c.translation.en,
+    ne: c.translation.np,
+    tags: c.tags,
+    level: 'A1',
+    exampleDe: c.examples[0]?.de,
+  };
+}
+
 /** Maps a `sentences` row onto the SentenceExercise shape. */
 function rowToExercise(row: SentencesRow): SentenceExercise {
   return {
@@ -261,6 +275,14 @@ export class SupabaseCurriculumService implements CurriculumService {
   }
 
   async getVocabulary(): Promise<VocabEntry[]> {
+    // Single source of truth: read the live `vocabulary` table via the
+    // filtered fetch (no filters = everything), then map to the legacy
+    // VocabEntry shape. Upgrades ALL legacy consumers (Pronunciation,
+    // Glossary, checkpoint vocab-translation, DailyChallenge, Dexie boot
+    // seed) from the 7-entry vocab-item pool to the full ~1000-row table.
+    const cards = await this.getVocabularyFiltered({ limit: 100 });
+    if (cards.length > 0) return cards.map(cardToLegacyEntry);
+    // Offline fallback: cached vocab-item pool (legacy behavior).
     return this.fetchContentPool<VocabEntry>('vocab-item', true, () => this.localService.getVocabulary());
   }
 

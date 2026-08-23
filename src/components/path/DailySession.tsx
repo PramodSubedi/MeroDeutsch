@@ -104,6 +104,7 @@ export function DailySession() {
           embedded
           limit={MAX_REVIEW_ITEMS}
           autoStart
+          completeLabel={isDE ? 'Weiter' : 'Continue'}
         />
       </section>
     );

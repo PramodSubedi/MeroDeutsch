@@ -130,6 +130,21 @@ export class LocalCurriculumService implements CurriculumService {
   }
 
   async getVocabulary(): Promise<VocabEntry[]> {
+    // Offline source of truth: the Dexie vocab cache (populated by the
+    // Supabase service's write-through), mapped to the legacy VocabEntry
+    // shape. Falls back to the tiny legacy vocab-item pool if empty.
+    const cards = await this.getVocabularyFiltered({});
+    if (cards.length > 0) {
+      return cards.map((c) => ({
+        id: c.id,
+        de: c.lemma,
+        en: c.translation.en,
+        ne: c.translation.np,
+        tags: c.tags,
+        level: 'A1' as const,
+        exampleDe: c.examples[0]?.de,
+      }));
+    }
     return getCachedContent<VocabEntry>('vocab-item');
   }
 

@@ -6,6 +6,19 @@ import { useXp } from '../hooks/useXp';
 import { TabGroup, type Tab } from './TabGroup';
 import type { WrongAnswerItem } from '../types';
 
+/** Apply the review filter rules (all / focus box≤2 / mastery box≥3 / moduleType).
+ *  Exported so the Dashboard list can filter with IDENTICAL rules to the
+ *  session pool — one source of truth for filtering (Bug A fix). */
+export function filterReviewQueue(items: WrongAnswerItem[], filter: string): WrongAnswerItem[] {
+  return items.filter((item) => {
+    const box = item.boxLevel ?? 1;
+    if (filter === 'focus') return box <= 2;
+    if (filter === 'mastery') return box >= 3;
+    if (filter !== 'all') return item.moduleType === filter;
+    return true;
+  });
+}
+
 interface ReviewSessionManagerProps {
   queue: WrongAnswerItem[];
   dueQueue?: WrongAnswerItem[];
@@ -17,6 +30,12 @@ interface ReviewSessionManagerProps {
   limit?: number;
   /** Automatically trigger study session upon mount (used for quick-starts). */
   autoStart?: boolean;
+  /** Controlled active filter (lifted state — lets the parent list share it). */
+  activeFilter?: FilterId;
+  /** Called when the user picks a different filter tab. */
+  onActiveFilterChange?: (filter: FilterId) => void;
+  /** Label for the summary screen's primary button (e.g. DailySession: "Continue"). */
+  completeLabel?: string;
 }
 
 type FilterId = 'all' | 'focus' | 'mastery' | string;
@@ -30,6 +49,47 @@ interface SessionStats {
 
 const EMPTY_STATS: SessionStats = { reviewed: 0, promoted: 0, demoted: 0, xp: 0 };
 
+/** Fisher-Yates shuffle (in place, on a copy owned by the caller). */
+function shuffleInPlace<T>(arr: T[]): T[] {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+/**
+ * Interleaved practice ordering (cognitive-science backed): round-robin
+ * through module-type groups so similar items are NOT clustered back-to-back.
+ * Mixing related-but-distinct skills within one session improves long-term
+ * retention vs. blocked practice — especially for confusable material
+ * (der/die/das genders, similar vocabulary).
+ */
+function interleaveByModule(items: WrongAnswerItem[]): WrongAnswerItem[] {
+  const groups = new Map<string, WrongAnswerItem[]>();
+  for (const item of items) {
+    const list = groups.get(item.moduleType);
+    if (list) list.push(item);
+    else groups.set(item.moduleType, [item]);
+  }
+  // Randomize order WITHIN each module group first.
+  const queues = Array.from(groups.values()).map((g) => shuffleInPlace([...g]));
+  // Round-robin across groups → adjacent items differ in moduleType whenever possible.
+  const out: WrongAnswerItem[] = [];
+  let added = true;
+  while (added) {
+    added = false;
+    for (const q of queues) {
+      const next = q.shift();
+      if (next) {
+        out.push(next);
+        added = true;
+      }
+    }
+  }
+  return out;
+}
+
 export function ReviewSessionManager({
   queue,
   dueQueue,
@@ -38,17 +98,27 @@ export function ReviewSessionManager({
   embedded = false,
   limit,
   autoStart = false,
+  activeFilter: activeFilterProp,
+  onActiveFilterChange,
+  completeLabel,
 }: ReviewSessionManagerProps) {
   const { langMode } = useLang();
   const { reportAnswer } = useXp();
   const isDE = langMode === 'german';
 
-  const [activeFilter, setActiveFilter] = useState<FilterId>('all');
+  const [internalFilter, setInternalFilter] = useState<FilterId>('all');
+  const activeFilter = activeFilterProp ?? internalFilter;
+  const setActiveFilter = (next: FilterId) => {
+    setInternalFilter(next);
+    onActiveFilterChange?.(next);
+  };
   const [sessionActive, setSessionActive] = useState(false);
   const [sessionItems, setSessionItems] = useState<WrongAnswerItem[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [sessionStats, setSessionStats] = useState<SessionStats>(EMPTY_STATS);
   const [showSummary, setShowSummary] = useState(false);
+  /** Spoiler guard: correct answer hidden until the user answers (Bug C). */
+  const [revealed, setRevealed] = useState(false);
 
   const isDueNow = (item: WrongAnswerItem) => !item.dueAt || new Date(item.dueAt).getTime() <= Date.now();
 
@@ -65,20 +135,18 @@ export function ReviewSessionManager({
     return Array.from(seen);
   }, [queue]);
 
-  // Filter items based on the selected tab.
-  const filteredQueue = useMemo(() => {
-    return effectiveDueQueue.filter((item) => {
-      const box = item.boxLevel ?? 1;
-      if (activeFilter === 'focus') return box <= 2;
-      if (activeFilter === 'mastery') return box >= 3;
-      if (activeFilter !== 'all') return item.moduleType === activeFilter;
-      return true;
-    });
-  }, [effectiveDueQueue, activeFilter]);
+  // Filter items based on the selected tab (shared rule via filterReviewQueue).
+  const filteredQueue = useMemo(
+    () => filterReviewQueue(effectiveDueQueue, activeFilter),
+    [effectiveDueQueue, activeFilter]
+  );
 
   const handleAnswerResult = (isCorrect: boolean) => {
     const currentItem = sessionItems[currentIndex];
-    if (!currentItem) return;
+    if (!currentItem || revealed) return;
+
+    // Reveal the correct answer BEFORE advancing so a wrong answer can be read.
+    setRevealed(true);
 
     if (isCorrect) {
       // Promote in Leitner system + award real XP (10 per correctly recalled item).
@@ -101,25 +169,33 @@ export function ReviewSessionManager({
       reportAnswer({ correct: false, module: currentItem.moduleType || 'review' });
     }
 
-    if (currentIndex + 1 < sessionItems.length) {
-      setCurrentIndex(currentIndex + 1);
-    } else {
-      // Session finished! Trigger confetti.
-      triggerConfetti();
-      setShowSummary(true);
-      setSessionActive(false);
-    }
+    // Brief pause so the revealed answer is readable (longer after a miss),
+    // then advance or finish the session.
+    const pauseMs = isCorrect ? 700 : 1800;
+    setTimeout(() => {
+      if (currentIndex + 1 < sessionItems.length) {
+        setCurrentIndex(currentIndex + 1);
+        setRevealed(false);
+      } else {
+        // Session finished! Trigger confetti.
+        triggerConfetti();
+        setShowSummary(true);
+        setSessionActive(false);
+      }
+    }, pauseMs);
   };
 
   const startSession = () => {
     if (filteredQueue.length === 0) return;
-    // Cap the pool if limit is set (Phase B short daily refresh/3-minute sprint).
+    // Cap the pool if limit is set (Phase B short daily refresh/3-minute sprint),
+    // then INTERLEAVE across module types for better discrimination practice.
     const pool = limit && limit > 0 ? filteredQueue.slice(0, limit) : filteredQueue;
-    setSessionItems(pool);
+    setSessionItems(interleaveByModule(pool));
     setCurrentIndex(0);
     setSessionStats(EMPTY_STATS);
     setSessionActive(true);
     setShowSummary(false);
+    setRevealed(false);
   };
 
   // Phase B: Automatically start study sprint on load if autoStart is true.
@@ -181,7 +257,7 @@ export function ReviewSessionManager({
           }}
           className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-all shadow-sm shadow-blue-200"
         >
-          {isDE ? 'Zurück zum Dashboard' : 'Return to Dashboard'}
+          {completeLabel ?? (isDE ? 'Zurück zum Dashboard' : 'Return to Dashboard')}
         </button>
       </div>
     );
@@ -209,10 +285,18 @@ export function ReviewSessionManager({
             {isDE ? 'Modul' : 'Module'}:{' '}
             <span className="capitalize font-medium">{currentItem.moduleType}</span>
           </p>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            {isDE ? 'Richtige Antwort' : 'Correct answer'}:{' '}
-            <span className="font-medium text-emerald-600">{currentItem.correctAnswer}</span>
-          </p>
+          {/* Spoiler guard: hidden until the user answers (Bug C). */}
+          {revealed && currentItem.correctAnswer && (
+            <p className="text-sm text-slate-500 dark:text-slate-400">
+              {isDE ? 'Richtige Antwort' : 'Correct answer'}:{' '}
+              <span className="font-medium text-emerald-600">{currentItem.correctAnswer}</span>
+            </p>
+          )}
+          {!revealed && (
+            <p className="text-xs italic text-slate-400 dark:text-slate-500">
+              {isDE ? 'Antwort anzeigen? Entscheide zuerst!' : 'Recall it first — then reveal!'}
+            </p>
+          )}
         </div>
 
         <div className="grid grid-cols-2 gap-3 pt-4">
@@ -246,10 +330,12 @@ export function ReviewSessionManager({
     { id: 'all', label: isDE ? 'Alle fällig' : 'All Due', icon: Filter, badge: effectiveDueQueue.length },
     { id: 'focus', label: isDE ? 'Box 1-2 (Fokus)' : 'Box 1-2 (Focus)', icon: Target, badge: effectiveDueQueue.filter(item => (item.boxLevel ?? 1) <= 2).length },
     { id: 'mastery', label: isDE ? 'Box 3-4 (Meisterschaft)' : 'Box 3-4 (Mastery)', icon: Award, badge: effectiveDueQueue.filter(item => (item.boxLevel ?? 1) >= 3).length },
+    // Module badges count DUE items — consistent with the All/Focus/Mastery
+    // badges and the actual Start Session pool (Bug A consistency fix).
     ...moduleTypes.map((moduleType) => ({
       id: moduleType as FilterId,
       label: moduleType.charAt(0).toUpperCase() + moduleType.slice(1),
-      badge: queue.filter(item => item.moduleType === moduleType).length,
+      badge: effectiveDueQueue.filter(item => item.moduleType === moduleType).length,
     })),
   ];
 
