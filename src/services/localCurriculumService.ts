@@ -129,6 +129,66 @@ export class LocalCurriculumService implements CurriculumService {
     }));
   }
 
+  /**
+   * Unit-themed vocabulary from the offline Dexie cache (v0.2.0).
+   * Mirrors the Supabase service's pass order: categories → optional POS →
+   * A1 fill, so checkpoints never starve even fully offline.
+   */
+  async getVocabularyByCategories(
+    categories: string[],
+    pos?: VocabularyFilter['pos'],
+    limit = 60
+  ): Promise<VocabEntry[]> {
+    const cats = categories.filter(Boolean);
+    const db = openDb();
+    if (!db) return [];
+    const cached = await db.vocab.toArray();
+
+    const out: VocabCard[] = [];
+    const seen = new Set<string>();
+    const push = (c: VocabCard) => {
+      if (!seen.has(c.id)) {
+        seen.add(c.id);
+        out.push(c);
+      }
+    };
+
+    // Pass 1: configured categories (+ pos when given) via tag intersection.
+    if (cats.length > 0) {
+      for (const c of cached) {
+        if (out.length >= limit) break;
+        if (pos && c.partOfSpeech !== pos) continue;
+        if (c.tags.some((t) => cats.includes(t))) push(c);
+      }
+    }
+
+    // Pass 2: POS-only theming.
+    if (out.length < limit && pos) {
+      for (const c of cached) {
+        if (out.length >= limit) break;
+        if (c.partOfSpeech === pos && c.cefrLevel === 'A1') push(c);
+      }
+    }
+
+    // Pass 3: A1 fill.
+    if (out.length < limit) {
+      for (const c of cached) {
+        if (out.length >= limit) break;
+        if (c.cefrLevel === 'A1') push(c);
+      }
+    }
+
+    return out.map((c) => ({
+      id: c.id,
+      de: c.lemma,
+      en: c.translation.en,
+      ne: c.translation.np,
+      tags: c.tags,
+      level: 'A1' as const,
+      exampleDe: c.examples[0]?.de,
+    }));
+  }
+
   async getVocabulary(): Promise<VocabEntry[]> {
     // Offline source of truth: the Dexie vocab cache (populated by the
     // Supabase service's write-through), mapped to the legacy VocabEntry

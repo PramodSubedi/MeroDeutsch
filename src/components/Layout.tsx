@@ -15,6 +15,7 @@ import { ModuleChrome } from './learning/ModuleChrome';
 import { BottomNav } from './BottomNav';
 import { Breadcrumb } from './Breadcrumb';
 import { UserMenu } from './UserMenu';
+import { LanguageToggle } from './LanguageToggle';
 import { LevelUpModal } from './LevelUpModal';
 import { useMilestoneToast } from '../hooks/useMilestoneToast';
 import { A1PathVisitTracker } from './path/A1PathVisitTracker';
@@ -24,7 +25,7 @@ import { subscribeDailySessionActive } from '../lib/dailySessionSignal';
 export function Layout() {
   const { pathname } = useLocation();
   const { dark, toggle: toggleDark } = useDarkMode();
-  const { langMode, toggle: toggleLang } = useLang();
+  const { langMode } = useLang();
   const { user } = useAuth();
   const { isOnline } = useOnlineStatus();
   const { rememberModule } = useLastModule();
@@ -110,7 +111,11 @@ export function Layout() {
 
       {/* Global non-blocking milestone/level-up toast */}
       {toast && (
-        <div className="fixed top-20 left-1/2 z-[60] -translate-x-1/2 flex items-center gap-3 rounded-xl bg-slate-900 px-4 py-3 text-sm font-bold text-white shadow-lg animate-bounce dark:bg-white dark:text-slate-900">
+        <div
+          role="status"
+          aria-live="polite"
+          className="fixed top-20 left-1/2 z-[60] -translate-x-1/2 flex items-center gap-3 rounded-xl bg-slate-900 px-4 py-3 text-sm font-bold text-white shadow-lg animate-bounce dark:bg-white dark:text-slate-900"
+        >
           <span>{toast.icon} {toast.message}</span>
           <button type="button" onClick={dismissToast} className="text-white/70 hover:text-white dark:text-slate-500 dark:hover:text-slate-900 font-bold" aria-label="Dismiss">
             ×
@@ -137,20 +142,7 @@ export function Layout() {
             {user && link('/dashboard', 'Dashboard')}
             {user ? link('/learn', 'Learn') : link('/auth', 'Sign in')}
             {/* Two-state language switch — highlighted side = CURRENT mode */}
-            <button
-              type="button"
-              onClick={toggleLang}
-              aria-label={langMode === 'normal' ? 'Switch to German only' : 'Switch to bilingual mode'}
-              aria-pressed={langMode === 'german'}
-              className={theme.layout.langSwitch.track}
-            >
-              <span className={langMode === 'normal' ? theme.layout.langSwitch.optionActive : theme.layout.langSwitch.optionInactive}>
-                EN
-              </span>
-              <span className={langMode === 'german' ? theme.layout.langSwitch.optionActive : theme.layout.langSwitch.optionInactive}>
-                DE
-              </span>
-            </button>
+            <LanguageToggle />
             <button
               type="button"
               onClick={toggleDark}
@@ -176,20 +168,7 @@ export function Layout() {
           {/* Mobile-only controls — nav is hidden below md */}
           <div className="flex items-center gap-2 md:hidden">
             {/* Two-state language switch (mobile) — highlighted side = CURRENT mode */}
-            <button
-              type="button"
-              onClick={toggleLang}
-              aria-label={langMode === 'normal' ? 'Switch to German only' : 'Switch to bilingual mode'}
-              aria-pressed={langMode === 'german'}
-              className={theme.layout.langSwitch.track}
-            >
-              <span className={langMode === 'normal' ? theme.layout.langSwitch.optionActive : theme.layout.langSwitch.optionInactive}>
-                EN
-              </span>
-              <span className={langMode === 'german' ? theme.layout.langSwitch.optionActive : theme.layout.langSwitch.optionInactive}>
-                DE
-              </span>
-            </button>
+            <LanguageToggle />
             <button
               type="button"
               onClick={toggleDark}

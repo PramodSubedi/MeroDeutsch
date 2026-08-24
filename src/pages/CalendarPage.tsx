@@ -1,15 +1,21 @@
 /**
  * src/pages/CalendarPage.tsx
  *
- * Unit 3 — Days & Months. Learn list (days/months tabs) + engine-driven
- * Listen & Type quiz (`useExerciseSession` + `<ListenAndType>`). The quiz
- * draws a finite deck of 10 unique items per round; "Play again" reshuffles.
- * XP/SRS reporting is owned entirely by the Lesson Engine session.
+ * Unit 3 — Days, Months & Telling Time. Learn list (days / months / uhrzeit tabs)
+ * + engine-driven Listen & Type quiz (`useExerciseSession` + `<ListenAndType>`).
+ * The quiz draws a finite without-replacement deck of up to 10 unique items per
+ * round; "Play again" reshuffles. XP/SRS reporting is owned by the Lesson Engine
+ * session.
+ *
+ * The Uhrzeit (telling-time) tab is an additive, always-available drill backed by
+ * src/data/uhrzeit.ts (local UI data, same role as a1Verbs.ts — NOT a DB seed), so
+ * it stays usable even when the calendar dataset has not been seeded yet.
  */
 
 import { useEffect, useMemo, useState } from 'react';
-import { BookOpen, Sparkles, Calendar, CalendarDays } from 'lucide-react';
+import { BookOpen, Sparkles, Calendar, CalendarDays, Clock } from 'lucide-react';
 import { sharedTextDatabase } from '../data/sharedContent';
+import { TIME_PHRASES, type UhrzeitItem } from '../data/uhrzeit';
 import { useLang } from '../hooks/useLang';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { speakWord } from '../hooks/useSpeech';
@@ -29,6 +35,9 @@ import type { CalendarItem } from '../types';
 /** Engine-compatible calendar question (audio prompt = the word itself). */
 interface CalendarQuestion extends ExerciseQuestion {}
 
+/** Items that can feed the day/month/time pools (common: de/en/ne). */
+type CalendarPool = CalendarItem | UhrzeitItem;
+
 const DECK_SIZE = 10;
 
 function normalize(input: string): string {
@@ -39,12 +48,17 @@ export function CalendarPage() {
   usePageTitle('Calendar');
   const { langMode } = useLang();
   const isDE = langMode === 'german';
-  const [tab, setTab] = useState<'days' | 'months'>('days');
+  const [tab, setTab] = useState<'days' | 'months' | 'uhrzeit'>('days');
   const [mode, setMode] = useState<'learn' | 'quiz'>('learn');
   const [calendar, setCalendar] = useState<CalendarItem[]>([]);
   const [loaded, setLoaded] = useState(false);
   /** Increments to reshuffle a fresh quiz deck. */
   const [runId, setRunId] = useState(0);
+
+  // Reshuffle when the active drill changes.
+  useEffect(() => {
+    setRunId((r) => r + 1);
+  }, [tab]);
 
   useEffect(() => {
     curriculumService
@@ -56,20 +70,32 @@ export function CalendarPage() {
       .catch(() => setLoaded(true));
   }, []);
 
-  const data = tab === 'days' ? calendar.slice(0, 7) : calendar.slice(7);
+  // Pool depends on the selected tab. Days/months come from the curriculum
+  // loader; the Uhrzeit pool is local client-side data so it is always ready.
+  const pool = useMemo<CalendarPool[]>(() => {
+    if (tab === 'days') return calendar.slice(0, 7);
+    if (tab === 'months') return calendar.slice(7);
+    return TIME_PHRASES;
+  }, [calendar, tab]);
+
+  // Friendly state only blocks days/months when calendar data is missing.
+  const emptyDaysMonths =
+    (tab === 'days' || tab === 'months') && calendar.length === 0;
 
   // Finite without-replacement deck per round (Lesson Engine contract).
   const deck = useMemo<CalendarQuestion[]>(
     () =>
-      pickNUnique({ items: calendar, count: Math.min(DECK_SIZE, calendar.length), getKey: (c) => c.de }).map(
-        (c) => ({
-          key: c.de,
-          correctAnswer: c.de,
-          speakPrompt: c.de,
-        })
-      ),
+      pickNUnique({
+        items: pool,
+        count: Math.min(DECK_SIZE, pool.length),
+        getKey: (c) => c.de,
+      }).map((c) => ({
+        key: c.de,
+        correctAnswer: c.de,
+        speakPrompt: c.de,
+      })),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [calendar, runId]
+    [pool, runId]
   );
 
   const session = useExerciseSession<CalendarQuestion>({
@@ -83,12 +109,16 @@ export function CalendarPage() {
     ? 'Lerne die Wochentage und Monate'
     : sharedTextDatabase.calendar.description;
 
+  const timeTitle = isDE ? 'Uhrzeit' : 'Telling Time';
+  const timeDesc = isDE
+    ? 'Wie spät ist es? — Zahlen, halb, Viertel.'
+    : 'What time is it? — hours, half past, quarter.';
+
   if (!loaded) {
     return <div className={theme.page.container}>Loading...</div>;
   }
 
-  // Pool empty (not seeded yet / offline before first fetch) — friendly state.
-  if (calendar.length === 0) {
+  if (emptyDaysMonths) {
     return (
       <div className={theme.page.container}>
         <h1 className={theme.page.heading}>{title}</h1>
@@ -117,20 +147,21 @@ export function CalendarPage() {
 
       {mode === 'learn' && (
         <SectionGrid
-          title={title}
-          description={description}
+          title={tab === 'uhrzeit' ? timeTitle : title}
+          description={tab === 'uhrzeit' ? timeDesc : description}
           controls={
             <TabGroup
               tabs={[
                 { id: 'days', label: isDE ? 'Wochentage' : 'Days of the Week', icon: Calendar },
                 { id: 'months', label: isDE ? 'Monate' : 'Months', icon: CalendarDays },
+                { id: 'uhrzeit', label: isDE ? 'Uhrzeit' : 'Telling Time', icon: Clock },
               ]}
               activeTab={tab}
               onTabChange={setTab}
             />
           }
         >
-          {data.map((item, index) => (
+          {pool.map((item, index) => (
             <StandardStudyCard
               key={item.de}
               badge={index + 1}
@@ -148,7 +179,15 @@ export function CalendarPage() {
           <ListenAndType
             session={session}
             onPlayPrompt={(q) => speakWord(q.correctAnswer)}
-            placeholder={isDE ? 'Tippe das deutsche Wort…' : 'Type the German word…'}
+            placeholder={
+              tab === 'uhrzeit'
+                ? isDE
+                  ? 'Tippe die Uhrzeit …'
+                  : 'Type the time …'
+                : isDE
+                  ? 'Tippe das deutsche Wort…'
+                  : 'Type the German word…'
+            }
             hideFooter
           />
           {/* Round footer: next/finish + play again */}
@@ -156,8 +195,12 @@ export function CalendarPage() {
             {session.locked && (
               <button type="button" onClick={session.next} className={theme.button.primary}>
                 {session.index >= session.total - 1
-                  ? isDE ? 'Fertig' : 'Finish'
-                  : isDE ? 'Weiter →' : 'Next →'}
+                  ? isDE
+                    ? 'Fertig'
+                    : 'Finish'
+                  : isDE
+                    ? 'Weiter →'
+                    : 'Next →'}
               </button>
             )}
             {!session.locked && session.answered > 0 && session.index >= session.total && (

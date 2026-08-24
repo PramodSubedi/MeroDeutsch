@@ -31,6 +31,21 @@ function audioFileExists(id: string): Promise<boolean> {
   });
 }
 
+/** Prefer natural-sounding German voices over robotic defaults. */
+function getGermanVoice(): SpeechSynthesisVoice | undefined {
+  if (typeof window === 'undefined' || !window.speechSynthesis) return undefined;
+  const voices = window.speechSynthesis.getVoices();
+  const de = voices.filter((v) => v.lang.toLowerCase().startsWith('de'));
+  if (de.length === 0) return undefined;
+  const natural = de.find((v) => /natural/i.test(v.name));
+  if (natural) return natural;
+  const google = de.find((v) => /google/i.test(v.name));
+  if (google) return google;
+  const female = de.find((v) => /(female|katja|anna|hedda|zira|hazel|susan)/i.test(v.name));
+  if (female) return female;
+  return de[0];
+}
+
 /** Speech synthesis — change only this file for audio behavior */
 export function speakText(text: string, rateOverride?: number) {
   if (typeof window === 'undefined' || !window.speechSynthesis) return;
@@ -39,9 +54,8 @@ export function speakText(text: string, rateOverride?: number) {
   const u = new SpeechSynthesisUtterance(text);
   u.lang = 'de-DE';
   u.rate = rate;
-  const voices = window.speechSynthesis.getVoices();
-  const de = voices.find((v) => v.lang.startsWith('de'));
-  if (de) u.voice = de;
+  const voice = getGermanVoice();
+  if (voice) u.voice = voice;
   window.speechSynthesis.speak(u);
 }
 

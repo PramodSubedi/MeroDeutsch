@@ -839,13 +839,14 @@ async function main(): Promise<void> {
     'Stunde', 'Minute', 'Morgen', 'Mittag', 'Abend', 'Nacht',
     'Tag', 'Woche', 'Monat', 'Jahr',
   ]);
-  const nounRows = Array.from(
+const nounRows = Array.from(
     new Map(
       NOUNS.map(([noun, art, meaning, sentence]) => {
         const [en, np] = meaning.split('/').map((s) => s.trim());
         const tags = TIME_NOUNS.has(noun)
           ? ['unit-3', 'time', `gender-${art}`]
           : ['unit-2', 'articles', `gender-${art}`];
+        const category = TIME_NOUNS.has(noun) ? 'time' : 'core';
         return [
           noun,
           {
@@ -855,7 +856,7 @@ async function main(): Promise<void> {
             translation_en: en || noun,
             translation_np: np || '',
             example_de: sentence,
-            category: 'core',
+            category,
             level: 'A1',
             tags,
           },
@@ -882,13 +883,14 @@ async function main(): Promise<void> {
     'fernsehen', 'aufräumen', 'anrufen', 'ausgehen', 'zurückkommen',
     'mitmachen', 'aufhören', 'anziehen', 'ausziehen',
   ]);
-  const verbRows = Array.from(
+const verbRows = Array.from(
     new Map(
       VERBS.map(([verb, meaning, sentence]) => {
         const [en, np] = meaning.split('/').map((s) => s.trim());
         const tags = ROUTINE_VERBS.has(verb)
           ? ['unit-3', 'routine', 'separable']
           : ['unit-2', 'verbs'];
+        const category = ROUTINE_VERBS.has(verb) ? 'routine' : 'core';
         return [
           verb,
           {
@@ -898,7 +900,7 @@ async function main(): Promise<void> {
             translation_en: en || verb,
             translation_np: np || '',
             example_de: sentence,
-            category: 'core',
+            category,
             level: 'A1',
             tags,
           },

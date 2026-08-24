@@ -44,7 +44,20 @@ export function setAudioEnabled(enabled: boolean): void {
 function getGermanVoice(): SpeechSynthesisVoice | undefined {
   if (typeof window === 'undefined' || !window.speechSynthesis) return undefined;
   const voices = window.speechSynthesis.getVoices();
-  return voices.find((v) => v.lang.toLowerCase().startsWith('de'));
+  const de = voices.filter((v) => v.lang.toLowerCase().startsWith('de'));
+  if (de.length === 0) return undefined;
+
+  // Prefer natural-sounding voices over robotic defaults. Windows 11 ships
+  // "… Natural" voices; Chrome/Edge expose "Google Deutsch". These read far
+  // more naturally than the basic system voice.
+  const natural = de.find((v) => /natural/i.test(v.name));
+  if (natural) return natural;
+  const google = de.find((v) => /google/i.test(v.name));
+  if (google) return google;
+  // Fall back to a female voice (usually clearer / less robotic).
+  const female = de.find((v) => /(female|katja|anna|hedda|zira|hazel|susan)/i.test(v.name));
+  if (female) return female;
+  return de[0];
 }
 
 /**

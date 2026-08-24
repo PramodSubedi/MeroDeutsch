@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
-import { BookA, Hash, Calendar, BookOpen, MessageCircle, Mic, BookText, Volume2, Users, Library, Zap } from 'lucide-react';
+import { BookA, Hash, Calendar, BookOpen, MessageCircle, Mic, BookText, Volume2, Users, Library, Zap, Layers, Puzzle } from 'lucide-react';
 
 /**
  * Single canonical module registry for MeroDeutsch.
@@ -36,6 +36,10 @@ export const MODULES: Module[] = [
   { id: 'roleplay', path: '/roleplay', label: 'Roleplay', labelDE: 'Rollenspiel', icon: Users, showChrome: true, category: 'practice' },
   { id: 'glossary', path: '/glossary', label: 'Glossary', labelDE: 'Glossar', icon: BookOpen, showChrome: true, category: 'practice' },
   { id: 'rapid', path: '/rapid-fire', label: 'Rapid Fire', labelDE: 'Schnellfeuer', icon: Zap, showChrome: false, category: 'practice' },
+  // v0.2.0 discoverability: the two strongest Supabase-vocab consumers are now
+  // first-class modules (switcher pills + chrome routes).
+  { id: 'vocab-trainer', path: '/vocab-trainer', label: 'Vocab Trainer', labelDE: 'Wortschatz-Trainer', icon: Layers, showChrome: true, category: 'practice' },
+  { id: 'sentence-builder', path: '/sentence-builder', label: 'Sentence Builder', labelDE: 'Satzbau', icon: Puzzle, showChrome: true, category: 'practice' },
   { id: 'practice', path: '/practice', label: 'Practice', labelDE: 'Übung', icon: BookOpen, showChrome: false, category: 'practice' },
 ];
 

@@ -227,7 +227,17 @@ export function A1CheckpointPage() {
         alphabet: needed.has('alphabet-letter') ? await curriculumService.getAlphabet() : [],
         articles: needed.has('article-precision') ? await curriculumService.getArticles() : [],
         calendar: needed.has('calendar-translation') ? await curriculumService.getCalendar() : [],
-        vocabulary: needed.has('vocab-translation') ? await curriculumService.getVocabulary() : [],
+        // v0.2.0: units with vocabCategories/vocabPos draw themed vocab
+        // (categories → POS → A1 fill, never empty); others keep the general pool.
+        vocabulary: needed.has('vocab-translation')
+          ? unit.vocabCategories?.length || unit.vocabPos
+            ? await curriculumService.getVocabularyByCategories(
+                unit.vocabCategories ?? [],
+                unit.vocabPos,
+                60
+              )
+            : await curriculumService.getVocabulary()
+          : [],
         grammar: needed.has('grammar-drill')
           ? (await Promise.all(grammarCategories.map((c) => curriculumService.getGrammarDrills(c)))).reduce(
               (acc, drills, i) => {

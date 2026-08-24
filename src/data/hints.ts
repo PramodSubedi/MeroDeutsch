@@ -80,6 +80,18 @@ const SPECIFIC: Record<string, HintText> = {
     ne: 'शब्द क्रम वा हिज्जे जाँच्नुहोस्।',
     de: 'Prüfe die Wortstellung oder Schreibweise.',
   },
+  // Sentence Builder — noun capitalization.
+  'grammar:capitalization': {
+    en: 'All German nouns start with a CAPITAL letter.',
+    ne: 'जर्मन संज्ञा सधैं ठूलो अक्षरले सुरु हुन्छ।',
+    de: 'Alle Substantive werden GROSS geschrieben.',
+  },
+  // Sentence Builder — wrong verb conjugation.
+  'grammar:verb-conjugation': {
+    en: 'Match the verb to the subject — e.g. "ich habe", "wir haben".',
+    ne: 'क्रियालाई कर्तासँग मिलाउनुहोस् — जस्तै "ich habe", "wir haben"।',
+    de: 'Passe das Verb an das Subjekt an — z. B. "ich habe", "wir haben".',
+  },
 };
 
 /**

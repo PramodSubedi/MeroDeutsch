@@ -7,6 +7,7 @@ import { useSpeechRecognition, isSpeechRecognitionSupported } from '../hooks/use
 import { drawWithoutReplacement } from '../utils/questionGenerator';
 import { theme } from '../config/theme';
 import { curriculumService } from '../services';
+import type { VocabCard } from '../types';
 
 function normalizeForCompare(input: string): string {
   return input
@@ -67,13 +68,38 @@ export function PronunciationPage() {
   const vocabRef = useRef<any[]>([]);
 
   useEffect(() => {
-    curriculumService.getVocabulary().then(vocab => {
-      if (vocab && vocab.length > 0) {
-        vocabRef.current = vocab;
-        const first = drawWithoutReplacement(vocab, usedWordKeysRef.current, (v: any) => v.id);
-        setWord(first ?? vocab[0]);
-      }
+    let cancelled = false;
+    // Prefer an A1-lemma pool (mapped to the {id,de,en,ne} shape the page renders)
+    // so practice stays A1-level; fall back to the general vocab table when the
+    // A1 pool is thin/offline (legacy behavior). (Phase 4)
+    const MIN_POOL = 8;
+    const toLemma = (c: VocabCard) => ({
+      id: c.id,
+      de: c.lemma,
+      en: c.translation?.en ?? '',
+      ne: c.translation?.np ?? '',
     });
+    curriculumService
+      .getVocabularyFiltered({ level: 'A1' })
+      .then((a1) => {
+        if (cancelled) return null;
+        if (a1 && a1.length >= MIN_POOL) return a1.map(toLemma);
+        return curriculumService
+          .getVocabulary()
+          .then((v) => (v ?? []).map((e) => ({ id: e.id, de: e.de, en: e.en, ne: e.ne })));
+      })
+      .then((pool) => {
+        if (cancelled || !pool || pool.length === 0) return;
+        vocabRef.current = pool;
+        const first = drawWithoutReplacement(pool, usedWordKeysRef.current, (v) => v.id);
+        setWord(first ?? pool[0]);
+      })
+      .catch(() => {
+        /* Offline / schema variance: keep empty state -> page shows Loading. */
+      });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const supported = useMemo(isSpeechRecognitionSupported, []);
@@ -146,7 +172,12 @@ export function PronunciationPage() {
   const next = () => {
     const vocab = vocabRef.current;
     if (vocab.length === 0) return;
-    const n = drawWithoutReplacement(vocab, usedWordKeysRef.current, (v: any) => v.id);
+    let n = drawWithoutReplacement(vocab, usedWordKeysRef.current, (v) => v.id);
+    // Pool exhausted — cycle without repeating the first word forever.
+    if (!n) {
+      usedWordKeysRef.current.clear();
+      n = drawWithoutReplacement(vocab, usedWordKeysRef.current, (v) => v.id);
+    }
     if (!n) return;
     setWord(n);
     setResult(null);

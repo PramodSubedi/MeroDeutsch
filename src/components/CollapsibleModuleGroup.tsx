@@ -89,7 +89,10 @@ export function CollapsibleModuleGroup({
         id={`${storageKey}-content`}
         className="overflow-hidden transition-all duration-300 ease-in-out"
         style={{
-          maxHeight: isExpanded ? `${contentHeight || modules.length * 48}px` : '0px',
+          // Measured height only — never a modules.length * 48 heuristic.
+          // `undefined` while unmeasured (first paint) = no max-height clamp,
+          // so the expand animation never clips a wrapping row.
+          maxHeight: isExpanded ? (contentHeight > 0 ? `${contentHeight}px` : undefined) : '0px',
           opacity: isExpanded ? 1 : 0,
         }}
       >

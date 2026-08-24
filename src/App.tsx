@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { SkeletonLoader } from './components/SkeletonLoader';
@@ -36,6 +36,17 @@ const FeedbackPage = lazy(() => import('./pages/FeedbackPage').then(m => ({ defa
 const A1CheckpointPage = lazy(() => import('./pages/A1CheckpointPage').then(m => ({ default: m.A1CheckpointPage })));
 const SentenceBuilderPage = lazy(() => import('./pages/SentenceBuilderPage').then(m => ({ default: m.SentenceBuilderPage })));
 
+/**
+ * Single canonical Rapid Blitz route is /rapid-fire.
+ * /rapid-blitz (legacy alias) redirects there, PRESERVING any ?mode= query so
+ * bonus-chip deep links (e.g. /rapid-blitz?mode=number-conversion) still start
+ * the intended challenge. A plain /rapid-blitz lands on the Mixed game.
+ */
+function RapidBlitzRedirect() {
+  const { search } = useLocation();
+  return <Navigate to={{ pathname: '/rapid-fire', search }} replace />;
+}
+
 /** Routes only — do not put feature logic here */
 export default function App() {
   // Bootstrap the Dexie data layer (seeds db.vocab on first load if empty)
@@ -67,7 +78,7 @@ export default function App() {
               <Route path="sentence-builder" element={<SentenceBuilderPage />} />
               <Route path="practice" element={<PracticeHubPage />} />
               <Route path="rapid-fire" element={<RapidBlitzPage />} />
-              <Route path="rapid-blitz" element={<RapidBlitzPage />} />
+              <Route path="rapid-blitz" element={<RapidBlitzRedirect />} />
               <Route path="stories" element={<StoriesPage />} />
               <Route path="analytics" element={<AnalyticsPage />} />
               <Route path="import" element={<ImportDeckPage />} />

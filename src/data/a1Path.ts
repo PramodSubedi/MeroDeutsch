@@ -110,6 +110,15 @@ export interface A1Unit {
   nodeIds: string[];
   pedagogy?: UnitPedagogy;
   checkpoint: CheckpointConfig;
+  /**
+   * v0.2.0 — optional unit-vocab theming for checkpoint `vocab-translation`
+   * items. Categories are tried in order, then vocabPos as a POS-only pass,
+   * and the loader ALWAYS tops up from the general A1 pool — sparse/unknown
+   * values can never starve a checkpoint deck. U1–U3 intentionally omit this
+   * (their dedicated pools already match the theme).
+   */
+  vocabCategories?: string[];
+  vocabPos?: 'noun' | 'verb' | 'adjective' | 'phrase';
 }
 
 /** Index signature so node lookup by id is O(1) and type-safe. */
@@ -287,6 +296,9 @@ export const A1_UNITS: A1Unit[] = [
       moduleType: 'a1-checkpoint',
       specs: [{ type: 'vocab-translation', count: 12 }],
     },
+    // "Place & food" theming. Only categories that exist in the DB apply;
+    // unknown ones return nothing and the A1 fill covers the rest.
+    vocabCategories: ['food', 'travel', 'places', 'directions', 'restaurant', 'core'],
     pedagogy: {
       grammarComparison: {
         title: lbl('Real-world practice', 'Praxis im echten Leben'),
@@ -309,6 +321,9 @@ export const A1_UNITS: A1Unit[] = [
         { type: 'vocab-translation', count: 6 },
       ],
     },
+    // "Want & can" theming: verb-focused (POS pass) + phrase/routine tags.
+    vocabCategories: ['verbs', 'phrases', 'routine', 'core'],
+    vocabPos: 'verb',
     pedagogy: {
       grammarComparison: { title: lbl('Modals & verb-final', 'Modalverben & Verb Position'), rows: MODAL_VERB_FINAL_PANEL },
     },

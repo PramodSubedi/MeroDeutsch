@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { BookOpen, Mic, FileText, MessageSquare, Volume2, Zap, Layers } from 'lucide-react';
+import { BookOpen, Mic, FileText, MessageSquare, Volume2, Zap, Layers, Puzzle } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 interface ToolItem {
@@ -76,6 +76,16 @@ const tools: ToolItem[] = [
     wellClass: 'bg-violet-50 dark:bg-violet-950/40 border-violet-100 dark:border-violet-900/50',
     href: '/vocab-trainer',
     buttonText: 'Start Training',
+  },
+  // v0.2.0 discoverability: Sentence Builder joins the practice grid.
+  {
+    title: 'Sentence Builder',
+    description: 'Build German sentences word by word',
+    icon: Puzzle,
+    iconColor: 'text-cyan-600 dark:text-cyan-400',
+    wellClass: 'bg-cyan-50 dark:bg-cyan-950/40 border-cyan-100 dark:border-cyan-900/50',
+    href: '/sentence-builder',
+    buttonText: 'Start Building',
   },
 ];
 

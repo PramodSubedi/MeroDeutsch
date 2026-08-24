@@ -4,6 +4,7 @@ import { usePageTitle } from '../hooks/usePageTitle';
 import { theme } from '../config/theme';
 import { curriculumService } from '../services';
 import type { MicroStory, StorySentence, StoryWord } from '../types/curriculum';
+import { StoryComprehensionQuiz } from '../components/stories/StoryComprehensionQuiz';
 
 /**
  * Interactive word tooltip component
@@ -252,6 +253,13 @@ export function StoriesPage() {
                 <SentenceCard key={sentence.id} sentence={sentence} />
               ))}
             </div>
+
+            {selectedStory.questions && selectedStory.questions.length > 0 && (
+              <StoryComprehensionQuiz
+                storyId={selectedStory.id}
+                questions={selectedStory.questions}
+              />
+            )}
 
             <div className={theme.panel.tip + ' mt-6'}>
               <p className="text-sm text-slate-600 dark:text-slate-400">

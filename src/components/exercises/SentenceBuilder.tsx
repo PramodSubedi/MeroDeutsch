@@ -33,6 +33,7 @@ import { XP_REWARDS } from '../../hooks/useXp';
 import { useAnswerReporter } from '../../hooks/useExerciseSession';
 import { useSpeechRecognition } from '../../hooks/useSpeechRecognition';
 import { getHint } from '../../data/hints';
+import { FORM_TO_VERB, getSubjectPerson } from '../../data/a1Verbs';
 
 export interface SentenceItem {
   /** Stable id (SRS itemKey). */
@@ -135,17 +136,26 @@ export function SentenceBuilder({
     if (!item) return false;
     if (activeMode === 'typing') return typedInput.trim().length > 0;
     if (activeMode === 'voice') return voiceInput.trim().length > 0;
-    return placed.length === item.words.length;
+    // v0.2.1 recoverability: `>=` so an accidentally placed distractor can
+    // never disable checking — the user can always press Check and get
+    // specific feedback instead of a dead UI.
+    return placed.length >= item.words.length;
   }, [item, activeMode, typedInput, voiceInput, placed.length]);
 
   // Contextual feedback analyzer for errors — returns the message AND a hint
   // reason keyed into the shared hint map (U4).
+  // Priority: Akkusativ -> Capitalization -> Verb conjugation -> Position-based
+  // missing -> Missing (global) -> Word order (generic fallback).
   const analyzeError = (attempt: string, expected: string[]): { message: string; reason: string } => {
-    const attemptWords = attempt.toLowerCase().split(/\s+/);
-    const expectedWords = expected.map((w) => w.toLowerCase());
+    const attemptWords = attempt
+      .toLowerCase()
+      .replace(/[.,!?]/g, '')
+      .split(/\s+/)
+      .filter(Boolean);
+    const expectedWords = expected.map((w) => w.toLowerCase().replace(/[.,!?]/g, ''));
     const expectedStr = expected.join(' ');
 
-    // Akkusativ check: der vs den
+    // 1. Akkusativ check: der vs den (highest priority, most common mistake)
     if (expectedStr.toLowerCase().includes('den') && attemptWords.includes('der')) {
       return {
         message: isDE
@@ -155,7 +165,63 @@ export function SentenceBuilder({
       };
     }
 
-    // Missing words check
+    // 2. Capitalization check: a noun the user typed lowercase at its position.
+    for (let i = 0; i < expected.length; i++) {
+      const expRaw = expected[i] ?? '';
+      const att = attemptWords[i] ?? '';
+      const exp = expectedWords[i] ?? '';
+      if (att === exp) continue;
+      if (/^[A-ZÄÖÜ]/.test(expRaw) && att === exp.toLowerCase()) {
+        return {
+          message: isDE
+            ? `Erinnerung: Substantive beginnen mit Großbuchstabe! (${expRaw})`
+            : `Capitalization: Nouns start with uppercase! (${expRaw})`,
+          reason: 'capitalization',
+        };
+      }
+    }
+
+    // 3. Verb-conjugation check — fires ONLY when safely detectable. The
+    //    attempt contains a known conjugated form that differs from the
+    //    sentence's OWN authoritative expected form. The correct value comes
+    //    from `expected`, never guessed from a possibly-ambiguous subject, so
+    //    a lone `sie` (she? they?) or `Sie` can't produce wrong advice.
+    //    `getSubjectPerson` is used only to add a friendly subject label.
+    const attemptForm = attemptWords.find((w) => FORM_TO_VERB[w]);
+    if (attemptForm) {
+      const verb = FORM_TO_VERB[attemptForm];
+      const expectedForm = expectedWords.find((w) => FORM_TO_VERB[w] === verb);
+      if (expectedForm && expectedForm !== attemptForm) {
+        const subjectRaw = expected.find((w) => (getSubjectPerson(w) ?? []).length > 0);
+        return {
+          message: subjectRaw
+            ? isDE
+              ? `⚠️ Verbkonjugation: „${subjectRaw}“ braucht „${expectedForm}“, nicht „${attemptForm}“`
+              : `⚠️ Verb conjugation: “${subjectRaw}” needs “${expectedForm}”, not “${attemptForm}”`
+            : isDE
+              ? `⚠️ Verbkonjugation: richtig ist „${expectedForm}“, nicht „${attemptForm}“`
+              : `⚠️ Verb conjugation: the correct form is “${expectedForm}”, not “${attemptForm}”`,
+          reason: 'verb-conjugation',
+        };
+      }
+    }
+
+    // 4. Position-based missing/incorrect word: expected word absent at its slot.
+    for (let i = 0; i < expected.length; i++) {
+      const exp = expectedWords[i] ?? '';
+      const att = attemptWords[i] ?? '';
+      if (att === exp) continue;
+      if (!attemptWords.includes(exp)) {
+        return {
+          message: isDE
+            ? `Fehlendes Wort an Position ${i + 1}: "${expected[i]}"`
+            : `Missing at position ${i + 1}: "${expected[i]}"`,
+          reason: 'missing-word',
+        };
+      }
+    }
+
+    // 5. Missing words (anywhere in the attempt).
     const missing = expectedWords.filter((w) => !attemptWords.includes(w));
     if (missing.length > 0) {
       return {
@@ -166,6 +232,7 @@ export function SentenceBuilder({
       };
     }
 
+    // 6. Generic fallback: all words present but wrong order / unknown reason.
     return {
       message: isDE ? 'Wortstellung oder Schreibweise prüfen!' : 'Check word order or spelling!',
       reason: 'word-order',
@@ -173,7 +240,9 @@ export function SentenceBuilder({
   };
 
   const check = () => {
-    if (!item || !isInputReady || wrongSlots.size > 0) return;
+    // v0.2.1 recoverability: no `wrongSlots` guard — users may re-check any
+    // time after correcting tiles (the old guard trapped them in error state).
+    if (!item || !isInputReady) return;
     const attempt = getAttemptText();
     const expectedStr = item.words.join(' ');
 
@@ -220,8 +289,9 @@ export function SentenceBuilder({
     setFeedback({ isError: true, message: errorMsg });
     setHintReason(reason);
 
+    // Hoisted so the auto-removal timer below can read it.
+    const wrong = new Set<number>();
     if (activeMode === 'tiles') {
-      const wrong = new Set<number>();
       placed.forEach((tileIdx, slotIdx) => {
         if (deck[tileIdx]?.word !== item.words[slotIdx]) wrong.add(slotIdx);
       });
@@ -239,21 +309,38 @@ export function SentenceBuilder({
     clearResetTimer();
     resetTimerRef.current = setTimeout(() => {
       if (activeMode === 'tiles') {
-        setPlaced((prev) => prev.filter((_, slotIdx) => !wrongSlots.has(slotIdx)));
+        // Use the LOCAL `wrong` set — the `wrongSlots` state captured in this
+        // closure is stale (still empty), which silently removed nothing.
+        setPlaced((prev) => prev.filter((_, slotIdx) => !wrong.has(slotIdx)));
         setWrongSlots(new Set());
       }
     }, 1200);
   };
 
   const placeTile = (tileIdx: number) => {
-    if (!item || placed.includes(tileIdx)) return;
+    if (!item) return;
+    clearResetTimer();
+    // v0.2.1 swap/recall: tapping a tile that is already placed returns it to
+    // the tray, so a wrong tile can be replaced without restarting.
+    if (placed.includes(tileIdx)) {
+      setPlaced((prev) => prev.filter((i) => i !== tileIdx));
+      setDraggingTile(null);
+      return;
+    }
     setPlaced((prev) => [...prev, tileIdx]);
     setDraggingTile(null);
   };
 
   const removeTile = (slotIdx: number) => {
-    if (wrongSlots.size > 0) return;
+    // v0.2.1 recoverability: removal is ALWAYS allowed — no locked error state.
+    clearResetTimer(); // cancel pending auto-removal so it cannot yank new tiles
     setPlaced((prev) => prev.filter((_, i) => i !== slotIdx));
+    setWrongSlots((prev) => {
+      if (!prev.has(slotIdx)) return prev;
+      const next = new Set(prev);
+      next.delete(slotIdx);
+      return next;
+    });
   };
 
   const restart = () => {
@@ -359,6 +446,17 @@ export function SentenceBuilder({
                         </motion.button>
                       );
                     })}
+                    {/* v0.2.1 slot indicators: numbered ghost slots show how many
+                        positions remain and where the next tile lands. */}
+                    {Array.from({ length: Math.max(0, item.words.length - placed.length) }, (_, i) => (
+                      <span
+                        key={`${item.id}-ghost-${i}`}
+                        aria-hidden="true"
+                        className="flex min-h-[44px] items-center rounded-xl border-2 border-dashed border-slate-200 px-3 py-2 text-xs font-bold text-slate-300 dark:border-slate-700 dark:text-slate-600"
+                      >
+                        {placed.length + i + 1}
+                      </span>
+                    ))}
                   </div>
                 </div>
 
@@ -367,27 +465,27 @@ export function SentenceBuilder({
                     {isDE ? 'Wörter' : 'Word tiles'}
                   </p>
                   <div className="flex flex-wrap gap-2 lg:flex-col lg:items-stretch">
-                    {deck.map((tile) => {
-                      const used = placed.includes(tile.key);
-                      return (
-                        <button
-                          key={`${item.id}-tile-${tile.key}`}
-                          type="button"
-                          draggable={!used}
-                          onDragStart={() => setDraggingTile(tile.key)}
-                          onDragEnd={() => setDraggingTile(null)}
-                          onClick={() => placeTile(tile.key)}
-                          disabled={used}
-                          className={`min-h-[44px] rounded-xl border-2 px-3 py-2 text-sm font-bold transition active:scale-95 ${
-                            used
-                              ? 'cursor-default border-transparent bg-transparent text-transparent'
-                              : 'cursor-grab border-slate-200 bg-white text-slate-800 shadow-sm hover:-translate-y-0.5 hover:border-blue-400 hover:shadow-md active:cursor-grabbing dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:hover:border-blue-500'
-                          }`}
-                        >
-                          {tile.word}
-                        </button>
-                      );
-                    })}
+                     {deck.map((tile, index) => {
+                       const used = placed.includes(index);
+                       return (
+                         <button
+                           key={`${item.id}-tile-${tile.key}`}
+                           type="button"
+                           draggable={!used}
+                           onDragStart={() => setDraggingTile(index)}
+                           onDragEnd={() => setDraggingTile(null)}
+                           onClick={() => placeTile(index)}
+                           title={used ? (isDE ? 'Zurück ins Fach' : 'Return to tray') : undefined}
+                           className={`min-h-[44px] rounded-xl border-2 px-3 py-2 text-sm font-bold transition active:scale-95 ${
+                             used
+                               ? 'cursor-pointer border-slate-200 bg-slate-100 text-slate-400 line-through opacity-70 hover:border-red-300 hover:text-red-500 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-500 dark:hover:border-red-700 dark:hover:text-red-400'
+                               : 'cursor-grab border-slate-200 bg-white text-slate-800 shadow-sm hover:-translate-y-0.5 hover:border-blue-400 hover:shadow-md active:cursor-grabbing dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:hover:border-blue-500'
+                           }`}
+                         >
+                           {tile.word}
+                         </button>
+                       );
+                     })}
                   </div>
                 </div>
               </div>
@@ -512,7 +610,7 @@ export function SentenceBuilder({
           <button
             type="button"
             onClick={check}
-            disabled={!isInputReady || wrongSlots.size > 0}
+            disabled={!isInputReady}
             className={`${theme.button.primary} inline-flex min-h-[44px] items-center gap-1.5`}
           >
             <Check className="h-4 w-4" aria-hidden="true" />

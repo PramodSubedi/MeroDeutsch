@@ -280,7 +280,9 @@ export class SupabaseCurriculumService implements CurriculumService {
     // VocabEntry shape. Upgrades ALL legacy consumers (Pronunciation,
     // Glossary, checkpoint vocab-translation, DailyChallenge, Dexie boot
     // seed) from the 7-entry vocab-item pool to the full ~1000-row table.
-    const cards = await this.getVocabularyFiltered({ limit: 100 });
+    // v0.2.0: cap raised 100 → 400 so Glossary/Pronunciation stop feeling
+    // like a sample while keeping per-mount payload light.
+    const cards = await this.getVocabularyFiltered({ limit: 400 });
     if (cards.length > 0) return cards.map(cardToLegacyEntry);
     // Offline fallback: cached vocab-item pool (legacy behavior).
     return this.fetchContentPool<VocabEntry>('vocab-item', true, () => this.localService.getVocabulary());
@@ -340,6 +342,94 @@ export class SupabaseCurriculumService implements CurriculumService {
 
   async getVocabularyFiltered(filters: VocabularyFilter): Promise<VocabCard[]> {
     return this.fetchVocabRows(filters);
+  }
+
+  /**
+   * Unit-themed vocabulary for checkpoint `vocab-translation` items (v0.2.0).
+   *
+   * Pass order (each pass dedupes into the same map):
+   *  1. categories (+ pos when given) — one `.in('category', …)` SELECT online,
+   *     Dexie tag-intersection offline.
+   *  2. pos only — catches units themed by part of speech (e.g. U5 verbs)
+   *     even when no category tags exist yet.
+   *  3. A1 fill — tops up from `{ level: 'A1' }` so a sparse/unknown category
+   *     can NEVER starve a checkpoint deck.
+   */
+  async getVocabularyByCategories(
+    categories: string[],
+    pos?: VocabularyFilter['pos'],
+    limit = 60
+  ): Promise<VocabEntry[]> {
+    const cats = categories.filter(Boolean);
+    const out = new Map<string, VocabCard>();
+
+    const addCards = (cards: VocabCard[]) => {
+      for (const c of cards) {
+        if (out.size >= limit) return;
+        out.set(c.id, c);
+      }
+    };
+
+    // Pass 1: configured categories (online table SELECT with .in()).
+    if (cats.length > 0) {
+      try {
+        if (supabase) {
+          let q = supabase
+            .from('vocabulary')
+            .select(
+              'word, article, translation_en, translation_np, translation_ne_roman, example_de, part_of_speech, level, category'
+            )
+            .in('category', cats)
+            .limit(limit);
+          if (pos) q = q.eq('part_of_speech', pos);
+          const { data, error } = await q;
+          if (!error && data && data.length > 0) {
+            const rows = data as (VocabRow & { part_of_speech: string; level?: string; category?: string })[];
+            void this.cacheVocab(rows);
+            addCards(rows.map(rowToVocabCard));
+          }
+        }
+      } catch (err) {
+        console.warn('[curriculum] themed vocab fetch failed:', err);
+      }
+      // Offline fallback for pass 1: Dexie tag intersection.
+      if (out.size === 0) {
+        const db = openDb();
+        if (db) {
+          try {
+            const cached = await db.vocab.toArray();
+            addCards(
+              cached.filter(
+                (c) => (!pos || c.partOfSpeech === pos) && c.tags.some((t) => cats.includes(t))
+              )
+            );
+          } catch {
+            /* cache unavailable — A1 fill below still applies */
+          }
+        }
+      }
+    }
+
+    // Pass 2: POS-only theming (e.g. U5 "want & can" → verbs).
+    if (out.size < limit && pos) {
+      try {
+        addCards(await this.fetchVocabRows({ pos, level: 'A1', limit }));
+      } catch {
+        /* fall through to A1 fill */
+      }
+    }
+
+    // Pass 3: A1 fill — guarantees a non-empty deck regardless of tag state.
+    if (out.size < limit) {
+      try {
+        addCards(await this.fetchVocabRows({ level: 'A1', limit }));
+      } catch {
+        /* last resort: whatever passes 1–2 produced (possibly empty on a
+           fully offline first run — same behavior as getVocabulary()) */
+      }
+    }
+
+    return Array.from(out.values()).map(cardToLegacyEntry);
   }
 
   async getVocabFilterOptions(): Promise<VocabularyFilterOptions> {

@@ -73,6 +73,19 @@ export interface StorySentence {
   words: StoryWord[];
 }
 
+/**
+ * One A1 comprehension question attached to a micro-story.
+ * Sourced by Kilo (questions column of content_items) — optional; absent => hidden.
+ */
+export interface StoryComprehensionQuestion {
+  id: string;
+  question: string;
+  options: string[];
+  correct: string;
+  /** Stable key for the review queue; defaults to \:q:\. */
+  itemKey?: string;
+}
+
 /** An A1 micro-story with interactive word-level translations. */
 export interface MicroStory {
   id: string;
@@ -81,6 +94,8 @@ export interface MicroStory {
   titleEn: string;
   level: 'A1';
   sentences: StorySentence[];
+  /** Optional comprehension questions (Kilo-seeded). Absent => quiz hidden. */
+  questions?: StoryComprehensionQuestion[];
 }
 
 /** Pronunciation tip for a specific letter (keyed by letter id). */
@@ -115,6 +130,17 @@ export interface CurriculumService {
   getVocabulary(): Promise<import('./index').VocabEntry[]>;
   /** Filtered vocabulary rows from the live `vocabulary` table (RPC → filtered → Dexie). */
   getVocabularyFiltered(filters: VocabularyFilter): Promise<import('./index').VocabCard[]>;
+  /**
+   * Unit-themed vocabulary for checkpoint `vocab-translation` items (v0.2.0).
+   * Tries each configured category in order, then an optional POS pass, and
+   * ALWAYS tops up from the general A1 pool — a sparse/unknown category can
+   * never starve a checkpoint deck.
+   */
+  getVocabularyByCategories(
+    categories: string[],
+    pos?: VocabularyFilter['pos'],
+    limit?: number
+  ): Promise<import('./index').VocabEntry[]>;
   /** Distinct level + category values for the trainer filter UI. */
   getVocabFilterOptions(): Promise<VocabularyFilterOptions>;
   getGrammarDrills(category: string): Promise<GrammarDrill[]>;
