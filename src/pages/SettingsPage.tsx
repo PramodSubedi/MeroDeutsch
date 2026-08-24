@@ -6,6 +6,7 @@ import { useDarkMode } from '../hooks/useDarkMode';
 import { useSpeechSpeed } from '../hooks/useSpeech';
 import { useAuth } from '../hooks/useAuth';
 import { usePageTitle } from '../hooks/usePageTitle';
+import { useInstallPrompt } from '../hooks/useInstallPrompt';
 import { scopedKey } from '../utils/userStorage';
 import { removeItem } from '../utils/safeStorage';
 import { supabase } from '../lib/supabase';
@@ -33,6 +34,7 @@ export function SettingsPage() {
   const { dark, toggle } = useDarkMode();
   const { speed, setSpeed } = useSpeechSpeed();
   const { user, logout } = useAuth();
+  const { canInstall, promptInstall } = useInstallPrompt();
   const navigate = useNavigate();
   const [confirmReset, setConfirmReset] = useState(false);
   const [resetting, setResetting] = useState(false);
@@ -186,6 +188,27 @@ export function SettingsPage() {
             </div>
           </div>
         </div>
+
+        {/* Install app (PWA) — only offered when the browser allows it */}
+        {canInstall && (
+          <div className={theme.panel.surface}>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h2 className="text-lg font-semibold text-slate-950 dark:text-white">
+                  {isDE ? 'App installieren' : 'Install App'}
+                </h2>
+                <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                  {isDE
+                    ? 'MeroDeutsch als App auf deinem Gerät installieren — funktioniert auch offline.'
+                    : 'Install MeroDeutsch on your device — works offline too.'}
+                </p>
+              </div>
+              <button type="button" onClick={() => void promptInstall()} className={theme.button.primary}>
+                {isDE ? '📲 Installieren' : '📲 Install'}
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Reset progress */}
         <div className={`${theme.panel.surface} border-red-200 dark:border-red-900/40`}>

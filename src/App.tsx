@@ -4,6 +4,7 @@ import { Layout } from './components/Layout';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { SkeletonLoader } from './components/SkeletonLoader';
 import { useDexieInit } from './hooks/useDexieInit';
+import { useSyncBridge } from './hooks/useSyncBridge';
 
 // Core pages - eagerly loaded for instant navigation
 import { HomePage } from './pages/HomePage';
@@ -51,6 +52,9 @@ function RapidBlitzRedirect() {
 export default function App() {
   // Bootstrap the Dexie data layer (seeds db.vocab on first load if empty)
   useDexieInit();
+  // Local→Cloud replay pipeline (v0.2.4 reintegration): syncs queued offline
+  // writes on reconnect + a 60s interval while authenticated. No-op for guests.
+  useSyncBridge();
   return (
     <ErrorBoundary>
       <BrowserRouter>

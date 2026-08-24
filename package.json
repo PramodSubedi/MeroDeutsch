@@ -22,13 +22,11 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.112.3",
     "@tanstack/react-virtual": "^3.14.9",
-    "@types/canvas-confetti": "^1.9.0",
     "@vercel/analytics": "^2.0.1",
     "canvas-confetti": "^1.9.4",
     "dexie": "^4.4.4",
     "dexie-react-hooks": "^4.4.0",
     "framer-motion": "^13.1.1",
-    "headroom-ai": "^0.36.4",
     "lucide-react": "^1.31.0",
     "pdf-parse": "^2.4.5",
     "react": "^19.2.8",
@@ -39,6 +37,7 @@
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.3",
+    "@types/canvas-confetti": "^1.9.0",
     "@types/next": "^8.0.7",
     "@types/node": "^24.13.3",
     "@types/react": "^19.2.18",
