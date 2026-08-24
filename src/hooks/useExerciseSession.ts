@@ -155,7 +155,8 @@ export function useExerciseSession<Q extends ExerciseQuestion>(
       const correct = matches ? matches(option, current) : option === current.correctAnswer;
       setSelected(option);
       setPhase(correct ? 'correct' : 'wrong');
-      setLastCorrect(correct);
+            setLastCorrect(correct);
+      setScore((n) => n + (correct ? 1 : 0));
       setAnswered((n) => n + 1);
       setResults((prev) => ({ ...prev, [current.key]: correct }));
 

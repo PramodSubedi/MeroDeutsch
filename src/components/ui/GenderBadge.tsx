@@ -47,7 +47,7 @@ export function GenderBadge({ article, labeled = true, dot = false, className }:
     article === 'plural' ? 'pl.' : GENDER_LABEL[article as Article];
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-bold ${t.bg} text-white ${className ?? ''}`}
+      className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-bold ${t.bg} text-white ${className ?? ''}`}
       aria-label={`gender ${article}`}
     >
       {labelText}

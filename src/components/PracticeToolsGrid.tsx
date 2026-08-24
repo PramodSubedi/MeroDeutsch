@@ -105,7 +105,7 @@ export function PracticeToolsGrid({ limit, footerLink = false }: PracticeToolsGr
         <Link
           key={index}
           to={tool.href}
-          className="bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between group cursor-pointer"
+          className="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between group cursor-pointer"
         >
           <div>
             <div className={`w-12 h-12 rounded-2xl border flex items-center justify-center mb-4 group-hover:scale-105 transition-transform ${tool.wellClass}`}>

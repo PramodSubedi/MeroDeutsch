@@ -43,7 +43,7 @@ export function GlossaryPage() {
         curriculumService.getCalendar(),
         curriculumService.getGreetings(),
         curriculumService.getArticles(),
-        curriculumService.getVocabulary(),
+        curriculumService.getVocabularyFiltered({}),
         curriculumService.getStories(),
       ]);
       setAlphabetData(alpha);
@@ -51,7 +51,7 @@ export function GlossaryPage() {
       setCalendarData(cal);
       setGreetingsData(greet);
       setArticlesData(art);
-      setVocabularyData(vocab);
+      setVocabularyData(vocab as unknown as VocabEntry[]);
       setStoriesData(stories);
       setDataLoaded(true);
     };
@@ -97,8 +97,15 @@ export function GlossaryPage() {
     });
 
     // Curated A1 vocabulary
-    vocabularyData.forEach((item) => {
-      entries.push({ de: item.de, en: item.en, ne: item.ne, source: item.tags[0] ?? 'Vocabulary' });
+    const vocabCardData = vocabularyData as any[];
+    vocabCardData.forEach((item) => {
+      const entry = {
+        de: item.lemma || item.de,
+        en: item.translation?.en || item.en,
+        ne: item.translation?.np || item.ne,
+        source: item.tags[0] ?? 'Vocabulary',
+      };
+      entries.push(entry);
     });
 
     // Stories - flatten all words from all stories (dynamic pool)
@@ -247,7 +254,7 @@ export function GlossaryPage() {
                         🔊
                       </button>
                     </div>
-                    <div className="mt-3 text-[11px] font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400">
+                    <div className="mt-3 text-xs font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400">
                       {entry.source}
                     </div>
                   </div>

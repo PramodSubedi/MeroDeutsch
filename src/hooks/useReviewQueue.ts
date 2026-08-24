@@ -51,19 +51,6 @@ function daysFromNow(days: number): string {
   return date.toISOString();
 }
 
-/** RFC-4122 v4 UUID generator (crypto.randomUUID fallback for older browsers). */
-function uuidv4(): string {
-  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
-    return crypto.randomUUID();
-  }
-  // Fallback: generate a v4 UUID manually
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-    const r = (Math.random() * 16) | 0;
-    const v = c === 'x' ? r : (r & 0x3) | 0x8;
-    return v.toString(16);
-  });
-}
-
 function rowToItem(row: LocalReviewRow): WrongAnswerItem {
   return {
     id: row.id,
@@ -217,11 +204,12 @@ export function useReviewQueue() {
     };
   }, [queue, userId, isAuthenticated]);
 
-  const addWrongAnswer = useCallback((item: Omit<WrongAnswerItem, 'id' | 'timestamp' | 'errorCount'>) => {
-    if (!db || !userId) return;
+const addWrongAnswer = useCallback((item: Omit<WrongAnswerItem, 'id' | 'timestamp' | 'errorCount'>) => {
+    if (!db) return;
 
+    const effectiveUserId = userId ?? 'guest';
     const existing = queue.find((entry) => entry.moduleType === item.moduleType && entry.itemKey === item.itemKey);
-    const id = existing?.id ?? uuidv4();
+    const id = existing?.id ?? `${effectiveUserId}:${item.moduleType}|${item.itemKey}`;
     const errorCount = (existing?.errorCount ?? 0) + 1;
 
     // Phase C: Infer error tag
@@ -234,7 +222,7 @@ export function useReviewQueue() {
 
     db.userProgress.put({
       id,
-      userId,
+      userId: effectiveUserId,
       cardId: item.itemKey,
       moduleType: item.moduleType,
       box: 1, // Start/reset to box 1 on wrong answer
@@ -253,23 +241,24 @@ export function useReviewQueue() {
     } as any);
 
     void recordActivity(1);
-  }, [userId, queue, recordActivity]);
+  }, [db, userId, queue, recordActivity]);
 
-  const markCorrect = useCallback((id: string) => {
+const markCorrect = useCallback((id: string) => {
     const localDb = db;
-    if (!localDb || !userId) return;
+    if (!localDb) return;
 
+    const effectiveUserId = userId ?? 'guest';
     localDb.userProgress.get(id).then((row) => {
       // Only mutate rows belonging to the current user.
-      if (!row || row.userId !== userId) return;
+      if (!row || row.userId !== effectiveUserId) return;
 
       const currentBox = row.box ?? 1;
 
-      // TRUE 4-BOX LEITNER: a correct answer at box 4 GRADUATES the card —
+// TRUE 4-BOX LEITNER: a correct answer at box 4 GRADUATES the card —
       // it is retired from the queue entirely instead of advancing to an
-      // out-of-range box 5 (which previously produced LEITNER_INTERVALS[4]
-      // === undefined → Invalid Date → silent put failure, so mastered
-      // items could never leave the queue).
+      // out-of-range box 5 (which would produce LEITNER_INTERVALS[4] === undefined
+      // → Invalid Date → silent put failure, so mastered items could never leave the queue).
+      // Cap advancement at box 4; a correct answer at box 4 graduates (removes from queue).
       if (currentBox >= LEITNER_INTERVALS.length) {
         localDb.userProgress.delete(id);
         if (isAuthenticated) {
@@ -277,7 +266,7 @@ export function useReviewQueue() {
             .from('review_queue')
             .delete()
             .eq('id', id)
-            .eq('user_id', userId)
+            .eq('user_id', effectiveUserId)
             .then(({ error }) => {
               if (error) console.warn('Failed to retire graduated review item remotely:', error.message);
             });
@@ -285,7 +274,8 @@ export function useReviewQueue() {
         return;
       }
 
-      const nextBox = currentBox + 1;
+// Advance one box, never exceeding box 4 (the graduation threshold).
+      const nextBox = Math.min(currentBox + 1, LEITNER_INTERVALS.length);
       const reps = (row.repetitions ?? 0) + 1;
       const interval = LEITNER_INTERVALS[nextBox - 1];
 
@@ -299,16 +289,16 @@ export function useReviewQueue() {
         updatedAt: new Date().toISOString(),
       });
     });
-
     void recordActivity(1);
-  }, [userId, isAuthenticated, recordActivity]);
+  }, [db, userId, isAuthenticated, recordActivity]);
 
-  const markResolved = useCallback((id: string) => {
+const markResolved = useCallback((id: string) => {
     const localDb = db;
-    if (!localDb || !userId) return;
+    if (!localDb) return;
+    const effectiveUserId = userId ?? 'guest';
     localDb.userProgress.get(id).then((row) => {
       // Only delete rows belonging to the current user.
-      if (row && row.userId === userId) {
+      if (row && row.userId === effectiveUserId) {
         localDb.userProgress.delete(id);
         // Delete remotely too — otherwise the login merge re-inserts the row
         // and "resolved" items resurrect after reload (Bug B fix).
@@ -317,31 +307,32 @@ export function useReviewQueue() {
             .from('review_queue')
             .delete()
             .eq('id', id)
-            .eq('user_id', userId)
+            .eq('user_id', effectiveUserId)
             .then(({ error }) => {
               if (error) console.warn('Failed to delete review item remotely:', error.message);
             });
         }
       }
     });
-  }, [userId, isAuthenticated]);
+  }, [db, userId, isAuthenticated]);
 
   /** Clear ALL review items. Cloud delete is AWAITED first so a subsequent
    *  login-merge cannot bulkPut the just-deleted remote rows back (Bug B).
    *  Local Dexie rows are cleared for the current user only.
    *  Resolves false when the cloud delete failed (caller should surface it). */
   const clearQueue = useCallback(async (): Promise<boolean> => {
-    if (isAuthenticated && userId) {
-      const { error } = await supabase.from('review_queue').delete().eq('user_id', userId);
+    const effectiveUserId = userId ?? 'guest';
+    if (isAuthenticated) {
+      const { error } = await supabase.from('review_queue').delete().eq('user_id', effectiveUserId);
       if (error) {
         console.warn('Failed to clear review queue in Supabase:', error.message);
         return false;
       }
     }
-    if (!db || !userId) return true;
-    db.userProgress.where('userId').equals(userId).delete();
+    if (!db) return true;
+    db.userProgress.where('userId').equals(effectiveUserId).delete();
     return true;
-  }, [userId, isAuthenticated]);
+  }, [db, isAuthenticated, userId]);
 
   const sortedQueue = useMemo(() => {
     const now = new Date().toISOString();

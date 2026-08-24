@@ -146,7 +146,7 @@ function VocabularyTranslationView({
         </div>
       </div>
 
-      <div className="rounded-3xl border-2 border-blue-200 bg-blue-50 p-6 text-center dark:border-blue-800 dark:bg-blue-950/40">
+      <div className="rounded-2xl border-2 border-blue-200 bg-blue-50 p-6 text-center dark:border-blue-800 dark:bg-blue-950/40">
         <div className="text-4xl font-extrabold text-slate-900 dark:text-white">
           {challenge.english}
         </div>
@@ -209,7 +209,7 @@ function AudioComprehensionView({
         </div>
       </div>
 
-      <div className="rounded-3xl border-2 border-purple-200 bg-purple-50 p-6 text-center dark:border-purple-800 dark:bg-purple-950/40">
+      <div className="rounded-2xl border-2 border-purple-200 bg-purple-50 p-6 text-center dark:border-purple-800 dark:bg-purple-950/40">
         <div className="mb-4 text-sm text-slate-600 dark:text-slate-400">
           Listen to the audio, then select the meaning
         </div>
@@ -268,7 +268,7 @@ function ArticlePrecisionView({
         </div>
       </div>
 
-      <div className="rounded-3xl border-2 border-green-200 bg-green-50 p-6 text-center dark:border-green-800 dark:bg-green-950/40">
+      <div className="rounded-2xl border-2 border-green-200 bg-green-50 p-6 text-center dark:border-green-800 dark:bg-green-950/40">
         <div className="flex items-center justify-center gap-3">
           <div className="text-4xl font-extrabold text-slate-900 dark:text-white">
             {challenge.noun}
@@ -287,7 +287,7 @@ function ArticlePrecisionView({
             type="button"
             onClick={() => handleClick(article)}
             disabled={locked}
-            className={`rounded-3xl px-3 py-3 text-lg font-extrabold text-white shadow transition-colors disabled:opacity-50 ${
+            className={`rounded-2xl px-3 py-3 text-lg font-extrabold text-white shadow transition-colors disabled:opacity-50 ${
               locked && lastChoice !== null
                 ? optionClass(article, challenge.article, lastChoice, locked)
                 : // Global gender color tokens: der=blue, die=red, das=green.
@@ -328,7 +328,7 @@ function NumberConversionView({
         </div>
       </div>
 
-      <div className="rounded-3xl border-2 border-amber-200 bg-amber-50 p-6 text-center dark:border-amber-800 dark:bg-amber-950/40">
+      <div className="rounded-2xl border-2 border-amber-200 bg-amber-50 p-6 text-center dark:border-amber-800 dark:bg-amber-950/40">
         <div className="text-4xl font-extrabold text-slate-900 dark:text-white">
           {isDigitToText ? challenge.number : challenge.germanText}
         </div>
@@ -380,7 +380,7 @@ function VerbConjugationView({
         </div>
       </div>
 
-      <div className="rounded-3xl border-2 border-indigo-200 bg-indigo-50 p-6 text-center dark:border-indigo-800 dark:bg-indigo-950/40">
+      <div className="rounded-2xl border-2 border-indigo-200 bg-indigo-50 p-6 text-center dark:border-indigo-800 dark:bg-indigo-950/40">
         <div className="text-3xl font-extrabold text-slate-900 dark:text-white">
           {challenge.pronoun} {challenge.verb ? `(${challenge.verb})` : ''}
         </div>
@@ -516,7 +516,7 @@ function PronunciationReadingView({
         </div>
       </div>
 
-      <div className="rounded-3xl border-2 border-rose-200 bg-rose-50 p-6 text-center dark:border-rose-800 dark:bg-rose-950/40">
+      <div className="rounded-2xl border-2 border-rose-200 bg-rose-50 p-6 text-center dark:border-rose-800 dark:bg-rose-950/40">
         <div className="text-4xl font-extrabold text-slate-900 dark:text-white">
           {challenge.text}
         </div>

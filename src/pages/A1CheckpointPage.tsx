@@ -211,7 +211,7 @@ export function A1CheckpointPage() {
     }
   }, [phase, answered, questions.length, score, unitIndex, markCheckpointResult]);
 
-  useEffect(() => {
+useEffect(() => {
     if (!unlocked) {
       setPhase('ready');
       return;
@@ -221,23 +221,31 @@ export function A1CheckpointPage() {
       const specs = unit.checkpoint.specs;
       const needed = new Set(specs.map((s) => s.type));
       const grammarCategories = ['sein', 'haben', 'weakVerb', 'cases'];
+      const vocabulary = needed.has('vocab-translation')
+        ? unit.vocabCategories?.length || unit.vocabPos
+          ? await curriculumService.getVocabularyByCategories(
+              unit.vocabCategories ?? [],
+              unit.vocabPos,
+              60
+            )
+          : await curriculumService.getVocabularyFiltered({ level: 'A1' })
+        : [];
+      // Map VocabCard[] to VocabEntry[] shape for compatibility with LoadedData
+      const vocabEntries: VocabEntry[] = ((vocabulary ?? []) as any).map((c: { id: string; lemma: string; translation: { en: string; np: string } | undefined; tags?: string[] }) => ({
+        id: c.id,
+        de: c.lemma,
+        en: c.translation?.en ?? '',
+        ne: c.translation?.np ?? '',
+        tags: c.tags ?? [],
+        level: 'A1',
+      }));
       const data: LoadedData = {
         greetings: needed.has('greeting-translation') ? await curriculumService.getGreetings() : [],
         numbers: needed.has('number-conversion') ? await curriculumService.getNumbers() : [],
         alphabet: needed.has('alphabet-letter') ? await curriculumService.getAlphabet() : [],
         articles: needed.has('article-precision') ? await curriculumService.getArticles() : [],
         calendar: needed.has('calendar-translation') ? await curriculumService.getCalendar() : [],
-        // v0.2.0: units with vocabCategories/vocabPos draw themed vocab
-        // (categories → POS → A1 fill, never empty); others keep the general pool.
-        vocabulary: needed.has('vocab-translation')
-          ? unit.vocabCategories?.length || unit.vocabPos
-            ? await curriculumService.getVocabularyByCategories(
-                unit.vocabCategories ?? [],
-                unit.vocabPos,
-                60
-              )
-            : await curriculumService.getVocabulary()
-          : [],
+        vocabulary: vocabEntries,
         grammar: needed.has('grammar-drill')
           ? (await Promise.all(grammarCategories.map((c) => curriculumService.getGrammarDrills(c)))).reduce(
               (acc, drills, i) => {
@@ -390,17 +398,26 @@ export function A1CheckpointPage() {
           </div>
 
           {missedItems.length > 0 && (
-            <div className="mt-4 space-y-2">
-              <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                {isDE ? 'Fehleranalyse' : 'Mistakes to review'}
-              </h2>
+            <div className="mt-5 space-y-2">
+              <div className="flex items-center justify-between">
+                <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                  {isDE ? 'Fehleranalyse' : 'Mistakes to review'}
+                </h2>
+                <span className="rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-semibold text-red-700 dark:bg-red-900/40 dark:text-red-300">
+                  {missedItems.length}/{total}
+                </span>
+              </div>
               {missedItems.map(({ q }) => (
                 <div
                   key={q.key}
-                  className="rounded-lg bg-red-50 p-3 text-xs dark:bg-red-950/30"
+                  className="flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 p-3 text-xs dark:border-red-900/50 dark:bg-red-950/30"
                 >
-                  <div className="font-medium text-slate-700 dark:text-slate-300">
-                    {q.prompt} → {q.correctAnswer}
+                  <span aria-hidden="true" className="mt-0.5 font-bold text-red-600 dark:text-red-300">✗</span>
+                  <div className="min-w-0 flex-1">
+                    <div className="font-medium text-slate-700 dark:text-slate-300">{q.prompt}</div>
+                    <div className="mt-0.5 text-emerald-700 dark:text-emerald-300">
+                      ✓ {q.correctAnswer}
+                    </div>
                   </div>
                 </div>
               ))}

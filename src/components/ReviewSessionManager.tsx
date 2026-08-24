@@ -36,6 +36,9 @@ interface ReviewSessionManagerProps {
   onActiveFilterChange?: (filter: FilterId) => void;
   /** Label for the summary screen's primary button (e.g. DailySession: "Continue"). */
   completeLabel?: string;
+  /** Fired when a correct answer graduates a box-4 item out of the queue
+   *  (true 4-box Leitner retirement). Parents use it for the 🎓 payoff. */
+  onGraduate?: () => void;
 }
 
 type FilterId = 'all' | 'focus' | 'mastery' | string;
@@ -101,6 +104,7 @@ export function ReviewSessionManager({
   activeFilter: activeFilterProp,
   onActiveFilterChange,
   completeLabel,
+  onGraduate,
 }: ReviewSessionManagerProps) {
   const { langMode } = useLang();
   const { reportAnswer } = useXp();
@@ -151,6 +155,9 @@ export function ReviewSessionManager({
     if (isCorrect) {
       // Promote in Leitner system + award real XP (10 per correctly recalled item).
       onMarkCorrect(currentItem.id);
+      // 🎓 True 4-box graduation: a correct answer while already at box 4
+      // retires the card — notify the parent so it can celebrate.
+      if ((currentItem.boxLevel ?? 1) >= 4) onGraduate?.();
       setSessionStats((prev) => ({
         ...prev,
         reviewed: prev.reviewed + 1,
@@ -187,10 +194,13 @@ export function ReviewSessionManager({
 
   const startSession = () => {
     if (filteredQueue.length === 0) return;
-    // Cap the pool if limit is set (Phase B short daily refresh/3-minute sprint),
-    // then INTERLEAVE across module types for better discrimination practice.
-    const pool = limit && limit > 0 ? filteredQueue.slice(0, limit) : filteredQueue;
-    setSessionItems(interleaveByModule(pool));
+    // Stratify-shuffle by moduleType BEFORE slicing: round-robin across groups
+    // preserves due-date priority within each module while guaranteeing a capped
+    // session samples across types (improves retention vs. blocked practice).
+    const shuffled = interleaveByModule(filteredQueue);
+    // Cap the pool if limit is set (Phase B short daily refresh/3-minute sprint).
+    const pool = limit && limit > 0 ? shuffled.slice(0, limit) : shuffled;
+    setSessionItems(pool);
     setCurrentIndex(0);
     setSessionStats(EMPTY_STATS);
     setSessionActive(true);

@@ -85,8 +85,15 @@ export function PronunciationPage() {
         if (cancelled) return null;
         if (a1 && a1.length >= MIN_POOL) return a1.map(toLemma);
         return curriculumService
-          .getVocabulary()
-          .then((v) => (v ?? []).map((e) => ({ id: e.id, de: e.de, en: e.en, ne: e.ne })));
+          .getVocabularyFiltered({})
+          .then((v) =>
+            (v ?? []).map((e) => ({
+              id: e.id,
+              de: e.lemma,
+              en: e.translation?.en ?? '',
+              ne: e.translation?.np ?? '',
+            }))
+          );
       })
       .then((pool) => {
         if (cancelled || !pool || pool.length === 0) return;
@@ -137,6 +144,15 @@ export function PronunciationPage() {
 
       if (wordMatch) {
         setResult('partial');
+        // Near-miss (correct word / lightly accented): queue for review as a soft-wrong
+        // so it re-appears in SRS and is not silently dropped from XP/progress.
+        reportResult({
+          correct: false,
+          module: 'pronunciation',
+          itemKey: word.de,
+          userAnswer: transcript,
+          correctAnswer: word.de,
+        });
       } else {
         setResult('wrong');
         reportResult({

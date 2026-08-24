@@ -130,15 +130,15 @@ export function AlphabetPage() {
             <div className="grid grid-cols-3 gap-2 text-center">
               <div>
                 <div className="text-xl font-bold text-blue-600 dark:text-blue-400">{progress.practiced.length}</div>
-                <div className="text-[11px] text-slate-500">{isDE ? 'Buchstaben' : 'Letters'}</div>
+                <div className="text-xs text-slate-500">{isDE ? 'Buchstaben' : 'Letters'}</div>
               </div>
               <div>
                 <div className="text-xl font-bold text-green-600">{quizPct}%</div>
-                <div className="text-[11px] text-slate-500">Quiz</div>
+                <div className="text-xs text-slate-500">Quiz</div>
               </div>
               <div>
                 <div className="text-xl font-bold text-amber-600">{progress.spellCompleted || 0}</div>
-                <div className="text-[11px] text-slate-500">{isDE ? 'Wörter' : 'Words'}</div>
+                <div className="text-xs text-slate-500">{isDE ? 'Wörter' : 'Words'}</div>
               </div>
             </div>
             <button

@@ -26,6 +26,24 @@ export const theme = {
     das: { hex: '#059669', text: 'text-emerald-600', bg: 'bg-emerald-600', border: 'border-emerald-600', darkText: 'dark:text-emerald-400' },
     diePl: { hex: '#d97706', text: 'text-amber-600', bg: 'bg-amber-600', border: 'border-amber-600', darkText: 'dark:text-amber-400' },
   } as const,
+  /**
+   * Review-row module badges (Dashboard queue). Tokenized so the palette stays
+   * consistent when new moduleTypes appear — unknown types fall back to slate.
+   */
+  moduleBadge: {
+    alphabet: 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300',
+    numbers: 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300',
+    calendar: 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300',
+    articles: 'bg-pink-100 text-pink-700 dark:bg-pink-900/40 dark:text-pink-300',
+    greetings: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300',
+    grammar: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300',
+    pronunciation: 'bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300',
+    dictation: 'bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300',
+    fallback: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
+    // Widened index signature: review rows carry open-ended moduleTypes
+    // ('a1-checkpoint', 'daily-challenge', stories, …). Unknown keys fall
+    // through to `fallback` at the call site (see DashboardPage badge).
+  } as Record<string, string>,
   page: {
     container: 'py-4',
     heading: 'text-xl font-bold text-slate-900 dark:text-slate-100',
@@ -68,6 +86,11 @@ export const theme = {
     accent: 'rounded-2xl bg-blue-50 p-5 shadow-sm dark:bg-blue-950/40',
     tip: 'rounded-2xl bg-slate-50 p-4 text-sm dark:bg-slate-800/60',
   },
+  /**
+   * Layer ladder (documented — keep values consistent):
+   *   header / bottom-nav / overlay dialogs = z-50 · milestone toast = z-[60]
+   * Toasts must stay above quiz UI (.clinerules E3); nothing else goes higher.
+   */
   modal: {
     overlay: 'fixed inset-0 z-50 flex items-start justify-center bg-black/50 p-4 backdrop-blur-sm',
     dialog: 'relative mt-[5%] w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl dark:bg-slate-800 dark:text-slate-100',
@@ -78,12 +101,14 @@ export const theme = {
     badge: 'w-10 text-center text-xl sm:text-2xl font-bold text-blue-600 dark:text-blue-400',
     title: 'text-lg font-bold text-slate-900 dark:text-slate-100',
     line: 'mt-1 text-sm text-slate-500 dark:text-slate-400',
-    footer: 'mt-1 text-[11px] text-slate-400 dark:text-slate-400',
-    note: 'mt-2 text-[11px] font-medium text-blue-600 dark:text-blue-400',
+    footer: 'mt-1 text-xs text-slate-400 dark:text-slate-400',
+    note: 'mt-2 text-xs font-medium text-blue-600 dark:text-blue-400',
   },
   input: 'w-full rounded-lg border border-slate-200 bg-white p-3 text-base text-slate-900 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-blue-500 dark:focus:ring-blue-900/40',
   button: {
     primary: 'rounded-lg bg-blue-600 px-4 py-3 text-base font-semibold text-white shadow-sm transition hover:bg-blue-700 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50',
+    /** Compact primary for dense rows (quest claim, inline CTAs) — no !important overrides needed. */
+    primarySmall: 'rounded-lg bg-blue-600 px-3 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-blue-700 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50',
     secondary: 'rounded-lg bg-blue-50 px-4 py-3 text-base font-semibold text-blue-600 transition hover:bg-blue-100 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-blue-950/40 dark:text-blue-300 dark:hover:bg-blue-900/40',
     danger: 'rounded-lg bg-red-600 px-4 py-3 text-base font-semibold text-white shadow-sm transition hover:bg-red-700 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50',
     icon: 'inline-flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 text-base text-blue-600 transition hover:bg-blue-100 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-blue-900/50 dark:text-blue-300 dark:hover:bg-blue-800',

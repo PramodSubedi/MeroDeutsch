@@ -153,7 +153,7 @@ export function SkillRadarChart() {
                       style={{ width: `${s.accuracy}%`, backgroundColor: BRAND_BLUE }}
                     />
                   </div>
-                  <div className="mt-1 text-[11px] text-slate-400 dark:text-slate-500">
+                  <div className="mt-1 text-xs text-slate-400 dark:text-slate-500">
                     {s.correct}/{s.total} {isDE ? 'richtig' : 'correct'} · Übe auf{' '}
                     <span className="font-mono">{meta.hint}</span>
                   </div>

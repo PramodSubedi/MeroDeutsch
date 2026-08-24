@@ -78,6 +78,7 @@ export function AuthPage() {
             <button
               type="button"
               onClick={() => setMode('register')}
+              aria-pressed={mode === 'register'}
               className={mode === 'register' ? theme.button.primary : theme.button.secondary}
             >
               Register
@@ -85,9 +86,10 @@ export function AuthPage() {
             <button
               type="button"
               onClick={() => setMode('login')}
+              aria-pressed={mode === 'login'}
               className={mode === 'login' ? theme.button.primary : theme.button.secondary}
             >
-              Login
+              Sign in
             </button>
           </div>
         </div>
@@ -201,7 +203,7 @@ export function AuthPage() {
                 {mode === 'register' ? 'Registering...' : 'Signing in...'}
               </span>
             ) : (
-              mode === 'register' ? 'Register account' : 'Login'
+              mode === 'register' ? 'Register account' : 'Sign in to continue'
             )}
           </button>
         </form>

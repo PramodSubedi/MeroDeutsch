@@ -28,6 +28,7 @@ import { A1_UNITS, A1_CURRICULUM, type PathNode } from '../../data/a1Path';
 import { HonorificsTable } from '../grammar/HonorificsTable';
 import { GrammarComparisonTable } from '../grammar/GrammarComparisonTable';
 import { GenderBadge } from '../ui/GenderBadge';
+import { theme } from '../../config/theme';
 
 type UnitPhase = 'locked' | 'current' | 'done';
 type PillState = 'completed' | 'active' | 'locked';
@@ -329,9 +330,9 @@ function UnitCard({ unitIndex }: { unitIndex: number }) {
             {!isAuthenticated && (
               <Link
                 to="/auth"
-                className="inline-flex min-h-[44px] items-center rounded-lg px-2 font-semibold text-blue-600 hover:text-blue-800 active:scale-95 dark:text-blue-300"
+                className={`inline-flex min-h-[44px] items-center rounded-lg font-semibold ${theme.button.secondary}`}
               >
-                {isDE ? 'Anmelden →' : 'Sign in →'}
+                {isDE ? 'Anmelden' : 'Sign in'}
               </Link>
             )}
           </p>

@@ -271,15 +271,15 @@ export function useRapidBlitzMultiChallenge(mode?: ChallengeType) {
       let isCorrect = false;
       let correctAnswer = '';
       switch (challenge.type) {
-        case 'vocabulary-translation': correctAnswer = challenge.german; isCorrect = selectedAnswer === correctAnswer; break;
-        case 'audio-comprehension': correctAnswer = challenge.meaning; isCorrect = selectedAnswer === correctAnswer; break;
+        case 'vocabulary-translation': correctAnswer = challenge.german; isCorrect = selectedAnswer.toLowerCase() === correctAnswer.toLowerCase(); break;
+        case 'audio-comprehension': correctAnswer = challenge.meaning; isCorrect = selectedAnswer.toLowerCase() === correctAnswer.toLowerCase(); break;
         case 'article-precision': correctAnswer = challenge.article; isCorrect = selectedAnswer === correctAnswer; break;
         case 'number-conversion':
           if (challenge.direction === 'digit-to-text') { correctAnswer = challenge.germanText; isCorrect = selectedAnswer === correctAnswer; }
           else { correctAnswer = String(challenge.number); isCorrect = selectedAnswer === correctAnswer; }
           break;
-        case 'verb-conjugation': correctAnswer = challenge.conjugated; isCorrect = selectedAnswer === correctAnswer; break;
-        case 'pronunciation-reading': correctAnswer = challenge.meaning; isCorrect = selectedAnswer === correctAnswer; break;
+        case 'verb-conjugation': correctAnswer = challenge.conjugated; isCorrect = selectedAnswer.toLowerCase() === correctAnswer.toLowerCase(); break;
+        case 'pronunciation-reading': correctAnswer = challenge.meaning; isCorrect = selectedAnswer.toLowerCase() === correctAnswer.toLowerCase(); break;
         default: isCorrect = false;
       }
       let xp = 0;

@@ -1,5 +1,6 @@
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { Moon, Sun, Volume2, VolumeX } from 'lucide-react';
 import { theme } from '../config/theme';
 import { getModuleRoutes } from '../config/modules';
 import { useDarkMode } from '../hooks/useDarkMode';
@@ -114,7 +115,7 @@ export function Layout() {
         <div
           role="status"
           aria-live="polite"
-          className="fixed top-20 left-1/2 z-[60] -translate-x-1/2 flex items-center gap-3 rounded-xl bg-slate-900 px-4 py-3 text-sm font-bold text-white shadow-lg animate-bounce dark:bg-white dark:text-slate-900"
+          className="fixed top-20 left-1/2 z-[60] -translate-x-1/2 flex items-center gap-3 rounded-xl bg-slate-900 px-4 py-3 text-sm font-bold text-white shadow-lg animate-in fade-in slide-in-from-top-4 duration-300 dark:bg-white dark:text-slate-900"
         >
           <span>{toast.icon} {toast.message}</span>
           <button type="button" onClick={dismissToast} className="text-white/70 hover:text-white dark:text-slate-500 dark:hover:text-slate-900 font-bold" aria-label="Dismiss">
@@ -149,7 +150,7 @@ export function Layout() {
               className={theme.layout.themeButton}
               aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'}
             >
-              {dark ? '☀️' : '🌙'}
+              {dark ? <Sun className="h-5 w-5" aria-hidden="true" /> : <Moon className="h-5 w-5" aria-hidden="true" />}
             </button>
             <button
               type="button"
@@ -161,7 +162,7 @@ export function Layout() {
               className={theme.layout.themeButton}
               aria-label={audioEnabled ? 'Mute audio' : 'Unmute audio'}
             >
-              {audioEnabled ? '🔊' : '🔇'}
+              {audioEnabled ? <Volume2 className="h-5 w-5" aria-hidden="true" /> : <VolumeX className="h-5 w-5" aria-hidden="true" />}
             </button>
             {user && <UserMenu user={user} />}
           </nav>
@@ -175,7 +176,7 @@ export function Layout() {
               className={theme.layout.themeButton}
               aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'}
             >
-              {dark ? '☀️' : '🌙'}
+              {dark ? <Sun className="h-5 w-5" aria-hidden="true" /> : <Moon className="h-5 w-5" aria-hidden="true" />}
             </button>
             <button
               type="button"
@@ -187,7 +188,7 @@ export function Layout() {
               className={theme.layout.themeButton}
               aria-label={audioEnabled ? 'Mute audio' : 'Unmute audio'}
             >
-              {audioEnabled ? '🔊' : '🔇'}
+              {audioEnabled ? <Volume2 className="h-5 w-5" aria-hidden="true" /> : <VolumeX className="h-5 w-5" aria-hidden="true" />}
             </button>
             {user && <UserMenu user={user} />}
           </div>
@@ -204,10 +205,9 @@ export function Layout() {
       <main
         id="main-content"
         role="main"
-        className={`${theme.layout.main} px-4 scroll-mt-24 pb-20 md:pb-8`}
-        style={isModuleRoute ? { paddingTop: '2rem' } : undefined}
+        className={`${theme.layout.main} px-4 scroll-mt-24 pb-20 md:pb-8 ${isModuleRoute ? 'pt-8' : ''}`}
       >
-        <Breadcrumb />
+        {pathname !== '/auth' && <Breadcrumb />}
         {isModuleRoute && <ModuleChrome />}
         <Outlet />
       </main>

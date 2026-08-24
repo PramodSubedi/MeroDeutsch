@@ -611,7 +611,7 @@ export function ArticlesPage() {
                   type="button"
                   onClick={() => checkArticle(choice)}
                   disabled={locked}
-                  className={`rounded-3xl px-4 py-3 text-sm font-semibold shadow-sm transition disabled:opacity-50 ${buttonClass} ${selected ? 'ring-4 ring-white/60' : ''}`}
+                  className={`rounded-2xl px-4 py-3 text-sm font-semibold shadow-sm transition disabled:opacity-50 ${buttonClass} ${selected ? 'ring-4 ring-white/60' : ''}`}
                 >
                   {choice.toUpperCase()}
                 </button>

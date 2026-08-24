@@ -118,11 +118,20 @@ export function DailyChallenge({ variant = 'normal' }: DailyChallengeProps) {
   // Fetch data from curriculumService
   useEffect(() => {
     const loadData = async () => {
-      const [vocab, alpha, nums] = await Promise.all([
-        curriculumService.getVocabulary(),
+      const [vocabCards, alpha, nums] = await Promise.all([
+        curriculumService.getVocabularyFiltered({}),
         curriculumService.getAlphabet(),
         curriculumService.getNumbers(),
       ]);
+      // Map VocabCard[] to VocabEntry[] shape for compatibility with existing state
+      const vocab: VocabEntry[] = vocabCards.map((c) => ({
+        id: c.id,
+        de: c.lemma,
+        en: c.translation?.en ?? '',
+        ne: c.translation?.np ?? '',
+        tags: c.tags ?? [],
+        level: 'A1',
+      }));
       setVocabularyData(vocab);
       setAlphabetData(alpha);
       setNumbersData(nums);

@@ -68,7 +68,7 @@ export function DailyQuestsWidget() {
                   style={{ width: `${pct}%` }}
                 />
               </div>
-              <div className="mt-1 flex items-center justify-between text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+              <div className="mt-1 flex items-center justify-between text-xs font-semibold text-slate-500 dark:text-slate-400">
                 <span>{quest.progress ?? 0}/{quest.maxProgress ?? 1}</span>
                 <span>+{quest.rewardXp} XP</span>
               </div>
@@ -84,7 +84,7 @@ export function DailyQuestsWidget() {
                     <button
                       type="button"
                       onClick={() => claimReward(quest.id)}
-                      className={`w-full ${theme.button.primary} !px-3 !py-1.5 text-xs`}
+                      className={`w-full ${theme.button.primarySmall}`}
                     >
                       {isDE ? 'XP einlösen' : 'Claim XP'} 🎁
                     </button>

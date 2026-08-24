@@ -3,7 +3,7 @@ import { Logo } from './common/Logo';
 
 export function Footer() {
   return (
-    <footer className="bg-white dark:bg-slate-900 shadow-[0_-4px_16px_rgba(15,23,42,0.06)] py-6 mt-12 transition-colors">
+    <footer className="bg-white dark:bg-slate-900 shadow-[0_-4px_16px_rgba(15,23,42,0.06)] py-6 pb-24 md:pb-6 mt-12 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 bg-slate-50 dark:bg-slate-950/50 rounded-2xl p-6">
 

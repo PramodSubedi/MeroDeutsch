@@ -90,5 +90,9 @@ When all of the following are true, you may mark your `[Kilo]` items done in `BA
 
 ## 6. Head hire with Cline (the join gate)
 - Your Step 1 + Tier 1 can run **in parallel** with Cline's A1–A4+re-route (no file overlap).
-- Cline's checkpoint `vocab-translation` level-powering is **blocked on your unit4/Unit5/A1 rows**; until they a land, the existing `a1Path.ts` A1 fallback keeps it non-degraded — so this is a soft/gate, not a blocker.
+- Cline's checkpoint `vocab-translation` level-powering is **blocked on your unit4/Unit5/A1 rows**; until they land, the existing `a1Path.ts` A1 fallback keeps it non-degraded — so this is a soft/gate, not a blocker.
 - When your seeds are ready, say so explicitly in `HANDOFF.md` so Cline can proceed with the checkpoint level filter.
+
+---
+
+*Companion sections: ownership table + tier gates live in `docs/BACKLOG.md` ("Shared Task — Engine (Cline) / Content (Kilo)"); live status snapshots + do-not-touch locks live in `docs/HANDOFF.md`. This was a docs-only pass — no `src/`, `scripts/`, or migration changes.*

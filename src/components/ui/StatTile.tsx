@@ -44,7 +44,7 @@ export function StatTile({ label, value, subValue, progressPct, caption, color =
     <>
       {/* Fixed vertical rhythm shared by every metric card sitewide:
           label → mt-3 value row (font-bold) → mt-3 bar/caption. */}
-      <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
+      <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
         {label}
       </div>
       <div className="mt-3 flex items-end justify-between gap-3">

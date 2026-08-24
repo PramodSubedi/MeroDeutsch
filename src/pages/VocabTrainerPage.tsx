@@ -220,7 +220,7 @@ export function VocabTrainerPage() {
       {/* ── Filter bar ─────────────────────────────────────────────── */}
       <div className={`${theme.panel.surface} space-y-3`}>
         <div>
-          <div className="mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+          <div className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-slate-400">
             {isDE ? 'Niveau' : 'Level'}
           </div>
           <div className="flex flex-wrap gap-2">
@@ -236,7 +236,7 @@ export function VocabTrainerPage() {
         </div>
 
         <div>
-          <div className="mb-1.5 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+          <div className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-slate-400">
             {isDE ? 'Wortart' : 'Word type'}
           </div>
           <div className="flex flex-wrap gap-2">
@@ -252,7 +252,7 @@ export function VocabTrainerPage() {
           <div>
             <label
               htmlFor="vt-category"
-              className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-slate-400"
+              className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-400"
             >
               {isDE ? 'Thema' : 'Topic'}
             </label>
@@ -354,7 +354,7 @@ export function VocabTrainerPage() {
             onClick={handleFlip}
             aria-pressed={flipped}
             aria-label={flipped ? 'Show German word' : 'Reveal translation'}
-            className="relative block w-full rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-sm transition-all duration-300 hover:shadow-md active:scale-[0.99] dark:border-slate-700 dark:bg-slate-900"
+            className="relative block w-full rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm transition-all duration-300 hover:shadow-md active:scale-[0.99] dark:border-slate-700 dark:bg-slate-900"
             style={{ minHeight: 220 }}
           >
             {!flipped ? (
@@ -422,7 +422,7 @@ export function VocabTrainerPage() {
           </div>
 
           <div className={`${theme.panel.surface} text-center`}>
-            <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+            <div className="text-xs font-semibold uppercase tracking-wider text-slate-400">
               {isDE ? 'Was bedeutet dieses Wort?' : 'What does this mean?'}
             </div>
             <div className="mt-2 text-3xl font-bold text-slate-900 dark:text-white">{question.card.lemma}</div>

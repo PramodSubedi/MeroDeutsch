@@ -172,7 +172,7 @@ export function DashboardPage() {
       <div className="mb-4 grid gap-4 lg:grid-cols-2">
         {/* Same vertical rhythm as StatTile: label → mt-3 bold value → mt-3 detail. */}
         <div className="rounded-2xl bg-white p-5 shadow-sm dark:bg-slate-900">
-          <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">{streakLabel}</div>
+          <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">{streakLabel}</div>
           <div className="mt-3 flex items-baseline gap-3">
             <div className="text-3xl font-bold leading-none text-emerald-600">{formatCount.format(streakCount)}</div>
             <div className="pb-0.5 text-sm font-medium text-slate-500 dark:text-slate-400">
@@ -183,7 +183,7 @@ export function DashboardPage() {
         </div>
 
         <div className="rounded-2xl bg-white p-5 shadow-sm dark:bg-slate-900">
-          <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">{progressLabel}</div>
+          <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">{progressLabel}</div>
           <div className="mt-3 space-y-1.5 text-sm text-slate-600 dark:text-slate-300">
             <div>{lettersPracticed}: {formatCount.format(progress.practiced.length)}/26</div>
             <div>{spellingRounds}: {formatCount.format(progress.spellCompleted)}</div>
@@ -249,6 +249,17 @@ export function DashboardPage() {
           queue={queue}
           dueQueue={dueQueue}
           onMarkCorrect={markCorrect}
+          onGraduate={() => {
+            // 🎓 "Mastered" celebration payoff (box-4 retirement): badge +
+            // non-blocking milestone toast, consistent with other payoffs here.
+            unlockBadge('box4_master');
+            showToast({
+              message: isDE
+                ? 'Karte gemeistert! Sie hat deine Review-Warteschlange verlassen. 🎓'
+                : 'Card mastered! It graduated from your review queue. 🎓',
+              icon: '🎓',
+            });
+          }}
           embedded
           limit={isSprint ? 10 : undefined}
           autoStart={isSprint}
@@ -281,16 +292,16 @@ export function DashboardPage() {
                   <div>
                     <div className="flex flex-wrap items-center gap-2">
                       <span
-                        className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${item.moduleType === 'alphabet' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300' : item.moduleType === 'numbers' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300' : item.moduleType === 'calendar' ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300' : item.moduleType === 'articles' ? 'bg-pink-100 text-pink-700 dark:bg-pink-900/40 dark:text-pink-300' : item.moduleType === 'greetings' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300' : item.moduleType === 'grammar' ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300' : item.moduleType === 'pronunciation' ? 'bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300' : item.moduleType === 'dictation' ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300' : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300'}`}>
+                        className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${theme.moduleBadge[item.moduleType] ?? theme.moduleBadge.fallback}`}>
                         {item.moduleType}
                       </span>
                       {item.errorTag && (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-red-50 px-2 py-0.5 text-[11px] font-semibold text-red-700 dark:bg-red-950/20 dark:text-red-300">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-red-50 px-2 py-0.5 text-xs font-semibold text-red-700 dark:bg-red-950/20 dark:text-red-300">
                           🏷️ {item.errorTag}
                         </span>
                       )}
                       <span
-                        className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold ${isDue(item) ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'}`}>
+                        className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${isDue(item) ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'}`}>
                         {isDue(item) ? dueLabel : scheduledLabel}
                       </span>
                     </div>
@@ -322,6 +333,16 @@ export function DashboardPage() {
                         // Box 4 Master badge: check if this promotion reaches Box 4.
                         const nextBox = Math.min((item.boxLevel ?? 1) + 1, 4);
                         if (nextBox >= 4) unlockBadge('box4_master');
+                        // 🎓 "Mastered" celebration payoff: a correct answer while
+                        // ALREADY at box 4 truly graduates (retires) the card.
+                        if ((item.boxLevel ?? 1) >= 4) {
+                          showToast({
+                            message: isDE
+                              ? 'Karte gemeistert! Sie hat deine Review-Warteschlange verlassen. 🎓'
+                              : 'Card mastered! It graduated from your review queue. 🎓',
+                            icon: '🎓',
+                          });
+                        }
                       }}
                       className={theme.button.primary}
                     >

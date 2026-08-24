@@ -24,7 +24,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     if (this.state.hasError) {
       return (
         <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4 py-8 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
-          <div className="max-w-xl rounded-3xl bg-white p-8 shadow-xl dark:bg-slate-900">
+          <div className="max-w-xl rounded-2xl bg-white p-8 shadow-xl dark:bg-slate-900">
             <h1 className="text-2xl font-semibold">Oops! Ein Fehler ist aufgetreten.</h1>
             <p className="mt-4 text-sm text-slate-600 dark:text-slate-400">
               Die Anwendung kann gerade nicht geladen werden. Bitte lade die Seite neu oder versuche es später erneut.
