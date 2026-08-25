@@ -5,19 +5,54 @@ export interface RoleplayOption {
   text: string;
   ok: boolean;
   fb: string;
+  /** Optional English translation (present on conversational roleplays). */
+  en?: string;
+  /** Optional Nepali translation in Devanagari. */
+  ne?: string;
+  /** Optional romanized Nepali. */
+  neR?: string;
+  /**
+   * Optional immediate NPC reply to THIS specific choice (branching-lite).
+   * When present, the NPC posts it right after the learner's bubble.
+   */
+  reaction?: string;
+  /** Optional English rendering of the reaction line. */
+  reactionEn?: string;
+  /**
+   * Optional target step index to route to after this choice.
+   * Defaults to the next step (linear). Lets a choice jump to a different
+   * continuation for real branching.
+   */
+  next?: number;
 }
 
 export interface RoleplayStep {
+  /**
+   * The exchange's leading line. Normally the NPC says it; when `from: 'me'`
+   * the learner is the one who INITIATES and must produce this line.
+   */
   npc: string;
+  /** Optional English rendering of the NPC line. */
+  npcEn?: string;
+  /** 'npc' (default) = NPC speaks the line; 'me' = the learner initiates. */
+  from?: 'npc' | 'me';
   prompt: string;
   options: RoleplayOption[];
+  /** Optional grammar-focus label inherited from the target card. */
+  grammarFocus?: string;
+  /** Optional CEFR level inherited from the target card. */
+  cefrLevel?: string;
 }
 
 export interface RoleplayScenario {
   id: string;
   title: string;
   emoji: string;
+  /** Optional CEFR band (e.g. "A1-A2"), used for filter chips + badges. */
+  level?: string;
   steps: RoleplayStep[];
+  /** Optional NPC farewell shown after the last correct reply (before the completion state). */
+  closing?: string;
 }
 
 export interface DictationWord {

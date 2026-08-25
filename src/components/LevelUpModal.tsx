@@ -30,7 +30,7 @@ export function LevelUpModal({ isOpen, level, rank, onClose }: LevelUpModalProps
 
     const duration = 2500;
     const animationEnd = Date.now() + duration;
-    const defaults = { startVelocity: 20, spread: 360, ticks: 60, zIndex: 9999 };
+    const defaults = { startVelocity: 20, spread: 360, ticks: 60, zIndex: 60 };
 
     function randomInRange(min: number, max: number) {
       return Math.random() * (max - min) + min;
@@ -68,7 +68,7 @@ export function LevelUpModal({ isOpen, level, rank, onClose }: LevelUpModalProps
 
   return (
     <div
-      className="fixed top-4 left-4 right-4 z-50 mx-auto max-w-md rounded-2xl border border-blue-200 bg-gradient-to-r from-blue-50 to-blue-100 p-4 shadow-lg dark:border-blue-800 dark:from-blue-950/60 dark:to-blue-900/40 animate-in fade-in slide-in-from-top-4 duration-300"
+      className="fixed top-4 left-4 right-4 z-[60] mx-auto max-w-md rounded-2xl border border-blue-200 bg-gradient-to-r from-blue-50 to-blue-100 p-4 shadow-lg dark:border-blue-800 dark:from-blue-950/60 dark:to-blue-900/40 animate-in fade-in slide-in-from-top-4 duration-300"
       role="status"
       aria-live="polite"
       aria-label={isDE ? `Level aufgestiegen! Stufe ${level}` : `Level up! Level ${level}`}

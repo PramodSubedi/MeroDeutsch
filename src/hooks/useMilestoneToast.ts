@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export interface MilestoneToast {
   message: string;
@@ -8,31 +8,59 @@ export interface MilestoneToast {
 const AUTO_DISMISS_MS = 4000;
 
 /**
- * Non-blocking milestone toast. Shows a small banner with CSS animation,
- * auto-dismisses after a few seconds. No heavy libraries.
+ * Non-blocking milestone toast — GLOBAL single-instance store.
+ *
+ * Every consumer (Layout, DashboardPage, …) shares ONE toast state, so all
+ * `showToast` calls funnel into the single fixed z-[60] viewport rendered by
+ * <Layout>. Pages call `showToast` and render nothing themselves — no more
+ * duplicated inline banners (UI-clutter fix: one toast system sitewide).
+ *
+ * Stable identities are critical: Layout's level-up effect depends on
+ * showToast, and an unstable identity would re-run that effect every
+ * render -> setLevelUpCallback -> re-render -> infinite update loop.
  */
+
+type Listener = (toast: MilestoneToast | null) => void;
+
+let currentToast: MilestoneToast | null = null;
+let autoDismissTimer: number | null = null;
+const listeners = new Set<Listener>();
+
+function notify(): void {
+  for (const listener of listeners) listener(currentToast);
+}
+
+function clearTimer(): void {
+  if (autoDismissTimer !== null) {
+    window.clearTimeout(autoDismissTimer);
+    autoDismissTimer = null;
+  }
+}
+
 export function useMilestoneToast() {
-  const [toast, setToast] = useState<MilestoneToast | null>(null);
-  const timeoutRef = useRef<number | null>(null);
+  const [toast, setToast] = useState<MilestoneToast | null>(currentToast);
 
   useEffect(() => {
+    listeners.add(setToast);
     return () => {
-      if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
+      listeners.delete(setToast);
     };
   }, []);
 
-  // Stable identities are critical: Layout's level-up effect depends on
-  // showToast, and an unstable identity would re-run that effect every
-  // render -> setLevelUpCallback -> re-render -> infinite update loop.
   const showToast = useCallback((next: MilestoneToast) => {
-    setToast(next);
-    if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
-    timeoutRef.current = window.setTimeout(() => setToast(null), AUTO_DISMISS_MS);
+    currentToast = next;
+    clearTimer();
+    autoDismissTimer = window.setTimeout(() => {
+      currentToast = null;
+      notify();
+    }, AUTO_DISMISS_MS);
+    notify();
   }, []);
 
   const dismissToast = useCallback(() => {
-    if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
-    setToast(null);
+    clearTimer();
+    currentToast = null;
+    notify();
   }, []);
 
   return { toast, showToast, dismissToast };

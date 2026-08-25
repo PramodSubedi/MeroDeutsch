@@ -268,7 +268,9 @@ function ArticlePrecisionView({
         </div>
       </div>
 
-      <div className="rounded-2xl border-2 border-green-200 bg-green-50 p-6 text-center dark:border-green-800 dark:bg-green-950/40">
+      {/* Well tint = das gender token family (emerald) — article mode aligns
+          with the global gender color system. */}
+      <div className="rounded-2xl border-2 border-emerald-200 bg-emerald-50 p-6 text-center dark:border-emerald-800 dark:bg-emerald-950/40">
         <div className="flex items-center justify-center gap-3">
           <div className="text-4xl font-extrabold text-slate-900 dark:text-white">
             {challenge.noun}

@@ -5,7 +5,6 @@ import { LearningPath } from '../learning/LearningPath';
 import { useAchievements, ALL_BADGES } from '../../hooks/useAchievements';
 import { useAuth } from '../../hooks/useAuth';
 import { useLang } from '../../hooks/useLang';
-import { useA1Path } from '../../hooks/useA1Path';
 import { useProgress } from '../../hooks/useProgress';
 import { useReviewQueue } from '../../hooks/useReviewQueue';
 import { useStreak } from '../../hooks/useStreak';
@@ -44,11 +43,10 @@ export function HomeLayoutA() {
   const { langMode } = useLang();
   const { user, isAuthenticated } = useAuth();
   const { progress } = useProgress();
-  const { queue, dueQueue } = useReviewQueue();
+  const { queue } = useReviewQueue();
   const { streakCount } = useStreak();
   const { totalXp, level, xpProgress } = useXp();
   const { unlockedBadges, checkAndUnlock } = useAchievements();
-  const { getPushNode } = useA1Path();
   const isDE = langMode === 'german';
 
   useEffect(() => {
@@ -73,15 +71,7 @@ export function HomeLayoutA() {
       ? 'Willkommen bei MeroDeutsch'
       : 'Welcome to MeroDeutsch';
 
-  const dueCount = dueQueue.length;
-  const pushNode = getPushNode();
 
-  // Resume CTA: when due items exist, route to the daily session (which starts
-  // with review — due-first, no bypass). Otherwise target the next incomplete
-  // path node (getPushNode prefers a checkpoint when it is next).
-  const continueTarget = dueCount > 0 ? '/learn#daily-session' : (pushNode?.to ?? '/learn');
-  const continueLabelEn = dueCount > 0 ? `Review ${dueCount}` : (pushNode ? `Next: ${pushNode.label.en}` : 'Go to path');
-  const continueLabelDe = dueCount > 0 ? `${dueCount} Review` : (pushNode ? `Weiter: ${pushNode.label.de}` : 'Zum Lernpfad');
 
   const practiceItems = [
     {
@@ -106,7 +96,7 @@ export function HomeLayoutA() {
 
   return (
     <div className={`${theme.page.container} w-full space-y-6 pb-8`}>
-      <section className="overflow-hidden rounded-[30px] bg-gradient-to-br from-white via-slate-50 to-blue-50 p-4 shadow-sm dark:from-slate-950 dark:via-slate-950 dark:to-slate-900 sm:p-5 md:p-8">
+      <section className="overflow-hidden rounded-2xl bg-gradient-to-br from-white via-slate-50 to-blue-50 p-4 shadow-sm dark:from-slate-950 dark:via-slate-950 dark:to-slate-900 sm:p-5 md:p-8">
         <div className="flex flex-col gap-5">
           <div className="flex flex-wrap items-center gap-2">
             {isAuthenticated && streakCount > 0 && (
@@ -124,31 +114,21 @@ export function HomeLayoutA() {
             )}
           </div>
 
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-            <div className="max-w-2xl">
-              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-blue-600 dark:text-blue-400">
-                {isDE ? 'MeroDeutsch' : 'MeroDeutsch'}
-              </p>
-              <h1 className="mt-2 min-w-0 break-words text-3xl font-semibold tracking-[-0.04em] text-slate-950 dark:text-white sm:text-5xl">
-                {greeting}
-              </h1>
-              <p className="mt-3 max-w-xl text-base leading-7 text-slate-600 dark:text-slate-300">
-                {isDE
-                  ? 'Neue Wörter, schnelle Reviews und klare nächste Schritte — alles auf einer Seite.'
-                  : 'New words, quick reviews, and the next best step — all in one place.'}
-              </p>
-            </div>
-
-            <div className="flex w-full max-w-md flex-col gap-3 sm:flex-row lg:flex-col">
-              <Link
-                to={continueTarget}
-                className="inline-flex min-h-[48px] items-center justify-center rounded-2xl bg-blue-600 px-5 py-3 text-base font-semibold text-white shadow-sm transition hover:bg-blue-700"
-              >
-                {isDE ? continueLabelDe : continueLabelEn} →
-              </Link>
-              {/* Daily session (due reviews -> summary -> next path node) lives in
-                  DailySession directly below — no duplicate CTA here. One primary action per screen. */}
-            </div>
+          {/* Single primary action lives in <DailySession /> directly below —
+              the hero deliberately renders NO second CTA so the screen has
+              exactly one primary "start" affordance (UI-clutter fix #1). */}
+          <div className="max-w-2xl">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600 dark:text-blue-400">
+              MeroDeutsch
+            </p>
+            <h1 className="mt-2 min-w-0 break-words text-3xl font-semibold tracking-[-0.04em] text-slate-950 dark:text-white sm:text-5xl">
+              {greeting}
+            </h1>
+            <p className="mt-3 max-w-xl text-base leading-7 text-slate-600 dark:text-slate-300">
+              {isDE
+                ? 'Neue Wörter, schnelle Reviews und klare nächste Schritte — alles auf einer Seite.'
+                : 'New words, quick reviews, and the next best step — all in one place.'}
+            </p>
           </div>
         </div>
       </section>
@@ -180,7 +160,7 @@ export function HomeLayoutA() {
           color="blue"
         />
         <StatTile
-          label={isDE ? 'Level & XP' : 'Level & XP'}
+          label="Level & XP"
           value={String(level)}
           subValue={`${totalXp} XP`}
           progressPct={xpProgress}
@@ -193,7 +173,7 @@ export function HomeLayoutA() {
           <Link
             key={title}
             to={to}
-            className={`group block rounded-[24px] border p-4 transition hover:-translate-y-0.5 sm:p-5 ${styles.card} ${styles.hover}`}
+            className={`group block rounded-2xl border p-4 transition hover:-translate-y-0.5 sm:p-5 ${styles.card} ${styles.hover}`}
           >
             <div className={`mb-4 inline-flex h-10 w-10 items-center justify-center rounded-xl text-lg font-bold ${styles.badge}`}>
               {title.charAt(0)}
@@ -212,7 +192,7 @@ export function HomeLayoutA() {
           core learning modules are discoverable from Home without /learn. */}
       <LearningPath />
 
-      <section className="rounded-[24px] bg-white p-4 shadow-sm dark:bg-slate-900">
+      <section className="rounded-2xl bg-white p-4 shadow-sm dark:bg-slate-900">
         <div className="mb-3 flex items-center justify-between gap-3">
           <h2 className="text-xl font-semibold text-slate-950 dark:text-white">
             {isDE ? 'Errungenschaften' : 'Achievements'}

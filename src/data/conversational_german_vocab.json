@@ -1,0 +1,553 @@
+[
+  {
+    "german_text": "Ich bin Aisha und komme aus Nepal.",
+    "cefr_level": "A1",
+    "grammar_focus": "Preposition: aus + Dativ",
+    "context_situation": "Self-introduction",
+    "translations": {
+      "en": "My name is Aisha and I come from Nepal.",
+      "ne": "मेरो नाम आयशा हो र म नेपालबाट आएको छु।",
+      "ne_roman": "mero naam aasha ho ra ma nepalbata aaeko chhu"
+    }
+  },
+  {
+    "german_text": "Freut mich, Sie kennenzulernen.",
+    "cefr_level": "A1",
+    "grammar_focus": "Reflexive verb: sich freuen",
+    "context_situation": "Self-introduction",
+    "translations": {
+      "en": "Pleased to meet you.",
+      "ne": "तपाईंलाई भेटेर खुसी लाग्यो।",
+      "ne_roman": "tapailai bhetera khushi laagyo"
+    }
+  },
+  {
+    "german_text": "Ich möchte bitte zwei Kaffee.",
+    "cefr_level": "A1",
+    "grammar_focus": "Modal verb: möchten",
+    "context_situation": "Ordering food and drink",
+    "translations": {
+      "en": "I would like two coffees, please.",
+      "ne": "कृपया मलाई दुई कप कफी चाहिए।",
+      "ne_roman": "kripaya malai dui kap kofi chahiyo"
+    }
+  },
+  {
+    "german_text": "Ich möchte bitte die Rechnung.",
+    "cefr_level": "A1",
+    "grammar_focus": "Modal verb: möchten",
+    "context_situation": "Ordering food and drink",
+    "translations": {
+      "en": "I would like the bill, please.",
+      "ne": "कृपया मलाई बिल दिनुहोस्।",
+      "ne_roman": "kripaya malai bil dinuhos"
+    }
+  },
+  {
+    "german_text": "Was kostet das?",
+    "cefr_level": "A1",
+    "grammar_focus": "Question: w-word + verb position",
+    "context_situation": "Shopping",
+    "translations": {
+      "en": "How much does this cost?",
+      "ne": "यसको मूल्य कति हो?",
+      "ne_roman": "yasko mulya kati ho"
+    }
+  },
+  {
+    "german_text": "Können Sie mir bitte helfen?",
+    "cefr_level": "A1",
+    "grammar_focus": "Modal verb: können (polite request)",
+    "context_situation": "Asking others",
+    "translations": {
+      "en": "Can you help me, please?",
+      "ne": "के तपाईं मलाई मद्दत गर्न सक्नुहुन्छ?",
+      "ne_roman": "ke tapailai malai maddat garna saknuhunchha"
+    }
+  },
+  {
+    "german_text": "Ich kann ein bisschen Deutsch sprechen.",
+    "cefr_level": "A1",
+    "grammar_focus": "Modal verb: können",
+    "context_situation": "Self-introduction",
+    "translations": {
+      "en": "I can speak a little German.",
+      "ne": "म अलिकति जर्मन बोल्न सक्छु।",
+      "ne_roman": "ma alikati jarman bolna sakchhu"
+    }
+  },
+  {
+    "german_text": "Können Sie bitte langsamer sprechen?",
+    "cefr_level": "A1",
+    "grammar_focus": "Modal verb: können (polite request)",
+    "context_situation": "Asking others",
+    "translations": {
+      "en": "Could you please speak more slowly?",
+      "ne": "के तपाईं थोरै धीमा बोल्न सक्नुहुन्छ?",
+      "ne_roman": "ke tapaai thori dhilo bolna saknuhunchha"
+    }
+  },
+  {
+    "german_text": "Sprechen Sie Englisch?",
+    "cefr_level": "A1",
+    "grammar_focus": "Word order: yes/no question",
+    "context_situation": "Asking others",
+    "translations": {
+      "en": "Do you speak English?",
+      "ne": "के तपाईं अंग्रेजी बोल्नुहुन्छ?",
+      "ne_roman": "ke tapail angreji bolnuhunchha"
+    }
+  },
+  {
+    "german_text": "Wie bitte?",
+    "cefr_level": "A1",
+    "grammar_focus": "Phrase: asking for repetition",
+    "context_situation": "Asking others",
+    "translations": {
+      "en": "Pardon me? Could you repeat that please?",
+      "ne": "के भन्नुभयो?",
+      "ne_roman": "ke bhannu bhayo"
+    }
+  },
+  {
+    "german_text": "Ich stehe um sechs Uhr auf.",
+    "cefr_level": "A1",
+    "grammar_focus": "Separable verb: aufstehen",
+    "context_situation": "Daily routine",
+    "translations": {
+      "en": "I get up at six o'clock in the morning.",
+      "ne": "म बिहान छ बजे उठ्छु।",
+      "ne_roman": "ma bihana chha baje uthchhu"
+    }
+  },
+  {
+    "german_text": "Der Kurs fängt um neun Uhr an.",
+    "cefr_level": "A1",
+    "grammar_focus": "Separable verb: anfangen",
+    "context_situation": "Workplace chat",
+    "translations": {
+      "en": "The course starts at nine o'clock.",
+      "ne": "पाठ्यक्रम नौ बजे सुरु हुन्छ।",
+      "ne_roman": "pathyakram nau baje suru hunchha"
+    }
+  },
+  {
+    "german_text": "Ich rufe dich morgen an.",
+    "cefr_level": "A1",
+    "grammar_focus": "Separable verb: anrufen",
+    "context_situation": "Workplace chat",
+    "translations": {
+      "en": "I will call you tomorrow.",
+      "ne": "म तिमीलाई भोलि फोन गर्छु।",
+      "ne_roman": "ma timilai bholi phon garchhu"
+    }
+  },
+  {
+    "german_text": "Kommst du morgen mit?",
+    "cefr_level": "A1",
+    "grammar_focus": "Separable verb: mitkommen",
+    "context_situation": "Invitation",
+    "translations": {
+      "en": "Are you coming along tomorrow?",
+      "ne": "के तिमी भोलि सँगै आउँछौ?",
+      "ne_roman": "ke timi bholi sangai aau chhau"
+    }
+  },
+  {
+    "german_text": "Ich gehe heute einkaufen.",
+    "cefr_level": "A1",
+    "grammar_focus": "Separable verb: einkaufen",
+    "context_situation": "Shopping",
+    "translations": {
+      "en": "I am going shopping today.",
+      "ne": "म आज किनमेल गर्न जान्छु।",
+      "ne_roman": "ma aaja kinmel garna jaanchhu"
+    }
+  },
+  {
+    "german_text": "Ich fahre mit dem Bus in die Stadt.",
+    "cefr_level": "A1",
+    "grammar_focus": "Preposition: mit + Dativ",
+    "context_situation": "Traveling",
+    "translations": {
+      "en": "I take the bus into the city.",
+      "ne": "म बसमा चढेर सहर जान्छु।",
+      "ne_roman": "ma basma chadhara sahar jaanchhu"
+    }
+  },
+  {
+    "german_text": "Zahlen Sie mit Karte oder bar?",
+    "cefr_level": "A1",
+    "grammar_focus": "Preposition: mit + Dativ",
+    "context_situation": "Shopping",
+    "translations": {
+      "en": "Do you pay by card or cash?",
+      "ne": "के तपाईं कार्डले कि नगदले तिर्नुहुन्छ?",
+      "ne_roman": "ke tapailai kardale ki nagadale tirnu hunchha"
+    }
+  },
+  {
+    "german_text": "Gibt es hier einen Parkplatz?",
+    "cefr_level": "A1",
+    "grammar_focus": "Construction: es gibt + Akkusativ",
+    "context_situation": "Traveling",
+    "translations": {
+      "en": "Is there a parking space here?",
+      "ne": "यहाँ पार्किङ गर्ने ठाउँ छ?",
+      "ne_roman": "ke yaha parking garna thau chha"
+    }
+  },
+  {
+    "german_text": "Wo ist bitte der Bahnhof?",
+    "cefr_level": "A1",
+    "grammar_focus": "Question word: wo",
+    "context_situation": "Asking the way",
+    "translations": {
+      "en": "Where is the railway station, please?",
+      "ne": "रेलवे स्टेशन कहाँ छ?",
+      "ne_roman": "railway station kaha chha"
+    }
+  },
+  {
+    "german_text": "Darf ich dich etwas fragen?",
+    "cefr_level": "A1",
+    "grammar_focus": "Modal verb: dürfen (polite question)",
+    "context_situation": "Asking others",
+    "translations": {
+      "en": "May I ask you something?",
+      "ne": "के म तिमीलाई केही सोध्न सक्छु?",
+      "ne_roman": "ke ma timilai kehi sodhna sakchhu"
+    }
+  },
+  {
+    "german_text": "Wann kommt dein Zug an?",
+    "cefr_level": "A2",
+    "grammar_focus": "Separable verb: ankommen",
+    "context_situation": "Traveling",
+    "translations": {
+      "en": "When does your train arrive?",
+      "ne": "तिम्रो ट्रेन कहिले आउनेछ?",
+      "ne_roman": "timro tren kahile aunechha"
+    }
+  },
+  {
+    "german_text": "Ich steige an der nächsten Haltestelle aus.",
+    "cefr_level": "A2",
+    "grammar_focus": "Separable verb: aussteigen",
+    "context_situation": "Traveling",
+    "translations": {
+      "en": "I am getting off at the next stop.",
+      "ne": "म अर्को स्टपमा झर्छु।",
+      "ne_roman": "ma arko stopmaa jharchhu"
+    }
+  },
+  {
+    "german_text": "Wir müssen am Hauptbahnhof umsteigen.",
+    "cefr_level": "A2",
+    "grammar_focus": "Separable verb: umsteigen",
+    "context_situation": "Traveling",
+    "translations": {
+      "en": "We have to change trains at the main station.",
+      "ne": "हामीले मुख्य स्टेशनमा ट्रेन बदल्नु पर्छ।",
+      "ne_roman": "hamile mukhya station maa tren badalnu parcha"
+    }
+  },
+  {
+    "german_text": "Ich möchte mich kurz vorstellen.",
+    "cefr_level": "A2",
+    "grammar_focus": "Reflexive verb: sich vorstellen",
+    "context_situation": "Self-introduction",
+    "translations": {
+      "en": "I would like to introduce myself briefly.",
+      "ne": "म आफ्नो छोटो परिचय दिन चाहन्छु।",
+      "ne_roman": "ma aaphno chhoto parichaya dina chahanchu"
+    }
+  },
+  {
+    "german_text": "Ich freue mich auf das Wochenende.",
+    "cefr_level": "A2",
+    "grammar_focus": "Reflexive verb: sich freuen auf",
+    "context_situation": "Small talk",
+    "translations": {
+      "en": "I am looking forward to the weekend.",
+      "ne": "म सप्ताहान्तको प्रतीक्षा गर्छु।",
+      "ne_roman": "ma saptaa antako pratiksha garchu"
+    }
+  },
+  {
+    "german_text": "Wir treffen uns um acht vor dem Kino.",
+    "cefr_level": "A2",
+    "grammar_focus": "Reflexive verb: sich treffen + preposition: vor",
+    "context_situation": "Social plans",
+    "translations": {
+      "en": "We are meeting at eight in front of the cinema.",
+      "ne": "हामी सिनेमा अगाडि आठ बजे भेट्छौं।",
+      "ne_roman": "hami cinema agadi aath baje bhetchau"
+    }
+  },
+  {
+    "german_text": "Kannst du bitte das Fenster aufmachen?",
+    "cefr_level": "A2",
+    "grammar_focus": "Separable verb: aufmachen",
+    "context_situation": "Asking others",
+    "translations": {
+      "en": "Can you please open the window?",
+      "ne": "के तिमी झ्याल खोलिदिन सक्छौ?",
+      "ne_roman": "ke timi jhyal kholi dina sakchau"
+    }
+  },
+  {
+    "german_text": "Muss ich dieses Formular ausfüllen?",
+    "cefr_level": "A2",
+    "grammar_focus": "Separable verb: ausfüllen",
+    "context_situation": "Hotel check-in",
+    "translations": {
+      "en": "Do I have to fill in this form?",
+      "ne": "के मलाई यो फारम भर्नु पर्छ?",
+      "ne_roman": "ke malai yo farm bharnu parcha"
+    }
+  },
+  {
+    "german_text": "Kann ich bitte die Speisekarte sehen?",
+    "cefr_level": "A2",
+    "grammar_focus": "Modal verb: können (polite request)",
+    "context_situation": "Ordering food and drink",
+    "translations": {
+      "en": "Could I see the menu, please?",
+      "ne": "के मैले मेनु देख्न सक्छु?",
+      "ne_roman": "ke maile menu dekhna sakchu"
+    }
+  },
+  {
+    "german_text": "Was möchtest du trinken?",
+    "cefr_level": "A2",
+    "grammar_focus": "Modal verb: möchten",
+    "context_situation": "Ordering food and drink",
+    "translations": {
+      "en": "What would you like to drink?",
+      "ne": "तिमी के पिउन चाहन्छौ?",
+      "ne_roman": "timi ke piuna chahanchau"
+    }
+  },
+  {
+    "german_text": "Wollen wir heute zusammen essen gehen?",
+    "cefr_level": "A2",
+    "grammar_focus": "Modal verb: wollen (suggestion)",
+    "context_situation": "Invitation",
+    "translations": {
+      "en": "Shall we go and eat together today?",
+      "ne": "के हामी आज सँगै खाना खान जाऔं?",
+      "ne_roman": "ke hami aaja sangai khana khaan jaau"
+    }
+  },
+  {
+    "german_text": "Ich muss mich beeilen.",
+    "cefr_level": "A2",
+    "grammar_focus": "Reflexive verb: sich beeilen",
+    "context_situation": "Daily routine",
+    "translations": {
+      "en": "I have to hurry up.",
+      "ne": "मलाई हतार गर्नु पर्छ।",
+      "ne_roman": "malai hataar garna parcha"
+    }
+  },
+  {
+    "german_text": "Wir fahren am Wochenende in die Berge.",
+    "cefr_level": "A2",
+    "grammar_focus": "Preposition: in + Akkusativ (direction)",
+    "context_situation": "Traveling",
+    "translations": {
+      "en": "We drive up to the mountains at the weekend.",
+      "ne": "हामी सप्ताहान्तमा पहाडमा जान्छौं।",
+      "ne_roman": "hami saptaahantmaa pahaad maa jaanchau"
+    }
+  },
+  {
+    "german_text": "Ich warte vor dem Eingang auf dich.",
+    "cefr_level": "A2",
+    "grammar_focus": "Preposition: vor + Dativ (fixed verb: warten auf)",
+    "context_situation": "Social plans",
+    "translations": {
+      "en": "I am waiting for you in front of the entrance.",
+      "ne": "म प्रवेशद्वार अगाडि तिमीलाई पर्खिरहेको छु।",
+      "ne_roman": "ma praveshdwar agadi timilai parkhiraheko chhu"
+    }
+  },
+  {
+    "german_text": "Wir sprechen später über das Projekt.",
+    "cefr_level": "A2",
+    "grammar_focus": "Preposition: über + Akkusativ",
+    "context_situation": "Workplace chat",
+    "translations": {
+      "en": "We will talk about the project later.",
+      "ne": "हामी पछि परियोजनाबारे कुरा गर्छौं।",
+      "ne_roman": "hami pachi pariyojana baare kura garchhau"
+    }
+  },
+  {
+    "german_text": "Ich bin mit dem Ergebnis sehr zufrieden.",
+    "cefr_level": "A2",
+    "grammar_focus": "Preposition: mit + Dativ",
+    "context_situation": "Workplace chat",
+    "translations": {
+      "en": "I am very satisfied with the result.",
+      "ne": "म परिणामबाट धेरै सन्तुष्ट छु।",
+      "ne_roman": "ma parinaamabata dherai santusta chhu"
+    }
+  },
+  {
+    "german_text": "Haben Sie noch ein Zimmer frei?",
+    "cefr_level": "A2",
+    "grammar_focus": "Question: haben + adjective",
+    "context_situation": "Hotel check-in",
+    "translations": {
+      "en": "Do you still have a room available?",
+      "ne": "के तपाईंसँग अझै खाली कोठा छ?",
+      "ne_roman": "ke tapai sanga ajhai khali kotha chha"
+    }
+  },
+  {
+    "german_text": "Darf ich Sie zu einem Kaffee einladen?",
+    "cefr_level": "A2",
+    "grammar_focus": "Modal verb: dürfen + separable verb: einladen",
+    "context_situation": "Invitation",
+    "translations": {
+      "en": "May I invite you to a coffee?",
+      "ne": "के म तपाईंलाई कफी खान बोलाउन सक्छु?",
+      "ne_roman": "ke ma tapailai kofi khaana bolauna sakchu"
+    }
+  },
+  {
+    "german_text": "Ich muss mich an das neue Umfeld gewöhnen.",
+    "cefr_level": "B1",
+    "grammar_focus": "Reflexive verb: sich gewöhnen an",
+    "context_situation": "Workplace chat",
+    "translations": {
+      "en": "I have to get used to the new environment.",
+      "ne": "मलाई नयाँ वातावरणमा अभ्यस्त हुनु पर्छ।",
+      "ne_roman": "malai naya vatavaranma abhyasta hunu parcha"
+    }
+  },
+  {
+    "german_text": "Erinnerst du dich an unseren Termin?",
+    "cefr_level": "B1",
+    "grammar_focus": "Reflexive verb: sich erinnern an",
+    "context_situation": "Workplace chat",
+    "translations": {
+      "en": "Do you remember our appointment?",
+      "ne": "के तिमीलाई हाम्रो भेटको समय याद छ?",
+      "ne_roman": "ke timilai hamro bheta ko samaya yaad chha"
+    }
+  },
+  {
+    "german_text": "Ich muss mich für den Kurs anmelden.",
+    "cefr_level": "B1",
+    "grammar_focus": "Reflexive verb: sich anmelden für",
+    "context_situation": "Workplace chat",
+    "translations": {
+      "en": "I have to register for the course.",
+      "ne": "मलाई पाठ्यक्रमका लागि भर्ना हुनु पर्छ।",
+      "ne_roman": "malai pathyakramkaa lagi bharnaa hunu parcha"
+    }
+  },
+  {
+    "german_text": "Ich möchte mich bei Ihnen für die Hilfe bedanken.",
+    "cefr_level": "B1",
+    "grammar_focus": "Reflexive verb: sich bedanken bei + für",
+    "context_situation": "Service",
+    "translations": {
+      "en": "I would like to thank you for your help.",
+      "ne": "म तपाईंको सहयोगका लागि धन्यवाद दिन चाहन्छु।",
+      "ne_roman": "ma tapaaiko sahayogkaa lagi dhanyavaad dina chahanchu"
+    }
+  },
+  {
+    "german_text": "Wir können uns später über den Ablauf unterhalten.",
+    "cefr_level": "B1",
+    "grammar_focus": "Reflexive verb: sich unterhalten über",
+    "context_situation": "Workplace chat",
+    "translations": {
+      "en": "We can talk about the plan later.",
+      "ne": "हामी पछि कार्यक्रमबारे कुरा गर्न सक्छौं।",
+      "ne_roman": "hami pachi karyakramabare kura garna sakchhau"
+    }
+  },
+  {
+    "german_text": "Ich möchte mich kurz ausruhen.",
+    "cefr_level": "B1",
+    "grammar_focus": "Reflexive verb: sich ausruhen",
+    "context_situation": "Traveling",
+    "translations": {
+      "en": "I would like to rest for a moment.",
+      "ne": "म एकछिन आराम गर्न चाहन्छु।",
+      "ne_roman": "ma ekachhin aaram garna chahanchu"
+    }
+  },
+  {
+    "german_text": "Ich hätte gern ein Doppelzimmer für zwei Nächte.",
+    "cefr_level": "B1",
+    "grammar_focus": "Subjunctive: ich hätte gern + preposition: für",
+    "context_situation": "Hotel check-in",
+    "translations": {
+      "en": "I would like a double room for two nights.",
+      "ne": "मलाई दुई रातका लागि एउटा डबल कोठा चाहिए।",
+      "ne_roman": "ke timi malai stationbata lina auna sakchhau"
+    }
+  },
+  {
+    "german_text": "Der Zug fährt in zwanzig Minuten ab.",
+    "cefr_level": "B1",
+    "grammar_focus": "Separable verb: abfahren",
+    "context_situation": "Traveling",
+    "translations": {
+      "en": "The train departs in twenty minutes.",
+      "ne": "ट्रेन बीस मिनेटमा छुट्छ।",
+      "ne_roman": "tren bis minatmaa chhutcha"
+    }
+  },
+  {
+    "german_text": "Ich wohne seit drei Jahren in Deutschland.",
+    "cefr_level": "B1",
+    "grammar_focus": "Preposition: seit + Dativ",
+    "context_situation": "Self-introduction",
+    "translations": {
+      "en": "I have been living in Germany for three years.",
+      "ne": "म तीन वर्षदेखि जर्मनीमा बस्छु।",
+      "ne_roman": "ma tin varshdekhi jarmani maa baschhu"
+    }
+  },
+  {
+    "german_text": "Ich soll den Schlüssel an der Rezeption abgeben.",
+    "cefr_level": "B1",
+    "grammar_focus": "Modal verb: sollen + separable verb: abgeben",
+    "context_situation": "Hotel check-in",
+    "translations": {
+      "en": "I am supposed to hand in the key at the reception.",
+      "ne": "मैले रिसेप्सनमा साँचो बुझाउनु पर्छ।",
+      "ne_roman": "maile receptionmaa saancho bujhaunu parcha"
+    },
+    "german": "Ich soll den Schlüssel an der Rezeption abgeben."
+  },
+  {
+    "german_text": "Könntest du mich am Bahnhof abholen?",
+    "cefr_level": "B1",
+    "grammar_focus": "Separable verb: abholen + modal: könntest (polite)",
+    "context_situation": "Traveling",
+    "translations": {
+      "en": "Could you pick me up at the station?",
+      "ne": "के तिमी मलाई स्टेशनबाट लिन आउन सक्छौ?",
+      "ne_roman": "ke timi malai steshanbata lina auna sakchha"
+    }
+  },
+  {
+    "german_text": "Ab übermorgen arbeite ich von zu Hause aus.",
+    "cefr_level": "B1",
+    "grammar_focus": "Preposition: von ... aus (place of work)",
+    "context_situation": "Workplace chat",
+    "translations": {
+      "en": "From the day after tomorrow I will work from home.",
+      "ne": "पर्सि देखि म घरबाट काम गर्नेछु।",
+      "ne_roman": "parsi dekhi ma ghar bata kaama garchhu"
+    }
+  }
+]

@@ -61,7 +61,7 @@ export function StandardStudyCard({
   const masteryInfo = getMasteryInfo(masteryLevel);
 
   return (
-    <div className="group relative flex h-full min-h-[180px] flex-col rounded-[22px] bg-white p-4 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md dark:bg-slate-900 sm:p-5">
+    <div className="group relative flex h-full min-h-[180px] flex-col rounded-2xl bg-white p-4 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md dark:bg-slate-900 sm:p-5">
       {/* Mastery level indicator (bottom progress bar) */}
       {masteryInfo && (
         <div className="absolute bottom-0 left-0 right-0 h-1 overflow-hidden rounded-b-[22px] bg-slate-100 dark:bg-slate-800">

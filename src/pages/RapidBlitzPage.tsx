@@ -43,7 +43,7 @@ interface ModeInfo {
 const MODE_INFO: Record<string, ModeInfo> = {
   vocabulary: { title: 'Vocabulary Translation', description: 'Match English → German', icon: BookOpen, color: 'text-blue-600', bg: 'bg-blue-50 dark:bg-blue-950/40 border-blue-200 dark:border-blue-900/50' },
   audio: { title: 'Audio Comprehension', description: 'Listen & select meaning', icon: Ear, color: 'text-purple-600', bg: 'bg-purple-50 dark:bg-purple-950/40 border-purple-200 dark:border-purple-900/50' },
-  article: { title: 'Article Precision', description: 'Select der/die/das', icon: Tag, color: 'text-green-600', bg: 'bg-green-50 dark:bg-green-950/40 border-green-200 dark:border-green-900/50' },
+  article: { title: 'Article Precision', description: 'Select der/die/das', icon: Tag, color: 'text-emerald-600', bg: 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-900/50' },
   number: { title: 'Number Conversion', description: 'Digits ↔ German text', icon: Hash, color: 'text-amber-600', bg: 'bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-900/50' },
   verb: { title: 'Verb Conjugation', description: 'Conjugate the verb', icon: Edit3, color: 'text-indigo-600', bg: 'bg-indigo-50 dark:bg-indigo-950/40 border-indigo-200 dark:border-indigo-900/50' },
   pronunciation: { title: 'Pronunciation & Reading', description: 'Speak the word', icon: Mic, color: 'text-rose-600', bg: 'bg-rose-50 dark:bg-rose-950/40 border-rose-200 dark:border-rose-900/50' },
@@ -452,8 +452,10 @@ export function RapidBlitzPage() {
   // ── Finished state with answer review ────────────────────────
   return (
     <div className={theme.page.container}>
-      <div className={theme.modal.overlay}>
-        <div className={theme.modal.dialog}>
+      {/* Completion summary as an in-flow centered card — no full-screen scrim;
+          end-of-session payoffs stay non-blocking (.clinerules C7 spirit). */}
+      <div className="mx-auto w-full max-w-md">
+        <div className={theme.panel.surface}>
           <div className="text-center">
             <div className="text-4xl font-extrabold text-slate-900 dark:text-white">
               {selectedMode ? `${modeLabel.title} Complete!` : 'Blitz Complete!'}

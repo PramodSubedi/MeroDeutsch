@@ -44,7 +44,7 @@ export function DashboardPage() {
   const { reportReview } = useDailyQuests();
   const { unlockBadge } = useAchievements();
   const { activities } = useActivityLog();
-  const { toast, showToast, dismissToast } = useMilestoneToast();
+  const { showToast } = useMilestoneToast();
   const isDE = langMode === 'german';
   const locale = isDE ? 'de-DE' : 'en-US';
   const formatCount = numberFormatter(locale);
@@ -128,14 +128,8 @@ export function DashboardPage() {
         </div>
       </div>
 
-      {toast && (
-        <div className="mb-4 flex items-center justify-between gap-3 rounded-2xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm font-semibold text-blue-800 shadow-sm dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-200">
-          <span>{toast.icon} {toast.message}</span>
-          <button type="button" onClick={dismissToast} className="text-blue-500 hover:text-blue-700" aria-label="Dismiss">
-            ×
-          </button>
-        </div>
-      )}
+      {/* Milestone/level-up feedback surfaces via the GLOBAL toast in <Layout />
+          (single fixed z-[60] viewport) — no inline banner here. */}
 
       {/* Compact stats grid — shared StatTile component (same as Home) */}
       <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">

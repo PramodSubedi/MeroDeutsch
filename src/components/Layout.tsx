@@ -207,7 +207,9 @@ export function Layout() {
         role="main"
         className={`${theme.layout.main} px-4 scroll-mt-24 pb-20 md:pb-8 ${isModuleRoute ? 'pt-8' : ''}`}
       >
-        {pathname !== '/auth' && <Breadcrumb />}
+        {/* Module routes render <ModuleChrome /> (back link + switcher) — the
+            breadcrumb would duplicate that navigation context (UI-clutter fix). */}
+        {pathname !== '/auth' && !isModuleRoute && <Breadcrumb />}
         {isModuleRoute && <ModuleChrome />}
         <Outlet />
       </main>

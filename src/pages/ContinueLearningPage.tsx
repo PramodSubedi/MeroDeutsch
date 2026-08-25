@@ -73,20 +73,8 @@ export function ContinueLearningPage() {
         </div>
       </header>
 
-      {/* Soft prompt — non-blocking; does not prevent navigation. */}
-      {dueCount > 0 && (
-        <div className="mb-4 flex items-center justify-between gap-3 rounded-xl border border-amber-200 bg-amber-50/60 px-4 py-2.5 text-sm font-semibold text-amber-800 dark:border-amber-800/50 dark:bg-amber-950/30 dark:text-amber-200">
-          <span>
-            🔔 {isDE ? `Du hast ${dueCount} Karten zum Wiederholen.` : `You have ${dueCount} cards to review.`}
-          </span>
-          <a
-            href="#daily-session"
-            className="shrink-0 underline hover:text-amber-950 dark:hover:text-amber-100 transition active:scale-95"
-          >
-            {isDE ? 'Sitzung starten →' : 'Start session →'}
-          </a>
-        </div>
-      )}
+      {/* The header chip + <DailySession /> below already surface review
+          pressure — no extra soft-prompt banner (UI-clutter fix #1). */}
 
       {/* B. Daily session — due reviews first (max 8) -> summary -> next path node */}
       <DailySession />
@@ -102,7 +90,7 @@ export function ContinueLearningPage() {
           heading is deliberately secondary (small uppercase muted) so it reads
           as "extra", not as the main path. */}
       <section className={`${theme.panel.surface} mb-8`} id="practice">
-        <h2 className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
+        <h2 className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
           {isDE ? 'Zusatzwerkzeuge' : 'Extra tools'}
         </h2>
         <PracticeToolsGrid limit={3} footerLink />

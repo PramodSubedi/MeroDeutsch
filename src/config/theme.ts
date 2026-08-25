@@ -46,7 +46,8 @@ export const theme = {
   } as Record<string, string>,
   page: {
     container: 'py-4',
-    heading: 'text-xl font-bold text-slate-900 dark:text-slate-100',
+    // Type scale: page title = text-2xl · section title = text-xl · card title = text-lg
+    heading: 'text-2xl font-bold text-slate-900 dark:text-slate-100',
     description: 'mb-4 text-sm text-slate-500 dark:text-slate-400',
   },
   layout: {

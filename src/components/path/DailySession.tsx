@@ -90,7 +90,7 @@ export function DailySession() {
   // ── Active review batch (reused existing review UI) ──────────────
   if (sessionStarted && dueCount > 0 && !sessionComplete) {
     return (
-      <section id="daily-session" className="rounded-[24px] bg-white p-4 shadow-sm dark:bg-slate-900">
+      <section id="daily-session" className="rounded-2xl bg-white p-4 shadow-sm dark:bg-slate-900">
         <div className="mb-3 flex items-center justify-between gap-3">
           <h2 className="text-lg font-semibold text-slate-950 dark:text-white">
             {isDE ? 'Heutige Sitzung' : "Today's session"}
@@ -113,7 +113,7 @@ export function DailySession() {
   // ── Summary step after the review batch ──────────────────────────
   if (sessionComplete) {
     return (
-      <section id="daily-session" className="rounded-[24px] bg-white p-4 shadow-sm dark:bg-slate-900">
+      <section id="daily-session" className="rounded-2xl bg-white p-4 shadow-sm dark:bg-slate-900">
         <div className="mb-3 flex items-center justify-between gap-3">
           <h2 className="text-lg font-semibold text-slate-950 dark:text-white">
             {isDE ? 'Heutige Sitzung' : "Today's session"}
@@ -159,7 +159,7 @@ export function DailySession() {
 
   // ── Default: primary CTA ─────────────────────────────────────────
   return (
-    <section id="daily-session" className="rounded-[24px] bg-white p-4 shadow-sm dark:bg-slate-900">
+    <section id="daily-session" className="rounded-2xl bg-white p-4 shadow-sm dark:bg-slate-900">
       <div className="mb-3 flex items-center justify-between gap-3">
         <h2 className="text-lg font-semibold text-slate-950 dark:text-white">
           {isDE ? 'Heutige Sitzung' : "Today's session"}

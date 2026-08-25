@@ -40,7 +40,7 @@ export function LearningPath() {
             <Link
               key={section.key}
               to={section.path}
-              className={`group relative flex h-full flex-col overflow-hidden rounded-[28px] border p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950 ${
+              className={`group relative flex h-full flex-col overflow-hidden rounded-2xl border p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950 ${
                 isLast
                   ? 'border-blue-400 bg-blue-50/40 ring-2 ring-blue-500 dark:border-blue-500 dark:bg-blue-950/30'
                   : 'border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-950'

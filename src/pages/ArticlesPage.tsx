@@ -7,6 +7,7 @@ import { useReviewQueue } from '../hooks/useReviewQueue';
 import { useXp } from '../hooks/useXp';
 import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
 import { useDailyQuests } from '../hooks/useDailyQuests';
+import { useArticleRecorder } from '../hooks/useArticleRecorder';
 import { theme } from '../config/theme';
 import { curriculumService } from '../services';
 import { CompactAudioButton } from '../components/CompactAudioButton';
@@ -85,103 +86,50 @@ export function ArticlesPage() {
   const [hint, setHint] = useState<{ en: string; ne: string; de: string } | null>(null);
   const [locked, setLocked] = useState(false);
   const [lastChoice, setLastChoice] = useState<'der' | 'die' | 'das' | null>(null);
-  const [speechMessage, setSpeechMessage] = useState('');
-  const [audioUrl, setAudioUrl] = useState<string | null>(null);
-  const [recordingTime, setRecordingTime] = useState(0);
-  const [recording, setRecording] = useState(false);
-  const [audioSupported, setAudioSupported] = useState(false);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const audioStreamRef = useRef<MediaStream | null>(null);
-  const audioChunksRef = useRef<Blob[]>([]);
-  const analyserRef = useRef<AnalyserNode | null>(null);
-  const animationRef = useRef<number | null>(null);
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const timerRef = useRef<number | null>(null);
-
   const { supported, status, start, stop } = useSpeechRecognition({
     lang: 'de-DE',
     onResult: (transcript) => {
       evaluateSpeech(transcript);
-      stopRecording();
+      recorderControlsRef.current?.stopRecording();
     },
     onError: (message) => {
-      setSpeechMessage(message);
+      recorderControlsRef.current?.setMessage(message);
       addWrongAnswer({
         moduleType: 'articles',
         itemKey: targetPhrase,
         userAnswer: message,
         correctAnswer: targetPhrase,
       });
-      stopRecording();
+      recorderControlsRef.current?.stopRecording();
     },
   });
 
-    const targetPhrase = useMemo(
-    () => currentItem ? `${currentItem.art} ${currentItem.noun}` : '',
+  // Ref bridge: the recorder hook is constructed below, but the speech
+  // callbacks above may fire before it exists on this render. Calling
+  // through the ref keeps Web Speech + MediaRecorder lifecycle in sync.
+  const [recorderState, recorderControls] = useArticleRecorder({
+    speechSupported: supported,
+    stopSpeech: stop,
+    startSpeech: start,
+    isDE,
+  });
+  const recorderControlsRef = useRef(recorderControls);
+  recorderControlsRef.current = recorderControls;
+
+  const {
+    recording,
+    recordingTime,
+    audioUrl,
+    audioSupported,
+    speechMessage,
+  } = recorderState;
+  const { canvasRef, startRecording, stopRecording, restartRecording, resetRecording } =
+    recorderControls;
+
+  const targetPhrase = useMemo(
+    () => (currentItem ? `${currentItem.art} ${currentItem.noun}` : ''),
     [currentItem]
   );
-
-
-  const stopRecording = useCallback(
-    (force = false) => {
-      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
-        mediaRecorderRef.current.stop();
-      }
-      if (audioStreamRef.current) {
-        audioStreamRef.current.getTracks().forEach((track) => track.stop());
-        audioStreamRef.current = null;
-      }
-      if (audioContextRef.current) {
-        audioContextRef.current.close().catch(() => {});
-        audioContextRef.current = null;
-      }
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-        animationRef.current = null;
-      }
-      if (timerRef.current) {
-        window.clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
-      setRecording(false);
-      if (!force) {
-        if (supported) {
-          stop();
-        }
-        if (!supported && audioSupported) {
-          setSpeechMessage(
-            isDE
-              ? 'Spracherkennung nicht verfügbar. Nur Audioaufnahme gespeichert.'
-              : 'Speech recognition unavailable. Audio recording saved only.'
-          );
-        } else {
-          setSpeechMessage(isDE ? 'Aufnahme gestoppt.' : 'Recording stopped.');
-        }
-      }
-    },
-    [audioSupported, isDE, stop, supported]
-  );
-
-  useEffect(() => {
-    setAudioSupported(
-      typeof window !== 'undefined' &&
-        !!window.MediaRecorder &&
-        !!(window.AudioContext || (window as any).webkitAudioContext)
-    );
-    return () => {
-      stopRecording(true);
-    };
-  }, [stopRecording]);
-
-  useEffect(() => {
-    if (!recording) {
-      if (timerRef.current) {
-        window.clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
-    }
-  }, [recording]);
 
   const nextItem = useCallback(() => {
     if (articlesData.length > 0) {
@@ -193,14 +141,9 @@ export function ArticlesPage() {
       setHint(null);
       setLocked(false);
       setLastChoice(null);
-      setSpeechMessage('');
-      if (audioUrl) {
-        URL.revokeObjectURL(audioUrl);
-        setAudioUrl(null);
-      }
+      resetRecording();
     }
-  }, [audioUrl, articlesData]);
-
+  }, [articlesData, resetRecording]);
 
   const evaluateSpeech = (spoken: string) => {
     const normalized = spoken.toLowerCase().trim();
@@ -268,139 +211,6 @@ export function ArticlesPage() {
     speakWord(targetPhrase);
   };
 
-  const startRecording = useCallback(async () => {
-    if (recording) return;
-
-    if (!supported && !audioSupported) {
-      setSpeechMessage(
-        isDE
-          ? 'Spracherkennung und Audioaufnahme werden hier nicht unterstützt.'
-          : 'Speech recognition and audio recording are not supported in this browser.'
-      );
-      return;
-    }
-
-    if (!supported && audioSupported) {
-      setSpeechMessage(
-        isDE
-          ? 'Spracherkennung nicht verfügbar. Nur Audioaufnahme ist möglich.'
-          : 'Speech recognition unavailable. Audio recording only.'
-      );
-    }
-
-    if (supported && !audioSupported) {
-      setSpeechMessage(
-        isDE
-          ? 'Spracherkennung aktiv. Sprich jetzt.'
-          : 'Speech recognition active. Speak now.'
-      );
-    }
-
-    const shouldRecordAudio = audioSupported && typeof navigator !== 'undefined' && !!navigator.mediaDevices?.getUserMedia;
-
-    if (audioSupported && !shouldRecordAudio) {
-      setSpeechMessage(
-        isDE
-          ? 'Audioaufnahme ist nicht verfügbar. Bitte überprüfe deine Browser-Einstellungen.'
-          : 'Audio recording is unavailable. Please check your browser settings.'
-      );
-      return;
-    }
-
-    try {
-      let stream: MediaStream | null = null;
-
-      if (shouldRecordAudio) {
-        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        audioStreamRef.current = stream;
-        const recorder = new MediaRecorder(stream);
-        audioChunksRef.current = [];
-        recorder.ondataavailable = (event) => {
-          if (event.data.size > 0) {
-            audioChunksRef.current.push(event.data);
-          }
-        };
-        recorder.onstop = () => {
-          const blob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
-          if (audioUrl) {
-            URL.revokeObjectURL(audioUrl);
-          }
-          setAudioUrl(URL.createObjectURL(blob));
-        };
-        recorder.start();
-        mediaRecorderRef.current = recorder;
-      }
-
-      setRecording(true);
-      setRecordingTime(0);
-      timerRef.current = window.setInterval(() => {
-        setRecordingTime((time) => time + 1);
-      }, 1000);
-
-      if (supported) {
-        start();
-      }
-
-      if (stream) {
-        startVisualizer(stream);
-      }
-    } catch {
-      setSpeechMessage(
-        isDE
-          ? 'Mikrofonberechtigung verweigert oder ein Fehler ist aufgetreten.'
-          : 'Microphone permission denied or an error occurred.'
-      );
-    }
-  }, [audioSupported, audioUrl, isDE, recording, start, supported]);
-
-  const restartRecording = async () => {
-    stopRecording(true);
-    setAudioUrl(null);
-    setRecordingTime(0);
-    await startRecording();
-  };
-
-  const startVisualizer = (stream: MediaStream) => {
-    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-    audioContextRef.current = audioContext;
-    const analyser = audioContext.createAnalyser();
-    analyser.fftSize = 256;
-    const source = audioContext.createMediaStreamSource(stream);
-    source.connect(analyser);
-    analyserRef.current = analyser;
-
-    const bufferLength = analyser.frequencyBinCount;
-    const dataArray = new Uint8Array(bufferLength);
-
-    const draw = () => {
-      if (!analyserRef.current || !canvasRef.current) return;
-      analyserRef.current.getByteTimeDomainData(dataArray);
-      let sum = 0;
-      for (let i = 0; i < bufferLength; i += 1) {
-        const value = dataArray[i] - 128;
-        sum += value * value;
-      }
-      const rms = Math.sqrt(sum / bufferLength) / 128;
-      const canvas = canvasRef.current;
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return;
-      const width = canvas.width;
-      const height = canvas.height;
-      ctx.clearRect(0, 0, width, height);
-      ctx.fillStyle = 'rgba(59, 130, 246, 0.85)';
-      const barWidth = width / 28;
-      for (let i = 0; i < 28; i += 1) {
-        const level = rms * (0.4 + 0.6 * (1 - Math.abs(i / 14 - 1)));
-        const barHeight = Math.max(2, level * height);
-        const x = i * barWidth;
-        const y = height - barHeight;
-        ctx.fillRect(x + 1, y, barWidth - 2, barHeight);
-      }
-      animationRef.current = requestAnimationFrame(draw);
-    };
-
-    animationRef.current = requestAnimationFrame(draw);
-  };
 
   const recorderEnabled = audioSupported || supported;
   const recorderModeHint = !audioSupported && supported
@@ -693,4 +503,3 @@ export function ArticlesPage() {
     </div>
   );
 }
-
