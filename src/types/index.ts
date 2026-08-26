@@ -133,6 +133,8 @@ export interface VocabEntry {
   level: 'A1';
   exampleDe?: string;
   audioId?: string;
+  /** Local TTS audio path for listening-gap questions. */
+  audioUrl?: string;
 }
 
 /**
@@ -153,6 +155,8 @@ export interface VocabCard {
   phonetics: { ipa: string; devanagari: string };
   tags: string[];
   examples: { de: string; en: string; np: string }[];
+  /** Local TTS audio path (e.g. `/audio/anki/tts-123.mp3`). Null when unavailable. */
+  audioUrl?: string;
 }
 
 /**

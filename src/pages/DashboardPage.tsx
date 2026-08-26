@@ -20,6 +20,7 @@ import { MasteryIndicator } from '../components/MasteryIndicator';
 import { SRSReviewWidget } from '../components/SRSReviewWidget';
 import { DailyQuestsWidget } from '../components/DailyQuestsWidget';
 import { StatTile } from '../components/ui/StatTile';
+import { ConfirmDialog } from '../components/ConfirmDialog';
 import { useDailyQuests } from '../hooks/useDailyQuests';
 import { useAchievements } from '../hooks/useAchievements';
 import { Link } from 'react-router-dom';
@@ -39,6 +40,7 @@ export function DashboardPage() {
   // ReviewSessionManager's Start Session pool (Bug A fix — one source of truth).
   const [reviewFilter, setReviewFilter] = useState<string>('all');
   const visibleItems = useMemo(() => filterReviewQueue(queue, reviewFilter), [queue, reviewFilter]);
+  const [confirmClearOpen, setConfirmClearOpen] = useState(false);
   const { langMode } = useLang();
   const { streakCount, longestStreak } = useStreak();
   const { reportReview } = useDailyQuests();
@@ -186,15 +188,24 @@ export function DashboardPage() {
         </div>
       </div>
 
-      {/* Activity Heatmap (intensity tiers + XP tooltips) */}
-      <div className="mt-4">
-        <ActivityHeatmap activities={activities} />
-      </div>
-
-      {/* Tactical skill radar — accuracy across Grammar/Vocab/Listening/Spelling */}
-      <div className="mt-4">
-        <SkillRadarChart />
-      </div>
+      {/* Secondary analytics — collapsed by default so Review stays primary */}
+      <details className="group mb-4 rounded-2xl bg-white p-4 shadow-sm dark:bg-slate-900">
+        <summary className="flex cursor-pointer items-center justify-between gap-3 list-none">
+          <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">
+            {isDE ? 'Detaillierte Analysen' : 'Detailed analytics'}
+          </span>
+          <span className="text-xs font-medium text-blue-600 dark:text-blue-400 group-open:hidden">
+            {isDE ? 'Anzeigen' : 'Show'}
+          </span>
+          <span className="hidden text-xs font-medium text-blue-600 dark:text-blue-400 group-open:inline">
+            {isDE ? 'Ausblenden' : 'Hide'}
+          </span>
+        </summary>
+        <div className="mt-4 space-y-4">
+          <ActivityHeatmap activities={activities} />
+          <SkillRadarChart />
+        </div>
+      </details>
 
       {/* Daily quests hub + compact SRS due-now widget */}
       <DailyQuestsWidget />
@@ -212,31 +223,39 @@ export function DashboardPage() {
           {queue.length > 0 && (
             <button
               type="button"
-              onClick={() => {
-                const confirmed = window.confirm(
-                  isDE
-                    ? 'Sollen alle offenen Review-Einträge gelöscht werden? Dieser Schritt kann nicht rückgängig gemacht werden.'
-                    : 'Clear all open review items? This cannot be undone.'
-                );
-                if (confirmed) {
-                  void clearQueue().then((ok) => {
-                    if (!ok) {
-                      showToast({
-                        message: isDE
-                          ? 'Cloud-Löschen fehlgeschlagen — lokale Einträge wurden entfernt.'
-                          : 'Cloud delete failed — local items were removed.',
-                        icon: '⚠️',
-                      });
-                    }
-                  });
-                }
-              }}
+              onClick={() => setConfirmClearOpen(true)}
               className={theme.button.secondary}
             >
               {clearAllLabel}
             </button>
           )}
         </div>
+
+        <ConfirmDialog
+          open={confirmClearOpen}
+          title={isDE ? 'Reviews löschen?' : 'Clear reviews?'}
+          message={
+            isDE
+              ? 'Sollen alle offenen Review-Einträge gelöscht werden? Dieser Schritt kann nicht rückgängig gemacht werden.'
+              : 'Clear all open review items? This cannot be undone.'
+          }
+          confirmLabel={isDE ? 'Alle löschen' : 'Clear all'}
+          cancelLabel={isDE ? 'Abbrechen' : 'Cancel'}
+          onConfirm={() => {
+            setConfirmClearOpen(false);
+            void clearQueue().then((ok) => {
+              if (!ok) {
+                showToast({
+                  message: isDE
+                    ? 'Cloud-Löschen fehlgeschlagen — lokale Einträge wurden entfernt.'
+                    : 'Cloud delete failed — local items were removed.',
+                  icon: '⚠️',
+                });
+              }
+            });
+          }}
+          onCancel={() => setConfirmClearOpen(false)}
+        />
 
         {/* SRS Review Session Manager (filter tabs + flashcard player + summary) — embedded, no nested card */}
         <ReviewSessionManager

@@ -74,3 +74,6 @@ local-german-db.json
 scripts/create-local-db.cjs
 scripts/enrich-local.ts
 scripts/populate-local-db.cjs
+
+# Cleanup archive (moved-out docs/plans/logs/strays/intermediates - local only)
+_archive/

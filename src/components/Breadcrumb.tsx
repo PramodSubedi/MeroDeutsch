@@ -35,8 +35,8 @@ export function Breadcrumb() {
     '/auth': { en: 'Sign in', de: 'Anmelden' },
   };
 
-  // Don't show breadcrumbs on homepage
-  if (pathname === '/') {
+  // Don't show breadcrumbs on homepage, auth, or pure legal pages
+  if (pathname === '/' || pathname === '/auth' || pathname === '/privacy' || pathname === '/terms') {
     return null;
   }
 

@@ -21,7 +21,8 @@ export function GrammarPage() {
   // Lesson Engine integration: XP + SRS reporting via the shared reporter.
   const reportResult = useAnswerReporter();
   const [tab, setTab] = useState<'sein' | 'haben' | 'weakVerb' | 'cases' | 'accusative' | 'bridge'>('sein');
-  const [answers, setAnswers] = useState<Record<number, string>>({});
+  const [answersByTab, setAnswersByTab] = useState<Record<string, Record<number, string>>>({});
+  const answers = answersByTab[tab] ?? {};
 
   const [drills, setDrills] = useState<GrammarDrill[]>([]);
 
@@ -39,8 +40,10 @@ export function GrammarPage() {
 
   const choose = (qi: number, opt: string) => {
     if (answers[qi] !== undefined) return; // locked after first selection
-    const next = { ...answers, [qi]: opt };
-    setAnswers(next);
+    setAnswersByTab((prev) => ({
+      ...prev,
+      [tab]: { ...(prev[tab] ?? {}), [qi]: opt },
+    }));
     // Single-point gamification/SRS reporting (Lesson Engine reporter).
     reportResult({
       correct: opt === drills[qi].correct,
@@ -68,7 +71,7 @@ export function GrammarPage() {
           { id: 'bridge', label: isDE ? 'Grammatik-Brücke' : 'Grammar Bridge', icon: Globe },
         ]}
         activeTab={tab}
-        onTabChange={(newTab) => { setTab(newTab as any); setAnswers({}); }}
+        onTabChange={(newTab) => { setTab(newTab as any); }}
       />
 
       {tab === 'cases' && (

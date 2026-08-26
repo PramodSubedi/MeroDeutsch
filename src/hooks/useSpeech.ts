@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { getItem, setItem } from '../utils/safeStorage';
+import { AUDIO_BY_LEMMA } from '../data/audioManifest';
 
 export type SpeechSpeed = 'slow' | 'normal' | 'fast';
 
@@ -59,10 +60,32 @@ export function speakText(text: string, rateOverride?: number) {
   window.speechSynthesis.speak(u);
 }
 
+/** Look up a bundled clip for a German word (case-insensitive lemma match). */
+function localAudioFor(text: string): string | null {
+  if (!text) return null;
+  const key = text.trim().toLowerCase();
+  return Object.prototype.hasOwnProperty.call(AUDIO_BY_LEMMA, key) ? AUDIO_BY_LEMMA[key] : null;
+}
+
+/** Play a bundled MP3; on any playback failure, fall back to speechSynthesis. */
+function playFile(url: string, fallbackText: string) {
+  const audio = new Audio(url);
+  audio.onerror = () => speakText(fallbackText);
+  audio.play().catch(() => speakText(fallbackText));
+}
+
 /** Speak a word, preferring a pre-recorded clip if present, else TTS. */
 export async function speakWordWithAudio(id: string, text: string) {
+  // 1) Bundled Anki/Thorsten-Voice clips (preferred — natural voice).
+  const bundled = localAudioFor(text);
+  if (bundled) {
+    playFile(bundled, text);
+    return;
+  }
+  // 2) Legacy per-id sample clips.
   const exists = await audioFileExists(id);
   if (!exists) {
+    // 3) speechSynthesis fallback.
     speakText(text);
     return;
   }
@@ -76,7 +99,12 @@ export function speakLetter(text: string) {
 }
 
 export function speakWord(text: string) {
-  // Uses the global speed setting.
+  // Prefer bundled Thorsten-Voice clip (natural voice) before OS TTS.
+  const bundled = localAudioFor(text);
+  if (bundled) {
+    playFile(bundled, text);
+    return;
+  }
   speakText(text);
 }
 

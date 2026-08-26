@@ -38,6 +38,7 @@ interface CheckpointQuestion extends ExerciseQuestion {
   prompt: string;
   source: CheckpointSource;
   article?: Article; // only for article-precision rendering
+  audioUrl?: string; // only for listening-gap questions
 }
 
 interface LoadedData {
@@ -161,6 +162,34 @@ function buildQuestions(
           })
         );
         break;
+      case 'vocab-translation-ne':
+        pick(data.vocabulary, spec.count, (v) => v.id).forEach((v) =>
+          out.push({
+            key: `vocab-ne:${v.id}`,
+            prompt: v.ne || v.en,
+            speakPrompt: v.de,
+            speakAfter: v.de,
+            options: buildOptions(v.de, data.vocabulary.map((x) => x.de), 4),
+            correctAnswer: v.de,
+            source: 'vocab-translation-ne',
+          })
+        );
+        break;
+      case 'listening-gap':
+        pick(data.vocabulary, spec.count, (v) => v.id).forEach((v) => {
+          if (!v.audioUrl) return;
+          out.push({
+            key: `listen:${v.id}`,
+            prompt: 'Höre und wähle das richtige Wort',
+            speakPrompt: v.de,
+            speakAfter: v.de,
+            options: buildOptions(v.de, data.vocabulary.map((x) => x.de), 4),
+            correctAnswer: v.de,
+            source: 'listening-gap',
+            audioUrl: v.audioUrl,
+          });
+        });
+        break;
       default:
         break;
     }
@@ -221,7 +250,8 @@ useEffect(() => {
       const specs = unit.checkpoint.specs;
       const needed = new Set(specs.map((s) => s.type));
       const grammarCategories = ['sein', 'haben', 'weakVerb', 'cases'];
-      const vocabulary = needed.has('vocab-translation')
+      const vocabularyNeeded = needed.has('vocab-translation') || needed.has('vocab-translation-ne') || needed.has('listening-gap');
+      const vocabulary = vocabularyNeeded
         ? unit.vocabCategories?.length || unit.vocabPos
           ? await curriculumService.getVocabularyByCategories(
               unit.vocabCategories ?? [],
@@ -231,13 +261,14 @@ useEffect(() => {
           : await curriculumService.getVocabularyFiltered({ level: 'A1' })
         : [];
       // Map VocabCard[] to VocabEntry[] shape for compatibility with LoadedData
-      const vocabEntries: VocabEntry[] = ((vocabulary ?? []) as any).map((c: { id: string; lemma: string; translation: { en: string; np: string } | undefined; tags?: string[] }) => ({
+      const vocabEntries: VocabEntry[] = ((vocabulary ?? []) as any).map((c: { id: string; lemma: string; translation: { en: string; np: string } | undefined; tags?: string[]; audioUrl?: string }) => ({
         id: c.id,
         de: c.lemma,
         en: c.translation?.en ?? '',
         ne: c.translation?.np ?? '',
         tags: c.tags ?? [],
         level: 'A1',
+        audioUrl: c.audioUrl,
       }));
       const data: LoadedData = {
         greetings: needed.has('greeting-translation') ? await curriculumService.getGreetings() : [],
@@ -449,6 +480,19 @@ useEffect(() => {
               <span className="ml-2 align-top">
                 <GenderBadge article={q.article ?? 'der'} dot labeled={false} />
               </span>
+            )}
+            {q.source === 'listening-gap' && q.audioUrl && (
+              <button
+                type="button"
+                onClick={() => {
+                  const audio = new Audio(q.audioUrl);
+                  audio.play();
+                }}
+                className="ml-3 inline-flex items-center gap-1 rounded-lg bg-blue-100 px-3 py-1.5 text-sm font-medium text-blue-700 hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-300"
+                aria-label={isDE ? 'Audio abspielen' : 'Play audio'}
+              >
+                🔊 {isDE ? 'Anhören' : 'Listen'}
+              </button>
             )}
           </>
         )}

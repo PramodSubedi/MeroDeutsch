@@ -136,10 +136,9 @@ export function AuthPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword((v) => !v)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg p-2 text-slate-500 transition hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-300"
+                className="absolute right-2 top-1/2 -translate-y-1/2 flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg p-2 text-slate-500 transition hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-300"
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
                 aria-pressed={showPassword}
-                tabIndex={-1}
               >
                 {showPassword ? (
                   <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -170,10 +169,9 @@ export function AuthPage() {
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword((v) => !v)}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg p-2 text-slate-500 transition hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-300"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg p-2 text-slate-500 transition hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-300"
                   aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
                   aria-pressed={showConfirmPassword}
-                  tabIndex={-1}
                 >
                   {showConfirmPassword ? (
                     <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">

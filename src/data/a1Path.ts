@@ -60,7 +60,9 @@ export type CheckpointSource =
   | 'article-precision'
   | 'grammar-drill'
   | 'calendar-translation'
-  | 'vocab-translation';
+  | 'vocab-translation'
+  | 'vocab-translation-ne'
+  | 'listening-gap';
 
 export interface CheckpointSpec {
   type: CheckpointSource;
@@ -294,7 +296,11 @@ export const A1_UNITS: A1Unit[] = [
     nodeIds: ['u4-roleplay', 'u4-stories', 'u4-checkpoint'],
     checkpoint: {
       moduleType: 'a1-checkpoint',
-      specs: [{ type: 'vocab-translation', count: 12 }],
+      specs: [
+        { type: 'vocab-translation', count: 6 },
+        { type: 'vocab-translation-ne', count: 3 },
+        { type: 'listening-gap', count: 3 },
+      ],
     },
     // "Place & food" theming. Only categories that exist in the DB apply;
     // unknown ones return nothing and the A1 fill covers the rest.
@@ -317,8 +323,10 @@ export const A1_UNITS: A1Unit[] = [
     checkpoint: {
       moduleType: 'a1-checkpoint',
       specs: [
-        { type: 'grammar-drill', count: 6 },
-        { type: 'vocab-translation', count: 6 },
+        { type: 'grammar-drill', count: 4 },
+        { type: 'vocab-translation', count: 4 },
+        { type: 'vocab-translation-ne', count: 2 },
+        { type: 'listening-gap', count: 2 },
       ],
     },
     // "Want & can" theming: verb-focused (POS pass) + phrase/routine tags.
