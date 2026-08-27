@@ -11,6 +11,12 @@ export interface RoleplayOption {
   ne?: string;
   /** Optional romanized Nepali. */
   neR?: string;
+      /** Optional English translation (present on conversational roleplays). */
+  en?: string;
+  /** Optional Nepali translation in Devanagari. */
+  ne?: string;
+  /** Optional romanized Nepali. */
+  neR?: string;
   /**
    * Optional immediate NPC reply to THIS specific choice (branching-lite).
    * When present, the NPC posts it right after the learner's bubble.
@@ -53,6 +59,11 @@ export interface RoleplayScenario {
   steps: RoleplayStep[];
   /** Optional NPC farewell shown after the last correct reply (before the completion state). */
   closing?: string;
+  /**
+   * True when the scenario is a role-swapped twin (learner plays the service
+   * side and opens the dialogue). Used for the 🎭 badge + banner.
+   */
+  roleFlip?: boolean;
 }
 
 export interface DictationWord {
@@ -134,6 +145,72 @@ export interface MicroStory {
 }
 
 /** Pronunciation tip for a specific letter (keyed by letter id). */
+/** One telling-time phrase (de/en/ne) — `uhrzeit-item` content pool. */
+export interface UhrzeitItem {
+  de: string;
+  en: string;
+  ne: string;
+}
+
+/** Conversational sentence bank entry (`conversation-vocab` pool). */
+export interface ConversationVocab {
+  german_text: string;
+  cefr_level: string;
+  grammar_focus: string;
+  context_situation: string;
+  translations: { en: string; ne: string; ne_roman: string };
+}
+
+/** Quick-reply option inside a scenario definition step. */
+export interface ConversationOptionSeed {
+  ref?: string;
+  t?: string;
+  en?: string;
+  ne?: string;
+  neR?: string;
+  ok?: boolean;
+  fb?: string;
+  reaction?: string;
+  reactionEn?: string;
+  next?: number;
+}
+
+/** One exchange step of a conversational variant. */
+export interface ConversationStepSeed {
+  n: string;
+  nEn?: string;
+  from?: 'npc' | 'me';
+  p: string;
+  opts: ConversationOptionSeed[];
+}
+
+/** One alternative dialogue for a scenario. */
+export interface ConversationVariantSeed {
+  id: string;
+  name: string;
+  steps: ConversationStepSeed[];
+  /**
+   * True when the learner plays the SERVICE side (waiter/clerk/…) and opens
+   * the dialogue themselves (opening step uses `from: 'me'`). Surfaced on the
+   * built `RoleplayScenario` so pages can badge role-swapped scenarios.
+   */
+  roleFlip?: boolean;
+}
+
+/** A conversational scenario definition (`conversation-def` pool). */
+export interface ConversationScenarioSeed {
+  sid: string;
+  title: string;
+  titleEn: string;
+  emoji: string;
+  ctx: string;
+  band: string;
+  closing?: string;
+  /** Metadata: roles available (e.g. ['customer','staff']). Informational. */
+  roleModes?: string[];
+  variants: ConversationVariantSeed[];
+}
+
 export interface PronunciationTip {
   letterId: string;
   en: string;
@@ -180,6 +257,17 @@ export interface CurriculumService {
   getVocabFilterOptions(): Promise<VocabularyFilterOptions>;
   getGrammarDrills(category: string): Promise<GrammarDrill[]>;
   getRoleplayScenarios(): Promise<RoleplayScenario[]>;
+/**
+   * Randomized sentence-building exercises from the dynamic pipeline
+   * (Supabase `get_random_sentences` RPC with a Dexie offline cache).
+   */
+  getSentences(grammarFocus?: string, limit?: number): Promise<SentenceExercise[]>;
+  /** Telling-time phrases from the `uhrzeit-item` content pool. */
+  getUhrzeit(): Promise<UhrzeitItem[]>;
+  /** Conversational scenario definitions from the `conversation-def` pool. */
+  getConversationDefs(): Promise<ConversationScenarioSeed[]>;
+  /** Conversational sentence bank from the `conversation-vocab` pool. */
+  getConversationVocab(): Promise<ConversationVocab[]>;
   getDictationWords(): Promise<DictationWord[]>;
   /** Micro-stories pool from the dynamic content table. */
   getStories(): Promise<MicroStory[]>;

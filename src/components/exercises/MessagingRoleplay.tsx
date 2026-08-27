@@ -389,8 +389,16 @@ export function MessagingRoleplay({ scenarios, module = 'roleplay' }: MessagingR
         </div>
 
         {/* Grammar / level chip (inherited from the target card) */}
-        {(step.grammarFocus || step.cefrLevel) && !conversationComplete && (
-          <div className="flex flex-wrap items-center gap-1.5 border-b border-slate-200 bg-slate-50 px-4 py-2 dark:border-slate-700 dark:bg-slate-900/60">
+        {(step.grammarFocus || step.cefrLevel || scenario.roleFlip) && !conversationComplete && (
+          <div className="flex flex-wrap items-center gap-1.5 border-b border-slate-200 bg-slate-50 px-3 py-2 dark:border-slate-700 dark:bg-slate-900/60">
+            {scenario.roleFlip && (
+              <span
+                className="rounded-full bg-violet-100 px-2 py-0.5 text-[11px] font-semibold text-violet-700 dark:bg-violet-950/60 dark:text-violet-200"
+                title={isDE ? 'Rollenwechsel: Du sprichst zuerst!' : 'Role flip: you speak first!'}
+              >
+                🎭 {isDE ? 'Du beginnst' : 'You start'}
+              </span>
+            )}
             {step.grammarFocus && (
               <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[11px] font-semibold text-violet-700 dark:bg-violet-950/60 dark:text-violet-200">
                 ✦ {step.grammarFocus}
@@ -604,9 +612,18 @@ export function MessagingRoleplay({ scenarios, module = 'roleplay' }: MessagingR
                       </button>
                       <button
                         type="button"
-                        onClick={() => speak(opt.text)}
-                        aria-label={isDE ? 'Anhören' : 'Hear this option'}
-                        className="inline-flex min-h-[44px] w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500 transition hover:border-blue-300 hover:text-blue-600 active:scale-95 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300"
+                        onClick={() => !opt.ok && speak(opt.text)}
+                        disabled={typing || opt.ok}
+                        aria-label={
+                          opt.ok
+                            ? isDE
+                              ? 'Richtige Antwort — noch nicht offenbart'
+                              : 'Correct answer — hidden until chosen'
+                            : isDE
+                              ? 'Anhören'
+                              : 'Hear this option'
+                        }
+                        className="inline-flex min-h-[44px] w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500 transition hover:border-blue-300 hover:text-blue-600 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300"
                       >
                         <Volume2 className="h-4 w-4" aria-hidden="true" />
                       </button>

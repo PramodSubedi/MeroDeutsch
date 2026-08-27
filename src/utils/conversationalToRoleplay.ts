@@ -1,83 +1,39 @@
 /**
  * src/utils/conversationalToRoleplay.ts
  *
- * Builds ready-to-play `RoleplayScenario[]` from two bundled JSON sources:
- *  - `conversational_german_vocab.json`   — the untouched single-sentence bank
- *  - `conversational_scenario_defs.json`  — 9 scenarios × 3–4 dialogue variants
+ * Builds ready-to-play `RoleplayScenario[]` from the conversational content
+ * sources, which now live in the `content_items` database pools:
+ *  - `conversation-vocab`   — the single-sentence bank
+ *  - `conversation-def`     — 9 scenarios × 3–4 dialogue variants
+ *
+ * `buildConversationalScenarios(defs, vocab)` is DATA-DRIVEN so pages can prefer
+ * the database (curriculumService → content pools → Dexie cache) and fall back
+ * to the bundled JSON files (`buildBundledConversationalScenarios`) when the
+ * pools are empty/pre-seed.
  *
  * Every learner turn references its sentence either by `ref` (the unique
- * `german_text` in the vocab bank) or by an inline `t` with translations.
- * The builder resolves refs against the bank, so each scenario INHERITS the
- * card's context, CEFR level and grammar focus without duplicating data.
+ * `german_text` in the vocab bank) or by an inline `t` with translations. The
+ * builder resolves refs against the bank so each scenario INHERITS the card's
+ * context, CEFR level and grammar focus without duplicating data.
  *
- * Variety: one variant per scenario is picked at random per build; the variant
- * played most recently for that scenario is avoided when alternatives exist,
- * so the learner does not see the same conversation every time.
+ * Variety: one variant per scenario is picked at random; the variant played most
+ * recently for that scenario is avoided when alternatives exist.
  *
- * Output shape = the EXISTING `RoleplayScenario` type → consumed by
- * `MessagingRoleplay` unchanged (chat UI, XP + SRS reporting all reused).
+ * Output = the existing `RoleplayScenario` type → consumed by `MessagingRoleplay`
+ * unchanged (chat UI, XP + SRS reporting all reused).
  */
-import type { RoleplayScenario, RoleplayOption } from '../types/curriculum';
-import vocabBank from '../data/conversational_german_vocab.json';
-import scenarioDefs from '../data/conversational_scenario_defs.json';
+import type {
+  RoleplayScenario,
+  RoleplayOption,
+  ConversationVocab,
+  ConversationScenarioSeed,
+  ConversationOptionSeed,
+} from '../types/curriculum';
+import vocabBankJson from '../data/conversational_german_vocab.json';
+import scenarioDefsJson from '../data/conversational_scenario_defs.json';
 
-interface VocabCard {
-  german_text: string;
-  cefr_level: string;
-  grammar_focus: string;
-  context_situation: string;
-  translations: { en: string; ne: string; ne_roman: string };
-}
-
-/** One quick-reply option in a definition step. */
-interface OptionDef {
-  /** Unique `german_text` inside the vocab bank (correct answers use this). */
-  ref?: string;
-  /** Inline learner turn for situation-specific lines (e.g. ordering pizza). */
-  t?: string;
-  en?: string;
-  ne?: string;
-  neR?: string;
-  ok?: boolean;
-  fb?: string;
-  /** Optional NPC reply to this exact choice (branching-lite). */
-  reaction?: string;
-  reactionEn?: string;
-  /** Optional target step index to route to after choosing this option. */
-  next?: number;
-}
-
-interface StepDef {
-  /** Leading line — the NPC says it, or the learner initiates when `from: 'me'`. */
-  n: string;
-  nEn?: string;
-  /** Learner initiates the exchange when true. */
-  from?: 'npc' | 'me';
-  /** English instruction shown to the learner. */
-  p: string;
-  opts: OptionDef[];
-}
-
-interface VariantDef {
-  id: string;
-  name: string;
-  steps: StepDef[];
-}
-
-interface ScenarioDef {
-  sid: string;
-  title: string;
-  titleEn: string;
-  emoji: string;
-  ctx: string;
-  band: string;
-  /** Optional NPC farewell after the last step. */
-  closing?: string;
-  variants: VariantDef[];
-}
-const CARDS = new Map<string, VocabCard>(
-  (vocabBank as VocabCard[]).map((c) => [c.german_text, c]),
-);
+/** One exchange step of a definition (alias for brevity). */
+type StepDef = ConversationScenarioSeed['variants'][number]['steps'][number];
 
 const LAST_PICK_KEY = 'meroDeutschConvPick';
 
@@ -99,7 +55,7 @@ function writeLastPick(sid: string, idx: number): void {
   }
 }
 
-/** Random variant index that avoids the previously played one when possible. */
+/** Random variant index that avoids the previously-picked one when possible. */
 function pickVariantIndex(sid: string, count: number): number {
   if (count <= 1) return 0;
   const last = readLastPicks()[sid];
@@ -109,9 +65,12 @@ function pickVariantIndex(sid: string, count: number): number {
   return idx;
 }
 
-function resolveOption(o: OptionDef): RoleplayOption | null {
+function resolveOption(
+  o: ConversationOptionSeed,
+  cards: Map<string, ConversationVocab>,
+): RoleplayOption | null {
   if (typeof o.ref === 'string') {
-    const card = CARDS.get(o.ref);
+    const card = cards.get(o.ref);
     if (!card) return null;
     return {
       text: card.german_text,
@@ -141,31 +100,37 @@ function resolveOption(o: OptionDef): RoleplayOption | null {
 
 /** Grammar + level are inherited from the card behind the CORRECT option. */
 function stepPedagogy(
-  def: OptionDef[],
+  def: ConversationOptionSeed[],
+  cards: Map<string, ConversationVocab>,
 ): { grammarFocus?: string; cefrLevel?: string } {
   const ok = def.find((o) => o.ok);
   if (!ok || typeof ok.ref !== 'string') return {};
-  const card = CARDS.get(ok.ref);
+  const card = cards.get(ok.ref);
   if (!card) return {};
   return { grammarFocus: card.grammar_focus, cefrLevel: card.cefr_level };
 }
 
 /**
- * Compose one random variant per scenario into playable roleplays.
- * Deterministic per call; call again (e.g. from a "Next conversation" button)
- * to shuffle a fresh set.
+ * Compose one scenario per definition into playable micros from data-sourced
+ * definitions + vocab cards. Call again (e.g. "Next conversation") to shuffle.
  */
-export function buildConversationalScenarios(): RoleplayScenario[] {
+export function buildConversationalScenarios(
+  defs: ConversationScenarioSeed[],
+  vocab: ConversationVocab[],
+): RoleplayScenario[] {
+  const cards = new Map<string, ConversationVocab>(vocab.map((c) => [c.german_text, c]));
   const scenarios: RoleplayScenario[] = [];
-  for (const def of scenarioDefs as unknown as ScenarioDef[]) {
+
+  for (const def of defs) {
+    if (!def.variants || def.variants.length === 0) continue;
     const vIdx = pickVariantIndex(def.sid, def.variants.length);
     const variant = def.variants[vIdx];
-    const steps = variant.steps
-      .map((s) => {
-        const options = s.opts
-          .map(resolveOption)
+    const steps = (variant.steps ?? [])
+      .map((s: StepDef) => {
+        const options = (s.opts ?? [])
+          .map((o) => resolveOption(o, cards))
           .filter((o): o is RoleplayOption => o !== null);
-        const { grammarFocus, cefrLevel } = stepPedagogy(s.opts);
+        const { grammarFocus, cefrLevel } = stepPedagogy(s.opts ?? [], cards);
         return {
           npc: s.n,
           npcEn: s.nEn,
@@ -185,7 +150,19 @@ export function buildConversationalScenarios(): RoleplayScenario[] {
       level: def.band,
       steps,
       ...(def.closing ? { closing: def.closing } : {}),
+      ...(variant.roleFlip ? { roleFlip: true } : {}),
     });
   }
   return scenarios;
+}
+
+/**
+ * Bundled JSON fallback — used when the DB content pools are empty (pre-seed)
+ * or unreachable. Reads the two committed JSON files directly.
+ */
+export function buildBundledConversationalScenarios(): RoleplayScenario[] {
+  return buildConversationalScenarios(
+    scenarioDefsJson as unknown as ConversationScenarioSeed[],
+    vocabBankJson as unknown as ConversationVocab[],
+  );
 }

@@ -52,6 +52,8 @@ export function CalendarPage() {
   const [mode, setMode] = useState<'learn' | 'quiz'>('learn');
   const [calendar, setCalendar] = useState<CalendarItem[]>([]);
   const [loaded, setLoaded] = useState(false);
+  /** Telling-time phrases from the DB pool; empty until seeded (JSON fallback). */
+  const [timeItems, setTimeItems] = useState<UhrzeitItem[]>([]);
   /** Increments to reshuffle a fresh quiz deck. */
   const [runId, setRunId] = useState(0);
 
@@ -70,13 +72,24 @@ export function CalendarPage() {
       .catch(() => setLoaded(true));
   }, []);
 
+  // Uhrzeit pool: prefer the database (`uhrzeit-item` pool → Dexie); the bundled
+  // TIME_PHRASES JSON remains the offline / pre-seed fallback.
+  useEffect(() => {
+    let cancelled = false;
+    curriculumService
+      .getUhrzeit()
+      .then((data) => { if (!cancelled && data.length > 0) setTimeItems(data); })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, []);
+
   // Pool depends on the selected tab. Days/months come from the curriculum
-  // loader; the Uhrzeit pool is local client-side data so it is always ready.
+  // loader; Uhrzeit prefers the DB pool with a bundled JSON fallback.
   const pool = useMemo<CalendarPool[]>(() => {
     if (tab === 'days') return calendar.slice(0, 7);
     if (tab === 'months') return calendar.slice(7);
-    return TIME_PHRASES;
-  }, [calendar, tab]);
+    return timeItems.length > 0 ? timeItems : TIME_PHRASES;
+  }, [calendar, tab, timeItems]);
 
   // Friendly state only blocks days/months when calendar data is missing.
   const emptyDaysMonths =

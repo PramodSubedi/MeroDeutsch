@@ -18,6 +18,9 @@ import type {
   PronunciationTip,
   VocabularyFilter,
   VocabularyFilterOptions,
+  UhrzeitItem,
+  ConversationScenarioSeed,
+  ConversationVocab,
 } from '../types/curriculum';
 import { supabase } from '../lib/supabase';
 import { openDb, seedVocab, seedSentences, seedContentItems } from '../lib/db';
@@ -575,5 +578,26 @@ export class SupabaseCurriculumService implements CurriculumService {
       (pools[q.type] ??= []).push(q);
     }
     return pools;
+  }
+
+  /** Telling-time phrases (`uhrzeit-item` pool) with local cache fallback. */
+  async getUhrzeit(): Promise<UhrzeitItem[]> {
+    return this.fetchContentPool<UhrzeitItem>('uhrzeit-item', false, () =>
+      this.localService.getUhrzeit()
+    );
+  }
+
+  /** Conversational scenario definitions (`conversation-def` pool). */
+  async getConversationDefs(): Promise<ConversationScenarioSeed[]> {
+    return this.fetchContentPool<ConversationScenarioSeed>('conversation-def', false, () =>
+      this.localService.getConversationDefs()
+    );
+  }
+
+  /** Conversational sentence bank (`conversation-vocab` pool). */
+  async getConversationVocab(): Promise<ConversationVocab[]> {
+    return this.fetchContentPool<ConversationVocab>('conversation-vocab', false, () =>
+      this.localService.getConversationVocab()
+    );
   }
 }

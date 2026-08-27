@@ -20,6 +20,7 @@ import dotenv from 'dotenv';
 // which file the project keeps them in.
 dotenv.config({ path: '.env', override: false });
 dotenv.config({ path: '.env.local', override: true });
+import * as fs from 'fs';
 import { createClient } from '@supabase/supabase-js';
 import {
   ALPHABET,
@@ -145,6 +146,21 @@ function buildRows(): ContentItemRow[] {
       sort: 0,
     });
   });
+
+  // NEW pools (uhrzeit + conversational roleplay) sourced from the generated
+  // snapshot so `npm run seed-content-pools` stays in sync with the runtime
+  // cold-start bundle (scripts/genContentPools.ts).
+  const extra = JSON.parse(fs.readFileSync('src/data/content-pools.json', 'utf8')) as {
+    contentType: string;
+    items: { id: string; payload: unknown; sort: number }[];
+  }[];
+  const NEW_TYPES = new Set(['uhrzeit-item', 'conversation-def', 'conversation-vocab']);
+  for (const pool of extra) {
+    if (!NEW_TYPES.has(pool.contentType)) continue;
+    for (const r of pool.items) {
+      rows.push({ id: r.id, content_type: pool.contentType, payload: r.payload, sort: r.sort });
+    }
+  }
 
   return rows;
 }

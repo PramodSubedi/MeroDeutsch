@@ -17,6 +17,9 @@ import type {
   PronunciationTip,
   VocabularyFilter,
   VocabularyFilterOptions,
+  UhrzeitItem,
+  ConversationScenarioSeed,
+  ConversationVocab,
 } from '../types/curriculum';
 import { openDb, getCachedContent } from '../lib/db';
 
@@ -284,5 +287,20 @@ export class LocalCurriculumService implements CurriculumService {
       (pools[q.type] ??= []).push(q);
     }
     return pools;
+  }
+
+  /** Telling-time phrases from the offline `uhrzeit-item` cache. */
+  async getUhrzeit(): Promise<UhrzeitItem[]> {
+    return getCachedContent<UhrzeitItem>('uhrzeit-item');
+  }
+
+  /** Conversational scenario definitions from the offline `conversation-def` cache. */
+  async getConversationDefs(): Promise<ConversationScenarioSeed[]> {
+    return getCachedContent<ConversationScenarioSeed>('conversation-def');
+  }
+
+  /** Conversational sentence bank from the offline `conversation-vocab` cache. */
+  async getConversationVocab(): Promise<ConversationVocab[]> {
+    return getCachedContent<ConversationVocab>('conversation-vocab');
   }
 }

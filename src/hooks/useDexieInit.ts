@@ -7,16 +7,18 @@
  *        a) `public/data/enriched-vocab.json` (full VocabCard schema, produced by
  *           `npm run enrich`) — preferred when present.
  *        b) curriculumService.getVocabularyFiltered({}) — the live `vocabulary`
- *           table via RPC/table-SELECT with full VocabCard fidelity
- *           (article / level / category preserved). No bundled static data,
- *           no lossy legacy adapter.
+ *           table via RPC/table-SELECT with full VocabCard fidelity.
+ *   2. Seed ALL curriculum content pools into `db.contentItems` from the bundled
+ *      `src/data/content-pools.json` snapshot when the table is empty (offline
+ *      cold start). Pools refresh from the live `content_items` table once online.
  *
- * Seeding is idempotent (guarded by `db.vocab.count() === 0`), so repeated
- * mounts or hot-reloads never duplicate rows.
+ * Seeding is idempotent (guarded by `count() === 0`), so repeated mounts or
+ * hot-reloads never duplicate rows.
  */
 import { useEffect, useState } from 'react';
-import { openDb, seedVocab } from '../lib/db';
+import { openDb, seedVocab, seedContentItems } from '../lib/db';
 import { curriculumService } from '../services';
+import { getColdStartPools } from '../data/contentPools';
 import type { VocabCard } from '../types';
 
 /** Lightweight shape check for fetched enriched vocab before seeding. */
@@ -72,6 +74,23 @@ export function useDexieInit(): boolean {
           await seedVocab(cards);
         }
       }
+
+      // 2. Seed all curriculum content pools into `contentItems` when empty, so
+      //    every module (alphabet, numbers, uhrzeit, roleplay, stories, …) works
+      //    on a first-ever OFFLINE cold start from the bundled snapshot. Pools
+      //    are refreshed from the live `content_items` table on subsequent
+      //    online visits as before.
+      const contentCount = await store.contentItems.count();
+      if (contentCount === 0) {
+        for (const pool of getColdStartPools()) {
+          if (pool.items.length === 0) continue;
+          await seedContentItems(
+            pool.contentType,
+            pool.items.map(({ id, payload, sort }) => ({ id, payload, sort }))
+          );
+        }
+      }
+
       if (!cancelled) setReady(true);
     };
 

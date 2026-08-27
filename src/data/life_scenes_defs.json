@@ -1,0 +1,1747 @@
+[
+ {
+  "sid": "life-cafe",
+  "title": "Im Café",
+  "titleEn": "At the café",
+  "emoji": "☕",
+  "ctx": "Ordering drinks and paying",
+  "band": "A1",
+  "roleModes": [
+   "guest",
+   "waiter"
+  ],
+  "closing": "Vielen Dank! Einen schönen Tag noch!",
+  "variants": [
+   {
+    "id": "cafe-kaffee-kuchen",
+    "name": "Kaffee und Kuchen",
+    "steps": [
+     {
+      "n": "Guten Tag! Was möchten Sie trinken?",
+      "nEn": "Hello! What would you like to drink?",
+      "p": "Order a coffee.",
+      "opts": [
+       {
+        "ref": "Ich möchte einen Kaffee, bitte.",
+        "ok": true
+       },
+       {
+        "t": "Ich bin sehr müde.",
+        "en": "I'm very tired.",
+        "fb": "That's how you feel, not what you'd like to drink!"
+       }
+      ]
+     },
+     {
+      "n": "Gerne. Möchten Sie auch ein Stück Kuchen?",
+      "nEn": "Certainly. Would you like a piece of cake too?",
+      "p": "Order cake OR politely decline.",
+      "opts": [
+       {
+        "ref": "Ja, gern. Ein Stück Kuchen, bitte.",
+        "ok": true,
+        "next": 2
+       },
+       {
+        "ref": "Nein, danke. Nur den Kaffee.",
+        "ok": true,
+        "next": 3
+       },
+       {
+        "t": "Wo ist der Bahnhof?",
+        "en": "Where is the station?",
+        "fb": "Wrong place — you're ordering at a café!"
+       }
+      ]
+     },
+     {
+      "n": "Oh je – Tut mir leid, wir haben keinen Kuchen mehr. Ist ein Muffin okay?",
+      "nEn": "Oh dear — sorry, we're out of cake. Is a muffin okay?",
+      "p": "Accept the muffin so breakfast is saved.",
+      "opts": [
+       {
+        "ref": "Ja, ein Muffin ist gut.",
+        "ok": true
+       },
+       {
+        "t": "Ich möchte nach Hause.",
+        "en": "I want to go home.",
+        "fb": "One friendly 'yes' solves everything here!"
+       }
+      ]
+     },
+     {
+      "n": "Hier ist Ihr Kaffee und der Muffin – das macht sechs Euro fünfzig. Bar oder mit Karte?",
+      "nEn": "Here's your coffee and muffin — six fifty please. Cash or card?",
+      "p": "Pay cash.",
+      "opts": [
+       {
+        "ref": "Bar, bitte.",
+        "ok": true
+       },
+       {
+        "ref": "Mit Karte, bitte.",
+        "ok": true
+       },
+       {
+        "t": "Ich habe keinen Hunger.",
+        "en": "I'm not hungry.",
+        "fb": "You've eaten — now comes the bill!"
+       }
+      ]
+     },
+     {
+      "n": "Perfekt. Danke für Ihren Besuch!",
+      "nEn": "Perfect. Thanks for coming!",
+      "p": "Give a warm closing thanks.",
+      "opts": [
+       {
+        "ref": "Danke schön!",
+        "ok": true
+       },
+       {
+        "ref": "Danke, gleichfalls!",
+        "ok": false,
+        "fb": "'Gleichfalls' fits AFTER they wish you something first."
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": "cafe-eistee",
+    "name": "Rund um den Tee",
+    "steps": [
+     {
+      "n": "Hallo! Was darf es sein?",
+      "nEn": "Hi! What can I get you?",
+      "p": "Order a tea.",
+      "opts": [
+       {
+        "ref": "Ich nehme einen Tee, bitte.",
+        "ok": true
+       },
+       {
+        "ref": "Ich nehme einen Apfelsaft, bitte.",
+        "ok": true
+       },
+       {
+        "t": "Der Kuchen schmeckt gut.",
+        "en": "The cake tastes good.",
+        "fb": "First order a drink, then praise later!"
+       }
+      ]
+     },
+     {
+      "n": "Sehr gern. Haben Sie Lust auf ein Stück Kuchen dazu?",
+      "nEn": "Very gladly. Fancy a piece of cake with it?",
+      "p": "Decline politely.",
+      "opts": [
+       {
+        "ref": "Nein, danke. Nur den Tee.",
+        "ok": true,
+        "next": 3
+       },
+       {
+        "t": "Ich kann kein Deutsch sprechen.",
+        "en": "I can't speak German.",
+        "fb": "But you just did! Just say 'no thanks'."
+       }
+      ]
+     },
+     {
+      "n": "Wunderbar. Sonst noch etwas?",
+      "nEn": "Wonderful. Anything else?",
+      "p": "Ask about cold tea instead.",
+      "opts": [
+       {
+        "ref": "Haben Sie auch kalten Tee?",
+        "ok": true
+       },
+       {
+        "t": "Wie viel Uhr ist es?",
+        "en": "What time is it?",
+        "fb": "A clock won't take an order!"
+       }
+      ]
+     },
+     {
+      "n": "Leider ist der kalte Tee aus. Dann nur der warme Tee – das macht drei Euro zwanzig.",
+      "nEn": "Iced tea's out, sadly. Just the warm tea then — three twenty please.",
+      "p": "Pay cash.",
+      "opts": [
+       {
+        "ref": "Bar, bitte.",
+        "ok": true
+       },
+       {
+        "ref": "Mit Karte, bitte.",
+        "ok": true
+       },
+       {
+        "t": "Nein, das ist zu teuer.",
+        "en": "No, that's too expensive.",
+        "fb": "Time to pay — haggling doesn't work in cafés!"
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "sid": "life-cafe-staff",
+  "title": "Im Café 🎭 als Bedienung",
+  "titleEn": "Café — YOU are the waiter",
+  "emoji": "🎭",
+  "ctx": "Role swap: serve the guest",
+  "band": "A1",
+  "roleModes": [
+   "guest",
+   "waiter"
+  ],
+  "closing": "Tschüss und bis bald!",
+  "variants": [
+   {
+    "id": "cafe-staff-waiting",
+    "name": "Du bedienst",
+    "roleFlip": true,
+    "steps": [
+     {
+      "from": "me",
+      "n": "Guten Tag! Was möchten Sie trinken?",
+      "nEn": "Hello! What would you like to drink?",
+      "p": "You're the waiter — greet the guest and ask for their drink order.",
+      "opts": [
+       {
+        "ref": "Guten Tag! Was möchten Sie trinken?",
+        "ok": true
+       },
+       {
+        "t": "Was möchtest du essen?",
+        "en": "What do you want to eat?",
+        "fb": "This visit starts with DRINKS — ask 'Was möchten Sie trinken?'"
+       }
+      ]
+     },
+     {
+      "n": "Einen kleinen Kaffee, bitte. Und gibt es Kuchen?",
+      "nEn": "A small coffee please. And is there cake?",
+      "p": "Apologise: the cake is sold out.",
+      "opts": [
+       {
+        "ref": "Tut mir leid, wir haben keinen Kuchen mehr.",
+        "ok": true
+       },
+       {
+        "t": "Ja, der Kuchen ist da.",
+        "en": "Yes, there is cake.",
+        "fb": "There ISN'T any left — remember the twist!"
+       }
+      ]
+     },
+     {
+      "n": "Schade. Okay, ich zahle gern – was kostet alles?",
+      "nEn": "Shame. OK, I'll pay — how much is everything?",
+      "p": "Tell the guest the total: six euros fifty.",
+      "opts": [
+       {
+        "ref": "Das macht zusammen sechs Euro fünfzig.",
+        "ok": true
+       },
+       {
+        "t": "Zwanzig Euro genau.",
+        "en": "Twenty euros exactly.",
+        "fb": "Way off — it's six euros fifty!"
+       }
+      ]
+     },
+     {
+      "n": "Bitte schön. Der Kaffee war super, danke!",
+      "nEn": "Here you go. The coffee was great, thanks!",
+      "p": "Reply warmly and say goodbye.",
+      "opts": [
+       {
+        "ref": "Danke schön!",
+        "ok": true
+       },
+       {
+        "t": "Ich gehe jetzt schlafen.",
+        "en": "I'm going to sleep now.",
+        "fb": "Stay professional — end with a friendly bye!"
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "sid": "life-bakery",
+  "title": "Beim Bäcker",
+  "titleEn": "At the bakery",
+  "emoji": "🥖",
+  "ctx": "Morning bread & rolls run",
+  "band": "A1",
+  "roleModes": [
+   "customer",
+   "baker"
+  ],
+  "closing": "Auf Wiedersehen und guten Appetit!",
+  "variants": [
+   {
+    "id": "bakery-brot",
+    "name": "Frühstückslauf",
+    "steps": [
+     {
+      "n": "Guten Morgen! Was darf es sein?",
+      "nEn": "Good morning! What can I get you?",
+      "p": "Say you need one loaf of bread.",
+      "opts": [
+       {
+        "ref": "Ich brauche ein Brot, bitte.",
+        "ok": true
+       },
+       {
+        "ref": "Ich möchte vier Brötchen.",
+        "ok": true,
+        "next": 3
+       },
+       {
+        "t": "Ich möchte schlafen.",
+        "en": "I want to sleep.",
+        "fb": "The baker can't sell sleep — order FOOD!"
+       }
+      ]
+     },
+     {
+      "n": "Natürlich. Weißbrot oder Schwarzbrot?",
+      "nEn": "Of course. White or dark bread?",
+      "p": "Pick dark bread.",
+      "opts": [
+       {
+        "ref": "Schwarzbrot, bitte.",
+        "ok": true,
+        "next": 4
+       },
+       {
+        "t": "Nein danke.",
+        "en": "No thanks.",
+        "fb": "You DO want bread — pick a colour!"
+       }
+      ]
+     },
+     {
+      "n": "Vier Brötchen, sehr gern. Süße oder normale Brötchen?",
+      "nEn": "Four rolls, gladly. Sweet or plain rolls?",
+      "p": "Choose plain rolls.",
+      "opts": [
+       {
+        "ref": "Normale Brötchen, bitte.",
+        "ok": true,
+        "next": 4
+       },
+       {
+        "t": "Weißbrot oder Schwarzbrot?",
+        "en": "White or dark bread?",
+        "fb": "Don't echo HIS question — answer sweet or plain!"
+       }
+      ]
+     },
+     {
+      "n": "Sonst noch etwas?",
+      "nEn": "Anything else?",
+      "p": "Add a croissant OR finish politely.",
+      "opts": [
+       {
+        "ref": "Ja, ein Croissant noch.",
+        "ok": true,
+        "next": 4
+       },
+       {
+        "ref": "Nein, danke. Das ist alles.",
+        "ok": true,
+        "next": 4
+       },
+       {
+        "t": "Wo ist die Toilette?",
+        "en": "Where's the toilet?",
+        "fb": "Answer his 'anything else?' first!"
+       }
+      ]
+     },
+     {
+      "n": "Das macht drei Euro sechzig.",
+      "nEn": "That's three sixty.",
+      "p": "Pay cash politely.",
+      "opts": [
+       {
+        "ref": "Bar, bitte.",
+        "ok": true
+       },
+       {
+        "ref": "Mit Karte, bitte.",
+        "ok": true
+       },
+       {
+        "t": "Bis morgen!",
+        "en": "See you tomorrow!",
+        "fb": "Pay FIRST — goodbyes come later!"
+       }
+      ]
+     },
+     {
+      "n": "Hier ist Ihr Brot. Guten Appetit!",
+      "nEn": "Here's your bread. Enjoy!",
+      "p": "Thank the baker.",
+      "opts": [
+       {
+        "ref": "Danke schön!",
+        "ok": true
+       },
+       {
+        "t": "Ich bin müde.",
+        "en": "I'm tired.",
+        "fb": "A friendly thank-you is perfect here."
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "sid": "life-bakery-staff",
+  "title": "Beim Bäcker 🎭 als Bäckerin",
+  "titleEn": "Bakery — YOU are the baker",
+  "emoji": "🎭",
+  "ctx": "Role swap: serve morning customers",
+  "band": "A1",
+  "roleModes": [
+   "customer",
+   "baker"
+  ],
+  "closing": "Kommen Sie bald wieder!",
+  "variants": [
+   {
+    "id": "bakery-staff-serve",
+    "name": "Hinterm Tresen",
+    "roleFlip": true,
+    "steps": [
+     {
+      "from": "me",
+      "n": "Guten Morgen! Was darf es sein?",
+      "nEn": "Good morning! What can I get you?",
+      "p": "You're the baker — greet and ask what they'd like.",
+      "opts": [
+       {
+        "ref": "Guten Morgen! Was darf es sein?",
+        "ok": true
+       },
+       {
+        "t": "Wie viel kostet das Brot?",
+        "en": "How much is the bread?",
+        "fb": "Prices come LATER — first greet with 'Was darf es sein?'"
+       }
+      ]
+     },
+     {
+      "n": "Ich hätte gern ein Brot und vier Brötchen, bitte.",
+      "nEn": "I'd like a loaf and four rolls, please.",
+      "p": "Ask which bread: white or dark?",
+      "opts": [
+       {
+        "ref": "Weißbrot oder Schwarzbrot?",
+        "ok": true
+       },
+       {
+        "t": "Schwarzbrot, bitte.",
+        "ok": false,
+        "fb": "Careful — YOU are the seller; ASK the question!"
+       }
+      ]
+     },
+     {
+      "n": "Schwarzbrot bitte. Und sonst gibt's nichts mehr?",
+      "nEn": "Dark bread please. And nothing else today?",
+      "p": "Ask the classic upsell: anything else?",
+      "opts": [
+       {
+        "ref": "Sonst noch etwas?",
+        "ok": true
+       },
+       {
+        "t": "Süße oder normale Brötchen?",
+        "en": "Sweet or plain rolls?",
+        "fb": "They asked for LOAF + rolls already — just upsell politely."
+       }
+      ]
+     },
+     {
+      "n": "Nein danke. Was kostet das alles?",
+      "nEn": "No thanks. What does all that cost?",
+      "p": "Give the total: three euros sixty.",
+      "opts": [
+       {
+        "ref": "Das macht drei Euro sechzig.",
+        "ok": true
+       },
+       {
+        "t": "Zwei Euro.",
+        "en": "Two euros.",
+        "fb": "Too low — say drei Euro sechzig."
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "sid": "life-grocery",
+  "title": "Im Lebensmittelgeschäft",
+  "titleEn": "At the grocery store",
+  "emoji": "🛒",
+  "ctx": "Find items, handle stock-outs",
+  "band": "A1",
+  "roleModes": [
+   "customer",
+   "staff"
+  ],
+  "closing": "Zahlen Sie bitte an der Kasse. Tschüss!",
+  "variants": [
+   {
+    "id": "grocery-obst",
+    "name": "Milch und Obst",
+    "steps": [
+     {
+      "from": "me",
+      "n": "Entschuldigung, wo finde ich Milch?",
+      "nEn": "Excuse me, where do I find milk?",
+      "p": "Start yourself: ask politely where the milk is.",
+      "opts": [
+       {
+        "ref": "Entschuldigung, wo finde ich Milch?",
+        "ok": true
+       },
+       {
+        "t": "Wo ist die Milch? Wo ist die Milch?",
+        "en": "Where's the milk? Where's the milk?",
+        "fb": "Repeating won't help — use the polite 'Entschuldigung, wo finde ich…?'"
+       }
+      ]
+     },
+     {
+      "n": "Die Milch ist in Gang drei. Suchen Sie auch Obst?",
+      "nEn": "Milk is in aisle three. Fruit as well?",
+      "p": "Say yes — you need apples.",
+      "opts": [
+       {
+        "ref": "Ja, ich brauche Äpfel.",
+        "ok": true
+       },
+       {
+        "ref": "Ja, ich suche Bananen.",
+        "ok": true,
+        "next": 3
+       },
+       {
+        "t": "Ja, ich habe Zeit.",
+        "en": "Yes, I have time.",
+        "fb": "'Time' isn't fruit — name an ITEM you need!"
+       }
+      ]
+     },
+     {
+      "n": "Hier sind die Äpfel. Wie viele möchten Sie?",
+      "nEn": "Here are the apples. How many would you like?",
+      "p": "Choose a weight: one kilo.",
+      "opts": [
+       {
+        "ref": "Ein Kilo Äpfel, bitte.",
+        "ok": true
+       },
+       {
+        "ref": "Ich nehme fünf Äpfel, bitte.",
+        "ok": true
+       },
+       {
+        "t": "Ein Glas Milch.",
+        "en": "One glass of milk.",
+        "fb": "He's asking HOW MANY apples!"
+       }
+      ]
+     },
+     {
+      "n": "Oh, es tut mir leid – wir haben heute keine Bananen mehr. Möchten Sie Orangen?",
+      "nEn": "Oh sorry — we're out of bananas today. Oranges instead?",
+      "p": "Accept the orange swap and take three.",
+      "opts": [
+       {
+        "ref": "Ja, Orangen sind gut. Ich nehme drei.",
+        "ok": true
+       },
+       {
+        "ref": "Nein, danke. Dann ohne Bananen.",
+        "ok": true
+       },
+       {
+        "t": "Ich mag Äpfel nicht.",
+        "en": "I don't like apples.",
+        "fb": "Answer his OFFER of oranges — yes or no."
+       }
+      ]
+     },
+     {
+      "n": "Alles klar. Ist das alles?",
+      "nEn": "Got it. Is that everything?",
+      "p": "Confirm the basket is complete.",
+      "opts": [
+       {
+        "ref": "Ja, das ist alles. Danke!",
+        "ok": true
+       },
+       {
+        "t": "Nein, ich möchte mehr Äpfel.",
+        "en": "No, I want more apples.",
+        "fb": "You picked your fruit already — close politely!"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": "grocery-eilige",
+    "name": "Schnell noch einkaufen",
+    "steps": [
+     {
+      "from": "me",
+      "n": "Können Sie mir bitte helfen? Ich suche schnelles Frühstück.",
+      "nEn": "Could you help me please? I'm after quick breakfast things.",
+      "p": "Ask for help politely with your breakfast search.",
+      "opts": [
+       {
+        "ref": "Können Sie mir bitte helfen?",
+        "ok": true
+       },
+       {
+        "t": "Helfen Sie mir!",
+        "en": "Help me!",
+        "fb": "Too blunt — keep it polite with 'Könnten/würden…'"
+       }
+      ]
+     },
+     {
+      "n": "Gern! Da drüben ist Brot. Suchen Sie auch Butter?",
+      "nEn": "Gladly! Bread's over there. Butter too?",
+      "p": "Say yes — butter belongs on the list.",
+      "opts": [
+       {
+        "ref": "Ja, auch Butter bitte.",
+        "ok": true
+       },
+       {
+        "t": "Ja, gerne oder nein.",
+        "en": "Yes please or no.",
+        "fb": "Pick ONE clear German answer first!"
+       }
+      ]
+     },
+     {
+      "n": "Die Butter liegt neben der Milch, dritter Gang. Sonst noch etwas?",
+      "nEn": "Butter's next to the milk, aisle three. Anything else?",
+      "p": "Politely finish the shopping trip.",
+      "opts": [
+       {
+        "ref": "Nein, danke. Das ist alles.",
+        "ok": true
+       },
+       {
+        "t": "Ja, noch ein Haus.",
+        "en": "Yes, another house.",
+        "fb": "Houses aren't groceries — wrap up politely!"
+       }
+      ]
+     },
+     {
+      "n": "Super. An der Kasse, bitte.",
+      "nEn": "Great. Please pay at the checkout.",
+      "p": "Thank the staff for their help.",
+      "opts": [
+       {
+        "ref": "Danke schön!",
+        "ok": true
+       },
+       {
+        "t": "Wo ist mein Auto?",
+        "en": "Where is my car?",
+        "fb": "Focus on checkout — say thank you!"
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "sid": "life-restaurant",
+  "title": "Im Restaurant",
+  "titleEn": "At the restaurant",
+  "emoji": "🍽️",
+  "ctx": "Order dinner, allergies, bill",
+  "band": "A1",
+  "roleModes": [
+   "guest",
+   "waiter"
+  ],
+  "closing": "Zahlen Sie bitte an der Kasse. Guten Abend noch!",
+  "variants": [
+   {
+    "id": "restaurant-abend",
+    "name": "Abendessen solo",
+    "steps": [
+     {
+      "n": "Guten Abend! Was möchten Sie essen?",
+      "nEn": "Good evening! What would you like to eat?",
+      "p": "Order the schnitzel with fries.",
+      "opts": [
+       {
+        "ref": "Ich nehme das Schnitzel, bitte.",
+        "ok": true
+       },
+       {
+        "ref": "Mit Pommes, bitte.",
+        "ok": false,
+        "fb": "Fries come SECOND — name your MAIN dish first."
+       },
+       {
+        "t": "Der Tisch ist frei.",
+        "en": "The table is free.",
+        "fb": "Wrong moment — order FOOD!"
+       }
+      ]
+     },
+     {
+      "n": "Sehr gern. Mit Pommes oder Kartoffeln?",
+      "nEn": "Very gladly. Fries or potatoes?",
+      "p": "Choose fries.",
+      "opts": [
+       {
+        "ref": "Mit Pommes, bitte.",
+        "ok": true
+       },
+       {
+        "t": "Mit Schokolade.",
+        "en": "With chocolate.",
+        "fb": "Chocolate isn't a side dish!"
+       }
+      ]
+     },
+     {
+      "n": "Sofort. Möchten Sie eine Nachspeise? Wir haben Kuchen.",
+      "nEn": "Right away. Dessert? We have cake.",
+      "p": "Politely decline dessert.",
+      "opts": [
+       {
+        "ref": "Nein, danke. Das ist alles.",
+        "ok": true
+       },
+       {
+        "t": "Ja, ein Brot mit Butter.",
+        "en": "Yes, bread with butter.",
+        "fb": "He offered CAKE — take it or politely refuse!"
+       }
+      ]
+     },
+     {
+      "n": "Hat es Ihnen geschmeckt?",
+      "nEn": "Did you enjoy the meal?",
+      "p": "Compliment warmly.",
+      "opts": [
+       {
+        "ref": "Ja, sehr lecker. Danke!",
+        "ok": true
+       },
+       {
+        "t": "Das Essen ist grün.",
+        "en": "The food is green.",
+        "fb": "Give a real compliment — say it was tasty!"
+       }
+      ]
+     },
+     {
+      "from": "me",
+      "n": "Entschuldigung, ich möchte bezahlen.",
+      "nEn": "Excuse me, I'd like to pay.",
+      "p": "Your turn to speak: politely ask for the bill.",
+      "opts": [
+       {
+        "ref": "Entschuldigung, ich möchte bezahlen.",
+        "ok": true
+       },
+       {
+        "t": "Geld, schnell!",
+        "en": "Money, quickly!",
+        "fb": "Politeness counts — use the soft opener 'Entschuldigung, ich möchte bezahlen.'"
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "sid": "life-clothing",
+  "title": "Im Kleidungsgeschäft",
+  "titleEn": "At the clothing store",
+  "emoji": "👕",
+  "ctx": "Sizes, colours, fitting room",
+  "band": "A1",
+  "roleModes": [
+   "customer",
+   "assistant"
+  ],
+  "closing": "Vielen Dank und bis zum nächsten Mal!",
+  "variants": [
+   {
+    "id": "clothing-jacke",
+    "name": "Neue Jacke",
+    "steps": [
+     {
+      "n": "Hallo! Suchen Sie etwas Bestimmtes?",
+      "nEn": "Hi! Looking for something particular?",
+      "p": "Say you're looking for a jacket.",
+      "opts": [
+       {
+        "ref": "Ja, ich suche eine Jacke.",
+        "ok": true
+       },
+       {
+        "t": "Ich suche einen Bus.",
+        "en": "I'm looking for a bus.",
+        "fb": "Wrong shop type — you want CLOTHES!"
+       }
+      ]
+     },
+     {
+      "n": "Diese Jacke gibt es in Schwarz oder Blau.",
+      "nEn": "This jacket comes in black or blue.",
+      "p": "Say you like blue — then ask for the fitting room.",
+      "opts": [
+       {
+        "ref": "Blau gefällt mir. Wo ist die Umkleidekabine?",
+        "ok": true
+       },
+       {
+        "ref": "Dort drüben, neben dem Spiegel.",
+        "ok": false,
+        "fb": "Don't answer YOUR OWN question — pick blue and ask!"
+       }
+      ]
+     },
+     {
+      "n": "Die Kabine ist dort drüben. Passt es?",
+      "nEn": "The room is over there. Does it fit?",
+      "p": "Confirm it fits perfectly and you'll buy it.",
+      "opts": [
+       {
+        "ref": "Ja, es passt perfekt. Ich nehme es.",
+        "ok": true
+       },
+       {
+        "ref": "Nein, es ist zu groß.",
+        "ok": true
+       },
+       {
+        "t": "Ich bin drei Meter groß.",
+        "en": "I'm three metres tall.",
+        "fb": "Answer the FIT question sensibly!"
+       }
+      ]
+     },
+     {
+      "n": "Wunderbar – oder mögen Sie die kleinere Nummer lieber?",
+      "nEn": "Wonderful — or would you prefer the smaller size?",
+      "p": "Decline politely; your size was right.",
+      "opts": [
+       {
+        "ref": "Nein danke, diese passt gut.",
+        "ok": true
+       },
+       {
+        "t": "Ja, eine Nummer kleiner wäre super.",
+        "en": "Yes, one size smaller would be great.",
+        "ok": false,
+        "fb": "It FIT perfectly — don't downsize now!"
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "sid": "life-fleamarket",
+  "title": "Auf dem Flohmarkt",
+  "titleEn": "At the flea market",
+  "emoji": "🧺",
+  "ctx": "Prices, haggling, conditions",
+  "band": "A1",
+  "roleModes": [
+   "buyer",
+   "seller"
+  ],
+  "closing": "Abgemacht – viel Spaß mit dem Buch!",
+  "variants": [
+   {
+    "id": "fleamarket-buch",
+    "name": "Feilschen um ein Buch",
+    "steps": [
+     {
+      "from": "me",
+      "n": "Wie viel kostet dieses Buch?",
+      "nEn": "How much does this book cost?",
+      "p": "Open yourself: ask the price of the book.",
+      "opts": [
+       {
+        "ref": "Wie viel kostet dieses Buch?",
+        "ok": true
+       },
+       {
+        "t": "Geben Sie mir das Buch frei.",
+        "en": "Give me the book for free.",
+        "fb": "Freebies aren't polite starts — ask the PRICE first."
+       }
+      ]
+     },
+     {
+      "n": "Das Buch kostet zehn Euro. Es ist übrigens wie neu.",
+      "nEn": "The book is ten euros. It's like new, by the way.",
+      "p": "Complain it's expensive — offer five euros.",
+      "opts": [
+       {
+        "ref": "Das ist zu teuer. Fünf Euro?",
+        "ok": true
+       },
+       {
+        "ref": "Okay, sieben Euro ist gut.",
+        "ok": true,
+        "next": 4
+       },
+       {
+        "t": "Ich habe kein Buch gelesen.",
+        "en": "I haven't read a book.",
+        "fb": "Stay on topic — the PRICE!"
+       }
+      ]
+     },
+     {
+      "n": "Fünf ist zu wenig. Machen wir sieben Euro?",
+      "nEn": "Five is too little. Let's make it seven?",
+      "p": "Accept seven euros happily.",
+      "opts": [
+       {
+        "ref": "Okay, sieben Euro ist gut.",
+        "ok": true
+       },
+       {
+        "ref": "Nein, danke. Tschüss!",
+        "ok": true
+       },
+       {
+        "t": "Sieben Euro sind zu billig.",
+        "en": "Seven euros is too cheap.",
+        "fb": "Nobody complains about cheap — say OK!"
+       }
+      ]
+     },
+     {
+      "n": "Sind Sie sicher? Ich kann auch zwei Euro nehmen…",
+      "nEn": "Are you sure? I could take two euros…",
+      "p": "Politely insist on walking away.",
+      "opts": [
+       {
+        "ref": "Nein, danke. Tschüss!",
+        "ok": true
+       },
+       {
+        "ref": "Abgemacht!",
+        "ok": false,
+        "fb": "'Deal!' fits when YOU offered a price that was accepted — re-check."
+       }
+      ]
+     },
+     {
+      "n": "Dann ein letzter Preis: sechs Euro und wir sagen abgemacht?",
+      "nEn": "One last price: six euros and we shake hands?",
+      "p": "Close the deal loudly and clearly.",
+      "opts": [
+       {
+        "ref": "Abgemacht!",
+        "ok": true
+       },
+       {
+        "t": "Ich verstehe nicht.",
+        "en": "I don't understand.",
+        "fb": "He made an OFFER — deal or walk: 'Abgemacht!' seals it."
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "sid": "life-hotel",
+  "title": "Im Hotel an der Rezeption",
+  "titleEn": "At the hotel reception",
+  "emoji": "🏨",
+  "ctx": "Check-in, rooms, breakfast times",
+  "band": "A1",
+  "roleModes": [
+   "guest",
+   "receptionist"
+  ],
+  "closing": "Wenn Sie Fragen haben, ich bin hier. Guten Aufenthalt!",
+  "variants": [
+   {
+    "id": "hotel-reservierung",
+    "name": "Mit Reservierung",
+    "steps": [
+     {
+      "n": "Guten Tag. Haben Sie eine Reservierung?",
+      "nEn": "Hello. Do you have a reservation?",
+      "p": "Confirm: yes, your name is Müller.",
+      "opts": [
+       {
+        "ref": "Ja, mein Name ist Müller.",
+        "ok": true
+       },
+       {
+        "ref": "Nein, haben Sie ein Zimmer frei?",
+        "ok": true,
+        "next": 2
+       },
+       {
+        "t": "Mein Auto ist rot.",
+        "en": "My car is red.",
+        "fb": "He asked about a BOOKING — give name or ask for rooms."
+       }
+      ]
+     },
+     {
+      "n": "Moment bitte… Ja, Zimmer zweihundertvier.",
+      "nEn": "One moment… yes, room 204.",
+      "p": "Ask when breakfast is served.",
+      "opts": [
+       {
+        "ref": "Wann gibt es Frühstück?",
+        "ok": true,
+        "next": 3
+       },
+       {
+        "t": "Wo ist der Bahnhof?",
+        "en": "Where is the train station?",
+        "ok": false,
+        "fb": "You just checked IN at a hotel — breakfast first!"
+       }
+      ]
+     },
+     {
+      "n": "Kein Problem. Einzelzimmer oder Doppelzimmer?",
+      "nEn": "No problem. Single or double room?",
+      "p": "Book a single room for two nights.",
+      "opts": [
+       {
+        "ref": "Ein Einzelzimmer für zwei Nächte, bitte.",
+        "ok": true
+       },
+       {
+        "t": "Zwei Zimmer für eine Nacht million.",
+        "en": "Two rooms for a night million.",
+        "fb": "Keep numbers real — single room, two nights!"
+       }
+      ]
+     },
+     {
+      "n": "Von sieben bis zehn Uhr im Restaurant.",
+      "nEn": "From seven till ten in the restaurant.",
+      "p": "Thank reception nicely.",
+      "opts": [
+       {
+        "ref": "Danke schön!",
+        "ok": true
+       },
+       {
+        "ref": "Hier ist Ihr Schlüssel. Guten Aufenthalt!",
+        "ok": false,
+        "fb": "THEY hand keys — you say THANKS."
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "sid": "life-hotel-staff",
+  "title": "Hotel 🎭 als Rezeptionist",
+  "titleEn": "Hotel — YOU are at the desk",
+  "emoji": "🎭",
+  "ctx": "Role swap: run the front desk",
+  "band": "A1",
+  "roleModes": [
+   "guest",
+   "receptionist"
+  ],
+  "closing": "Ich wünsche einen schönen Aufenthalt!",
+  "variants": [
+   {
+    "id": "hotel-staff-desk",
+    "name": "Am Empfangstresen",
+    "roleFlip": true,
+    "steps": [
+     {
+      "from": "me",
+      "n": "Guten Tag. Haben Sie eine Reservierung?",
+      "nEn": "Hello. Do you have a reservation?",
+      "p": "You're reception — greet and ask about reservations.",
+      "opts": [
+       {
+        "ref": "Guten Tag. Haben Sie eine Reservierung?",
+        "ok": true
+       },
+       {
+        "t": "Wie teuer ist das Frühstück?",
+        "en": "How pricey is breakfast?",
+        "fb": "Sequence matters: FIRST greet, ask reservation — prices later."
+       }
+      ]
+     },
+     {
+      "n": "Leider nein. Haben Sie noch etwas frei für heute Nacht?",
+      "nEn": "Sadly no. Anything free for tonight?",
+      "p": "Reassure and ask: single or double?",
+      "opts": [
+       {
+        "ref": "Einzelzimmer oder Doppelzimmer?",
+        "ok": true
+       },
+       {
+        "t": "Schade, alles voll.",
+        "en": "Shame, we're full.",
+        "fb": "Tonight isn't sold out — OFFER the two room types!"
+       }
+      ]
+     },
+     {
+      "n": "Ein Einzelzimmer bitte, eine Nacht.",
+      "nEn": "A single room please, one night.",
+      "p": "Announce the key handover for room twenty-one.",
+      "opts": [
+       {
+        "t": "Zimmer einsundzwanzig, zweiter Stock – hier bitte schön.",
+        "en": "Room twenty-one, second floor — here you are.",
+        "ok": true,
+        "reaction": "Oh, perfekt. Danke!",
+        "reactionEn": "Oh perfect. Thanks!"
+       }
+      ]
+     },
+     {
+      "n": "Danke! Und wann gibt es bei Ihnen Frühstück?",
+      "nEn": "Thanks! And when is breakfast here?",
+      "p": "State breakfast hours: seven to ten.",
+      "opts": [
+       {
+        "ref": "Von sieben bis zehn Uhr im Restaurant.",
+        "ok": true
+       },
+       {
+        "t": "Immer wenn ich Zeit habe.",
+        "en": "Whenever I have time.",
+        "fb": "Hotels love precision — quote 7–10 o'clock!"
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "sid": "life-directions",
+  "title": "Nach dem Weg fragen",
+  "titleEn": "Asking for directions",
+  "emoji": "🧭",
+  "ctx": "Street help: station, bus, walking",
+  "band": "A1",
+  "roleModes": [
+   "stranger",
+   "local"
+  ],
+  "closing": "Kein Problem. Viel Erfolg!",
+  "variants": [
+   {
+    "id": "directions-bhf",
+    "name": "Zum Bahnhof",
+    "steps": [
+     {
+      "from": "me",
+      "n": "Entschuldigung, wo ist der Bahnhof?",
+      "nEn": "Excuse me, where is the train station?",
+      "p": "You start: politely ask where the station is.",
+      "opts": [
+       {
+        "ref": "Entschuldigung, wo ist der Bahnhof?",
+        "ok": true
+       },
+       {
+        "t": "Bahnhof? Warum?",
+        "en": "Station? Why?",
+        "fb": "Ask WHERE politely — don't question the mission!"
+       }
+      ]
+     },
+     {
+      "n": "Sie können zu Fuß gehen oder den Bus nehmen.",
+      "nEn": "You can walk or take the bus.",
+      "p": "Say you'll walk and ask how far.",
+      "opts": [
+       {
+        "ref": "Ich gehe zu Fuß. Wie weit ist es?",
+        "ok": true
+       },
+       {
+        "ref": "Wo ist die Bushaltestelle?",
+        "ok": true,
+        "next": 4
+       },
+       {
+        "t": "Ich habe keinen Bus gefahren.",
+        "en": "I didn't drive a bus.",
+        "fb": "Past-tense bus talk isn't helpful — pick walk or bus NOW."
+       }
+      ]
+     },
+     {
+      "n": "Ungefähr zehn Minuten zu Fuß.",
+      "nEn": "About ten minutes on foot.",
+      "p": "Missed the details? Politely ask him to repeat.",
+      "opts": [
+       {
+        "ref": "Können Sie das bitte wiederholen?",
+        "ok": true
+       },
+       {
+        "t": "Ich wohne hier nicht.",
+        "en": "I don't live here.",
+        "fb": "HE is helping YOU — ask him to repeat kindly!"
+       }
+      ]
+     },
+     {
+      "n": "Die Haltestelle ist hinter der Bank.",
+      "nEn": "The bus stop is behind the bank.",
+      "p": "Which line goes there? Ask about bus number four... or just say thanks warmly.",
+      "opts": [
+       {
+        "ref": "Danke für die Hilfe!",
+        "ok": true
+       },
+       {
+        "ref": "Nehmen Sie den Bus Nummer vier.",
+        "ok": false,
+        "fb": "'Take bus four' is ADVICE HE'D give — thank him instead."
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "sid": "life-train",
+  "title": "Am Fahrkartenschalter",
+  "titleEn": "At the ticket counter",
+  "emoji": "🚆",
+  "ctx": "Destination, times, class",
+  "band": "A1",
+  "roleModes": [
+   "traveller",
+   "clerk"
+  ],
+  "closing": "Das macht fünfundvierzig Euro. Gute Reise!",
+  "variants": [
+   {
+    "id": "train-berlin",
+    "name": "Ticket nach Berlin",
+    "steps": [
+     {
+      "n": "Wohin möchten Sie fahren?",
+      "nEn": "Where would you like to travel?",
+      "p": "Answer: to Berlin please.",
+      "opts": [
+       {
+        "ref": "Nach Berlin, bitte.",
+        "ok": true
+       },
+       {
+        "t": "Ich fahre nicht.",
+        "en": "I'm not travelling.",
+        "fb": "At a TICKET COUNTER you are — say a city!"
+       }
+      ]
+     },
+     {
+      "n": "Für heute oder für morgen?",
+      "nEn": "For today or tomorrow?",
+      "p": "Choose today.",
+      "opts": [
+       {
+        "ref": "Für heute, bitte.",
+        "ok": true
+       },
+       {
+        "ref": "Für morgen, bitte.",
+        "ok": true,
+        "next": 4
+       },
+       {
+        "t": "Immer, ich wohne dort.",
+        "en": "Always, I live there.",
+        "fb": "Pick a concrete DAY for the ticket."
+       }
+      ]
+     },
+     {
+      "n": "Der Zug fährt um vierzehn Uhr und um sechzehn Uhr.",
+      "nEn": "Trains go at 14:00 and 16:00.",
+      "p": "Pick the 14:00 one.",
+      "opts": [
+       {
+        "ref": "Um vierzehn Uhr passt mir gut.",
+        "ok": true
+       },
+       {
+        "ref": "Ich nehme den Zug um sechzehn Uhr.",
+        "ok": true
+       },
+       {
+        "t": "Zwei Stunden sind lang.",
+        "en": "Two hours is long.",
+        "fb": "Just CHOOSE a departure time!"
+       }
+      ]
+     },
+     {
+      "n": "Erste oder zweite Klasse?",
+      "nEn": "First or second class?",
+      "p": "Take second class.",
+      "opts": [
+       {
+        "ref": "Zweite Klasse, bitte.",
+        "ok": true
+       },
+       {
+        "ref": "Erste Klasse, bitte.",
+        "ok": true
+       },
+       {
+        "t": "Die Klasse der Schule?",
+        "en": "School class?",
+        "fb": "Train CLASS 1 or 2 — simple choice!"
+       }
+      ]
+     },
+     {
+      "n": "Sehr gern. Möchten Sie auch Tickets für Ihren Freund?",
+      "nEn": "Very good. Tickets for your friend as well?",
+      "p": "Add two tickets to Hamburg on top.",
+      "opts": [
+       {
+        "ref": "Zwei Tickets nach Hamburg, bitte.",
+        "ok": true
+       },
+       {
+        "t": "Mein Freund hat ein Auto.",
+        "en": "My friend has a car.",
+        "fb": "Answer his TICKET offer directly!"
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "sid": "life-airport",
+  "title": "Am Flughafen",
+  "titleEn": "At the airport",
+  "emoji": "✈️",
+  "ctx": "Check-in, luggage, gate change",
+  "band": "A1",
+  "roleModes": [
+   "passenger",
+   "staff"
+  ],
+  "closing": "Danke und guten Flug!",
+  "variants": [
+   {
+    "id": "airport-checkin",
+    "name": "Einchecken in Wien",
+    "steps": [
+     {
+      "n": "Wohin fliegen Sie heute?",
+      "nEn": "Where are you flying today?",
+      "p": "Show your ticket: Vienna, here it is.",
+      "opts": [
+       {
+        "ref": "Nach Wien, bitte. Hier ist mein Ticket.",
+        "ok": true
+       },
+       {
+        "t": "Mit dem Zug.",
+        "en": "By train.",
+        "fb": "AIRPORT check-in = a FLIGHT destination!"
+       }
+      ]
+     },
+     {
+      "n": "Danke schön. Haben Sie Handgepäck oder einen Koffer?",
+      "nEn": "Thanks. Hand luggage or suitcase?",
+      "p": "Say you have a suitcase with you.",
+      "opts": [
+       {
+        "ref": "Ich habe einen Koffer.",
+        "ok": true
+       },
+       {
+        "t": "Stellen Sie den Koffer auf die Waage.",
+        "en": "Put the suitcase on the scale.",
+        "ok": false,
+        "fb": "SHE instructs YOU — first state what you HAVE."
+       }
+      ]
+     },
+     {
+      "n": "Bitte auf die Waage… Perfekt, unter zwanzig Kilo.",
+      "nEn": "On the scale please… perfect, under twenty kilos.",
+      "p": "Thank her briefly.",
+      "opts": [
+       {
+        "ref": "Danke schön!",
+        "ok": true
+       },
+       {
+        "t": "Ich fliege nie wieder.",
+        "en": "Never flying again.",
+        "fb": "Mood swings aside — a friendly thanks fits."
+       }
+      ]
+     },
+     {
+      "n": "Achtung: Ihr Flug hat Verspätung. Flugsteig B zwölf statt A null vier.",
+      "nEn": "Attention: delay. Gate B12 instead of A04.",
+      "p": "React gratefully to the information.",
+      "opts": [
+       {
+        "ref": "Oh, danke für die Information!",
+        "ok": true
+       },
+       {
+        "t": "Wo ist mein Gepäck geblieben?",
+        "en": "Where did my luggage go?",
+        "fb": "Luggage was FINE — react to the GATE news!"
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "sid": "life-pharmacy",
+  "title": "In der Apotheke",
+  "titleEn": "At the pharmacy",
+  "emoji": "💊",
+  "ctx": "Symptoms, medicine, dosage",
+  "band": "A1",
+  "roleModes": [
+   "patient",
+   "pharmacist"
+  ],
+  "closing": "Gute Besserung! Auf Wiedersehen!",
+  "variants": [
+   {
+    "id": "pharmacy-kopf",
+    "name": "Kopfschmerzen und Husten",
+    "steps": [
+     {
+      "n": "Guten Tag, was kann ich für Sie tun?",
+      "nEn": "Hello, what can I do for you?",
+      "p": "Describe: a bad headache.",
+      "opts": [
+       {
+        "ref": "Ich habe starke Kopfschmerzen.",
+        "ok": true
+       },
+       {
+        "ref": "Mein Kind hat Husten und Fieber.",
+        "ok": true,
+        "next": 3
+       },
+       {
+        "t": "Ich bin Apotheker.",
+        "en": "I'm a pharmacist.",
+        "fb": "HE is the pharmacist — describe YOUR symptom!"
+       }
+      ]
+     },
+     {
+      "n": "Dafür habe ich etwas. Nehmen Sie diese Tabletten zweimal täglich.",
+      "nEn": "Something for that. Take these tablets twice daily.",
+      "p": "Ask about timing relative to meals.",
+      "opts": [
+       {
+        "t": "Vor oder nach dem Essen?",
+        "en": "Before or after meals?",
+        "ok": true
+       },
+       {
+        "ref": "Nach dem Essen, bitte.",
+        "ok": false,
+        "fb": "That's HER line — ASK about timing instead."
+       }
+      ]
+     },
+     {
+      "n": "Ja, genau: nach dem Essen. Und viel Wasser trinken!",
+      "nEn": "Right: after meals. And drink lots of water!",
+      "p": "Ask whether you must see a doctor too.",
+      "opts": [
+       {
+        "ref": "Muss ich zum Arzt gehen?",
+        "ok": true
+       },
+       {
+        "t": "Ich gehe nie zum Arzt.",
+        "en": "I never go to the doctor.",
+        "fb": "He can't respond to boasts — ASK his advice."
+       }
+      ]
+     },
+     {
+      "n": "Hier ist ein Hustensaft für Kinder. Wie oft muss er den Saft nehmen?",
+      "nEn": "Here's a children's cough syrup. How often does he take it?",
+      "p": "Relay the doctor-style dosage: three times daily one spoonful.",
+      "opts": [
+       {
+        "ref": "Dreimal täglich ein Löffel.",
+        "ok": true
+       },
+       {
+        "t": "Zehnmal am Tag.",
+        "en": "Ten times a day.",
+        "fb": "Too much! Standard is THREE times."
+       }
+      ]
+     },
+     {
+      "n": "Wenn es morgen nicht besser geht, dann ja – zum Arzt.",
+      "nEn": "If it's not better tomorrow, then yes — see a doctor.",
+      "p": "Thank the pharmacist and say goodbye.",
+      "opts": [
+       {
+        "ref": "Danke schön!",
+        "ok": true
+       },
+       {
+        "t": "Bis morgen im Krankenhaus!",
+        "en": "See you tomorrow in hospital!",
+        "fb": "Dark humour — just thank him kindly!"
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "sid": "life-doctor",
+  "title": "Termin beim Arzt",
+  "titleEn": "Doctor appointment call",
+  "emoji": "🩺",
+  "ctx": "Urgent vs routine slots",
+  "band": "A1",
+  "roleModes": [
+   "patient",
+   "assistant"
+  ],
+  "closing": "Wir sehen uns dann. Auf Wiederhören!",
+  "variants": [
+   {
+    "id": "doctor-krank",
+    "name": "Ich bin krank",
+    "steps": [
+     {
+      "n": "Praxis Dr. Weber, guten Tag!",
+      "nEn": "Dr. Weber's practice, hello!",
+      "p": "Say you're very sick — can you come today?",
+      "opts": [
+       {
+        "ref": "Ich bin sehr krank. Kann ich heute kommen?",
+        "ok": true
+       },
+       {
+        "ref": "Anna Schmidt.",
+        "ok": false,
+        "fb": "Name comes LATER — state the PROBLEM first!"
+       }
+      ]
+     },
+     {
+      "n": "Das tut mir leid. Kommen Sie um elf Uhr. Sie müssen leider warten.",
+      "nEn": "Sorry to hear. Come at eleven; you may have to wait.",
+      "p": "Accept the slot cheerfully.",
+      "opts": [
+       {
+        "ref": "Kein Problem, ich komme um elf.",
+        "ok": true
+       },
+       {
+        "t": "Elf Stunden sind lang.",
+        "en": "Eleven hours are long.",
+        "fb": "Elf UHR = 11 o'clock, not hours — accept!"
+       }
+      ]
+     },
+     {
+      "n": "Nur damit ich es notieren kann: Wie ist Ihr Name, bitte?",
+      "nEn": "So I can note it: your name please?",
+      "p": "Give the name from registration practice.",
+      "opts": [
+       {
+        "ref": "Anna Schmidt.",
+        "ok": true
+       },
+       {
+        "t": "Ich heiße Dr. Weber.",
+        "en": "My name is Dr. Weber.",
+        "fb": "Funny — HE works there! Give YOUR name."
+       }
+      ]
+     },
+     {
+      "from": "me",
+      "n": "Ich brauche einen Termin für nächste Woche.",
+      "nEn": "I need an appointment next week.",
+      "p": "Routine path (second visit): first speak yourself to book NEXT week.",
+      "opts": [
+       {
+        "ref": "Ich brauche einen Termin für nächste Woche.",
+        "ok": true
+       },
+       {
+        "ref": "Montag passt mir gut.",
+        "ok": false,
+        "fb": "Wait — he hasn't offered days yet. Ask for the appointment FIRST."
+       }
+      ]
+     },
+     {
+      "n": "Geht es auch dringend? Montag um fünfzehn Uhr oder Dienstag um neun Uhr wäre frei.",
+      "nEn": "How urgent is it? Monday 15:00 or Tuesday 9:00 would be free.",
+      "p": "Prefer Tuesday this time.",
+      "opts": [
+       {
+        "ref": "Dienstag ist besser für mich.",
+        "ok": true
+       },
+       {
+        "ref": "Montag passt mir gut.",
+        "ok": true
+       },
+       {
+        "t": "Nächste Woche hat sieben Tage.",
+        "en": "Next week has seven days.",
+        "fb": "Calendar facts aside — PICK a offered day!"
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "sid": "life-doctor-staff",
+  "title": "Arzttermin 🎭 als Arzthelferin",
+  "titleEn": "Doctor call — YOU schedule patients",
+  "emoji": "🎭",
+  "ctx": "Role swap: run the clinic phone",
+  "band": "A1",
+  "roleModes": [
+   "patient",
+   "assistant"
+  ],
+  "closing": "Bis dann bei Dr. Weber!",
+  "variants": [
+   {
+    "id": "doctor-staff-telefon",
+    "name": "Am Telefon der Praxis",
+    "roleFlip": true,
+    "steps": [
+     {
+      "from": "me",
+      "n": "Praxis Dr. Weber, guten Tag!",
+      "nEn": "Dr. Weber's practice, hello!",
+      "p": "You answer the clinic phone with the standard greeting.",
+      "opts": [
+       {
+        "ref": "Praxis Dr. Weber, guten Tag!",
+        "ok": true
+       },
+       {
+        "t": "Hallo, wer sind Sie?",
+        "en": "Hello, who are you?",
+        "fb": "Front-desk style = announce THE PRACTICE first."
+       }
+      ]
+     },
+     {
+      "n": "Hallo! Ich brauche dringend einen Termin heute.",
+      "nEn": "Hi! I urgently need an appointment today.",
+      "p": "Offer the walk-in slot at eleven WITH waiting warning.",
+      "opts": [
+       {
+        "ref": "Kommen Sie um elf Uhr. Sie müssen leider warten.",
+        "ok": true
+       },
+       {
+        "ref": "Montag um fünfzehn Uhr oder Dienstag um neun?",
+        "ok": false,
+        "fb": "URGENT means TODAY — don't offer next week days yet!"
+       }
+      ]
+     },
+     {
+      "n": "Super, danke! Mein Name ist Anna Schmidt.",
+      "nEn": "Great thanks! My name is Anna Schmidt.",
+      "p": "Politely confirm her name back before booking.",
+      "opts": [
+       {
+        "t": "Frau Schmidt – richtig, ich notiere es.",
+        "en": "Ms Schmidt — right, I'll note it down.",
+        "ok": true
+       },
+       {
+        "ref": "Wie ist Ihr Name, bitte?",
+        "ok": false,
+        "fb": "She JUST said her name — confirm it back politely."
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ }
+]
