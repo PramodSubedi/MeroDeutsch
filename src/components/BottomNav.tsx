@@ -62,7 +62,7 @@ export function BottomNav() {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white shadow-[0_-4px_16px_rgba(15,23,42,0.08)] md:hidden dark:bg-slate-900">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-slate-200/70 bg-white/85 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl supports-[backdrop-filter]:bg-white/70 md:hidden dark:border-slate-800/70 dark:bg-slate-950/85 dark:supports-[backdrop-filter]:bg-slate-950/70">
       <div className="flex items-center justify-around">
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -70,13 +70,19 @@ export function BottomNav() {
             <Link
               key={item.to}
               to={item.to}
-              className={`flex min-h-[56px] min-w-[56px] flex-1 flex-col items-center justify-center gap-1 px-2 py-2 transition-colors ${
+              className={`group flex min-h-[56px] min-w-[56px] flex-1 flex-col items-center justify-center gap-1 px-2 py-2 transition-colors ${
                 item.active
                   ? 'text-blue-600 dark:text-blue-400'
-                  : 'text-slate-600 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400'
+                  : 'text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400'
               }`}
             >
-              <Icon className="h-6 w-6" strokeWidth={2} aria-hidden="true" />
+              <span
+                className={`flex h-7 w-12 items-center justify-center rounded-full transition-colors ${
+                  item.active ? 'bg-blue-50 dark:bg-blue-950/50' : 'group-hover:bg-slate-100 dark:group-hover:bg-slate-800/60'
+                }`}
+              >
+                <Icon className="h-[22px] w-[22px]" strokeWidth={item.active ? 2.4 : 2} aria-hidden="true" />
+              </span>
               <span className="text-[10px] font-semibold uppercase tracking-wider">
                 {item.label}
               </span>

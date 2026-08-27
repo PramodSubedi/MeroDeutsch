@@ -96,7 +96,7 @@ export function HomeLayoutA() {
 
   return (
     <div className={`${theme.page.container} w-full space-y-6 pb-8`}>
-      <section className="overflow-hidden rounded-2xl bg-gradient-to-br from-white via-slate-50 to-blue-50 p-4 shadow-sm dark:from-slate-950 dark:via-slate-950 dark:to-slate-900 sm:p-5 md:p-8">
+      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-white via-slate-50 to-blue-50 p-4 shadow-card ring-1 ring-slate-200/70 dark:from-slate-900 dark:via-slate-950 dark:to-blue-950/40 dark:ring-slate-800/70 sm:p-5 md:p-8">
         <div className="flex flex-col gap-5">
           <div className="flex flex-wrap items-center gap-2">
             {isAuthenticated && streakCount > 0 && (
@@ -173,7 +173,7 @@ export function HomeLayoutA() {
           <Link
             key={title}
             to={to}
-            className={`group block rounded-2xl border p-4 transition hover:-translate-y-0.5 sm:p-5 ${styles.card} ${styles.hover}`}
+            className={`group block rounded-2xl border p-4 shadow-card transition-all duration-300 hover:-translate-y-0.5 hover:shadow-card-hover sm:p-5 ${styles.card} ${styles.hover}`}
           >
             <div className={`mb-4 inline-flex h-10 w-10 items-center justify-center rounded-xl text-lg font-bold ${styles.badge}`}>
               {title.charAt(0)}
@@ -192,7 +192,7 @@ export function HomeLayoutA() {
           core learning modules are discoverable from Home without /learn. */}
       <LearningPath />
 
-      <section className="rounded-2xl bg-white p-4 shadow-sm dark:bg-slate-900">
+      <section className="rounded-2xl bg-white p-4 shadow-card ring-1 ring-slate-200/70 dark:bg-slate-900 dark:ring-slate-800/70">
         <div className="mb-3 flex items-center justify-between gap-3">
           <h2 className="text-xl font-semibold text-slate-950 dark:text-white">
             {isDE ? 'Errungenschaften' : 'Achievements'}

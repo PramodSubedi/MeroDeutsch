@@ -51,10 +51,10 @@ export const theme = {
     description: 'mb-4 text-sm text-slate-500 dark:text-slate-400',
   },
   layout: {
-    app: 'min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100',
-    // Light premium navbar: white surface + elevation (no solid brand block).
+    app: 'min-h-screen bg-[#f6f7f9] dark:bg-slate-950 text-slate-900 dark:text-slate-100',
+    // Light premium navbar: glassy translucent surface + hairline bottom border.
     // Brand blue is reserved for primary actions and the active nav state.
-    header: 'h-16 bg-white shadow-sm sticky top-0 z-50 dark:bg-slate-900',
+    header: 'h-16 sticky top-0 z-50 border-b border-slate-200/70 bg-white/80 backdrop-blur-xl supports-[backdrop-filter]:bg-white/70 dark:border-slate-800/70 dark:bg-slate-950/80 dark:supports-[backdrop-filter]:bg-slate-950/70',
     headerInner: 'max-w-7xl mx-auto h-16 px-4 sm:px-6 flex items-center justify-between gap-3',
     brand: 'text-lg font-bold flex items-center gap-1',
     nav: 'flex items-center gap-1',
@@ -73,19 +73,19 @@ export const theme = {
     main: 'mx-auto w-full max-w-7xl px-4 sm:px-6 md:px-8',
   },
   section: {
-    // Elevation over borders: white cards on a slate-50 canvas.
-    surface: 'mb-4 rounded-2xl bg-white p-4 shadow-sm sm:p-6 dark:bg-slate-900',
+    // Hairline ring + layered shadow: refined depth on a soft canvas.
+    surface: 'mb-4 rounded-2xl bg-white p-4 shadow-card ring-1 ring-slate-200/70 sm:p-6 dark:bg-slate-900 dark:ring-slate-800/70',
     title: 'text-xl font-bold text-slate-900 dark:text-slate-100',
     description: 'mt-2 text-sm text-slate-500 dark:text-slate-400',
     controls: 'mt-3 flex flex-wrap gap-2',
     grid: 'grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3',
   },
   panel: {
-    surface: 'rounded-2xl bg-white p-5 shadow-sm sm:p-6 dark:bg-slate-900',
-    muted: 'rounded-2xl bg-slate-50 p-4 dark:bg-slate-800/60',
-    info: 'rounded-xl bg-amber-50 p-3 text-sm dark:bg-amber-900/20',
-    accent: 'rounded-2xl bg-blue-50 p-5 shadow-sm dark:bg-blue-950/40',
-    tip: 'rounded-2xl bg-slate-50 p-4 text-sm dark:bg-slate-800/60',
+    surface: 'rounded-2xl bg-white p-5 shadow-card ring-1 ring-slate-200/70 sm:p-6 dark:bg-slate-900 dark:ring-slate-800/70',
+    muted: 'rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-200/60 dark:bg-slate-800/60 dark:ring-slate-800/60',
+    info: 'rounded-xl bg-amber-50 p-3 text-sm ring-1 ring-amber-200/60 dark:bg-amber-900/20 dark:ring-amber-800/40',
+    accent: 'rounded-2xl bg-blue-50 p-5 shadow-card ring-1 ring-blue-200/60 dark:bg-blue-950/40 dark:ring-blue-900/50',
+    tip: 'rounded-2xl bg-slate-50 p-4 text-sm ring-1 ring-slate-200/60 dark:bg-slate-800/60 dark:ring-slate-800/60',
   },
   /**
    * Layer ladder (documented — keep values consistent):
@@ -94,26 +94,26 @@ export const theme = {
    */
   modal: {
     overlay: 'fixed inset-0 z-50 flex items-start justify-center bg-black/50 p-4 backdrop-blur-sm',
-    dialog: 'relative mt-[5%] w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl dark:bg-slate-800 dark:text-slate-100',
+    dialog: 'relative mt-[5%] w-full max-w-md rounded-2xl bg-white p-6 shadow-elevated ring-1 ring-slate-200/70 dark:bg-slate-800 dark:text-slate-100 dark:ring-slate-700/70',
     close: 'absolute right-4 top-3 flex min-h-[44px] min-w-[44px] items-center justify-center text-2xl text-slate-400 hover:text-slate-800 dark:hover:text-white',
   },
   card: {
-    surface: 'rounded-2xl bg-white p-4 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md dark:bg-slate-900',
+    surface: 'rounded-2xl bg-white p-4 shadow-card ring-1 ring-slate-200/70 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-card-hover hover:ring-slate-300/70 dark:bg-slate-900 dark:ring-slate-800/70 dark:hover:ring-slate-700/70',
     badge: 'w-10 text-center text-xl sm:text-2xl font-bold text-blue-600 dark:text-blue-400',
     title: 'text-lg font-bold text-slate-900 dark:text-slate-100',
     line: 'mt-1 text-sm text-slate-500 dark:text-slate-400',
     footer: 'mt-1 text-xs text-slate-400 dark:text-slate-400',
     note: 'mt-2 text-xs font-medium text-blue-600 dark:text-blue-400',
   },
-  input: 'w-full rounded-lg border border-slate-200 bg-white p-3 text-base text-slate-900 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-blue-500 dark:focus:ring-blue-900/40',
+  input: 'w-full rounded-xl border border-slate-200 bg-white p-3 text-base text-slate-900 shadow-xs outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-500/15 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-blue-500 dark:focus:ring-blue-500/20',
   button: {
-    primary: 'rounded-lg bg-blue-600 px-4 py-3 text-base font-semibold text-white shadow-sm transition hover:bg-blue-700 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50',
+    primary: 'rounded-xl bg-blue-600 px-4 py-3 text-base font-semibold text-white shadow-sm shadow-blue-600/20 transition hover:bg-blue-700 hover:shadow-md hover:shadow-blue-600/25 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50',
     /** Compact primary for dense rows (quest claim, inline CTAs) — no !important overrides needed. */
-    primarySmall: 'rounded-lg bg-blue-600 px-3 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-blue-700 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50',
-    secondary: 'rounded-lg bg-blue-50 px-4 py-3 text-base font-semibold text-blue-600 transition hover:bg-blue-100 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-blue-950/40 dark:text-blue-300 dark:hover:bg-blue-900/40',
-    danger: 'rounded-lg bg-red-600 px-4 py-3 text-base font-semibold text-white shadow-sm transition hover:bg-red-700 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50',
-    icon: 'inline-flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 text-base text-blue-600 transition hover:bg-blue-100 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-blue-900/50 dark:text-blue-300 dark:hover:bg-blue-800',
-    pill: 'rounded-xl border border-slate-200 px-4 py-3 text-base font-semibold text-slate-700 transition hover:border-blue-400 hover:text-blue-600 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-700 dark:text-slate-200',
+    primarySmall: 'rounded-lg bg-blue-600 px-3 py-2 text-xs font-semibold text-white shadow-sm shadow-blue-600/20 transition hover:bg-blue-700 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50',
+    secondary: 'rounded-xl bg-blue-50 px-4 py-3 text-base font-semibold text-blue-600 ring-1 ring-inset ring-blue-100 transition hover:bg-blue-100 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 dark:bg-blue-950/40 dark:text-blue-300 dark:ring-blue-900/50 dark:hover:bg-blue-900/40',
+    danger: 'rounded-xl bg-red-600 px-4 py-3 text-base font-semibold text-white shadow-sm shadow-red-600/20 transition hover:bg-red-700 hover:shadow-md hover:shadow-red-600/25 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50',
+    icon: 'inline-flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-base text-blue-600 transition hover:bg-blue-100 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 dark:bg-blue-900/50 dark:text-blue-300 dark:hover:bg-blue-800',
+    pill: 'rounded-xl border border-slate-200 px-4 py-3 text-base font-semibold text-slate-700 transition hover:border-blue-400 hover:text-blue-600 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-700 dark:text-slate-200',
     toggleActive: 'rounded-lg bg-white px-4 py-3 text-base font-semibold text-blue-600 shadow-sm dark:bg-slate-700 dark:text-blue-300',
     toggleInactive: 'rounded-lg px-4 py-3 text-base font-semibold text-slate-500 transition hover:bg-slate-100 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200',
   },

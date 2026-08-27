@@ -167,7 +167,7 @@ export function DashboardPage() {
       {/* Streak + Progress details — wider cards */}
       <div className="mb-4 grid gap-4 lg:grid-cols-2">
         {/* Same vertical rhythm as StatTile: label → mt-3 bold value → mt-3 detail. */}
-        <div className="rounded-2xl bg-white p-5 shadow-sm dark:bg-slate-900">
+        <div className="rounded-2xl bg-white p-5 shadow-card ring-1 ring-slate-200/70 dark:bg-slate-900 dark:ring-slate-800/70">
           <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">{streakLabel}</div>
           <div className="mt-3 flex items-baseline gap-3">
             <div className="text-3xl font-bold leading-none text-emerald-600">{formatCount.format(streakCount)}</div>
@@ -178,7 +178,7 @@ export function DashboardPage() {
           <div className="mt-3 text-sm text-slate-600 dark:text-slate-300">{streakSubtitle}</div>
         </div>
 
-        <div className="rounded-2xl bg-white p-5 shadow-sm dark:bg-slate-900">
+        <div className="rounded-2xl bg-white p-5 shadow-card ring-1 ring-slate-200/70 dark:bg-slate-900 dark:ring-slate-800/70">
           <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">{progressLabel}</div>
           <div className="mt-3 space-y-1.5 text-sm text-slate-600 dark:text-slate-300">
             <div>{lettersPracticed}: {formatCount.format(progress.practiced.length)}/26</div>
@@ -189,7 +189,7 @@ export function DashboardPage() {
       </div>
 
       {/* Secondary analytics — collapsed by default so Review stays primary */}
-      <details className="group mb-4 rounded-2xl bg-white p-4 shadow-sm dark:bg-slate-900">
+      <details className="group mb-4 rounded-2xl bg-white p-4 shadow-card ring-1 ring-slate-200/70 dark:bg-slate-900 dark:ring-slate-800/70">
         <summary className="flex cursor-pointer items-center justify-between gap-3 list-none">
           <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">
             {isDE ? 'Detaillierte Analysen' : 'Detailed analytics'}
@@ -213,7 +213,7 @@ export function DashboardPage() {
 
       <div
         id="review-queue-section"
-        className="mt-4 rounded-2xl bg-white p-6 shadow-sm transition-shadow duration-300 hover:shadow-md dark:bg-slate-900"
+        className="mt-4 rounded-2xl bg-white p-6 shadow-card ring-1 ring-slate-200/70 transition-shadow duration-300 hover:shadow-card-hover dark:bg-slate-900 dark:ring-slate-800/70"
       >
         <div className="mb-4 flex items-center justify-between gap-3">
           <div>

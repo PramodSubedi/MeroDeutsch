@@ -37,8 +37,8 @@ interface StatTileProps {
 
 export function StatTile({ label, value, subValue, progressPct, caption, color = 'blue', to }: StatTileProps) {
   const shell =
-    'rounded-2xl bg-white p-4 shadow-sm sm:p-5 dark:bg-slate-900';
-  const interactive = 'transition hover:shadow-md';
+    'rounded-2xl bg-white p-4 shadow-card ring-1 ring-slate-200/70 sm:p-5 dark:bg-slate-900 dark:ring-slate-800/70';
+  const interactive = 'block transition-all duration-300 hover:-translate-y-0.5 hover:shadow-card-hover hover:ring-slate-300/70 dark:hover:ring-slate-700/70';
 
   const body = (
     <>
