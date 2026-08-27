@@ -95,9 +95,9 @@ export function HomeLayoutA() {
   ];
 
   return (
-    <div className={`${theme.page.container} w-full space-y-6 pb-8`}>
+    <div className={`${theme.page.container} w-full space-y-5 pb-12`}>
       <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-white via-slate-50 to-blue-50 p-4 shadow-card ring-1 ring-slate-200/70 dark:from-slate-900 dark:via-slate-950 dark:to-blue-950/40 dark:ring-slate-800/70 sm:p-5 md:p-8">
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-4">
           <div className="flex flex-wrap items-center gap-2">
             {isAuthenticated && streakCount > 0 && (
               <span className="inline-flex items-center gap-1.5 rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-300">
@@ -121,10 +121,10 @@ export function HomeLayoutA() {
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600 dark:text-blue-400">
               MeroDeutsch
             </p>
-            <h1 className="mt-2 min-w-0 break-words text-3xl font-semibold tracking-[-0.04em] text-slate-950 dark:text-white sm:text-5xl">
+            <h1 className="mt-1.5 min-w-0 break-words text-3xl font-semibold tracking-[-0.04em] text-slate-950 dark:text-white sm:text-5xl">
               {greeting}
             </h1>
-            <p className="mt-3 max-w-xl text-base leading-7 text-slate-600 dark:text-slate-300">
+            <p className="mt-2.5 max-w-xl text-base leading-7 text-slate-600 dark:text-slate-300">
               {isDE
                 ? 'Neue Wörter, schnelle Reviews und klare nächste Schritte — alles auf einer Seite.'
                 : 'New words, quick reviews, and the next best step — all in one place.'}
@@ -137,7 +137,7 @@ export function HomeLayoutA() {
       <DailySession />
 
       {/* Shared StatTile component — same source of truth as DashboardPage */}
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <section className="grid gap-3 sm:gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatTile
           label={isDE ? 'Fortschritt' : 'Progress'}
           value={`${progressPct}%`}
@@ -168,20 +168,20 @@ export function HomeLayoutA() {
         />
       </section>
 
-      <section className="grid gap-4 md:grid-cols-3">
+      <section className="grid gap-3 md:gap-4 md:grid-cols-3">
         {practiceItems.map(({ title, description, to, styles }) => (
           <Link
             key={title}
             to={to}
             className={`group block rounded-2xl border p-4 shadow-card transition-all duration-300 hover:-translate-y-0.5 hover:shadow-card-hover sm:p-5 ${styles.card} ${styles.hover}`}
           >
-            <div className={`mb-4 inline-flex h-10 w-10 items-center justify-center rounded-xl text-lg font-bold ${styles.badge}`}>
+            <div className={`mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl text-lg font-bold ${styles.badge}`}>
               {title.charAt(0)}
             </div>
             <h2 className="text-lg font-semibold text-slate-950 dark:text-white">{title}</h2>
-            <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{description}</p>
+            <p className="mt-1.5 text-sm text-slate-600 dark:text-slate-300">{description}</p>
             {/* Visible click affordance — matches LearningPath.tsx "Start →" */}
-            <div className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-blue-600 transition group-hover:text-blue-800 dark:text-blue-300">
+            <div className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-blue-600 transition group-hover:text-blue-800 dark:text-blue-300">
               {isDE ? 'Starten' : 'Start'} →
             </div>
           </Link>
@@ -193,7 +193,7 @@ export function HomeLayoutA() {
       <LearningPath />
 
       <section className="rounded-2xl bg-white p-4 shadow-card ring-1 ring-slate-200/70 dark:bg-slate-900 dark:ring-slate-800/70">
-        <div className="mb-3 flex items-center justify-between gap-3">
+        <div className="mb-4 flex items-center justify-between gap-3">
           <h2 className="text-xl font-semibold text-slate-950 dark:text-white">
             {isDE ? 'Errungenschaften' : 'Achievements'}
           </h2>
