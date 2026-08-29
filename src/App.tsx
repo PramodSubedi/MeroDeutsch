@@ -25,6 +25,7 @@ const PronunciationPage = lazy(() => import('./pages/PronunciationPage').then(m 
 const RoleplayPage = lazy(() => import('./pages/RoleplayPage').then(m => ({ default: m.RoleplayPage })));
 const ContinueLearningPage = lazy(() => import('./pages/ContinueLearningPage').then(m => ({ default: m.ContinueLearningPage })));
 const PracticeHubPage = lazy(() => import('./pages/PracticeHubPage').then(m => ({ default: m.PracticeHubPage })));
+const ArticleSprintPage = lazy(() => import('./pages/ArticleSprintPage').then(m => ({ default: m.ArticleSprintPage })));
 const StoriesPage = lazy(() => import('./pages/StoriesPage').then(m => ({ default: m.StoriesPage })));
 const AnalyticsPage = lazy(() => import('./pages/Analytics').then(m => ({ default: m.AnalyticsPage })));
 const ImportDeckPage = lazy(() => import('./pages/ImportDeck').then(m => ({ default: m.ImportDeckPage })));
@@ -81,6 +82,7 @@ export default function App() {
               {/* Unit 2 optional practice — bonus node on the /learn spine */}
               <Route path="sentence-builder" element={<SentenceBuilderPage />} />
               <Route path="practice" element={<PracticeHubPage />} />
+            <Route path="article-sprint" element={<ArticleSprintPage />} />
               <Route path="rapid-fire" element={<RapidBlitzPage />} />
               <Route path="rapid-blitz" element={<RapidBlitzRedirect />} />
               <Route path="stories" element={<StoriesPage />} />

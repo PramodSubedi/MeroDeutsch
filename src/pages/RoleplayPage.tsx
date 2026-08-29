@@ -1,16 +1,9 @@
-/**
- * Roleplay — branching dialogue practice rendered as a simulated messaging
- * app via the `MessagingRoleplay` Lesson Engine primitive.
- *
- * v0.2.5 slice: conversational roleplay content now lives in the `content_items`
- * pools (`conversation-def` + `conversation-vocab`). The page PREFERS the
- * database source via curriculumService (with the Dexie offline cache), and
- * falls back to the bundled JSON files on first-run/pre-seed.
- */
 import { useEffect, useMemo, useState } from 'react';
 import { useLang } from '../hooks/useLang';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { theme } from '../config/theme';
+import { SEO } from '../components/common/SEO';
+import { PageHeading } from '../components/common/PageHeading';
 import { curriculumService } from '../services';
 import { MessagingRoleplay } from '../components/exercises/MessagingRoleplay';
 import { buildConversationalScenarios } from '../utils/conversationalToRoleplay';
@@ -23,27 +16,28 @@ import scenarioDefsJson from '../data/conversational_scenario_defs.json';
 import vocabBankJson from '../data/conversational_german_vocab.json';
 import lifeDefsJson from '../data/life_scenes_defs.json';
 import lifeVocabJson from '../data/life_scenes_vocab.json';
+import convStaffTwinsJson from '../data/roleplay_staff_twins.json';
+import lifeStaffTwinsJson from '../data/roleplay_life_staff_twins.json';
 
 type ConvSource = { defs: ConversationScenarioSeed[]; vocab: ConversationVocab[] };
 
+/**
+ * Roleplay — branching dialogue practice.
+ * PICKER-FIRST: pick ONE scenario, then the chat loads. Staff `-staff` twins
+ * are NOT separate cards (no double cards); a 🎭 badge marks swap-able topics
+ * and the swap happens inside the chat via its variant chips.
+ */
 export function RoleplayPage() {
   usePageTitle('Roleplay');
   const { langMode } = useLang();
   const isDE = langMode === 'german';
-  // Basic DB pool (public `roleplay-scenario` pool).
   const [dbScenarios, setDbScenarios] = useState<RoleplayScenario[]>([]);
-  // Conversational source: DB-first, bundled JSON fallback.
   const [source, setSource] = useState<ConvSource | null>(null);
-  // Built-from-source conversations (one random variant per scenario).
   const [conversations, setConversations] = useState<RoleplayScenario[]>([]);
   const [loading, setLoading] = useState(true);
-  // Incremented by the shuffle button → re-picks one variant per scenario.
-  const [round, setRound] = useState(0);
-  // CEFR filter: 'all' | 'A1' | 'A2' | 'B1'.
   const [levelFilter, setLevelFilter] = useState<'all' | 'A1' | 'A2' | 'B1'>('all');
-
-  /** Resolve the conversational source: DB pools first, bundled JSON fallback. */
-  useEffect(() => {
+  const [activeScenario, setActiveScenario] = useState<RoleplayScenario | null>(null);
+useEffect(() => {
     let cancelled = false;
     (async () => {
       let defs: ConversationScenarioSeed[] = [];
@@ -54,14 +48,15 @@ export function RoleplayPage() {
           curriculumService.getConversationVocab(),
         ]);
       } catch {
-        // service failure → fall through to bundled fallback
+        // fall through to bundled fallback
       }
       if (cancelled) return;
-      // Fallback = old conversational pack + the v0.3 life-scenes pack merged,
-      // so an offline cold start still sees every bundled conversation.
       const fallbackDefs = [
         ...(scenarioDefsJson as unknown as ConversationScenarioSeed[]),
         ...((lifeDefsJson as unknown) as ConversationScenarioSeed[]),
+        // Staff role-swap twin scenarios — swap happens inside the chat.
+        ...((convStaffTwinsJson as unknown) as ConversationScenarioSeed[]),
+        ...((lifeStaffTwinsJson as unknown) as ConversationScenarioSeed[]),
       ];
       const fallbackVocab = [
         ...(vocabBankJson as unknown as ConversationVocab[]),
@@ -70,7 +65,7 @@ export function RoleplayPage() {
       setSource(
         defs.length > 0 && vocab.length > 0
           ? { defs, vocab }
-          : { defs: fallbackDefs, vocab: fallbackVocab }
+          : { defs: fallbackDefs, vocab: fallbackVocab },
       );
       setLoading(false);
     })();
@@ -79,34 +74,33 @@ export function RoleplayPage() {
     };
   }, []);
 
-  // Rebuild conversations whenever the source or round changes.
   useEffect(() => {
     if (!source) return;
     setConversations(buildConversationalScenarios(source.defs, source.vocab));
-  }, [source, round]);
+  }, [source]);
 
-  // The basic (non-conversational) DB scenario pool, if any.
   useEffect(() => {
     let cancelled = false;
     curriculumService
       .getRoleplayScenarios()
-      .then((s) => { if (!cancelled) setDbScenarios(s); })
-      .catch(() => { if (!cancelled) setDbScenarios([]); });
-    return () => { cancelled = true; };
+      .then((s) => {
+        if (!cancelled) setDbScenarios(s);
+      })
+      .catch(() => {
+        if (!cancelled) setDbScenarios([]);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
-  /** Shuffle synchronously so the new key + data land in ONE commit. */
-  const reshuffle = () => setRound((r) => r + 1);
 
-  // Conversational scenarios FIRST so async DB results never shift indices.
-  // DB pool scenarios whose title is already covered are superseded (dedupe).
   const allScenarios = useMemo(() => {
     const convTitles = new Set(conversations.map((s) => s.title));
     const db = dbScenarios.filter((s) => !convTitles.has(s.title));
     return [...conversations, ...db];
   }, [conversations, dbScenarios]);
 
-  // CEFR filter chips derive from the levels actually present.
   const availableLevels = useMemo(() => {
     const s = new Set<'A1' | 'A2' | 'B1'>();
     allScenarios.forEach((sc) => {
@@ -120,21 +114,78 @@ export function RoleplayPage() {
 
   const filtered = useMemo(() => {
     if (levelFilter === 'all') return allScenarios;
-    return allScenarios.filter((sc) => (sc.level ?? '').toUpperCase().includes(levelFilter));
+    return allScenarios.filter((sc) =>
+      (sc.level ?? '').toUpperCase().includes(levelFilter),
+    );
   }, [allScenarios, levelFilter]);
 
-  /** Determine a clean "A1 / A2 / B1" label from a band string. */
-  const levelLabel = (band?: string) => (band ?? '').trim() || 'A1';
+  // Base ids that HAVE a staff twin (for the 🎭 badge).
+  const swapBaseIds = useMemo(
+    () =>
+      new Set(
+        allScenarios
+          .filter((s) => s.id.endsWith('-staff'))
+          .map((s) => s.id.replace(/-staff$/, '')),
+      ),
+    [allScenarios],
+  );
 
+  // Picker cards: hide `-staff` twins so each topic appears once (no doubles).
+  const pickerScenarios = useMemo(
+    () => filtered.filter((sc) => !sc.id.endsWith('-staff')),
+    [filtered],
+  );
+
+  const levelLabel = (band?: string) => (band ?? '').trim() || 'A1';
   const levelBadgeClass = (band?: string) => {
     const b = (band ?? '').toUpperCase();
     if (b.includes('B1')) return 'bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300';
     if (b.includes('A2')) return 'bg-blue-100 text-blue-800 dark:bg-blue-950/40 dark:text-blue-300';
     return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300';
   };
+
+  const handlePick = (sc: RoleplayScenario) => setActiveScenario(sc);
+  const handleBack = () => setActiveScenario(null);
+
+  // Swap pair for the chat: active base + its `-staff` twin (if present).
+  const swapPair = useMemo(() => {
+    if (!activeScenario) return [];
+    const inv = activeScenario.id.endsWith('-staff')
+      ? activeScenario.id.replace(/-staff$/, '')
+      : `${activeScenario.id}-staff`;
+    return allScenarios.filter((sc) => sc.id === activeScenario.id || sc.id === inv).slice(0, 2);
+  }, [activeScenario, allScenarios]);
 return (
     <div className={theme.page.container}>
-      {loading || (source !== null && conversations.length === 0 && dbScenarios.length === 0) ? (
+      <PageHeading
+        title={isDE ? 'Dialoge' : 'Roleplay'}
+        subtitle={
+          isDE
+            ? 'Wähl eine Alltagssituation und übe das Gespräch.'
+            : 'Pick a real-world situation and practice the dialogue.'
+        }
+      />
+      <SEO
+        title="Roleplay German Dialogs | MeroDeutsch"
+        description="Practice real-world German conversations. Role-flip scenarios let you play the staff side too."
+      />
+
+      {activeScenario ? (
+        <div className="mx-auto max-w-xl">
+          <button
+            type="button"
+            onClick={handleBack}
+            className={`${theme.button.secondary} mb-4 min-h-[44px] active:scale-95`}
+          >
+            ← {isDE ? 'Zurück zur Auswahl' : 'Back to scenarios'}
+          </button>
+          {swapPair.length === 0 ? (
+            <MessagingRoleplay scenarios={[activeScenario]} module="roleplay" />
+          ) : (
+            <MessagingRoleplay key={activeScenario.id} scenarios={swapPair} module="roleplay" />
+          )}
+        </div>
+      ) : loading || (source !== null && conversations.length === 0 && dbScenarios.length === 0) ? (
         <div className={`${theme.panel.muted} flex min-h-[160px] items-center justify-center text-sm`}>
           {isDE ? 'Szenarien werden geladen…' : 'Loading conversations…'}
         </div>
@@ -145,8 +196,7 @@ return (
             : 'No conversations available yet — go online once to load them.'}
         </div>
       ) : (
-        <div className="mt-6">
-          {/* CEFR filter pills */}
+<div className="mt-6">
           {availableLevels.length > 1 && (
             <div className="mb-4 flex flex-wrap items-center gap-2">
               {(['all', ...availableLevels] as const).map((lv) => (
@@ -167,60 +217,48 @@ return (
             </div>
           )}
 
-          {/* Scenario picker — cards with emoji, title, level badge */}
           <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
-            {filtered.map((sc) => (
-              <button
-                key={sc.id}
-                type="button"
-                onClick={reshuffle}
-                className="group flex min-h-[72px] items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-left shadow-sm transition hover:border-blue-300 hover:bg-blue-50/40 active:scale-95 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-blue-400 dark:hover:bg-blue-950/30"
-              >
-                <span className="text-2xl" aria-hidden="true">{sc.emoji || '💬'}</span>
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate font-semibold text-slate-900 dark:text-white">
-                    {sc.title}
-                  </span>
-                  <span className="mt-1 flex flex-wrap items-center gap-1.5">
-                    <span className={`inline-block rounded-full px-2 py-0.5 text-[11px] font-semibold ${levelBadgeClass(sc.level)}`}>
-                      {levelLabel(sc.level)}
+            {pickerScenarios.map((sc) => {
+              const canSwap = swapBaseIds.has(sc.id);
+              return (
+                <button
+                  key={sc.id}
+                  type="button"
+                  onClick={() => handlePick(sc)}
+                  className="group flex min-h-[72px] items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-left shadow-sm transition hover:border-blue-300 hover:bg-blue-50/40 active:scale-95 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-blue-400 dark:hover:bg-blue-950/30"
+                >
+                  <span className="text-2xl" aria-hidden="true">{sc.emoji || '💬'}</span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate font-semibold text-slate-900 dark:text-white">
+                      {sc.title}
                     </span>
-                    {sc.roleFlip && (
-                      <span
-                        className="inline-block rounded-full bg-violet-100 px-2 py-0.5 text-[11px] font-semibold text-violet-700 dark:bg-violet-950/60 dark:text-violet-200"
-                        title={isDE ? 'Rollenwechsel — du spielst die Servicekraft' : 'Role flip — you play the staff'}
-                      >
-                        🎭 {isDE ? 'Rollenwechsel' : 'Role flip'}
+                    <span className="mt-1 flex flex-wrap items-center gap-1.5">
+                      <span className={`inline-block rounded-full px-2 py-0.5 text-[11px] font-semibold ${levelBadgeClass(sc.level)}`}>
+                        {levelLabel(sc.level)}
                       </span>
-                    )}
+                      {canSwap && (
+                        <span
+                          className="inline-block rounded-full bg-violet-100 px-2 py-0.5 text-[11px] font-semibold text-violet-700 dark:bg-violet-950/60 dark:text-violet-200"
+                          title={isDE ? 'Rollenwechsel verfügbar' : 'Role swap available'}
+                        >
+                          🎭 {isDE ? 'Rollenwechsel' : 'Role swap'}
+                        </span>
+                      )}
+                    </span>
                   </span>
-                </span>
-                <span className="text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-blue-500 dark:text-slate-600">
-                  →
-                </span>
-              </button>
-            ))}
+                  <span className="text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-blue-500 dark:text-slate-600">
+                    →
+                  </span>
+                </button>
+              );
+            })}
           </div>
 
-          {filtered.length === 0 ? (
+          {pickerScenarios.length === 0 && (
             <div className={`${theme.panel.muted} mb-4 text-sm`}>
               {isDE
                 ? 'Für diese Stufe gibt es noch keine Gespräche.'
                 : 'No conversations at this level yet.'}
-            </div>
-          ) : (
-            <div className="mx-auto max-w-xl">
-              {/* Shuffle: re-picks one random dialogue variant per scenario. */}
-              <div className="mb-3 flex justify-end">
-                <button
-                  type="button"
-                  onClick={reshuffle}
-                  className={`${theme.button.secondary} min-h-[44px] active:scale-95`}
-                >
-                  {isDE ? 'Neues Gespräch 🔄' : 'Next conversation 🔄'}
-                </button>
-              </div>
-              <MessagingRoleplay key={round} scenarios={filtered} module="roleplay" />
             </div>
           )}
         </div>

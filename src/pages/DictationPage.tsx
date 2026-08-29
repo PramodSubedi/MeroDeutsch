@@ -106,6 +106,7 @@ export function DictationPage() {
         <DictationInput
           session={session}
           onPlayAudio={(q) => speakWord(q.correctAnswer)}
+          autoPlay={false}
           hideFooter
         />
         {/* Round footer: next/finish + play again */}

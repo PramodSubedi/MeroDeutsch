@@ -82,7 +82,13 @@ function buildQuestions(
         );
         break;
       case 'number-conversion':
-        pick(data.numbers, spec.count, (n) => n.de).forEach((n) =>
+        // Gate A (first contact) focuses on numbers 0–12; the full range is
+        // offered later as optional practice (Band D bonus), not on the gate.
+        pick(
+          data.numbers.filter((n) => Number(n.n) <= 12),
+          spec.count,
+          (n) => n.de
+        ).forEach((n) =>
           out.push({
             key: `number:${n.de}`,
             prompt: String(n.n),
@@ -210,6 +216,29 @@ export function A1CheckpointPage() {
   const { markCheckpointResult, isUnitUnlocked, isCheckpointComplete } = useA1Path();
 
   const unit = A1_UNITS[unitIndex];
+
+  // A SUPPORT band (Band B) carries no checkpoint — and optionally the hard
+  // deep link still loads. Show a friendly "optional" screen, not an error.
+  if (!unit || !unit.checkpoint) {
+    return (
+      <div className={theme.page.container}>
+        <div className={theme.panel.surface}>
+          <h1 className="text-xl font-bold text-slate-900 dark:text-white">
+            {isDE ? `Band ${unit?.code ?? '?'}` : `Band ${unit?.code ?? '?'}`}
+          </h1>
+          <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+            {isDE
+              ? 'Dieses Band hat keine Pflichtprüfung – es ist ein optionaler Unterstützungs-Band.'
+              : 'This band has no checkpoint — it is optional support content, no gate required.'}
+          </p>
+          <Link to="/learn" className={`${theme.button.primary} mt-4 inline-flex min-h-[44px]`}>
+            {isDE ? 'Zurück zum Lernpfad' : 'Back to learning path'}
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   const unlocked = isUnitUnlocked(unitIndex);
   const alreadyPassed = isCheckpointComplete(unitIndex);
 
@@ -247,7 +276,7 @@ useEffect(() => {
     }
     let cancelled = false;
     const build = async () => {
-      const specs = unit.checkpoint.specs;
+      const specs = unit.checkpoint!.specs;
       const needed = new Set(specs.map((s) => s.type));
       const grammarCategories = ['sein', 'haben', 'weakVerb', 'cases'];
       const vocabularyNeeded = needed.has('vocab-translation') || needed.has('vocab-translation-ne') || needed.has('listening-gap');
@@ -327,7 +356,16 @@ useEffect(() => {
 
   // ---- Locked (soft-lock) screen ----
   if (!unlocked) {
-    const prereq = unitIndex - 1;
+    // The band that must be passed to unlock this one = the previous CORE band
+    // (bands before may include the SUPPORT band B, which has no gate).
+    const prevBand = (() => {
+      for (let i = unitIndex - 1; i >= 0; i--) {
+        const b = A1_UNITS[i];
+        if (b && b.checkpoint) return b;
+      }
+      return undefined;
+    })();
+    const prevCode = prevBand?.code ?? 'A';
     return (
       <div className={theme.page.container}>
         <div className={theme.panel.surface}>
@@ -338,8 +376,8 @@ useEffect(() => {
             <span className="text-4xl" aria-hidden="true">🔒</span>
             <p className="mt-2 text-slate-600 dark:text-slate-300">
               {isDE
-                ? `Dieser Puffer ist gesperrt. Bestehe Puffer ${prereq + 1}, um diese Einheit freizuschalten.`
-                : `This checkpoint is locked. Pass checkpoint ${prereq + 1} to unlock this unit.`}
+                ? `Dieses Band ist gesperrt. Bestehe Pforte ${prevCode}, um dieses Band freizuschalten.`
+                : `This band is locked. Pass Gate ${prevCode} to unlock it.`}
             </p>
             <Link to="/learn" className={`${theme.button.primary} mt-4 inline-flex min-h-[44px]`}>
               {isDE ? 'Zurück zum Lernpfad' : 'Back to learning path'}
@@ -382,7 +420,7 @@ useEffect(() => {
               {isDE ? 'Bereits bestanden ✓' : 'Already passed ✓'}
             </p>
           )}
-          {unitIndex === 1 && (
+          {unitIndex === 2 && (
             <div className="mt-3 flex flex-wrap items-center gap-2">
               <GenderBadge article="der" />
               <GenderBadge article="die" />

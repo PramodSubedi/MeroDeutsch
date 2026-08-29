@@ -1,0 +1,140 @@
+[
+  {
+    "sid": "life-grocery-staff", "title": "Supermarkt (Kassierer)", "titleEn": "Grocery (as cashier)", "emoji": "🛒",
+    "ctx": "Checkout", "band": "A1", "closing": "Auf Wiedersehen!",
+    "variants": [{ "id": "grocery-staff", "name": "Als Kassierer", "roleFlip": true, "steps": [
+      { "n": "Guten Tag! Das macht zusammen 12 Euro, 70.", "nEn": "Hello! That comes to 12 euros 70.", "p": "Nennen Sie den Betrag.", "opts": [
+        {"t": "Zahlen Sie bitte.", "ok": true, "en": "Please pay.", "ne": "कृपया भुक्तानी गर्नुहोस्", "neR": "Kripaya bhuktani garnuhos"},
+        {"t": "Wo ist die Kasse?", "ok": false, "en": "Where is the checkout?", "neR": "Kasse kahaan chha?", "fb": "Nennen Sie zuerst den Betrag!"},
+        {"t": "Ich bezahle nicht.", "ok": false, "en": "I will not pay.", "neR": "Ma tirnai", "fb": "Bitten Sie höflich zum Bezahlen!"}
+      ]},
+      { "n": "Haben Sie den Bonusringe?", "nEn": "Do you have the bonus cards?", "p": "Fragen Sie nach dem Bonus.", "opts": [
+        {"t": "Ja, hier ist die Karte.", "ok": true, "en": "Yes, here is the card.", "ne": "हो, यो कार्ड हो", "neR": "Ho, yo kaardi ho"},
+        {"t": "Ich habe keine Karte.", "ok": false, "en": "I have no card.", "neR": "Ma kaaardi chaina", "fb": "Geben Sie die Karte!"}
+      ]},
+      { "n": "Strecken Sie den Betrag für den Bon.", "nEn": "Please hand over the amount for the receipt.", "p": "Bedanken Sie sich.", "opts": [
+        {"t": "Danke, hier ist der Betrag.", "ok": true, "en": "Thanks, here is the amount.", "ne": "धन्यवाद, यो रकम हो", "neR": "Dhanyabaad, yo rakam ho"},
+        {"t": "Ich brauche keinen Bon.", "ok": false, "en": "I don't need a receipt.", "neR": "Ma bono chahanchhu", "fb": "Bedanken Sie sich!"}
+      ]}
+    ]}]},
+  {
+    "sid": "life-restaurant-staff", "title": "Restaurant (Ober)", "titleEn": "Restaurant (as waiter)", "emoji": "🍽️",
+    "ctx": "Taking order", "band": "A1", "closing": "Guten Apparat!",
+    "variants": [{ "id": "restaurant-staff", "name": "Als Ober", "roleFlip": true, "steps": [
+      { "n": "Guten Abend! Wir haben heute Suppe.", "nEn": "Good evening! We have soup today.", "p": "Fragen Sie nach dem Angebot.", "opts": [
+        {"t": "Ich hätte gern die Suppe.", "ok": true, "en": "I would like the soup, please.", "ne": "माझै सूप चाहियो", "neR": "Maai soup chahiyo"},
+        {"t": "Ich will nichts essen.", "ok": false, "en": "I don't want to eat.", "neR": "Ma khana chahanchhu", "fb": "Fragt nach dem Essen!"}
+      ]},
+      { "n": "Möchten Sie noch etwas Trinken?", "nEn": "Would you like something to drink?", "p": "Bieten Sie ein Getränk an.", "opts": [
+        {"t": "Ja, Wasser, bitte.", "ok": true, "en": "Yes, water, please.", "ne": "हो, पानी हेर्नुहोस्", "neR": "Ho, pani hernuhos"},
+        {"t": "Nein, ich trinke nichts.", "ok": false, "en": "No, I drink nothing.", "neR": "Ma kei na khaltinthye", "fb": "Bieten Sie etwas an!"}
+      ]},
+      { "n": "Etwas später bringe ich die Speisekarte.", "nEn": "I will bring the menu shortly.", "p": "Kündigen Sie die Bestellung.", "opts": [
+        {"t": "Alles klar, danke.", "ok": true, "en": "All right, thanks.", "ne": "ठिक छ, धन्यवाद", "neR": "Thik cha, dhanyabaad"},
+        {"t": "Ich brauche die Speisekarte.", "ok": false, "en": "I need the menu.", "neR": "Ma menu chahanchhu", "fb": "Bestellen Sie zuerst!"}
+      ]}
+    ]}]},
+  {
+    "sid": "life-clothing-staff", "title": "Kleidung (Verkäufer)", "titleEn": "Clothing (as shop assistant)", "emoji": "👗",
+    "ctx": "Fitting room helper", "band": "A1", "closing": "Bis bald!",
+    "variants": [{ "id": "clothing-staff", "name": "Als Verkäuferin", "roleFlip": true, "steps": [
+      { "n": "Kann ich Ihnen helfen? Wir haben neue Kollektion.", "nEn": "Can I help you? We have a new collection.", "p": "Bieten Sie Hilfe an.", "opts": [
+        {"t": "Ja, ich suche eine Bluse.", "ok": true, "en": "Yes, I am looking for a blouse.", "ne": "हो, माझै ब्लाउज़ खोजिरहेको छु", "neR": "Ho, ma blouse khojirahako chhu"},
+        {"t": "Nein, ich schaue nur.", "ok": false, "en": "No, I am just looking.", "neR": "Ma kei herna basira", "fb": "Nennen Sie, wonach Sie suchen!"}
+      ]},
+      { "n": "Welche Größe passt Ihnen?", "nEn": "Which size fits you?", "p": "Fragen Sie nach der Größe.", "opts": [
+        {"t": "Größe 38, bitte.", "ok": true, "en": "Size 38, please.", "ne": "३८ आकार राम्ररी", "neR": "38 aakaar ramrari"},
+        {"t": "Ich weiß nicht.", "ok": false, "en": "I don't know.", "neR": "Man lekhnu", "fb": "Nennen Sie eine Größe!"}
+      ]},
+      { "n": "Hier sind die 38er. Kosten 25 Euro.", "nEn": "Here are the 38s. Cost 25 euros.", "p": "Übergeben Sie die Ware.", "opts": [
+        {"t": "Ich nehme zwei Stück.", "ok": true, "en": "I will take two pieces.", "ne": "म दुई टुक्रा लिनेछु", "neR": "Ma dui tukra linechhu"},
+        {"t": "Das ist zu teuer.", "ok": false, "en": "That is too expensive.", "neR": "Yasto maha chha", "fb": "Überlegen Sie es!"}
+      ]}
+    ]}]},
+  {
+    "sid": "life-fleamarket-staff", "title": "Flohmärkte (Verkäufer)", "titleEn": "Flea market (seller)", "emoji": "🏺",
+    "ctx": "Vintage seller chats", "band": "A1-A2", "closing": "Auf Wiedersehen!",
+    "variants": [{ "id": "fleamarket-staff", "name": "Als Verkäufer", "roleFlip": true, "steps": [
+      { "n": "Schauen Sie hier, ein echtes Möbelstück!", "nEn": "Look here, a real piece of furniture!", "p": "Werben Sie das Möbel an.", "opts": [
+        {"t": "Wie teuer kostet es?", "ok": true, "en": "How much does it cost?", "ne": "कति मूल्य?", "neR": "Kati moolya?"},
+        {"t": "Ich mag Möbel nicht.", "ok": false, "en": "I don't like furniture.", "neR": "Mala baaja sakiyo", "fb": "Fragen Sie nach dem Preis!"}
+      ]},
+      { "n": "Das ist 50 Euro, sehr guter Zustand.", "nEn": "That is 50 euros, very good condition.", "p": "Nennen Sie den Preis.", "opts": [
+        {"t": "Ich überlege es.", "ok": true, "en": "I will consider it.", "ne": "मलाई विचार गर्नुपर्छ", "neR": "Malai vichar garnu parcha"},
+        {"t": "Das ist billig.", "ok": false, "en": "That is cheap.", "neR": "Sasto chha", "fb": "Geben Sie einen klaren Preis!"}
+      ]},
+      { "n": "Super, ich verpacke es gleich für Sie.", "nEn": "Great, I will wrap it up for you.", "p": "Bestätigen Sie den Verkauf.", "opts": [
+        {"t": "Danke, das ist ein Schnäppchen!", "ok": true, "en": "Thanks, that is a bargain!", "ne": "धन्यवाद, यो राम्रो मूल्यमा छ", "neR": "Dhanyabaad, yo ramro moolyama chha"},
+        {"t": "Ich nehme es nicht.", "ok": false, "en": "I don't take it.", "neR": "Ma lina bahirlinchu", "fb": "Kaufen Sie!"}
+      ]}
+    ]}]},
+  {
+    "sid": "life-directions-staff", "title": "Information (Mitarbeiter)", "titleEn": "Info desk (as staff)", "emoji": "ℹ️",
+    "ctx": "Giving directions", "band": "A1", "closing": "Gute Reise!",
+    "variants": [{ "id": "directions-staff", "name": "Als Infoschalter", "roleFlip": true, "steps": [
+      { "n": "Guten Tag! Wohin möchten Sie gehen?", "nEn": "Hello! Where would you like to go?", "p": "Fragen Sie das Ziel.", "opts": [
+        {"t": "Wo ist der Bahnhof?", "ok": true, "en": "Where is the train station?", "ne": "रेलवे स्टेशन कहाँ छ?", "neR": "Railway steshan kaha chha?"},
+        {"t": "Ich weiß es nicht.", "ok": false, "en": "I don't know.", "neR": "Ma lekhnu", "fb": "Sagen Sie, wohin Sie wollen!"}
+      ]},
+      { "n": "Fahren Sie geradeaus und dann links.", "nEn": "Go straight, then turn left.", "p": "Geben Sie die Richtung an.", "opts": [
+        {"t": "Wie weit ist es?", "ok": true, "en": "How far is it?", "ne": "कति टाढा छ?", "neR": "Kati tadha chha?"},
+        {"t": "Das ist zu weit.", "ok": false, "en": "That is too far.", "neR": "Tetot paila", "fb": "Nennen Sie den Abstand!"}
+      ]},
+      { "n": "Hier ist eine Karte. Viel Erfolg!", "nEn": "Here is a map. Good luck!", "p": "Übergeben Sie die Karte.", "opts": [
+        {"t": "Danke, das hilft mir sehr.", "ok": true, "en": "Thanks, that helps me a lot.", "ne": "धन्यवाद, यो मलाई धेरै मद्दत गर्छ", "neR": "Dhanyabaad, yo malai dherai maddat garchha"},
+        {"t": "Ich brauche keine Karte.", "ok": false, "en": "I don't need a map.", "neR": "Ma map chaiyeko chhaina", "fb": "Nehmen Sie die Karte!"}
+      ]}
+    ]}]},
+  {
+    "sid": "life-train-staff", "title": "Zug (Personal)", "titleEn": "Train (as staff)", "emoji": "🚆",
+    "ctx": "Ticket check", "band": "A1-A2", "closing": "Gute Reise!",
+    "variants": [{ "id": "train-staff", "name": "Als Schaffner", "roleFlip": true, "steps": [
+      { "n": "Guten Tag! Hier mein Ausweis zur Kontrolle.", "nEn": "Hello! Here is my ID for the check.", "p": "Fragen Sie nach dem Ticket.", "opts": [
+        {"t": "Hier ist mein Ticket für Zug 5.", "ok": true, "en": "Here is my ticket for train 5.", "ne": "यो मेरो टिकट हो", "neR": "Yo mero ticket ho"},
+        {"t": "Ich habe kein Ticket.", "ok": false, "en": "I have no ticket.", "neR": "Ma ticket chaina", "fb": "Zeigen Sie das Ticket!"},
+        {"t": "Wo ist die Toilette?", "ok": false, "en": "Where is the toilet?", "neR": "Shauchalay kahaan chha?", "fb": "Geben Sie zuerst das Ticket!"}
+      ]},
+      { "n": "Bitte halten Sie die Türen geschlossen.", "nEn": "Please keep the doors closed.", "p": "Erinnern Sie an die Sicherheit.", "opts": [
+        {"t": "Ich halte die Tür offen.", "ok": true, "en": "I keep the door open.", "ne": "मलाई ढोका खुला राख्नुहोस्", "neR": "Malai dhoka khulaa rakhnuhos"},
+        {"t": "Nein, das ist langweilig.", "ok": false, "en": "No, that is boring.", "neR": "Ma gahana lagyo", "fb": "Halten Sie die Tür!"}
+      ]},
+      { "n": "Nächster Halt: Berlin Hauptbahnhof!", "nEn": "Next stop: Berlin central station!", "p": "Kündigen Sie den Halt.", "opts": [
+        {"t": "Danke, ich steige aus.", "ok": true, "en": "Thanks, I will get off.", "ne": "धन्यवाद, म झरने छ", "neR": "Dhanyabaad, ma jharn e chhu"},
+        {"t": "Ich bleibe im Zug.", "ok": false, "en": "I stay on the train.", "neR": "Ma trainma baschu", "fb": "Steigen Sie aus!"}
+      ]}
+    ]}]},
+  {
+    "sid": "life-airport-staff", "title": "Flughafen (Mitarbeiter)", "titleEn": "Airport (as staff)", "emoji": "✈️",
+    "ctx": "Check-in counter", "band": "A1-A2", "closing": "Gute Reise!",
+    "variants": [{ "id": "airport-staff", "name": "Als Check-in-Mitarbeiter", "roleFlip": true, "steps": [
+      { "n": "Guten Tag! Haben Sie eine Boardingkarte?", "nEn": "Hello! Do you have a boarding pass?", "p": "Fragen Sie nach dem Pass.", "opts": [
+        {"t": "Ja, hier ist meine Boardingkarte.", "ok": true, "en": "Yes, here is my boarding pass.", "ne": "हो, यो मेरो बोर्डिङ पास हो", "neR": "Ho, yo mero boarding pass ho"},
+        {"t": "Ich habe keinen Pass.", "ok": false, "en": "I have no passport.", "neR": "Ma pass chaina", "fb": "Geben Sie den Pass!"}
+      ]},
+      { "n": "Wohin fliegen Sie?", "nEn": "Where are you flying to?", "p": "Nennen Sie das Reiseziel.", "opts": [
+        {"t": "Nach Kathmandu, bitte.", "ok": true, "en": "To Kathmandu, please.", "ne": "काठमाडौं सम्म", "neR": "Kathmandu samma"},
+        {"t": "Nicht fliegen.", "ok": false, "en": "Not flying.", "neR": "Ma hudai", "fb": "Nennen Sie Ihr Ziel!"}
+      ]},
+      { "n": "Gleis 12, Boarding in 30 Minuten.", "nEn": "Gate 12, boarding in 30 minutes.", "p": "Weisen Sie auf das Gate hin.", "opts": [
+        {"t": "Danke, ich komme gleich.", "ok": true, "en": "Thanks, I will come right away.", "ne": "धन्यवाद, म अहिले आउँछु", "neR": "Dhanyabaad, ma ahile aauchhu"},
+        {"t": "Ich brauche etwas Zeit.", "ok": false, "en": "I need some time.", "neR": "Kei samaya chahanchhu", "fb": "Kommen Sie pünktlich!"}
+      ]}
+    ]}]},
+  {
+    "sid": "life-pharmacy-staff", "title": "Apotheke (Apotheker)", "titleEn": "Pharmacy (as pharmacist)", "emoji": "💊",
+    "ctx": "Pharmacy counter", "band": "A1", "closing": "Gute Besserung!",
+    "variants": [{ "id": "pharmacy-staff", "name": "Als Apotheker", "roleFlip": true, "steps": [
+      { "n": "Guten Tag! Was brauchen Sie?", "nEn": "Hello! What do you need?", "p": "Fragen Sie nach dem Rezept.", "opts": [
+        {"t": "Ich habe Kopfschmerzen.", "ok": true, "en": "I have a headache.", "ne": "मलाई टाउकामा दुखेको छ", "neR": "Malai taukamaa dukeko chha"},
+        {"t": "Ich bin gesund.", "ok": false, "en": "I am healthy.", "neR": "Ma swasth chhu", "fb": "Sagen Sie, was weh tut!"}
+      ]},
+      { "n": "Hier ist ein Schmerzmittel, 3 Tage einnehmen.", "nEn": "Here is painkiller, take for 3 days.", "p": "Geben Sie die Anweisung.", "opts": [
+        {"t": "Wie oft am Tag?", "ok": true, "en": "How many times a day?", "ne": "एकदिनमा कति पटक?", "neR": "Ekdin ma kati potaka?"},
+        {"t": "Ich mag Medikamente nicht.", "ok": false, "en": "I don't like medicine.", "neR": "Ma medicine man paridaina", "fb": "Nehmen Sie das Medikament!"}
+      ]},
+      { "n": "Bei Schwindel sofort stürzen!", "nEn": "If dizzy, stop immediately!", "p": "Geben Sie die Warnung.", "opts": [
+        {"t": "Danke, ich achte auf das.", "ok": true, "en": "Thanks, I will watch for it.", "ne": "धन्यवाद, मलाई ध्यान दिनेछु", "neR": "Dhanyabaad, malai dhyan dinechhu"},
+        {"t": "Das schmeckt nicht gut.", "ok": false, "en": "That does not taste good.", "neR": "Yo rama ramain chha", "fb": "Folgen Sie der Anleitung!"}
+      ]}
+    ]}]}
+]

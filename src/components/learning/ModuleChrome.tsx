@@ -1,11 +1,12 @@
 import { Link } from 'react-router-dom';
 import { useLang } from '../../hooks/useLang';
-import { ModuleSwitcher } from './ModuleSwitcher';
 
 /**
  * Shared module navigation chrome for A1 learning module routes.
  *
- * Renders a "Back → Learning Hub" link alongside the ModuleSwitcher pill bar.
+ * Renders a "Back → Learning Hub" link only. The ModuleSwitcher pill rail was
+ * removed because the AppSidebar now handles cross-module navigation; keeping
+ * both duplicated the same links directly under the header.
  * Mounted by Layout.tsx above <Outlet /> for module routes so that ArticlesPage
  * (a protected file) receives module navigation without being edited.
  */
@@ -14,8 +15,6 @@ export function ModuleChrome() {
   const isDE = langMode === 'german';
 
   return (
-    // Single wrapped row: back link sits inline with the switcher pills so it
-    // never floats as an orphan on wide screens.
     <div className="mb-2 flex flex-wrap items-center gap-x-3 gap-y-2">
       <Link
         to="/learn"
@@ -23,7 +22,6 @@ export function ModuleChrome() {
       >
         ← {isDE ? 'Zurück zum Lern-Hub' : 'Back to Learning Hub'}
       </Link>
-      <ModuleSwitcher />
     </div>
   );
 }

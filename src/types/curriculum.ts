@@ -11,12 +11,6 @@ export interface RoleplayOption {
   ne?: string;
   /** Optional romanized Nepali. */
   neR?: string;
-      /** Optional English translation (present on conversational roleplays). */
-  en?: string;
-  /** Optional Nepali translation in Devanagari. */
-  ne?: string;
-  /** Optional romanized Nepali. */
-  neR?: string;
   /**
    * Optional immediate NPC reply to THIS specific choice (branching-lite).
    * When present, the NPC posts it right after the learner's bubble.

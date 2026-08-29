@@ -73,6 +73,7 @@ function UnitCard({ unitIndex }: { unitIndex: number }) {
 
   const unit = A1_UNITS[unitIndex];
   if (!unit) return null;
+  const isSupport = unit.kind === 'support';
   const phase = getUnitPhase(unitIndex);
   const resolved = resolveNodes(unitIndex);
   const best = checkpointBestByUnit[unitIndex];
@@ -130,16 +131,16 @@ function UnitCard({ unitIndex }: { unitIndex: number }) {
         aria-hidden="true"
         className={`absolute left-0 top-4 flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold shadow-sm ring-4 ring-slate-50 transition-colors dark:ring-slate-950 ${markerTone}`}
       >
-        {phase === 'done' ? <CheckCircle className="h-4 w-4" /> : unitIndex + 1}
+        {phase === 'done' ? <CheckCircle className="h-4 w-4" /> : unit.code}
       </div>
 
       {/* Unit card */}
       <section className={`transition-all ${cardTone}`}>
         <div className="flex items-start justify-between gap-3">
           <div>
-            {/* Eyebrow */}
+            {/* Eyebrow — band letter; SUPPORT band B is labelled optional */}
             <span className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-              {isDE ? `EINHEIT ${unitIndex + 1}` : `UNIT ${unitIndex + 1}`}
+              {isDE ? `BAND ${unit.code}${isSupport ? ' · OPTIONAL' : ''}` : `BAND ${unit.code}${isSupport ? ' · OPTIONAL' : ''}`}
             </span>
             <h3
               className={`mt-1 text-xl font-bold ${
@@ -152,12 +153,18 @@ function UnitCard({ unitIndex }: { unitIndex: number }) {
             </h3>
           </div>
           {/* Status pill */}
-          <span className={`shrink-0 rounded-md px-2.5 py-1 text-xs font-semibold ${statusPillTone}`}>
-            {phase === 'done'
-              ? isDE ? 'Erledigt' : 'Done'
-              : phase === 'current'
-                ? isDE ? 'Aktuell' : 'Current'
-                : isDE ? 'Gesperrt' : 'Locked'}
+          <span className={`shrink-0 rounded-md px-2.5 py-1 text-xs font-semibold ${
+            isSupport
+              ? 'bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300'
+              : statusPillTone
+          }`}>
+            {isSupport
+              ? isDE ? 'Optional' : 'Optional'
+              : phase === 'done'
+                ? isDE ? 'Erledigt' : 'Done'
+                : phase === 'current'
+                  ? isDE ? 'Aktuell' : 'Current'
+                  : isDE ? 'Gesperrt' : 'Locked'}
           </span>
         </div>
 
@@ -308,21 +315,30 @@ function UnitCard({ unitIndex }: { unitIndex: number }) {
           </div>
         )}
 
-        {/* Checkpoint status footer */}
-        {phase === 'current' && !passed && (
-          <p className="mt-4 text-xs font-medium text-blue-700 dark:text-blue-300">
+        {/* Checkpoint status footer — only CORE bands carry a gate (SUPPORT = none) */}
+        {isSupport ? (
+          <p className="mt-4 text-xs font-medium text-amber-700 dark:text-amber-300">
             {isDE
-              ? `Puffer ${unitIndex + 1}: brauche ≥80% zum Freischalten der nächsten Einheit.${typeof best === 'number' ? ` Bestes Ergebnis: ${Math.round(best * 100)}%.` : ''}`
-              : `Checkpoint ${unitIndex + 1}: need ≥80% to unlock the next unit.${typeof best === 'number' ? ` Best score: ${Math.round(best * 100)}%.` : ''}`}
+              ? 'Freiwillig — dieser Band blockiert nie den Lernpfad.'
+              : 'Optional — this support band never locks the path.'}
           </p>
+        ) : (
+          phase === 'current' &&
+          !passed && (
+            <p className="mt-4 text-xs font-medium text-blue-700 dark:text-blue-300">
+              {isDE
+                ? `Pforte ${unit.code}: brauche ≥80% zum Freischalten des nächsten Bands.${typeof best === 'number' ? ` Bestes Ergebnis: ${Math.round(best * 100)}%.` : ''}`
+                : `Gate ${unit.code}: need ≥80% to unlock the next band.${typeof best === 'number' ? ` Best score: ${Math.round(best * 100)}%.` : ''}`}
+            </p>
+          )
         )}
         {phase === 'locked' && (
           <p className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-slate-500 dark:text-slate-400">
             <span>
               {isAuthenticated
                 ? isDE
-                  ? 'Beende den vorherigen Puffer, um diese Einheit freizuschalten.'
-                  : 'Pass the previous checkpoint to unlock this unit.'
+                  ? 'Bestehe die vorherige Pforte, um dieses Band freizuschalten.'
+                  : 'Pass the previous gate to unlock this band.'
                 : isDE
                   ? 'Melde dich an, um deinen Fortschritt zu speichern.'
                   : 'Sign in to save your path progress.'}
@@ -354,8 +370,8 @@ export function UnitSpine() {
         </h2>
         <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
           {isDE
-            ? 'Lerne Einheit für Einheit. Jeder Puffer schaltet die nächste Einheit frei.'
-            : 'Learn unit by unit. Each checkpoint unlocks the next unit.'}
+            ? 'Lerne Band für Band. Jede Pforte schaltet das nächste Band frei.'
+            : 'Learn band by band. Each gate unlocks the next band.'}
         </p>
       </div>
 

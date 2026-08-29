@@ -55,7 +55,12 @@ import {
   A1_CURRICULUM,
   A1_LEARN_NODES,
   A1_UNIT_COUNT,
+  BAND_MIGRATION_MARKER,
   CHECKPOINT_PASS_THRESHOLD,
+  getNextGatedBandIndex,
+  isBandNodeId,
+  isLegacyPathNodeId,
+  remapLegacyUnitIndex,
   type PathNode,
 } from '../data/a1Path';
 
@@ -90,18 +95,40 @@ function hasProgress(s: Partial<A1PathState>): boolean {
 
 /** Clamp/normalize any partial state into a valid A1PathState. */
 function normalizeState(raw: Partial<A1PathState>): A1PathState {
-  const unlockedRaw =
+  const completedNodeIds = Array.isArray(raw.completedNodeIds)
+    ? raw.completedNodeIds.filter((id): id is string => typeof id === 'string')
+    : [];
+
+  let unlockedRaw =
     typeof raw.unlockedUnitIndex === 'number' ? raw.unlockedUnitIndex : 0;
+  let bestRaw =
+    raw.checkpointBestByUnit && typeof raw.checkpointBestByUnit === 'object'
+      ? raw.checkpointBestByUnit
+      : {};
+
+  // One-time band migration: an OLD (5-unit) state is detected by the presence
+  // of a legacy `uN-` node id with NO new band id yet. We REMAP `unlockedUnitIndex`
+  // and `checkpointBestByUnit` keys to the new band indices (see LEGACY_TO_BAND_INDEX)
+  // and never wipe completedNodeIds. The BAND_MIGRATION_MARKER makes the remap
+  // idempotent — the very next hydrate sees a new-band id and skips it.
+  const hasLegacy = completedNodeIds.some(isLegacyPathNodeId);
+  const hasNewBand = completedNodeIds.some(isBandNodeId);
+  if (hasLegacy && !hasNewBand) {
+    unlockedRaw = remapLegacyUnitIndex(unlockedRaw);
+    const remappedBest: Record<number, number> = {};
+    for (const [k, v] of Object.entries(bestRaw)) {
+      const oldIdx = Number(k);
+      if (!Number.isFinite(oldIdx) || oldIdx < 0 || oldIdx > 4) continue;
+      remappedBest[remapLegacyUnitIndex(oldIdx)] = Number(v) ?? 0;
+    }
+    bestRaw = remappedBest;
+    completedNodeIds.push(BAND_MIGRATION_MARKER);
+  }
+
   return {
-    completedNodeIds: Array.isArray(raw.completedNodeIds)
-      ? raw.completedNodeIds.filter((id): id is string => typeof id === 'string')
-      : [],
+    completedNodeIds,
     unlockedUnitIndex: Math.max(0, Math.min(unlockedRaw, A1_UNIT_COUNT - 1)),
-    checkpointBestByUnit:
-      raw.checkpointBestByUnit &&
-      typeof raw.checkpointBestByUnit === 'object'
-        ? raw.checkpointBestByUnit
-        : {},
+    checkpointBestByUnit: bestRaw,
   };
 }
 
@@ -221,6 +248,13 @@ export function A1PathProvider({ children }: A1PathProviderProps) {
         }
       }
 
+      // Persist the migration marker back so the band remap is idempotent —
+      // the very next hydrate sees a new-band id and skips the remap. This is
+      // a no-op for non-migrated (fresh / already-band) states.
+      if (next.completedNodeIds.includes(BAND_MIGRATION_MARKER)) {
+        void persistToDexie(userId, next);
+      }
+
       if (!cancelled) {
         setState(next);
         setHydrated(true);
@@ -323,9 +357,12 @@ export function A1PathProvider({ children }: A1PathProviderProps) {
           completedNodeIds = [...completedNodeIds, checkpointNode.id];
         }
 
-        // unlock NEVER decreases; only advance forward.
+        // Advance to the NEXT CORE band (getNextGatedBandIndex skips support
+        // band B) when the gate is passed; unlock NEVER decreases; clamp top.
         const unlockedUnitIndex = Math.min(
-          passed ? Math.max(prev.unlockedUnitIndex, safeUnit + 1) : prev.unlockedUnitIndex,
+          passed
+            ? Math.max(prev.unlockedUnitIndex, getNextGatedBandIndex(safeUnit))
+            : prev.unlockedUnitIndex,
           A1_UNIT_COUNT - 1
         );
 
@@ -357,8 +394,12 @@ export function A1PathProvider({ children }: A1PathProviderProps) {
   const isCheckpointComplete = useCallback(
     (unitIndex: number) => {
       const safe = Math.max(0, Math.min(unitIndex, A1_UNIT_COUNT - 1));
-      // Passing unit `safe`'s checkpoint advanced unlockedUnitIndex to >= safe+1.
-      return state.unlockedUnitIndex > safe;
+      const band = A1_CURRICULUM.units[safe];
+      // SUPPORT bands (B) carry no checkpoint — treat as not passed.
+      if (!band || band.kind === 'support') return false;
+      // Passing `safe`'s gate advanced unlockedUnitIndex to at least the NEXT
+      // CORE band index (getNextGatedBandIndex skips support bands like B).
+      return state.unlockedUnitIndex >= getNextGatedBandIndex(safe);
     },
     [state.unlockedUnitIndex]
   );
@@ -366,6 +407,9 @@ export function A1PathProvider({ children }: A1PathProviderProps) {
   const isUnitUnlocked = useCallback(
     (unitIndex: number) => {
       const safe = Math.max(0, Math.min(unitIndex, A1_UNIT_COUNT - 1));
+      const band = A1_CURRICULUM.units[safe];
+      // SUPPORT bands (B) are always accessible — they never gate.
+      if (band && band.kind === 'support') return true;
       return safe <= state.unlockedUnitIndex;
     },
     [state.unlockedUnitIndex]
@@ -402,6 +446,10 @@ export function A1PathProvider({ children }: A1PathProviderProps) {
   const getUnitPhase = useCallback(
     (unitIndex: number): 'locked' | 'current' | 'done' => {
       const safe = Math.max(0, Math.min(unitIndex, A1_UNIT_COUNT - 1));
+      const band = A1_CURRICULUM.units[safe];
+      // SUPPORT band (B): always available & optional — current, never 'done'
+      // (no gate to pass) and never 'locked'.
+      if (band && band.kind === 'support') return 'current';
       if (safe < state.unlockedUnitIndex) return 'done';
       if (safe === state.unlockedUnitIndex) return 'current';
       return 'locked';

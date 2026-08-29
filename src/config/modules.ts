@@ -40,6 +40,8 @@ export const MODULES: Module[] = [
   // first-class modules (switcher pills + chrome routes).
   { id: 'vocab-trainer', path: '/vocab-trainer', label: 'Vocab Trainer', labelDE: 'Wortschatz-Trainer', icon: Layers, showChrome: true, category: 'practice' },
   { id: 'sentence-builder', path: '/sentence-builder', label: 'Sentence Builder', labelDE: 'Satzbau', icon: Puzzle, showChrome: true, category: 'practice' },
+  // Article Sprint (der/die/das) — now a first-class practice module with its own route.
+  { id: 'article-sprint', path: '/article-sprint', label: 'Article Sprint', labelDE: 'Artikel-Sprint', icon: BookA, showChrome: true, category: 'practice' },
   { id: 'practice', path: '/practice', label: 'Practice', labelDE: 'Übung', icon: BookOpen, showChrome: false, category: 'practice' },
 ];
 

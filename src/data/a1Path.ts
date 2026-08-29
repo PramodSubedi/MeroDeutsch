@@ -1,18 +1,22 @@
-/**
+﻿/**
  * src/data/a1Path.ts
  *
  * A1 curriculum spine configuration for MeroDeutsch.
  *
  * This is a DATA-ONLY module (no React). It wraps the EXISTING lesson routes
- * (/greetings, /alphabet, /numbers, /articles, /calendar, /grammar,
- *  /roleplay, /stories, /rapid-fire, /pronunciation) into a LINEAR campaign of
- * 5 units (index 0..4). No new lesson pages are invented; if a route is missing
- * a node is simply omitted (see U4/U5 docs).
+ * (/greetings, /numbers, /articles, /calendar, /grammar, /roleplay,
+ *  /pronunciation, /dictation, /sentence-builder, /alphabet, /stories,
+ *  /rapid-fire) into a LINEAR campaign of BANDS A..F (index 0..5).
+ * Band B ("Script & Sound") is a SUPPORT band: it carries no checkpoint, never
+ *  gates, and never push-blocks (its nodes are bonus-kind). Gates A/C/D/E/F sit
+ *  on the core bands; passing a gate unlocks the NEXT CORE band, skipping B.
  *
- * Design (locked decisions from .clinerules):
- *  - Linear spine only. Bonus chips never gate the next unit.
+ * Design (locked .clinerules + band-reorg decisions):
+ *  - Linear spine only. Support/bonus chips never gate the next band.
  *  - Lesson-complete rule = (A) visit counts as complete for learn/practice
- *    nodes. ONLY a checkpoint pass (>=80%) unlocks the next unit.
+ *    nodes. ONLY a checkpoint pass (>=80%) unlocks the next band.
+ *  - Gate A has NO alphabet items; Gate E is vocab + listening only (real
+ *    loaders, no new roleplay engine).
  *  - Checkpoint item sources are real curriculumService loaders (no mocks).
  *
  * The per-user progress state (`completedNodeIds`, `unlockedUnitIndex`,
@@ -24,6 +28,13 @@
 export type Article = 'der' | 'die' | 'das';
 
 export type PathNodeKind = 'learn' | 'practice' | 'checkpoint' | 'bonus';
+
+/**
+ * A band is CORE when it carries a checkpoint (gate) that must be passed to
+ * unlock the next core band. A SUPPORT band (Band B: alphabet/spelling) is
+ * optional — it never gates and never blocks the path.
+ */
+export type BandKind = 'core' | 'support';
 
 export type WordOrder = 'SVO' | 'SOV' | 'V2';
 
@@ -103,15 +114,18 @@ export interface ComparisonRow {
 }
 
 export interface A1Unit {
-  id: string; // 'unit-1'
-  index: number; // 0..4
+  id: string; // 'band-a'
+  index: number; // 0..5
+  code: 'A' | 'B' | 'C' | 'D' | 'E' | 'F'; // band letter shown on the spine
+  kind: BandKind; // 'core' (gates) | 'support' (optional, never gates)
   title: LocalizedLabel;
   theme: LocalizedLabel;
   goal: LocalizedLabel;
   /** Ordered node ids (learn -> practice -> checkpoint). */
   nodeIds: string[];
   pedagogy?: UnitPedagogy;
-  checkpoint: CheckpointConfig;
+  /** Optional: only CORE bands carry a checkpoint (gate); SUPPORT bands omit it. */
+  checkpoint?: CheckpointConfig;
   /**
    * v0.2.0 — optional unit-vocab theming for checkpoint `vocab-translation`
    * items. Categories are tried in order, then vocabPos as a POS-only pass,
@@ -224,43 +238,65 @@ export const MODAL_VERB_FINAL_PANEL: ComparisonRow[] = [
  */
 export const A1_UNITS: A1Unit[] = [
   {
-    id: 'unit-1',
+    id: 'band-a',
     index: 0,
-    title: lbl('Unit 1 — First Steps', 'Einheit 1 — Erste Schritte'),
-    theme: lbl('Ice & sound', 'Eis & Klang'),
-    goal: lbl('Introduce self; signs & prices', 'Sich vorstellen; Preise & Schilder'),
-    nodeIds: ['u1-greetings', 'u1-alphabet', 'u1-numbers', 'u1-checkpoint'],
+    code: 'A',
+    kind: 'core',
+    title: lbl('First Contact', 'Erster Kontakt'),
+    theme: lbl('Greet · Introduce · Numbers', 'Begrüßen · Vorstellen · Zahlen'),
+    goal: lbl('Greet people, introduce yourself, and handle signs, prices and numbers', 'Sich begrüßen und vorstellen; Preise, Schilder und Zahlen'),
+    // Gate A: contact language ONLY. No alphabet-letter items (decision).
+    nodeIds: ['a-greetings', 'a-numbers', 'a-gate'],
     checkpoint: {
       moduleType: 'a1-checkpoint',
       specs: [
-        { type: 'greeting-translation', count: 6 },
-        { type: 'number-conversion', count: 4 },
-        { type: 'alphabet-letter', count: 3 },
+        { type: 'greeting-translation', count: 7 },
+        { type: 'number-conversion', count: 5 },
       ],
     },
     pedagogy: {
       honorifics: { title: lbl('Du / Sie', 'Du / Sie'), rows: HONORIFICS },
-      umlautCallout: lbl(
-        'Umlauts (ä, ö, ü) and ß are separate letters — e.g. Fuß (foot), Über (over).',
-        'Umlaute (ä, ö, ü) und ß sind eigenständige Buchstaben — z. B. Fuß, Über.'
-      ),
     },
   },
   {
-    id: 'unit-2',
+    id: 'band-b',
     index: 1,
-    title: lbl('Unit 2 — The Core', 'Einheit 2 — Der Kern'),
-    theme: lbl('Gender', 'Genus'),
-    goal: lbl('Objects + correct article', 'Objekte + richtiger Artikel'),
-    nodeIds: ['u2-articles', 'u2-checkpoint'],
+    code: 'B',
+    kind: 'support',
+    title: lbl('Script & Sound', 'Schrift & Klang'),
+    theme: lbl('Optional', 'Optional'),
+    goal: lbl('Alphabet + spelling of known words — optional side track, never blocks', 'Alphabet + bekannte Wörter buchstabieren — optional, blockiert nichts'),
+    // Support band: no checkpoint, no gate. Its nodes are bonus-kind so
+    // getPushNode never stops here and no later band is gated by it.
+    nodeIds: [],
+    pedagogy: {
+      umlautCallout: lbl(
+        'Umlauts (ä, ö, ü) and ß are separate letters — e.g. Fuß (foot), Über (over). Optional to learn early.',
+        'Umlaute (ä, ö, ü) und ß sind eigenständige Buchstaben — z. B. Fuß, Über. Optional zu lernen.'
+      ),
+    },
+  },
+{
+    id: 'band-c',
+    index: 2,
+    code: 'C',
+    kind: 'core',
+    title: lbl('Name the World', 'Die Welt benennen'),
+    theme: lbl('Gender · Articles', 'Genus · Artikel'),
+    goal: lbl('Name everyday things with der/die/das', 'Alltagsdinge mit der/die/das benennen'),
+    nodeIds: ['c-articles', 'c-gate'],
     checkpoint: {
       moduleType: 'a1-checkpoint',
-      specs: [{ type: 'article-precision', count: 12 }],
+      specs: [
+        { type: 'article-precision', count: 8 },
+        { type: 'vocab-translation', count: 4 }, // adds meaning (EN/NE) alongside article
+      ],
     },
+    vocabCategories: ['core', 'food', 'home'],
     pedagogy: {
       genderLegend: lbl(
-        'der = masculine, die = feminine, das = neuter, Plural = amber. Color tokens live in theme.ts.',
-        'der = maskulin, die = feminin, das = neutral, Plural = orange. Farben aus theme.ts.'
+        'der = masculine, die = feminine, das = neuter, Plural = amber. Gender colors live in theme.ts tokens.',
+        'der = maskulin, die = feminin, das = neutral, Plural = orange. Genus-Farben aus theme.ts.'
       ),
       suffixNote: lbl(
         'Tip: -ung, -heit, -keit, -schaft, -e → usually die (feminine).',
@@ -269,12 +305,14 @@ export const A1_UNITS: A1Unit[] = [
     },
   },
   {
-    id: 'unit-3',
-    index: 2,
-    title: lbl('Unit 3 — Action', 'Einheit 3 — Aktion'),
-    theme: lbl('Routine & time', 'Routine & Zeit'),
-    goal: lbl('Simple routine + telling time', 'Einfache Routine + Uhrzeit'),
-    nodeIds: ['u3-calendar', 'u3-grammar', 'u3-checkpoint'],
+    id: 'band-d',
+    index: 3,
+    code: 'D',
+    kind: 'core',
+    title: lbl('Time & Routine', 'Zeit & Alltag'),
+    theme: lbl('Clock · Verbs · Word order', 'Uhrzeit · Verben · Wortstellung'),
+    goal: lbl('Talk about your day: times, routines, and sein/haben', 'Über den Alltag sprechen: Uhrzeit, Routine, sein/haben'),
+    nodeIds: ['d-calendar', 'd-grammar', 'd-gate'],
     checkpoint: {
       moduleType: 'a1-checkpoint',
       specs: [
@@ -287,23 +325,24 @@ export const A1_UNITS: A1Unit[] = [
     },
   },
   {
-    id: 'unit-4',
-    index: 3,
-    title: lbl('Unit 4 — Navigation', 'Einheit 4 — Orientierung'),
-    theme: lbl('Place & food', 'Ort & Essen'),
-    goal: lbl('Directions, ordering café food', 'Wegbeschreibungen, Café-bestellung'),
-    // `/roleplay` exists; `/stories` exists (bonus — never gates the next unit).
-    nodeIds: ['u4-roleplay', 'u4-stories', 'u4-checkpoint'],
+    id: 'band-e',
+    index: 4,
+    code: 'E',
+    kind: 'core',
+    title: lbl('Situations', 'Situationen'),
+    theme: lbl('Food · Place · Directions', 'Essen · Ort · Orientieren'),
+    goal: lbl('Apply vocabulary: ordering, directions, real-world chats', 'Wortschatz anwenden: Bestellen, Wege, Alltagssituationen'),
+    // Gate E sources = EXISTING vocab + listening loaders only (decision: no new
+    // roleplay/dialogue engine). Thin pool → fewer items, never fake content.
+    nodeIds: ['e-roleplay', 'e-gate'],
     checkpoint: {
       moduleType: 'a1-checkpoint',
       specs: [
-        { type: 'vocab-translation', count: 6 },
+        { type: 'vocab-translation', count: 7 },
         { type: 'vocab-translation-ne', count: 3 },
-        { type: 'listening-gap', count: 3 },
+        { type: 'listening-gap', count: 2 },
       ],
     },
-    // "Place & food" theming. Only categories that exist in the DB apply;
-    // unknown ones return nothing and the A1 fill covers the rest.
     vocabCategories: ['food', 'travel', 'places', 'directions', 'restaurant', 'core'],
     pedagogy: {
       grammarComparison: {
@@ -312,64 +351,70 @@ export const A1_UNITS: A1Unit[] = [
       },
     },
   },
-  {
-    id: 'unit-5',
-    index: 4,
-    title: lbl('Unit 5 — Expression', 'Einheit 5 — Ausdruck'),
-    theme: lbl('Want & can', 'Können & Mögen'),
-    goal: lbl('Express ability & wants', 'Fähigkeit & Wünsche ausdrücken'),
-    // Blitz-as-practice (existing) + bonus pronunciation. Both never gate.
-    nodeIds: ['u5-blitz', 'u5-pronunciation', 'u5-checkpoint'],
+{
+    id: 'band-f',
+    index: 5,
+    code: 'F',
+    kind: 'core',
+    title: lbl('Control & Accuracy', 'Präzision & Aussprache'),
+    theme: lbl('Modals · Pronunciation · Dictation', 'Modalverben · Aussprache · Diktat'),
+    goal: lbl('Say and write accurately; express ability and wants', 'Korrekt sprechen & schreiben; Wünsche und Fähigkeiten'),
+    nodeIds: ['f-pron', 'f-dict', 'f-gate'],
     checkpoint: {
       moduleType: 'a1-checkpoint',
       specs: [
-        { type: 'grammar-drill', count: 4 },
         { type: 'vocab-translation', count: 4 },
         { type: 'vocab-translation-ne', count: 2 },
         { type: 'listening-gap', count: 2 },
+        { type: 'grammar-drill', count: 4 },
       ],
     },
-    // "Want & can" theming: verb-focused (POS pass) + phrase/routine tags.
     vocabCategories: ['verbs', 'phrases', 'routine', 'core'],
     vocabPos: 'verb',
     pedagogy: {
-      grammarComparison: { title: lbl('Modals & verb-final', 'Modalverben & Verb Position'), rows: MODAL_VERB_FINAL_PANEL },
+      grammarComparison: { title: lbl('Modals & Word', 'Modalverben & Wortstellung'), rows: MODAL_VERB_FINAL_PANEL },
     },
   },
 ];
 
-/** All learning nodes (learn/practice/checkpoint) in spine order — bonus excluded from "incomplete" tracking. */
+/**
+ * Core learning nodes (learn/practice/checkpoint) in spine order. Bonus/support
+ * nodes are excluded here — so getPushNode never stops on optional content and
+ * Band B (support) never blocks the campaign.
+ */
 export const A1_LEARN_NODES: PathNode[] = [
-  // U1
-  { id: 'u1-greetings', unitIndex: 0, kind: 'learn', label: lbl('Greetings', 'Grüße'), to: '/greetings' },
-  { id: 'u1-alphabet', unitIndex: 0, kind: 'learn', label: lbl('Alphabet', 'Alphabet'), to: '/alphabet' },
-  { id: 'u1-numbers', unitIndex: 0, kind: 'learn', label: lbl('Numbers', 'Zahlen'), to: '/numbers' },
-  { id: 'u1-checkpoint', unitIndex: 0, kind: 'checkpoint', label: lbl('Checkpoint 1', 'Puffer 1'), to: '/checkpoint/0' },
-  // U2
-  { id: 'u2-articles', unitIndex: 1, kind: 'learn', label: lbl('Articles', 'Artikel'), to: '/articles' },
-  { id: 'u2-checkpoint', unitIndex: 1, kind: 'checkpoint', label: lbl('Checkpoint 2', 'Puffer 2'), to: '/checkpoint/1' },
-  // U3
-  { id: 'u3-calendar', unitIndex: 2, kind: 'learn', label: lbl('Calendar', 'Kalender'), to: '/calendar' },
-  { id: 'u3-grammar', unitIndex: 2, kind: 'learn', label: lbl('Grammar', 'Grammatik'), to: '/grammar' },
-  { id: 'u3-checkpoint', unitIndex: 2, kind: 'checkpoint', label: lbl('Checkpoint 3', 'Puffer 3'), to: '/checkpoint/2' },
-  // U4
-  { id: 'u4-roleplay', unitIndex: 3, kind: 'learn', label: lbl('Roleplay', 'Rollenspiel'), to: '/roleplay' },
-  { id: 'u4-checkpoint', unitIndex: 3, kind: 'checkpoint', label: lbl('Checkpoint 4', 'Puffer 4'), to: '/checkpoint/3' },
-  // U5
-  { id: 'u5-blitz', unitIndex: 4, kind: 'practice', label: lbl('Blitz practice', 'Blitz-Übung'), to: '/rapid-fire' },
-  { id: 'u5-checkpoint', unitIndex: 4, kind: 'checkpoint', label: lbl('Checkpoint 5', 'Puffer 5'), to: '/checkpoint/4' },
+  // Band A — Gate A (contact language only; no alphabet items)
+  { id: 'a-greetings', unitIndex: 0, kind: 'learn', label: lbl('Greetings', 'Grüße'), to: '/greetings' },
+  { id: 'a-numbers', unitIndex: 0, kind: 'learn', label: lbl('Numbers', 'Zahlen'), to: '/numbers' },
+  { id: 'a-gate', unitIndex: 0, kind: 'checkpoint', label: lbl('Gate A', 'Pforte A'), to: '/checkpoint/0' },
+  // Band C — Gate C (name the world)
+  { id: 'c-articles', unitIndex: 2, kind: 'learn', label: lbl('Articles', 'Artikel'), to: '/articles' },
+  { id: 'c-gate', unitIndex: 2, kind: 'checkpoint', label: lbl('Gate C', 'Pforte C'), to: '/checkpoint/2' },
+  // Band D — Gate D (time & routine)
+  { id: 'd-calendar', unitIndex: 3, kind: 'learn', label: lbl('Calendar & Time', 'Kalender & Uhrzeit'), to: '/calendar' },
+  { id: 'd-grammar', unitIndex: 3, kind: 'learn', label: lbl('Grammar', 'Grammatik'), to: '/grammar' },
+  { id: 'd-gate', unitIndex: 3, kind: 'checkpoint', label: lbl('Gate D', 'Pforte D'), to: '/checkpoint/3' },
+  // Band E — Gate E (situations / vocab + listening only)
+  { id: 'e-roleplay', unitIndex: 4, kind: 'learn', label: lbl('Roleplay', 'Rollenspiel'), to: '/roleplay' },
+  { id: 'e-gate', unitIndex: 4, kind: 'checkpoint', label: lbl('Gate E', 'Pforte E'), to: '/checkpoint/4' },
+  // Band F — Gate F (control & accuracy)
+  { id: 'f-pron', unitIndex: 5, kind: 'learn', label: lbl('Pronunciation', 'Aussprache'), to: '/pronunciation' },
+  { id: 'f-dict', unitIndex: 5, kind: 'practice', label: lbl('Dictation', 'Diktat'), to: '/dictation' },
+  { id: 'f-gate', unitIndex: 5, kind: 'checkpoint', label: lbl('Gate F', 'Pforte F'), to: '/checkpoint/5' },
 ];
 
-/** Bonus chips — optional, never gates the next unit. */
+/** Bonus + support nodes — optional, never gate, never push-lock. */
 export const A1_BONUS_NODES: PathNode[] = [
-  { id: 'u1-numbers-practice', unitIndex: 0, kind: 'bonus', label: lbl('Number Practice', 'Zahlen-Üben'), to: '/rapid-blitz?mode=number-conversion', bonus: true },
-  { id: 'u2-sentence', unitIndex: 1, kind: 'bonus', label: lbl('Sentence Builder', 'Satzbau'), to: '/sentence-builder', bonus: true },
-  { id: 'u3-time-practice', unitIndex: 2, kind: 'bonus', label: lbl('Time Practice', 'Uhrzeit-Üben'), to: '/calendar', bonus: true },
-  { id: 'u3-separables', unitIndex: 2, kind: 'bonus', label: lbl('Separable Verbs', 'Trennbare Verben'), to: '/grammar', bonus: true },
-  { id: 'u4-vocab-drill', unitIndex: 3, kind: 'bonus', label: lbl('Vocab Drill', 'Wortschatz-Drill'), to: '/rapid-blitz?mode=vocabulary-translation', bonus: true },
-  { id: 'u4-stories', unitIndex: 3, kind: 'bonus', label: lbl('Stories', 'Geschichten'), to: '/stories', bonus: true },
-  { id: 'u5-modals', unitIndex: 4, kind: 'bonus', label: lbl('Modal Drills', 'Modalverben'), to: '/grammar?tab=modals', bonus: true },
-  { id: 'u5-pronunciation', unitIndex: 4, kind: 'bonus', label: lbl('Pronunciation', 'Aussprache'), to: '/pronunciation', bonus: true },
+  { id: 'a-numbers-practice', unitIndex: 0, kind: 'bonus', label: lbl('Number Minigame', 'Zahlen-Minispiel'), to: '/rapid-blitz?mode=number-conversion', bonus: true },
+  // Band B (support row) — alphabet/spelling live here as a visible optional chip.
+  { id: 'b-alphabet', unitIndex: 1, kind: 'bonus', label: lbl('Alphabet & Spelling', 'Alphabet & Buchstabieren'), to: '/alphabet', bonus: true },
+  { id: 'c-sentence', unitIndex: 2, kind: 'bonus', label: lbl('Sentence Builder', 'Satzbau'), to: '/sentence-builder', bonus: true },
+  { id: 'd-time-practice', unitIndex: 3, kind: 'bonus', label: lbl('Time Practice', 'Uhrzeit-Üben'), to: '/rapid-blitz?mode=calendar-translation', bonus: true },
+  { id: 'd-numbers-full', unitIndex: 3, kind: 'bonus', label: lbl('All Numbers', 'Alle Zahlen'), to: '/rapid-blitz?mode=number-conversion', bonus: true },
+  { id: 'e-stories', unitIndex: 4, kind: 'bonus', label: lbl('Stories', 'Geschichten'), to: '/stories', bonus: true },
+  { id: 'e-vocab-drill', unitIndex: 4, kind: 'bonus', label: lbl('Vocab Drill', 'Wortschatz-Drill'), to: '/rapid-blitz?mode=vocabulary-translation', bonus: true },
+  { id: 'f-modals', unitIndex: 5, kind: 'bonus', label: lbl('Modal Drills', 'Modalverben'), to: '/grammar?tab=modals', bonus: true },
+  { id: 'f-blitz', unitIndex: 5, kind: 'bonus', label: lbl('Blitz Mixed', 'Mixed-Quiz'), to: '/rapid-fire', bonus: true },
 ];
 
 function buildCurriculum(): A1Curriculum {
@@ -427,4 +472,52 @@ export function getCheckpointNode(unitIndex: number): PathNode | undefined {
 /** Find the learn/practice node whose route matches a pathname (for visit-based completion). */
 export function getNodeByRoute(pathname: string): PathNode | undefined {
   return A1_CURRICULUM.nodes.find((n) => n.kind !== 'checkpoint' && pathname === n.to);
+}
+
+/**
+ * The band index that is unlocked next after passing the checkpoint at
+ * `currentUnitIndex`. Only CORE bands advance the path — SUPPORT bands (B) are
+ * skipped, so passing Gate A (0) unlocks Band C (2) directly (skip-b).
+ * Returns the last band when nothing lies ahead.
+ */
+export function getNextGatedBandIndex(currentUnitIndex: number): number {
+  for (let i = currentUnitIndex + 1; i < A1_UNIT_COUNT; i++) {
+    const band = A1_UNITS[i];
+    if (band && band.kind === 'core') return i;
+  }
+  return Math.max(0, A1_UNIT_COUNT - 1);
+}
+
+/**
+ * One-time remap for users holding OLD 5-unit progress (index 0..4) -> new band
+ * index. Band B is support and never produced, so old unit 1 (Core) lands on
+ * Band C (2):
+ *   old 0 (U1 First Steps)  -> A (0)
+ *   old 1 (U2 Core)         -> C (2)
+ *   old 2 (U3 Action)       -> D (3)
+ *   old 3 (U4 Navigation)   -> E (4)
+ *   old 4 (U5 Expression)   -> F (5)
+ */
+export const LEGACY_TO_BAND_INDEX: readonly number[] = [0, 2, 3, 4, 5];
+
+export function remapLegacyUnitIndex(oldIndex: number): number {
+  const i = Math.max(0, Math.min(oldIndex, LEGACY_TO_BAND_INDEX.length - 1));
+  return LEGACY_TO_BAND_INDEX[i] ?? 0;
+}
+
+/**
+ * Marker injected into `completedNodeIds` exactly once during migration so the
+ * remap is idempotent (never re-runs on a later hydrate). It is not a real
+ * node id; path lookups ignore unknown ids.
+ */
+export const BAND_MIGRATION_MARKER = 'a1-path-bands-v2';
+
+/** True when an id belongs to the OLD `u1-..u5` node scheme. */
+export function isLegacyPathNodeId(id: string): boolean {
+  return /^u[1-5]-/.test(id);
+}
+
+/** True when an id belongs to the NEW `a-..f-` band scheme (or the migration marker). */
+export function isBandNodeId(id: string): boolean {
+  return /^[a-f]-/.test(id) || id === BAND_MIGRATION_MARKER;
 }

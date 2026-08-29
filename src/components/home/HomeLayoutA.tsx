@@ -11,6 +11,7 @@ import { useStreak } from '../../hooks/useStreak';
 import { useXp } from '../../hooks/useXp';
 import { DailySession } from '../path/DailySession';
 import { StatTile } from '../ui/StatTile';
+import { useA1Path } from '../../hooks/useA1Path';
 
 const PRACTICE_ITEM_STYLES = [
   {
@@ -37,6 +38,14 @@ const PRACTICE_ITEM_STYLES = [
       hover: 'hover:border-rose-300',
     },
   },
+  {
+    accent: 'sky',
+    styles: {
+      card: 'border-sky-200/70 bg-sky-50/60 dark:border-sky-900/50 dark:bg-sky-950/30',
+      badge: 'bg-sky-500/15 text-sky-600 dark:text-sky-300',
+      hover: 'hover:border-sky-300',
+    },
+  },
 ] as const;
 
 export function HomeLayoutA() {
@@ -47,6 +56,7 @@ export function HomeLayoutA() {
   const { streakCount } = useStreak();
   const { totalXp, level, xpProgress } = useXp();
   const { unlockedBadges, checkAndUnlock } = useAchievements();
+  const { getPushNode } = useA1Path();
   const isDE = langMode === 'german';
 
   useEffect(() => {
@@ -63,17 +73,46 @@ export function HomeLayoutA() {
   
   const reviewCount = queue?.length ?? 0;
   const displayName = user?.username || (isAuthenticated ? 'Learner' : 'MeroDeutsch learner');
+
+  // Time-of-day dynamic greeting (07:00–11:00 morning, 11:00–18:00 day, else evening).
+  const hour = new Date().getHours();
+  const timeGreeting = isDE
+    ? hour < 11
+      ? 'Guten Morgen'
+      : hour < 18
+        ? 'Guten Tag'
+        : 'Guten Abend'
+    : hour < 11
+      ? 'Good morning'
+      : hour < 18
+        ? 'Good afternoon'
+        : 'Good evening';
   const greeting = isAuthenticated
-    ? isDE
-      ? `Willkommen zurück, ${displayName}`
-      : `Welcome back, ${displayName}`
+    ? `${timeGreeting}, ${displayName}`
     : isDE
       ? 'Willkommen bei MeroDeutsch'
       : 'Welcome to MeroDeutsch';
 
+  // Push: first incomplete node of the unlocked A1 path (route or checkpoint).
+  const pushNode = getPushNode();
+
 
 
   const practiceItems = [
+    // "Continue the A1 path" — the Push card (next unlocked node). Hidden if
+    // the whole path is complete so no dead card renders.
+    ...(pushNode
+      ? [
+          {
+            title: isDE ? 'A1-Pfad fortsetzen' : 'Continue A1 Path',
+            description: isDE
+              ? `Nächster Schritt: ${pushNode.label.de}`
+              : `Next up: ${pushNode.label.en}`,
+            to: pushNode.to,
+            ...PRACTICE_ITEM_STYLES[3],
+          },
+        ]
+      : []),
     {
       title: isDE ? 'Schnell-Quiz' : 'Rapid‑Fire Blitz',
       description: isDE ? 'Schnelle Artikel-Abfragen' : 'Quick article recall drills',

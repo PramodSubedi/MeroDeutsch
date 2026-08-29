@@ -3,22 +3,20 @@ import { useLang } from '../hooks/useLang';
 import { useA1Path } from '../hooks/useA1Path';
 import { useReviewQueue } from '../hooks/useReviewQueue';
 import { usePageTitle } from '../hooks/usePageTitle';
-import { DailyChallenge } from '../components/DailyChallenge';
 import { UnitSpine } from '../components/path/UnitSpine';
-import { DailySession } from '../components/path/DailySession';
-import { PracticeToolsGrid } from '../components/PracticeToolsGrid';
 import { theme } from '../config/theme';
 
 /**
  * Dedicated Learning Hub at /learn.
  *
- * Reuses the existing Word-of-the-Day system (DailyChallenge), the existing
- * A1 Learning Path (LearningPath — extracted from HomePage), and the existing
- * learning tools grid. No new datasets or curriculum types are introduced.
+ * Per the A1 campaign plan, /learn is the LINEAR BAND SPINE ONLY — no daily
+ * session, no word-of-the-day, no tool grid body. Warm-up (due reviews) lives
+ * on Home; practice tools are the compact quick-access row at the bottom.
  *
- * Accessible to both guest and authenticated users.
+ * The header surfaces review pressure (Warm-up target) and the Push next node
+ * (via getPushNode, which prefers a checkpoint when one is next). Accessible to
+ * guest and authenticated users. Reuses UnitSpine + existing quick tools.
  */
-
 export function ContinueLearningPage() {
   usePageTitle('Learn');
   const { langMode } = useLang();
@@ -29,16 +27,23 @@ export function ContinueLearningPage() {
   const dueCount = dueQueue.length;
   const nextNode = getPushNode();
 
-  // Resume CTA: when due items exist, route to the daily session (which starts
-  // with review — due-first, no bypass). Otherwise target the next incomplete
-  // path node (getPushNode prefers a checkpoint when it is next).
-  const resumePath = dueCount > 0 ? '/learn#daily-session' : (nextNode?.to ?? '/learn');
-  const resumeLabelEn = dueCount > 0 ? `Review ${dueCount}` : (nextNode ? `Next: ${nextNode.label.en}` : 'Go to path');
-  const resumeLabelDe = dueCount > 0 ? `${dueCount} Review` : (nextNode ? `Weiter: ${nextNode.label.de}` : 'Zum Lernpfad');
+  // Warm-up: due reviews first -> Dashboard review slot. Otherwise Push.
+  const resumePath =
+    dueCount > 0
+      ? '/dashboard#review-queue-section'
+      : (nextNode?.to ?? '/learn');
+  const resumeLabelEn =
+    dueCount > 0
+      ? `Review ${dueCount}`
+      : (nextNode ? `Next: ${nextNode.label.en}` : 'Go to path');
+  const resumeLabelDe =
+    dueCount > 0
+      ? `${dueCount} Review`
+      : (nextNode ? `Weiter: ${nextNode.label.de}` : 'Zum Lernpfad');
 
   return (
     <div className={theme.page.container}>
-      {/* A. Page header — back-to-home + title + due chip + Resume CTA */}
+      {/* Page header — back-to-home + title + due chip + Resume CTA */}
       <header className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <Link
@@ -48,16 +53,15 @@ export function ContinueLearningPage() {
             ← {isDE ? 'Zurück zur Startseite' : 'Back to Home'}
           </Link>
           <h1 className="mt-1 text-2xl font-bold text-slate-950 dark:text-white">
-            {isDE ? 'Weiterlernen' : 'Continue Learning'}
+            {isDE ? 'Lernpfad' : 'Learning Path'}
           </h1>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             {isDE
-              ? 'Dein persönlicher Lernhub — Wort des Tages, Lernpfad und Übungs-Tools.'
-              : 'Your personal learning hub — word of the day, learning path, and practice tools.'}
+              ? 'Dein linearer A1-Kurs — ein Band nach dem anderen.'
+              : 'Your linear A1 course — one band at a time.'}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
-          {/* Due-count chip — surfaces review pressure at the Learn entry point. */}
           {dueCount > 0 && (
             <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700 shadow-sm dark:border-amber-700/60 dark:bg-amber-900/30 dark:text-amber-300">
               <span aria-hidden="true">⚠️</span>
@@ -73,28 +77,12 @@ export function ContinueLearningPage() {
         </div>
       </header>
 
-      {/* The header chip + <DailySession /> below already surface review
-          pressure — no extra soft-prompt banner (UI-clutter fix #1). */}
+      {/* Module switcher rail — jump between A1 lessons and practice tools */}
 
-      {/* B. Daily session — due reviews first (max 8) -> summary -> next path node */}
-      <DailySession />
-
-      {/* C. Word of the Day — reuses existing DailyChallenge component with compact variant */}
-      <DailyChallenge variant="compact" />
-
-      {/* D. A1 campaign spine — linear units with 80% checkpoint gates */}
+      {/* A. A1 campaign spine — linear bands with 80% checkpoint gates */}
       <UnitSpine />
 
-      {/* E. Quick-access tools (3) + link to the full hub on /practice — keeps
-          this page distinct from /practice, which shows all six tools. The
-          heading is deliberately secondary (small uppercase muted) so it reads
-          as "extra", not as the main path. */}
-      <section className={`${theme.panel.surface} mb-8`} id="practice">
-        <h2 className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
-          {isDE ? 'Zusatzwerkzeuge' : 'Extra tools'}
-        </h2>
-        <PracticeToolsGrid limit={3} footerLink />
-      </section>
+
     </div>
   );
 }

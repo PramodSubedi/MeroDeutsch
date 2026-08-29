@@ -1,6 +1,6 @@
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { Moon, Sun, Volume2, VolumeX } from 'lucide-react';
+import { Menu, Moon, Sun, Volume2, VolumeX } from 'lucide-react';
 import { theme } from '../config/theme';
 import { getModuleRoutes } from '../config/modules';
 import { useDarkMode } from '../hooks/useDarkMode';
@@ -14,6 +14,7 @@ import { Logo } from './common/Logo';
 import { Footer } from './Footer';
 import { ModuleChrome } from './learning/ModuleChrome';
 import { BottomNav } from './BottomNav';
+import { AppSidebar } from './AppSidebar';
 import { Breadcrumb } from './Breadcrumb';
 import { UserMenu } from './UserMenu';
 import { LanguageToggle } from './LanguageToggle';
@@ -35,8 +36,24 @@ export function Layout() {
   const [newLevel, setNewLevel] = useState(1);
   const [audioEnabled, setAudioEnabledState] = useState(isAudioEnabled);
   const { toast, showToast, dismissToast } = useMilestoneToast();
-  const [pendingLevelUp, setPendingLevelUp] = useState<number | null>(null);
   const [dailySessionActive, setDailySessionActiveState] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [pendingLevelUp, setPendingLevelUp] = useState<number | null>(null);
+  // Desktop sidebar collapsed state (persisted per device).
+  const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem('meroDeutschSidebarCollapsed') === '1';
+    } catch {
+      return false;
+    }
+  });
+  useEffect(() => {
+    try {
+      localStorage.setItem('meroDeutschSidebarCollapsed', sidebarCollapsed ? '1' : '0');
+    } catch {
+      /* ignore */
+    }
+  }, [sidebarCollapsed]);
 
   const isDE = langMode === 'german';
 
@@ -131,8 +148,17 @@ export function Layout() {
       <a href="#main-content" className="skip-to-main">
         {langMode === 'german' ? 'Zum Hauptinhalt springen' : 'Skip to main content'}
       </a>
-      
-      <header className={theme.layout.header} role="banner">
+      <AppSidebar
+        mobileOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+        collapsed={sidebarCollapsed}
+        onToggleCollapsed={() => setSidebarCollapsed((c) => !c)}
+      />
+      {/* Header shifts with the desktop rail so navbar + content move together */}
+      <header
+        className={`${theme.layout.header} ${sidebarCollapsed ? 'lg:pl-24' : 'lg:pl-64'}`}
+        role="banner"
+      >
         <div className={theme.layout.headerInner}>
           {/* Logo is a link → Home */}
           <Link to="/" aria-label="MeroDeutsch – Home" className="inline-flex h-9 items-center transition duration-200 hover:opacity-90 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none focus-visible:ring-offset-2 rounded-lg">
@@ -168,6 +194,14 @@ export function Layout() {
           </nav>
           {/* Mobile-only controls — nav is hidden below md */}
           <div className="flex items-center gap-2 md:hidden">
+            <button
+              type="button"
+              onClick={() => setSidebarOpen(true)}
+              className={theme.layout.themeButton}
+              aria-label={isDE ? 'Menü öffnen' : 'Open menu'}
+            >
+              <Menu className="h-5 w-5" />
+            </button>
             {/* Two-state language switch (mobile) — highlighted side = CURRENT mode */}
             <LanguageToggle />
             <button
@@ -205,7 +239,7 @@ export function Layout() {
       <main
         id="main-content"
         role="main"
-        className={`${theme.layout.main} px-4 scroll-mt-24 pb-20 md:pb-8 ${isModuleRoute ? 'pt-8' : ''}`}
+        className={`${theme.layout.main} px-4 scroll-mt-24 pb-20 md:pb-8 ${sidebarCollapsed ? 'lg:pl-24' : 'lg:pl-64'} ${isModuleRoute ? 'pt-8' : ''}`}
       >
         {/* Module routes render <ModuleChrome /> (back link + switcher) — the
             breadcrumb would duplicate that navigation context (UI-clutter fix). */}

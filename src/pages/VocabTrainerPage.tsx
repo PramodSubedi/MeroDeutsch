@@ -18,6 +18,7 @@
  *   - Nur-DE mode hides EN/NE helper lines (C1.5) but stays playable.
  */
 import { useCallback, useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Layers, ListChecks, Volume2 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { theme } from '../config/theme';
@@ -65,7 +66,8 @@ export function VocabTrainerPage() {
   const { addWrongAnswer } = useReviewQueue();
 
   // ── Filters ────────────────────────────────────────────────────────────
-  const [level, setLevel] = useState<string>('');
+  const [searchParams] = useSearchParams();
+  const [level, setLevel] = useState<string>(searchParams.get('level') ?? '');
   const [category, setCategory] = useState<string>('');
   const [pos, setPos] = useState<PosFilter>('');
   const [options, setOptions] = useState<VocabularyFilterOptions>({ levels: [], categories: [] });

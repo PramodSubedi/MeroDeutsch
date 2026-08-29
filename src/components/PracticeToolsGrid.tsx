@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { BookOpen, Mic, FileText, MessageSquare, Volume2, Zap, Layers, Puzzle } from 'lucide-react';
+import { BookA, BookOpen, Mic, FileText, MessageSquare, Volume2, Zap, Layers, Puzzle } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 interface ToolItem {
@@ -67,6 +67,16 @@ const tools: ToolItem[] = [
     wellClass: 'bg-orange-50 dark:bg-orange-950/40 border-orange-100 dark:border-orange-900/50',
     href: '/rapid-blitz',
     buttonText: 'Choose Mode',
+  },
+  // Article Sprint (der/die/das) — now its own route + grid card (was inlined on /practice).
+  {
+    title: 'Article Sprint',
+    description: 'der / die / das recall drill',
+    icon: BookA,
+    iconColor: 'text-fuchsia-600 dark:text-fuchsia-400',
+    wellClass: 'bg-fuchsia-50 dark:bg-fuchsia-950/40 border-fuchsia-100 dark:border-fuchsia-900/50',
+    href: '/article-sprint',
+    buttonText: 'Start Sprint',
   },
   {
     title: 'Vocab Trainer',

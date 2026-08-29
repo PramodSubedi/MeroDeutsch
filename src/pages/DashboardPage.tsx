@@ -18,6 +18,7 @@ import { SkillRadarChart } from '../components/SkillRadarChart';
 import { ReviewSessionManager, filterReviewQueue } from '../components/ReviewSessionManager';
 import { MasteryIndicator } from '../components/MasteryIndicator';
 import { SRSReviewWidget } from '../components/SRSReviewWidget';
+import { A1PathProgress } from '../components/path/A1PathProgress';
 import { DailyQuestsWidget } from '../components/DailyQuestsWidget';
 import { StatTile } from '../components/ui/StatTile';
 import { ConfirmDialog } from '../components/ConfirmDialog';
@@ -50,6 +51,16 @@ export function DashboardPage() {
   const isDE = langMode === 'german';
   const locale = isDE ? 'de-DE' : 'en-US';
   const formatCount = numberFormatter(locale);
+
+  // Smooth-scroll to hash anchor on mount (e.g. from Home's review link).
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash) {
+      const id = hash.replace('#', '');
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, []);
 
   const lettersPct = Math.min(100, Math.round((progress.practiced.length / 26) * 100));
   const quizPctBar = progress.quizTotal ? Math.min(100, Math.round((progress.quizCorrect / progress.quizTotal) * 100)) : 0;
@@ -206,6 +217,9 @@ export function DashboardPage() {
           <SkillRadarChart />
         </div>
       </details>
+
+      {/* A1 linear campaign progress (bands A–F + checkpoint gates) */}
+      <A1PathProgress />
 
       {/* Daily quests hub + compact SRS due-now widget */}
       <DailyQuestsWidget />

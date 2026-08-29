@@ -1,0 +1,180 @@
+[
+  {
+    "sid": "conv-intro-staff",
+    "title": "Vorstellung (Servicekraft)",
+    "titleEn": "Meeting people (as staff)",
+    "emoji": "👤",
+    "ctx": "Instructor greets new student",
+    "band": "A1-A2",
+    "closing": "Herzlich willkommen im Kurs!",
+    "variants": [
+      {
+        "id": "intro-staff",
+        "name": "Als Kursleiter",
+        "roleFlip": true,
+        "steps": [
+          { "n": "Guten Tag! Sie sind also neu hier?", "nEn": "Hello! So you are new here?", "p": "Begrüßen Sie die Person freundlich.", "opts": [
+            {"t": "Willkommen! Ich bin der neue Kurs. Wie geht es Ihnen?", "ok": true, "en": "Welcome! I am the new student. How are you?", "ne": "स्वागत छ म नयाँ विद्यार्थी हुँ. तपाईंलाई कसैले?", "neR": "Swagat cha, ma naya bidyarthi hu. Tapailei kasaile?"},
+            {"t": "Die Stunde beginnt um neun Uhr.", "ok": false, "en": "The lesson starts at nine.", "neR": "Karyakram bihi uña baje suru hunchha", "fb": "Sagen Sie zuerst Hallo!"},
+            {"t": "Wo ist die Toilette?", "ok": false, "en": "Where is the toilet?", "neR": "Shauchalay kahaan chha?", "fb": "Begrüßen Sie zuerst!"}
+          ]},
+          { "n": "Schön, dass Sie da sind. Wie heißen Sie?", "nEn": "Glad you are here. What is your name?", "p": "Nennen Sie sich und Ihren Namen.", "opts": [
+            {"t": "Ich bin Aisha und komme aus Nepal.", "ok": true, "en": "I am Aisha and I come from Nepal.", "ne": "म त अइशा हुँ र नेपालबाट आएकी छु", "neR": "Ma Aisha hu, Nepalbat aayeki chhu"},
+            {"t": "Ich habe heute keine Zeit.", "ok": false, "en": "I have no time today.", "neR": "Aaja mera kura chaina", "fb": "Nennen Sie Ihren Namen!"},
+            {"t": "Der Kurs ist sehr schwer.", "ok": false, "en": "The course is very hard.", "neR": "Karyakram dher garho chha", "fb": "Erzählen Sie, woher Sie kommen!"}
+          ]},
+          { "n": "Prima! Setzen Sie sich bitte hier rein.", "nEn": "Great! Please take a seat here.", "p": "Setzen Sie sich und machen Sie sich bereit.", "opts": [
+            {"t": "Danke, ich setze mich jetzt.", "ok": true, "en": "Thank you, I will sit down now.", "ne": "धन्यवाद, म अहिले बस्छु", "neR": "Dhanyabaad, ma ahile baschu"},
+            {"t": "Nein, ich bleibe stehen.", "ok": false, "en": "No, I stay standing.", "neR": "Ma khara rahanxu", "fb": "Setzen Sie sich, um mitzumachen!"}
+          ]}
+        ]
+      }
+    ]
+  },
+  {
+    "sid": "conv-cafe-staff", "title": "Café (Barista)", "titleEn": "Café (as barista)", "emoji": "☕",
+    "ctx": "Barista takes order", "band": "A1", "closing": "Auf Wiedersehen!",
+    "variants": [{ "id": "cafe-staff", "name": "Als Barista", "roleFlip": true, "steps": [
+      { "n": "Guten Morgen! Was darf es sein?", "nEn": "Good morning! What can I get you?", "p": "Fragen Sie nach dem Wunsch.", "opts": [
+        {"t": "Ein Kaffee und ein Croissant, bitte.", "ok": true, "en": "One coffee and a croissant, please.", "ne": "एक कप कफ़ी र क्रेए़न्ट हेर्नुहोस्", "neR": "Ek kap coffee ra croissant hernuhos"},
+        {"t": "Wo ist der Ausgang?", "ok": false, "en": "Where is the exit?", "neR": "Bahira kahaan chha?", "fb": "Nehmen Sie zuerst die Bestellung an!"},
+        {"t": "Wie viel kostet das?", "ok": false, "en": "How much does it cost?", "neR": "Yasto katiko lagcha?", "fb": "Fragen Sie zuerst, was bestellt werden soll!"}
+      ]},
+      { "n": "Möchten Sie Zucker oder Sahne dazu?", "nEn": "Do you want sugar or cream?", "p": "Bieten Sie Zucker an.", "opts": [
+        {"t": "Nur Zucker, danke.", "ok": true, "en": "Just sugar, thanks.", "ne": "केहि मात्र चिनी हेर्नुहोस्", "neR": "Kehi matra chini hernuhos"},
+        {"t": "Nein, ich will nichts.", "ok": false, "en": "No, I want nothing.", "neR": "Ma kehi chahanchhu", "fb": "Sagen Sie, was Sie möchten!"}
+      ]},
+      { "n": "Das macht drei Euro. Hier ist die Kasse.", "nEn": "That is three euros. Here is the cashier.", "p": "Weisen Sie auf die Kasse hin.", "opts": [
+        {"t": "Möchten Sie noch etwas?", "ok": false, "en": "Do you want anything else?", "neR": " Kein extra", "fb": ""},
+        {"t": "Bitte schön, hier ist der Kaffee.", "ok": true, "en": "Here is your coffee, enjoy.", "ne": "कृपया लिनुहोस्, यो कफ़ी हो", "neR": "Kripaya linuhos, yo coffee ho"}
+      ]}
+    ]}]},
+  {
+    "sid": "conv-hotel-staff", "title": "Hotel (Rezeption)", "titleEn": "Hotel (reception)", "emoji": "🏨",
+    "ctx": "Reception check-in", "band": "A1-A2", "closing": "Guten Aufenthalt!",
+    "variants": [{ "id": "hotel-staff", "name": "Als Rezeptionist", "roleFlip": true, "steps": [
+      { "n": "Herzlich willkommen! Haben Sie eine Reservierung?", "nEn": "Welcome! Do you have a reservation?", "p": "Fragen Sie nach der Reservierung.", "opts": [
+        {"t": "Ja, auf Namen Schmidt.", "ok": true, "en": "Yes, under the name Schmidt.", "ne": "हो, श्मिड्ट नाममा", "neR": "Ho, Schmidt naam ma"},
+        {"t": "Nein, ich muss mich anmelden.", "ok": false, "en": "No, I need to register.", "neR": "Mana registrarsakka", "fb": "Geben Sie zuerst den Namen an!"},
+        {"t": "Wohin geht es?", "ok": false, "en": "Where are you going?", "neR": "Kaha jaan xa?", "fb": "Nennen Sie zuerst den Namen!"}
+      ]},
+      { "n": "Wie lange bleiben Sie?", "nEn": "How long will you stay?", "p": "Fragen Sie die Dauer.", "opts": [
+        {"t": "Drei Nächte im Doppelzimmer.", "ok": true, "en": "Three nights in a double room.", "ne": "तीन रात जोडा कोरा", "neR": "Teen raat joda kora"},
+        {"t": "Nur eine Nacht.", "ok": false, "en": "Only one night.", "neR": "Ek raat", "fb": "Bestätigen Sie die Dauer!"}
+      ]},
+      { "n": "Hier ist Ihr Zimmerschlüssel, Zimmer 304.", "nEn": "Here is your key, room 304.", "p": "Übergeben Sie den Schlüssel.", "opts": [
+        {"t": "Danke, und guten Apparat!", "ok": true, "en": "Thank you, good night!", "ne": "धन्यवाद र रात्री शुभ होस्", "neR": "Dhanyabaad ra raatri shubh chha"},
+        {"t": "Wo ist das Frühstück?", "ok": false, "en": "Where is breakfast?", "neR": "Bhat khana kahaan chha?", "fb": "Bedanken Sie sich zuerst!"}
+      ]}
+    ]}]},
+  {
+    "sid": "conv-shop-staff", "title": "Schlosserei (Verkäufer)", "titleEn": "Shop (salesperson)", "emoji": "🏪",
+    "ctx": "Department store greeting", "band": "A1", "closing": "Auf Wiedersehen!",
+    "variants": [{ "id": "shop-staff", "name": "Als Verkäufer", "roleFlip": true, "steps": [
+      { "n": "Guten Tag, wie kann ich Ihnen helfen?", "nEn": "Hello, how can I help you?", "p": "Begrüßen Sie den Kunden.", "opts": [
+        {"t": "Ich suche eine neue Jacke.", "ok": true, "en": "I am looking for a new jacket.", "ne": "म अिनयो ज्याके खोजिरहेको छु", "neR": "Ma kinayo jacket khojirahako chhu"},
+        {"t": "Wo ist die nächste Bank?", "ok": false, "en": "Where is the nearest bank?", "neR": "Baan phata bank kahaan chha?", "fb": "Sagen Sie, wonach Sie suchen!"},
+        {"t": "Ich habe keine Fragen.", "ok": false, "en": "I have no questions.", "neR": "Kehi prashna chaina", "fb": "Sagen Sie, was Sie brauchen!"}
+      ]},
+      { "n": "Welche Größe tragen Sie?", "nEn": "What size do you wear?", "p": "Fragen Sie nach der Größe.", "opts": [
+        {"t": "Größe groß, bitte.", "ok": true, "en": "Large, please.", "ne": "ठूलो साइज राम्ररी", "neR": "Thulo size ramrari"},
+        {"t": "Ich weiß nicht.", "ok": false, "en": "I don't know.", "neR": "Man lekhnu", "fb": "Nennen Sie eine Größe!"}
+      ]},
+      { "n": "Das passt Ihnen gut! 45 Euro.", "nEn": "That fits you well! 45 euros.", "p": "Nennen Sie den Preis.", "opts": [
+        {"t": "Ich nehme es.", "ok": true, "en": "I will take it.", "ne": "मलाई लिने", "neR": "Malai line"},
+        {"t": "Das ist zu teuer.", "ok": false, "en": "That is too expensive.", "neR": "Yasto maha priceman lagcha", "fb": "Ist es wirklich zu teuer?"}
+      ]}
+    ]}]},
+  {
+    "sid": "conv-reisen-staff", "title": "Reiseagentur (Mitarbeiter)", "titleEn": "Travel agency (agent)", "emoji": "✈️",
+    "ctx": "Travel agent offers trip", "band": "A1-A2", "closing": "Gute Reise!",
+    "variants": [{ "id": "reisen-staff", "name": "Als Reiseverkäufer", "roleFlip": true, "steps": [
+      { "n": "Möchten Sie im Urlaub in die Berge?", "nEn": "Would you like to go to the mountains on holiday?", "p": "Bieten Sie ein Angebot an.", "opts": [
+        {"t": "Ja, ein Wochenende im April.", "ok": true, "en": "Yes, a weekend in April.", "ne": "हो, एप्रिलमा एक हप्ता", "neR": "Ho, April ma ek hapta"},
+        {"t": "Nein, ich bleibe zu Hause.", "ok": false, "en": "No, I stay at home.", "neR": "Ma ghar basti", "fb": "Fragen Sie, was der Kunde möchte!"},
+        {"t": "Ich hasse den Regen.", "ok": false, "en": "I hate the rain.", "neR": "Mala barsha narokcha", "fb": "Bieten Sie ein Reiseangebot!"}
+      ]},
+      { "n": "Wir haben ein Angebot für zwei Personen.", "nEn": "We have an offer for two people.", "p": "Nennen Sie die Angebote.", "opts": [
+        {"t": "Wie teuer ist der Flug?", "ok": true, "en": "How expensive is the flight?", "ne": "उडान कति महँगो छ", "neR": "Udaan katiko garho chha"},
+        {"t": "Ich brauche keinen Flug.", "ok": false, "en": "I don't need a flight.", "neR": "Mala udaan chahanchu", "fb": "Nennen Sie den Preis!"}
+      ]},
+      { "n": "Super! Ich buche das jetzt für Sie.", "nEn": "Great! I will book it for you now.", "p": "Bestätigen Sie die Buchung.", "opts": [
+        {"t": "Prima, vielen Dank!", "ok": true, "en": "Great, many thanks!", "ne": "मास्ट, धेरै धन्यवाद", "neR": "Masto, dher dhanyabaad"},
+        {"t": "Vielleicht später.", "ok": false, "en": "Maybe later.", "neR": "Pachi hernu", "fb": "Nehmen Sie das Angebot an!"}
+      ]}
+    ]}]},
+  {
+    "sid": "conv-buero-staff", "title": "Büro (Mitarbeiter)", "titleEn": "Office (as colleague)", "emoji": "💼",
+    "ctx": "Colleague asks about meeting", "band": "A2", "closing": "Bis später!",
+    "variants": [{ "id": "buero-staff", "name": "Als Kollege", "roleFlip": true, "steps": [
+      { "n": "Herr Schmidt, die Besprechung beginnt um zehn.", "nEn": "Mr. Schmidt, the meeting starts at ten.", "p": "Erinnern Sie an die Besprechung.", "opts": [
+        {"t": "Danke, ich komme pünktlich.", "ok": true, "en": "Thanks, I will be on time.", "ne": "धन्यवाद, म समयमा आउनेछु", "neR": "Dhanyabaad, ma samayama aaunechhu"},
+        {"t": "Ich habe keine Zeit.", "ok": false, "en": "I have no time.", "neR": "Kehi time chaina", "fb": "Bestätigen Sie den Termin!"},
+        {"t": "Wo ist der Kaffee?", "ok": false, "en": "Where is the coffee?", "neR": "Coffee kahaan chha?", "fb": "Erinnern Sie zuerst an die Besprechung!"}
+      ]},
+      { "n": "Können Sie die Präsentation vorbereiten?", "nEn": "Can you prepare the presentation?", "p": "Bitten Sie um Vorbereitung.", "opts": [
+        {"t": "Ja, ich mache sie gleich.", "ok": true, "en": "Yes, I will do it right away.", "ne": "हो, म अहिले नै बनाउँछु", "neR": "Ho, ma ahile nai banauchhu"},
+        {"t": "Nein, das ist nicht meine Aufgabe.", "ok": false, "en": "No, that is not my task.", "neR": "Yo malai haina", "fb": "Sagen Sie ja!"}
+      ]},
+      { "n": "Alles klar, bis dann!", "nEn": "All right, then bye!", "p": "Verabschieden Sie sich.", "opts": [
+        {"t": "Bis später, viel Erfolg!", "ok": true, "en": "See you later, good luck!", "ne": "पछि हेरिनुस्, राम्रो खजाना पाओस्", "neR": "Pachi herinu, ramro khana pauna"},
+        {"t": "Ich muss gehen.", "ok": false, "en": "I must go.", "neR": "Mala janchu", "fb": "Wünschen Sie Erfolg!"}
+      ]}
+    ]}]},
+  {
+    "sid": "conv-treffen-staff", "title": "Treffen (Gastgeber)", "titleEn": "Appointment (as host)", "emoji": "📅",
+    "ctx": "Host arranges meeting", "band": "A1-A2", "closing": "Bis zum nächsten Mal!",
+    "variants": [{ "id": "treffen-staff", "name": "Als Gastgeber", "roleFlip": true, "steps": [
+      { "n": "Kommen Sie um zehn Uhr zum Kaffee?", "nEn": "Will you come at ten for coffee?", "p": "Laden Sie zu Kaffee ein.", "opts": [
+        {"t": "Ja, ich komme gern.", "ok": true, "en": "Yes, I would like to come.", "ne": "हो, म आउन सक्छु", "neR": "Ho, ma auna sakchhu"},
+        {"t": "Nein, ich arbeite.", "ok": false, "en": "No, I am working.", "neR": "Ma kaam marirako chhu", "fb": "Sagen Sie ja!"},
+        {"t": "Woher kommen Sie?", "ok": false, "en": "Where are you from?", "neR": "Kaha bata aayi?", "fb": "Antworten Sie auf die Einladung!"}
+      ]},
+      { "n": "Wir treffen uns hier in der Cafeteria.", "nEn": "We meet here in the cafeteria.", "p": "Geben Sie den Treffpunkt an.", "opts": [
+        {"t": "Alles klar, bis dann.", "ok": true, "en": "All right, see you then.", "ne": "ठीक छ, त्यसपछि", "neR": "Thik cha, typsai pachhi"},
+        {"t": "Ich komme nicht.", "ok": false, "en": "I will not come.", "neR": "Ma aaudina", "fb": "Bestätigen Sie den Termin!"}
+      ]},
+      { "n": "Super, ich freue mich auf den Kaffee.", "nEn": "Great, I am looking forward to the coffee.", "p": "Zeigen Sie Freude.", "opts": [
+        {"t": "Danke, bis später!", "ok": true, "en": "Thanks, see you later!", "ne": "धन्यवाद, पछि हेरिनुन्", "neR": "Dhanyabaad, pachi herinu"},
+        {"t": "Ich mag keinen Kaffee.", "ok": false, "en": "I don't like coffee.", "neR": "Mala coffee man paryo", "fb": "Zeigen Sie Freude am Treffen!"}
+      ]}
+    ]}]},
+  {
+    "sid": "conv-alltag-staff", "title": "Small Talk (Nachbar)", "titleEn": "Small talk (as neighbor)", "emoji": "🏘️",
+    "ctx": "Neighbor chats about weather", "band": "A1", "closing": "Bis bald!",
+    "variants": [{ "id": "alltag-staff", "name": "Als Nachbar", "roleFlip": true, "steps": [
+      { "n": "Schönes Wetter heute, nicht wahr?", "nEn": "Nice weather today, isn't it?", "p": "Kommentieren Sie das Wetter.", "opts": [
+        {"t": "Ja, wirklich ein schöner Tag!", "ok": true, "en": "Yes, really a beautiful day!", "ne": "हो, अखरात राम्रो दिन", "neR": "Ho, akharat ramro din"},
+        {"t": "Ich hasse das Wetter.", "ok": false, "en": "I hate the weather.", "neR": "Mala mausam naram lagcha", "fb": "Seien Sie freundlich!"},
+        {"t": "Wo wohnen Sie?", "ok": false, "en": "Where do you live?", "neR": "Kaha basobha?", "fb": "Kommentieren Sie das Wetter!"}
+      ]},
+      { "n": "Wie geht es Ihnen den letzten Tagen?", "nEn": "How have you been lately?", "p": "Erzählen Sie von sich.", "opts": [
+        {"t": "Mir geht es gut, danke der Nachfrage.", "ok": true, "en": "I am good, thanks for asking.", "ne": "म ठीक छु, सोध्नुभएकोमा धन्यवाद", "neR": "Ma thik chhu, sodhnu bhaekoma dhanyabaad"},
+        {"t": "Nicht gut.", "ok": false, "en": "Not good.", "neR": "Ramro chhaina", "fb": "Seien Sie positiv!"}
+      ]},
+      { "n": "Möchten Sie diese Woche ins Fitnessstudio?", "nEn": "Do you want to go to the gym this week?", "p": "Laden Sie zum Training ein.", "opts": [
+        {"t": "Vielleicht, ich melde mich.", "ok": true, "en": "Maybe, I will let you know.", "ne": "जस्तो, म अखरात जानेछु", "neR": "jasto, ma akhara jaane chhu"},
+        {"t": "Nein, ich hasse Sport.", "ok": false, "en": "No, I hate sports.", "neR": "Ma khela nafarkechu", "fb": "Seien Sie offen!"},
+        {"t": "Wie viel kostet das?", "ok": false, "en": "How much does it cost?", "neR": "Katiko lagcha?", "fb": "Antworten Sie zuerst!"}
+      ]}
+    ]}]},
+  {
+    "sid": "conv-nachfragen-staff", "title": "Nachfragen (Gesprächspartner)", "titleEn": "Follow-ups (conversation)", "emoji": "💬",
+    "ctx": "Follow-up questions", "band": "A1-A2", "closing": "Bis zum nächsten Mal!",
+    "variants": [{ "id": "nachfragen-staff", "name": "Als Gesprächspartner", "roleFlip": true, "steps": [
+      { "n": "Erzählen Sie mir mehr über Ihre Arbeit.", "nEn": "Tell me more about your job.", "p": "Beschreiben Sie Ihre Arbeit.", "opts": [
+        {"t": "Ich arbeite als Lehrer.", "ok": true, "en": "I work as a teacher.", "ne": "म शिक्षकको रूपमा काम गर्छु", "neR": "Ma sikshako roopmaa kaam garchhu"},
+        {"t": "Ich habe keine Arbeit.", "ok": false, "en": "I have no job.", "neR": "Kehi kaam chhaina", "fb": "Erzählen Sie von Ihrer Arbeit!"},
+        {"t": "Das ist geheim.", "ok": false, "en": "That is secret.", "neR": "Yo chhupa chha", "fb": "Erzählen Sie ein bisschen!"}
+      ]},
+      { "n": "Und was machen Sie in Ihrer Freizeit?", "nEn": "And what do you do in your free time?", "p": "Erzählen Sie von Hobbies.", "opts": [
+        {"t": "Ich lese und höre Musik.", "ok": true, "en": "I read and listen to music.", "ne": "म बुझ्छु र संगीत सुन्छु", "neR": "Ma bichchu ra sangit sunchu"},
+        {"t": "Ich spiele nichts.", "ok": false, "en": "I don't play anything.", "neR": "Kei khelna ba", "fb": "Nennen Sie ein Hobby!"},
+        {"t": "Ich arbeite viel.", "ok": false, "en": "I work a lot.", "neR": "Dherai kaam garchu", "fb": "Erzählen Sie von Ihrer Freizeit!"}
+      ]},
+      { "n": "Das klingt interessant!", "nEn": "That sounds interesting!", "p": "Zeigen Sie Interesse.", "opts": [
+        {"t": "Möchten Sie auch etwas hören?", "ok": true, "en": "Would you like to hear something too?", "ne": "केहि सुन्न चाहनुहुन्छ?", "neR": "Kehi sunna chaahanunuhunchha?"},
+        {"t": "Nein, ich bin müde.", "ok": false, "en": "No, I am tired.", "neR": "Ma thakaa chhu", "fb": "Zeigen Sie Interesse!"}
+      ]}
+    ]}]}
+]

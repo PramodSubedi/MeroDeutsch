@@ -22,6 +22,10 @@ export function GlossaryPage() {
   const { langMode } = useLang();
   const isDE = langMode === 'german';
   const [query, setQuery] = useState('');
+  // Source filter: 'all' or a specific source name
+  const [sourceFilter, setSourceFilter] = useState<string>('all');
+  // Sort key: 'az' | 'za' | 'source'
+  const [sortKey, setSortKey] = useState<string>('az');
   const parentRef = useRef<HTMLDivElement>(null);
   
   // State for data from curriculumService
@@ -133,14 +137,30 @@ export function GlossaryPage() {
   
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return glossary;
-    return glossary.filter(
+    let items = glossary.filter(
       (entry) =>
-        entry.de.toLowerCase().includes(q) ||
-        entry.en.toLowerCase().includes(q) ||
-        entry.ne.toLowerCase().includes(q)
+        (entry.de.toLowerCase().includes(q) ||
+          entry.en.toLowerCase().includes(q) ||
+          entry.ne.toLowerCase().includes(q))
     );
-  }, [glossary, query]);
+    // Source filter
+    if (sourceFilter !== 'all') {
+      items = items.filter((entry) => entry.source === sourceFilter);
+    }
+    // Sort
+    items = [...items].sort((a, b) => {
+      switch (sortKey) {
+        case 'za':
+          return b.de.localeCompare(a.de);
+        case 'source':
+          return a.source.localeCompare(b.source) || a.de.localeCompare(b.de);
+        case 'az':
+        default:
+          return a.de.localeCompare(b.de);
+      }
+    });
+    return items;
+  }, [glossary, query, sourceFilter, sortKey]);
 
   // Virtualize rows for smooth scrolling with large datasets
   const rowVirtualizer = useVirtualizer({
@@ -180,6 +200,40 @@ export function GlossaryPage() {
       />
       <h1 className="text-2xl font-semibold tracking-tight text-slate-950 dark:text-white">{title}</h1>
       <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{description}</p>
+
+      {/* Source filter chips + sort selector */}
+      <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-wrap items-center gap-1.5">
+          {['all', 'Alphabet', 'Numbers', 'Calendar', 'Greetings', 'Articles', 'Vocabulary', 'Stories'].map((src) => {
+            const active = sourceFilter === src;
+            const label = src === 'all' ? (isDE ? 'Alle' : 'All') : src;
+            return (
+              <button
+                key={src}
+                type="button"
+                onClick={() => setSourceFilter(src)}
+                className={`rounded-full px-3 py-1 text-xs font-semibold transition active:scale-95 ${
+                  active
+                    ? 'bg-blue-600 text-white'
+                    : 'border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300'
+                }`}
+              >
+                {label}
+              </button>
+            );
+          })}
+        </div>
+        <select
+          value={sortKey}
+          onChange={(e) => setSortKey(e.target.value)}
+          className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+          aria-label={isDE ? 'Sortieren nach' : 'Sort by'}
+        >
+          <option value="az">{isDE ? 'A–Z' : 'A–Z'}</option>
+          <option value="za">{isDE ? 'Z–A' : 'Z–A'}</option>
+          <option value="source">{isDE ? 'Nach Quelle' : 'By source'}</option>
+        </select>
+      </div>
 
       <div className="mt-4">
         <input
