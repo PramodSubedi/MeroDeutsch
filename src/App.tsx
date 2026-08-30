@@ -5,15 +5,17 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { SkeletonLoader } from './components/SkeletonLoader';
 import { useDexieInit } from './hooks/useDexieInit';
 import { useSyncBridge } from './hooks/useSyncBridge';
+import { useAuth } from './hooks/useAuth';
 
 // Core pages - eagerly loaded for instant navigation
-import { HomePage } from './pages/HomePage';
 import { AuthPage } from './pages/AuthPage';
 import { AlphabetPage } from './pages/AlphabetPage';
 import { NumbersPage } from './pages/NumbersPage';
 import { CalendarPage } from './pages/CalendarPage';
 import { ArticlesPage } from './pages/ArticlesPage';
 import { GreetingsPage } from './pages/GreetingsPage';
+import { AppHomeSwitch } from './pages/AppHomeSwitch';
+import { LandingPage } from './pages/LandingPage';
 
 // Secondary pages - lazy loaded to reduce initial bundle size
 const DashboardPage = lazy(() => import('./pages/DashboardPage').then(m => ({ default: m.DashboardPage })));
@@ -50,6 +52,25 @@ function RapidBlitzRedirect() {
 }
 
 /** Routes only — do not put feature logic here */
+
+/** Landing "seen" flag — returning guests skip straight to guest Home. */
+const LANDING_SEEN_KEY = 'meroDeutschLandingSeenV1';
+
+/**
+ * Root path (`/`) router: authenticated users go to the app home,
+ * guests go to the marketing landing on first visit (or /home if they've
+ * already seen the landing). UseAuth must be under AuthProvider (it is).
+ */
+function RootRedirect() {
+  const { isAuthenticated } = useAuth();
+  const target = isAuthenticated
+    ? '/home'
+    : localStorage.getItem(LANDING_SEEN_KEY) === '1'
+      ? '/home'
+      : '/welcome';
+  return <Navigate to={target} replace />;
+}
+
 export default function App() {
   // Bootstrap the Dexie data layer (seeds db.vocab on first load if empty)
   useDexieInit();
@@ -61,9 +82,17 @@ export default function App() {
       <BrowserRouter>
         <Suspense fallback={<SkeletonLoader />}>
           <Routes>
+            {/* Root: redirect to the app home (authed) or marketing landing
+                (guest, first visit) / guest Home (returning guest). */}
+            <Route index element={<RootRedirect />} />
+            {/* Full-screen marketing landing — NO app shell, NO sidebar/bottom nav */}
+            <Route path="welcome" element={<LandingPage />} />
+            {/* Auth — standalone focus screen: centered card, NO sidebar/footer */}
+            <Route path="auth" element={<AuthPage />} />
+            {/* App shell */}
             <Route element={<Layout />}>
-              <Route index element={<HomePage />} />
-              <Route path="auth" element={<AuthPage />} />
+              {/* Guest action-first Home; authed → existing HomePage */}
+              <Route path="home" element={<AppHomeSwitch />} />
               <Route path="alphabet" element={<AlphabetPage />} />
               <Route path="numbers" element={<NumbersPage />} />
               <Route path="calendar" element={<CalendarPage />} />

@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { theme } from '../../config/theme';
+import { RefreshCw, Target, TrendingUp, Zap } from 'lucide-react';
 import { LearningPath } from '../learning/LearningPath';
 import { useAchievements, ALL_BADGES } from '../../hooks/useAchievements';
 import { useAuth } from '../../hooks/useAuth';
@@ -10,7 +11,9 @@ import { useReviewQueue } from '../../hooks/useReviewQueue';
 import { useStreak } from '../../hooks/useStreak';
 import { useXp } from '../../hooks/useXp';
 import { DailySession } from '../path/DailySession';
+import { DailyChallenge } from '../DailyChallenge';
 import { StatTile } from '../ui/StatTile';
+import { DailyQuestsWidget } from '../DailyQuestsWidget';
 import { useA1Path } from '../../hooks/useA1Path';
 
 const PRACTICE_ITEM_STYLES = [
@@ -52,7 +55,7 @@ export function HomeLayoutA() {
   const { langMode } = useLang();
   const { user, isAuthenticated } = useAuth();
   const { progress } = useProgress();
-  const { queue } = useReviewQueue();
+  const { queue, dueQueue } = useReviewQueue();
   const { streakCount } = useStreak();
   const { totalXp, level, xpProgress } = useXp();
   const { unlockedBadges, checkAndUnlock } = useAchievements();
@@ -134,8 +137,8 @@ export function HomeLayoutA() {
   ];
 
   return (
-    <div className={`${theme.page.container} w-full space-y-6 pb-8`}>
-      <section className="overflow-hidden rounded-2xl bg-gradient-to-br from-white via-slate-50 to-blue-50 p-4 shadow-sm dark:from-slate-950 dark:via-slate-950 dark:to-slate-900 sm:p-5 md:p-8">
+    <div className={`${theme.page.container} w-full space-y-5 pb-8`}>
+      <section className="overflow-hidden rounded-2xl bg-gradient-to-br from-white via-slate-50 to-blue-50 p-4 shadow-sm dark:from-slate-950 dark:via-slate-950 dark:to-slate-900 sm:p-5 md:p-6">
         <div className="flex flex-col gap-5">
           <div className="flex flex-wrap items-center gap-2">
             {isAuthenticated && streakCount > 0 && (
@@ -145,7 +148,10 @@ export function HomeLayoutA() {
               </span>
             )}
             {/* "All clear" badge: emerald-800 on emerald-50 ≈ 7:1 contrast (≥ 4.5:1 WCAG AA). */}
-            {reviewCount === 0 && (
+            {/* "All clear" = nothing DUE right now (same predicate as
+                DailySession's CTA branch). Items queued for the future don't
+                block the all-clear — reconciled with the dueQueue source. */}
+            {dueQueue.length === 0 && (
               <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800 dark:border-emerald-900/50 dark:bg-emerald-950/40 dark:text-emerald-300">
                 <span aria-hidden="true">✅</span>
                 <span>{isDE ? 'Alles erledigt' : 'All clear'}</span>
@@ -175,6 +181,12 @@ export function HomeLayoutA() {
       {/* Daily session: due reviews first (max 8) -> summary -> next path node */}
       <DailySession />
 
+      {/* Word of the Day + daily challenge — reactivates the existing
+          DailyChallenge system on the logged-in Home (it was orphaned from
+          the old HomePage restructure). Reads curriculumService, shuffles at
+          create, feeds addWrongAnswer/XP — no new system introduced. */}
+      {isAuthenticated && <DailyChallenge />}
+
       {/* Shared StatTile component — same source of truth as DashboardPage */}
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatTile
@@ -183,6 +195,7 @@ export function HomeLayoutA() {
           subValue={`${progressCount}/26`}
           progressPct={progressPct}
           color="blue"
+          icon={TrendingUp}
         />
         <StatTile
           label={isDE ? 'Genauigkeit' : 'Accuracy'}
@@ -190,6 +203,7 @@ export function HomeLayoutA() {
           subValue="Quiz"
           progressPct={quizPct}
           color="emerald"
+          icon={Target}
         />
         <StatTile
           label={isDE ? 'Review' : 'Review queue'}
@@ -197,6 +211,7 @@ export function HomeLayoutA() {
           subValue={isDE ? 'Wartend' : 'Queued'}
           to="/dashboard"
           color="blue"
+          icon={RefreshCw}
         />
         <StatTile
           label="Level & XP"
@@ -204,9 +219,16 @@ export function HomeLayoutA() {
           subValue={`${totalXp} XP`}
           progressPct={xpProgress}
           color="violet"
+          icon={Zap}
         />
       </section>
 
+      {/* Daily quests (shared with Dashboard) — logged-in only. */}
+      {isAuthenticated && <DailyQuestsWidget />}
+
+      {/* Practice tools — guest discovery only. Signed-in Home stays on the
+          daily loop: DailySession + quests; tools live in the sidebar / /practice. */}
+      {!isAuthenticated && (
       <section className="grid gap-4 md:grid-cols-3">
         {practiceItems.map(({ title, description, to, styles }) => (
           <Link
@@ -227,9 +249,10 @@ export function HomeLayoutA() {
         ))}
       </section>
 
-      {/* A1 module grid — visible to guests and signed-in users alike so the
-          core learning modules are discoverable from Home without /learn. */}
-      <LearningPath />
+      )}
+      {/* A1 module grid — guest discovery catalog. Signed-in learners use
+          the linear campaign on /learn instead. */}
+      {!isAuthenticated && <LearningPath />}
 
       <section className="rounded-2xl bg-white p-4 shadow-sm dark:bg-slate-900">
         <div className="mb-3 flex items-center justify-between gap-3">

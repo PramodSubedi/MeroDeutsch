@@ -54,7 +54,11 @@ export const theme = {
     app: 'min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100',
     // Light premium navbar: white surface + elevation (no solid brand block).
     // Brand blue is reserved for primary actions and the active nav state.
-    header: 'h-16 bg-white shadow-sm sticky top-0 z-50 dark:bg-slate-900',
+    // Converged Shell: the header rides the content column (Layout applies
+    // lg:ml-20 / lg:ml-64 margins) beside the fixed rail — same surface both modes.
+    // border-b (not shadow-sm) so the bottom hairline stays continuous with
+    // the rail's brand band at the seam (no broken line where they meet).
+    header: 'h-16 bg-white border-b border-slate-200 sticky top-0 z-50 dark:bg-slate-900 dark:border-slate-800',
     headerInner: 'max-w-7xl mx-auto h-16 px-4 sm:px-6 flex items-center justify-between gap-3',
     brand: 'text-lg font-bold flex items-center gap-1',
     nav: 'flex items-center gap-1',
@@ -69,8 +73,19 @@ export const theme = {
       optionActive: 'rounded-md bg-white px-2.5 py-1 text-blue-600 shadow-sm dark:bg-slate-700 dark:text-blue-300',
       optionInactive: 'rounded-md px-2.5 py-1 text-slate-500 transition hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200',
     },
-    themeButton: 'inline-flex h-9 w-9 items-center justify-center rounded-lg text-base text-slate-500 transition hover:bg-slate-100 hover:text-slate-700 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200',
-    main: 'mx-auto w-full max-w-7xl px-4 sm:px-6 md:px-8',
+    // Header icon buttons (menu / dark / audio): 44px touch targets with a
+    // soft rounded-xl hitbox — polished to match 21st.dev header patterns.
+    themeButton: 'inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl text-base text-slate-500 transition hover:bg-slate-100 hover:text-slate-700 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none active:scale-95 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200',
+    // Header context chip — shows the current section on lg+ (Converged Shell).
+    contextChip: 'inline-flex h-9 max-w-[260px] items-center gap-1.5 truncate rounded-full border border-slate-200 bg-slate-50 px-3 text-sm font-medium text-slate-700 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-300',
+    // Pinned bottom bar in the rail — the expand/collapse control lives WITH
+    // the rail it toggles (never stranded in the header). Border-t matches the
+    // brand-band hairline; the bar is h-12 with a 44px touch target inside.
+    sidebarToggleBar: 'flex h-12 shrink-0 items-center border-t border-slate-200 px-2 dark:border-slate-800',
+    // Content column wrapper: same max-w + horizontal padding as headerInner so
+    // the page text aligns exactly with the header chip/nav (no ~72px skew).
+    // Layout applies the rail inset as a MARGIN on <main>, never padding.
+    main: 'mx-auto w-full max-w-7xl px-4 sm:px-6',
   },
   section: {
     // Elevation over borders: white cards on a slate-50 canvas.
@@ -89,7 +104,8 @@ export const theme = {
   },
   /**
    * Layer ladder (documented — keep values consistent):
-   *   header / bottom-nav / overlay dialogs = z-50 · milestone toast = z-[60]
+   *   sidebar rail = z-30 (full-height app shell) · header / bottom-nav /
+   *   overlay dialogs = z-50 · mobile drawer = z-[55] · milestone toast = z-[60]
    * Toasts must stay above quiz UI (.clinerules E3); nothing else goes higher.
    */
   modal: {
@@ -110,6 +126,8 @@ export const theme = {
     primary: 'rounded-lg bg-blue-600 px-4 py-3 text-base font-semibold text-white shadow-sm transition hover:bg-blue-700 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50',
     /** Compact primary for dense rows (quest claim, inline CTAs) — no !important overrides needed. */
     primarySmall: 'rounded-lg bg-blue-600 px-3 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-blue-700 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50',
+    /** Compact secondary for dense rows (quest actions) — mirrors primarySmall spacing, no !important overrides needed. */
+    secondarySmall: 'rounded-lg bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-600 transition hover:bg-blue-100 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-blue-950/40 dark:text-blue-300 dark:hover:bg-blue-900/40',
     secondary: 'rounded-lg bg-blue-50 px-4 py-3 text-base font-semibold text-blue-600 transition hover:bg-blue-100 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-blue-950/40 dark:text-blue-300 dark:hover:bg-blue-900/40',
     danger: 'rounded-lg bg-red-600 px-4 py-3 text-base font-semibold text-white shadow-sm transition hover:bg-red-700 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50',
     icon: 'inline-flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 text-base text-blue-600 transition hover:bg-blue-100 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-blue-900/50 dark:text-blue-300 dark:hover:bg-blue-800',
@@ -118,3 +136,22 @@ export const theme = {
     toggleInactive: 'rounded-lg px-4 py-3 text-base font-semibold text-slate-500 transition hover:bg-slate-100 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200',
   },
 };
+
+/** One gender token object (hex + Tailwind classes) from the locked `theme.gender` set. */
+export type GenderToken = (typeof theme.gender)[keyof typeof theme.gender];
+
+/**
+ * Map a German article string to its global gender token.
+ *   der → der · die → dieF (feminine) · das → das · plural → diePl · unknown → der.
+ * Centralizes the der/die→dieF mapping so GenderBadge and review rows don't
+ * re-implement it inline (locked decision C1.8 — no one-off hexes).
+ * Accepts a plain string so both typed (`Article | 'plural'`) and regex-matched
+ * call sites work.
+ */
+export function genderTokenFor(article: string): GenderToken {
+  const key = article.trim().toLowerCase();
+  if (key === 'die') return theme.gender.dieF;
+  if (key === 'das') return theme.gender.das;
+  if (key === 'plural' || key === 'diePl') return theme.gender.diePl;
+  return theme.gender.der; // der (and any unknown) → masculine/der
+}

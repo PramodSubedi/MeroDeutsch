@@ -32,7 +32,7 @@ export function LearningPath() {
   ];
 
   return (
-    <section className="mb-6" id="learning-path">
+    <section className="mb-6 scroll-mt-20" id="learning-path">
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {sections.map((section) => {
           const isLast = lastModulePath === section.path;

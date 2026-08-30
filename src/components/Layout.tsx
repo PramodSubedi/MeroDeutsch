@@ -24,6 +24,36 @@ import { A1PathVisitTracker } from './path/A1PathVisitTracker';
 import { subscribeDailySessionActive } from '../lib/dailySessionSignal';
 
 /** Top nav + shell — branding/layout only; features live in pages/ */
+
+/** Page → header context-chip label (Converged Shell: on lg+ the header shows
+    where you are instead of duplicating nav links, which now live in the rail). */
+const CONTEXT_LABELS: ReadonlyArray<readonly [string, string, string]> = [
+  ['/home', 'Home', 'Startseite'],
+  ['/learn', 'A1 Path', 'A1-Lernpfad'],
+  ['/dashboard', 'Dashboard', 'Übersicht'],
+  ['/practice', 'Practice', 'Übung'],
+  ['/alphabet', 'Alphabet', 'Alphabet'],
+  ['/numbers', 'Numbers', 'Zahlen'],
+  ['/calendar', 'Calendar', 'Kalender'],
+  ['/articles', 'Articles', 'Artikel'],
+  ['/greetings', 'Greetings', 'Begrüßungen'],
+  ['/glossary', 'Glossary', 'Glossar'],
+  ['/dictation', 'Dictation', 'Diktat'],
+  ['/grammar', 'Grammar', 'Grammatik'],
+  ['/pronunciation', 'Pronunciation', 'Aussprache'],
+  ['/roleplay', 'Role-play', 'Rollenspiel'],
+  ['/rapid-fire', 'Rapid Fire', 'Schnellfeuer'],
+  ['/sentence-builder', 'Sentence Builder', 'Satzbau'],
+];
+
+function contextLabelFor(pathname: string, isDE: boolean): string {
+  if (pathname === '/') return isDE ? 'Startseite' : 'Home';
+  for (const [prefix, en, de] of CONTEXT_LABELS) {
+    if (pathname === prefix || pathname.startsWith(prefix + '/')) return isDE ? de : en;
+  }
+  return isDE ? 'Deutsch lernen' : 'Learn German';
+}
+
 export function Layout() {
   const { pathname } = useLocation();
   const { dark, toggle: toggleDark } = useDarkMode();
@@ -56,6 +86,7 @@ export function Layout() {
   }, [sidebarCollapsed]);
 
   const isDE = langMode === 'german';
+  const contextLabel = contextLabelFor(pathname, isDE);
 
   // U6: the daily review session runs on Home/Learn — not a "quiz route" by
   // pathname. Subscribe to the module signal so level-ups mid-batch render as
@@ -109,7 +140,7 @@ export function Layout() {
   }, [pathname, rememberModule]);
 
   const link = (to: string, label: string) => {
-    const active = to === '/' ? pathname === '/' : pathname.startsWith(to);
+    const active = to === '/home' ? pathname === '/home' || pathname === '/' : pathname.startsWith(to);
     return (
       <Link to={to} className={active ? theme.layout.navLinkActive : theme.layout.navLink}>
         {label}
@@ -154,55 +185,44 @@ export function Layout() {
         collapsed={sidebarCollapsed}
         onToggleCollapsed={() => setSidebarCollapsed((c) => !c)}
       />
-      {/* Header shifts with the desktop rail so navbar + content move together */}
+      {/* Header rides the content column: the fixed rail owns the left shell,
+          so the sticky header is pulled in with a MARGIN (lg:ml-*) — left/right
+          offsets don't move sticky elements on a vertical-scroll page. */}
       <header
-        className={`${theme.layout.header} ${sidebarCollapsed ? 'lg:pl-24' : 'lg:pl-64'}`}
+        className={`${theme.layout.header} ${sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'}`}
         role="banner"
       >
         <div className={theme.layout.headerInner}>
-          {/* Logo is a link → Home */}
-          <Link to="/" aria-label="MeroDeutsch – Home" className="inline-flex h-9 items-center transition duration-200 hover:opacity-90 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none focus-visible:ring-offset-2 rounded-lg">
+          {/* Desktop context chip (lg+): the rail owns top-level nav AND its
+              own expand/collapse control (pinned to the rail's bottom edge),
+              so the header only shows "where you are" — nothing stranded. */}
+          <div className="hidden items-center gap-2 lg:flex">
+            <span className={theme.layout.contextChip}>{contextLabel}</span>
+          </div>
+
+          {/* Brand — header keeps the logo below lg (mobile/tablet); on lg+
+              the rail owns the brand band, so it is hidden here. */}
+          <Link to="/home" aria-label="MeroDeutsch – Home" className="inline-flex h-9 items-center transition duration-200 hover:opacity-90 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none focus-visible:ring-offset-2 rounded-lg lg:hidden">
             <Logo size="sm" variant="navbar" />
           </Link>
-          <nav className={`${theme.layout.nav} hidden md:flex`}>
-            {link('/', 'Home')}
+
+          {/* Top-level nav links — md through lg only (rail owns nav on lg+) */}
+          <nav className={`${theme.layout.nav} hidden md:flex lg:hidden`}>
+            {link('/home', 'Home')}
             {user && link('/dashboard', 'Dashboard')}
             {user ? link('/learn', 'Learn') : link('/auth', 'Sign in')}
-            {/* Two-state language switch — highlighted side = CURRENT mode */}
-            <LanguageToggle />
-            <button
-              type="button"
-              onClick={toggleDark}
-              className={theme.layout.themeButton}
-              aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'}
-            >
-              {dark ? <Sun className="h-5 w-5" aria-hidden="true" /> : <Moon className="h-5 w-5" aria-hidden="true" />}
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                const next = !audioEnabled;
-                setAudioEnabled(next);
-                setAudioEnabledState(next);
-              }}
-              className={theme.layout.themeButton}
-              aria-label={audioEnabled ? 'Mute audio' : 'Unmute audio'}
-            >
-              {audioEnabled ? <Volume2 className="h-5 w-5" aria-hidden="true" /> : <VolumeX className="h-5 w-5" aria-hidden="true" />}
-            </button>
-            {user && <UserMenu user={user} />}
           </nav>
-          {/* Mobile-only controls — nav is hidden below md */}
-          <div className="flex items-center gap-2 md:hidden">
+
+          {/* Global utilities — every breakpoint: menu (mobile) + language + theme + audio + user */}
+          <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={() => setSidebarOpen(true)}
-              className={theme.layout.themeButton}
+              className={`${theme.layout.themeButton} md:hidden`}
               aria-label={isDE ? 'Menü öffnen' : 'Open menu'}
             >
               <Menu className="h-5 w-5" />
             </button>
-            {/* Two-state language switch (mobile) — highlighted side = CURRENT mode */}
             <LanguageToggle />
             <button
               type="button"
@@ -229,7 +249,7 @@ export function Layout() {
         </div>
       </header>
       {!isOnline && (
-        <div className="border-b border-amber-200 bg-amber-50 px-4 py-2 text-center text-sm font-medium text-amber-800 dark:border-amber-800/50 dark:bg-amber-900/40 dark:text-amber-200">
+        <div className={`border-b border-amber-200 bg-amber-50 px-4 py-2 text-center text-sm font-medium text-amber-800 dark:border-amber-800/50 dark:bg-amber-900/40 dark:text-amber-200 ${sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'}`}>
           <span aria-hidden="true">📡</span>{' '}
           {langMode === 'german'
             ? 'Du bist offline — gecachte Lektionen funktionieren weiter.'
@@ -239,15 +259,21 @@ export function Layout() {
       <main
         id="main-content"
         role="main"
-        className={`${theme.layout.main} px-4 scroll-mt-24 pb-20 md:pb-8 ${sidebarCollapsed ? 'lg:pl-24' : 'lg:pl-64'} ${isModuleRoute ? 'pt-8' : ''}`}
+        className={`scroll-mt-24 pb-20 md:pb-8 ${sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'} ${isModuleRoute ? 'pt-8' : ''}`}
       >
-        {/* Module routes render <ModuleChrome /> (back link + switcher) — the
-            breadcrumb would duplicate that navigation context (UI-clutter fix). */}
-        {pathname !== '/auth' && !isModuleRoute && <Breadcrumb />}
-        {isModuleRoute && <ModuleChrome />}
-        <Outlet />
+        {/* Centered content column — same max-w/px as headerInner so the page
+            text shares one axis with the header (no ~72px skew). The rail
+            inset is the MARGIN on <main>; this wrapper only centers. */}
+        <div className={theme.layout.main}>
+          {/* Module routes render <ModuleChrome /> (back link + switcher) — the
+              breadcrumb would duplicate that navigation context (UI-clutter fix). */}
+          {pathname !== '/auth' && !isModuleRoute && <Breadcrumb />}
+          {isModuleRoute && <ModuleChrome />}
+          <Outlet />
+        </div>
       </main>
-      <Footer />
+      {/* Footer rides the content column with the header + main (ml inset) */}
+      <Footer className={sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'} />
       <BottomNav />
     </div>
   );

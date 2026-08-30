@@ -33,10 +33,14 @@ export function Breadcrumb() {
     '/pronunciation': { en: 'Pronunciation', de: 'Aussprache' },
     '/roleplay': { en: 'Role-play', de: 'Rollenspiel' },
     '/auth': { en: 'Sign in', de: 'Anmelden' },
+    '/checkpoint': { en: 'Checkpoint', de: 'Checkpoint' },
+    '/rapid-fire': { en: 'Rapid Fire', de: 'Schnellfeuer' },
+    '/sentence-builder': { en: 'Sentence Builder', de: 'Satzbau' },
   };
 
-  // Don't show breadcrumbs on homepage, auth, or pure legal pages
-  if (pathname === '/' || pathname === '/auth' || pathname === '/privacy' || pathname === '/terms') {
+  // Don't show breadcrumbs on homepage, auth, legal pages, or the hubs that
+  // carry their own page context (Learn + Practice — converged shell).
+  if (pathname === '/' || pathname === '/auth' || pathname === '/privacy' || pathname === '/terms' || pathname === '/learn' || pathname === '/practice') {
     return null;
   }
 
@@ -49,7 +53,11 @@ export function Breadcrumb() {
   let currentPath = '';
   for (const segment of pathSegments) {
     currentPath += `/${segment}`;
-    const routeInfo = routeLabels[currentPath];
+    // Resolve labels for both static routes and parameterized ones (e.g.
+    // /checkpoint/1 → label from `/checkpoint`). Numeric/dynamic segments
+    // fall back to their base route label so /:id routes keep a readable crumb.
+    const routeInfo =
+      routeLabels[currentPath] ?? routeLabels[currentPath.replace(/\/\d+$/, '')];
     if (routeInfo) {
       breadcrumbs.push({
         label: isDE ? routeInfo.de : routeInfo.en,

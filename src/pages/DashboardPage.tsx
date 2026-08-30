@@ -8,7 +8,7 @@ import { useStreak } from '../hooks/useStreak';
 import { useActivityLog } from '../hooks/useActivityLog';
 import { useMilestoneToast } from '../hooks/useMilestoneToast';
 import { usePageTitle } from '../hooks/usePageTitle';
-import { theme } from '../config/theme';
+import { genderTokenFor, theme } from '../config/theme';
 import { BrandMark } from '../components/BrandMark';
 import { useSearchParams } from 'react-router-dom';
 import { EmptyState } from '../components/EmptyState';
@@ -337,10 +337,10 @@ export function DashboardPage() {
                       {(() => {
                         const m = `${item.itemKey} ${item.correctAnswer}`.match(/\b(der|die|das)\b/i);
                         if (!m) return null;
-                        const key = m[1].toLowerCase() === 'die' ? 'dieF' : m[1].toLowerCase();
+                        const t = genderTokenFor(m[1]);
                         return (
                           <span
-                            className={`h-2.5 w-2.5 shrink-0 rounded-full ${theme.gender[key as keyof typeof theme.gender].bg}`}
+                            className={`h-2.5 w-2.5 shrink-0 rounded-full ${t.bg}`}
                             title={m[1]}
                             aria-hidden="true"
                           />

@@ -20,13 +20,14 @@ export function BottomNav() {
   // Analytics + Import live in the UserMenu dropdown (desktop header) only.
   const navItems: Array<{ to: string; icon: LucideIcon; label: string; active: boolean }> = [
     {
-      to: '/',
+      to: '/home',
       icon: Home,
       label: isDE ? 'Start' : 'Home',
-      active: pathname === '/',
+      active: pathname === '/home' || pathname === '/',
     },
     {
-      to: '/learn',
+      // Path is sign-in-gated: guests' Learn tab leads to the module grid on /home.
+      to: user ? '/learn' : '/home',
       icon: BookOpen,
       label: isDE ? 'Lernen' : 'Learn',
       active: pathname.startsWith('/learn') || 

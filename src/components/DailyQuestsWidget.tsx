@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { CheckCircle2 } from 'lucide-react';
 import { useDailyQuests } from '../hooks/useDailyQuests';
 import { useLang } from '../hooks/useLang';
 import { theme } from '../config/theme';
@@ -53,12 +54,23 @@ export function DailyQuestsWidget() {
           const label = isDE ? quest.titleDE : quest.title;
           const desc = isDE ? quest.descriptionDE : quest.description;
 
+          // Completed quests shift to the emerald "done" family
+          // (21st.dev "Activity Card" pattern); active stays violet.
           return (
             <div
               key={quest.id}
-              className="rounded-xl border border-violet-200 bg-white p-3 dark:border-violet-800 dark:bg-slate-800"
+              className={`rounded-xl border p-3 transition-colors ${
+                quest.completed
+                  ? 'border-emerald-200 bg-emerald-50/60 hover:border-emerald-300 dark:border-emerald-800 dark:bg-emerald-950/20 dark:hover:border-emerald-700'
+                  : 'border-violet-200 bg-white hover:border-violet-300 dark:border-violet-800 dark:bg-slate-800 dark:hover:border-violet-700'
+              }`}
             >
-              <div className="text-sm font-bold text-slate-900 dark:text-white">{label}</div>
+              <div className="flex items-center gap-1.5 text-sm font-bold text-slate-900 dark:text-white">
+                {quest.completed && (
+                  <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-500" aria-hidden="true" />
+                )}
+                <span>{label}</span>
+              </div>
               <div className="mt-1 text-xs text-slate-500 dark:text-slate-400">{desc}</div>
 
               {/* Progress bar */}
@@ -93,7 +105,7 @@ export function DailyQuestsWidget() {
                   <button
                     type="button"
                     onClick={() => handleQuestAction(quest.id)}
-                    className={`w-full ${theme.button.secondary} !px-3 !py-1.5 text-xs`}
+                    className={`w-full ${theme.button.secondarySmall}`}
                   >
                     {quest.id === 'speed-demon'
                       ? isDE ? 'Blitz starten' : 'Start Blitz'

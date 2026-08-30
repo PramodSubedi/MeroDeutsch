@@ -77,9 +77,7 @@ export function ContinueLearningPage() {
         </div>
       </header>
 
-      {/* Module switcher rail — jump between A1 lessons and practice tools */}
-
-      {/* A. A1 campaign spine — linear bands with 80% checkpoint gates */}
+      {/* A1 campaign spine — linear bands with 80% checkpoint gates */}
       <UnitSpine />
 
 

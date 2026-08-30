@@ -8,7 +8,7 @@
  */
 
 import type { Article } from '../../data/a1Path';
-import { theme } from '../../config/theme';
+import { genderTokenFor } from '../../config/theme';
 
 interface GenderBadgeProps {
   article: Article | 'plural';
@@ -25,14 +25,8 @@ const GENDER_LABEL: Record<Article, string> = {
   das: 'das',
 };
 
-function token(article: Article | 'plural') {
-  if (article === 'plural') return theme.gender.diePl;
-  if (article === 'die') return theme.gender.dieF; // feminine -> dieF key
-  return theme.gender[article]; // der | das
-}
-
 export function GenderBadge({ article, labeled = true, dot = false, className }: GenderBadgeProps) {
-  const t = token(article);
+  const t = genderTokenFor(article);
   if (dot) {
     return (
       <span

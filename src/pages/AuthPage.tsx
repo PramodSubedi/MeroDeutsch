@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { Cloud, Map, RefreshCw } from 'lucide-react';
 import { theme } from '../config/theme';
 import { useAuth } from '../hooks/useAuth';
-import { BrandMark } from '../components/BrandMark';
+import { Logo } from '../components/common/Logo';
 import { usePageTitle } from '../hooks/usePageTitle';
 
 export function AuthPage() {
-  usePageTitle('Auth');
+  usePageTitle('Sign in');
   const navigate = useNavigate();
   const { register, login } = useAuth();
   const [mode, setMode] = useState<'login' | 'register'>('register');
@@ -52,8 +53,8 @@ export function AuthPage() {
 
     try {
       await login(email, password);
-      setMessage('Welcome back! Redirecting to dashboard...');
-      window.setTimeout(() => navigate('/dashboard'), 600);
+      setMessage('Welcome back! Redirecting to your home...');
+      window.setTimeout(() => navigate('/home'), 600);
     } catch (loginError: unknown) {
       setError(loginError instanceof Error ? loginError.message : 'Login failed.');
       setIsLoading(false);
@@ -61,40 +62,90 @@ export function AuthPage() {
   };
 
   return (
-    <div className={theme.page.container}>
-      <div className={theme.panel.surface}>
-        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <BrandMark className="text-2xl" />
-            <p className="mt-1 text-sm uppercase tracking-[0.25em] text-blue-600">Account</p>
-            <h1 className="text-3xl font-bold">{mode === 'register' ? 'Create your account' : 'Sign in'}</h1>
-            <p className="mt-2 max-w-xl text-slate-600 dark:text-slate-300">
-              {mode === 'register'
-                ? 'Register once to save your progress and unlock your personal review queue.'
-                : 'Sign in to continue where you left off.'}
-            </p>
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+      <div className="mx-auto flex min-h-screen max-w-6xl items-center justify-center px-4 py-10">
+        <div className="grid w-full items-center gap-10 lg:grid-cols-2">
+          {/* Brand panel — desktop only (value props, no app chrome) */}
+          <div className="hidden lg:block">
+            <div className="rounded-3xl bg-gradient-to-br from-blue-600 via-blue-700 to-blue-900 p-10 text-white shadow-2xl">
+              <Logo size="md" variant="on-dark" />
+              <h2 className="mt-8 text-3xl font-bold tracking-tight">Everything a beginner needs.</h2>
+              <p className="mt-3 max-w-sm text-blue-100">One free account, three lasting benefits.</p>
+              <ul className="mt-8 space-y-5">
+                <li className="flex items-start gap-3">
+                  <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/15">
+                    <Cloud className="h-5 w-5" aria-hidden="true" />
+                  </span>
+                  <div>
+                    <p className="font-semibold">Progress saved &amp; synced</p>
+                    <p className="mt-0.5 text-sm text-blue-100">Pick up on any device where you left off.</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/15">
+                    <Map className="h-5 w-5" aria-hidden="true" />
+                  </span>
+                  <div>
+                    <p className="font-semibold">Guided A1 path</p>
+                    <p className="mt-0.5 text-sm text-blue-100">
+                      Units in a fixed order with checkpoints that gate real progress.
+                    </p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/15">
+                    <RefreshCw className="h-5 w-5" aria-hidden="true" />
+                  </span>
+                  <div>
+                    <p className="font-semibold">Smart review queue</p>
+                    <p className="mt-0.5 text-sm text-blue-100">Missed items come back on purpose until they stick.</p>
+                  </div>
+                </li>
+              </ul>
+            </div>
           </div>
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => setMode('register')}
-              aria-pressed={mode === 'register'}
-              className={mode === 'register' ? theme.button.primary : theme.button.secondary}
-            >
-              Register
-            </button>
-            <button
-              type="button"
-              onClick={() => setMode('login')}
-              aria-pressed={mode === 'login'}
-              className={mode === 'login' ? theme.button.primary : theme.button.secondary}
-            >
-              Sign in
-            </button>
-          </div>
-        </div>
 
-                <form onSubmit={handleSubmit} className="grid gap-4">
+          {/* Card */}
+          <div className="mx-auto w-full max-w-md">
+            <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-xl dark:border-slate-800 dark:bg-slate-900">
+              <Logo size="sm" />
+              <p className="mt-4 text-sm leading-6 text-slate-600 dark:text-slate-300">
+                {mode === 'register'
+                  ? 'Save your progress, unlock your guided A1 path, and review mistakes smartly.'
+                  : 'Sign in to continue where you left off.'}
+              </p>
+
+              {/* Mode tabs */}
+              <div className="mt-6 grid grid-cols-2 gap-1 rounded-xl bg-slate-100 p-1 dark:bg-slate-800" role="tablist">
+                <button
+                  type="button"
+                  onClick={() => setMode('login')}
+                  role="tab"
+                  aria-selected={mode === 'login'}
+                  className={`min-h-[44px] rounded-lg px-3 text-sm font-semibold transition ${
+                    mode === 'login'
+                      ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white'
+                      : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'
+                  }`}
+                >
+                  Sign in
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setMode('register')}
+                  role="tab"
+                  aria-selected={mode === 'register'}
+                  className={`min-h-[44px] rounded-lg px-3 text-sm font-semibold transition ${
+                    mode === 'register'
+                      ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white'
+                      : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'
+                  }`}
+                >
+                  Create account
+                </button>
+              </div>
+
+            <form onSubmit={handleSubmit} className="mt-6 grid gap-4">
           <label className="space-y-2 text-sm font-medium text-slate-700 dark:text-slate-200">
             Email
             <input
@@ -205,6 +256,18 @@ export function AuthPage() {
             )}
           </button>
         </form>
+            </div>
+
+            {/* Legal - minimal, under the card */}
+            <p className="mt-4 text-center text-xs leading-5 text-slate-500 dark:text-slate-400">
+              By continuing you agree to our{' '}
+              <Link to="/terms" className="font-semibold text-blue-600 hover:underline dark:text-blue-400">Terms</Link>{' '}
+              and{' '}
+              <Link to="/privacy" className="font-semibold text-blue-600 hover:underline dark:text-blue-400">Privacy Policy</Link>
+              . No credit card needed - A1 is free.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );
