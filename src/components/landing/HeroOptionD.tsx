@@ -27,9 +27,9 @@ export function HeroOptionD() {
   ];
 
   return (
-    <div className="grid w-full max-w-[480px] gap-4 sm:grid-cols-2">
+    <div className="grid w-full max-w-4xl gap-4 sm:grid-cols-2">
       {/* Without */}
-      <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800/60">
+      <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800/60">
         <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-400">
           {isDE ? 'Übliche Apps' : 'Typical apps'}
         </p>
@@ -46,7 +46,7 @@ export function HeroOptionD() {
       </div>
 
       {/* With MeroDeutsch */}
-      <div className="rounded-2xl border border-blue-200 bg-blue-50 p-5 shadow-lg shadow-blue-600/10 dark:border-blue-800 dark:bg-blue-950/40">
+      <div className="rounded-2xl border border-blue-200 bg-blue-50 p-6 shadow-lg shadow-blue-600/10 dark:border-blue-800 dark:bg-blue-950/40">
         <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-500 dark:text-blue-400">MeroDeutsch</p>
         <ul className="mt-4 space-y-3">
           {withUs.map((item) => (

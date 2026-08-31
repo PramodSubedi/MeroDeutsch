@@ -1,25 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import {
-  ArrowRight,
-  BarChart3,
-  BookOpen,
-  Flag,
-  GraduationCap,
-  Languages,
-  Mic,
-  Moon,
-  RefreshCw,
-  Sparkles,
-  Sun,
-  Target,
-  Zap,
-} from 'lucide-react';
+import { ArrowRight, Languages, Moon, Smartphone, Sparkles, Sun, Target } from 'lucide-react';
 import { theme } from '../config/theme';
 import { Footer } from '../components/Footer';
 import { Logo } from '../components/common/Logo';
 import { LanguageToggle } from '../components/LanguageToggle';
-import { LandingHero } from '../components/landing/LandingHero';
+import { HeroOptionC } from '../components/landing/HeroOptionC';
+import { HeroOptionD } from '../components/landing/HeroOptionD';
+import { HeroOptionE } from '../components/landing/HeroOptionE';
+import { LandingDemoScroll } from '../components/landing/LandingDemoScroll';
 import { useDarkMode } from '../hooks/useDarkMode';
 import { useLang } from '../hooks/useLang';
 import { usePageTitle } from '../hooks/usePageTitle';
@@ -52,20 +41,6 @@ export function LandingPage() {
     return () => window.clearTimeout(id);
   }, []);
 
-  // How-it-works copy reflects the split: guests _explore_ A1 lessons; the
-  // linear checkpoint path is a sign-in-gated benefit, not a guest feature.
-  const how = isDE
-    ? [
-        { title: 'Kostenlos ausprobieren', line: 'Starten Sie als Gast — kein Konto nötig.' },
-        { title: 'A1-Lektionen entdecken', line: 'Arbeiten Sie direkt mit Alphabet, Zahlen, Artikeln.' },
-        { title: 'Anmelden für den geführten Pfad', line: 'Ihr Fortschritt wird gespeichert, inkl. Wiederholdungen.' },
-      ]
-    : [
-        { title: 'Try free', line: 'Start as a guest — no account needed.' },
-        { title: 'Explore A1 lessons', line: 'Jump straight into alphabet, numbers, articles.' },
-        { title: 'Sign in for guided path', line: 'Progress saved + smart review of mistakes.' },
-      ];
-
   const t = {
     eyebrow: 'MeroDeutsch · A1',
     h1: isDE ? 'Deutsch von null lernen — mit nepalesischer Unterstützung' : 'Learn German from zero — with Nepali support',
@@ -75,35 +50,57 @@ export function LandingPage() {
     ne: 'नेपाली बोल्नेहरूका लागि पनि — अंग्रेजी + नेपाली सहयोग',
     tryFree: isDE ? 'Kostenlos starten' : 'Start learning',
     signIn: isDE ? 'Anmelden' : 'Sign in',
-    trust: [
-      { icon: GraduationCap, title: isDE ? 'Geführter A1-Pfad' : 'Guided A1 path', line: isDE ? 'Schritt für Schritt, nicht ein zufälliges Menü.' : 'Step-by-step units, not a random menu.' },
-      { icon: Languages, title: isDE ? 'Nepali + Englisch' : 'Nepali + English', line: isDE ? 'Erklärungen in der Sprache, die Sie verstehen.' : 'Explanations in the language you understand.' },
-      { icon: RefreshCw, title: isDE ? 'Intelligente Wiederholung' : 'Smart review', line: isDE ? 'Verpasste Punkte kommen gezielt wieder.' : 'Missed items come back on purpose.' },
-    ],
+    // Slim pill row between hero and demo — the full value props live in the
+    // hero cards, the benefit panel and the journey ribbon below.
+    trust: isDE
+      ? ['Kostenlos testen', 'Kein Konto nötig', 'English + नेपाली', 'Geführter A1-Pfad']
+      : ['Free to try', 'No account needed', 'English + नेपाली', 'Guided A1 path'],
     featuresHeading: isDE ? 'Was Sie bekommen' : 'What you get',
-    features: [
-      { icon: Flag, title: isDE ? 'A1-Lernpfad' : 'A1 learning path', line: isDE ? 'Einheiten in fester Reihenfolge mit Checkpoints.' : 'Units in a fixed order with checkpoints.' },
-      { icon: BookOpen, title: isDE ? 'Artikel & Wörter' : 'Articles & words', line: isDE ? 'der/die/das mit klarem Üben.' : 'der/die/das with clear practice.' },
-      { icon: Mic, title: isDE ? 'Sprechen & Rollenspiel' : 'Speaking & role-play', line: isDE ? 'Alltagsdialoge von Anfang an.' : 'Everyday dialogues from day one.' },
-      { icon: RefreshCw, title: isDE ? 'Review-Queue' : 'Review queue', line: isDE ? 'Verpasste Items kommen gezielt zurück.' : 'Missed items come back on purpose.' },
-      { icon: Zap, title: isDE ? 'Blitz-Quizze' : 'Blitz quizzes', line: isDE ? 'Schnelle Übungen für unterwegs.' : 'Fast drills for on the go.' },
-      { icon: BarChart3, title: isDE ? 'Fortschritt & Statistiken' : 'Progress & stats', line: isDE ? 'Sehen Sie, was Sie schon können.' : 'See what you already know.' },
-    ],
-    howHeading: isDE ? 'So funktioniert’s' : 'How it works',
-    // NOTE: `how` is an ARRAY — spread it as a named property (not `...how`,
-    // which would splat it into numeric keys and break `t.how.map(...)`).
-    how,
+    featuresSub: isDE
+      ? 'Geführter Pfad, zweisprachige Hilfe, kluge Wiederholung und echte Statistiken — kein zufälliges Lektionsmenü.'
+      : 'Guided path, bilingual help, smart review, and real stats — not a random lesson menu.',
+    howSub: isDE
+      ? 'Vom ersten Klick bis zum geführten Pfad — vier Schritte.'
+      : 'From first click to your guided path — four steps.',
     whomHeading: isDE ? 'Für wen' : 'For whom',
-    whom: isDE
-      ? ['Anfänger (A1)', 'Nepali-Sprecher', 'Selbststudium', 'Mobil & Desktop']
-      : ['Beginners (A1)', 'Nepali speakers', 'Self-paced', 'Mobile & desktop'],
+    whomSub: isDE
+      ? 'Gemacht für Nepalis und Englischsprachige, die Deutsch von null lernen.'
+      : 'Built for Nepali and English speakers starting German.',
+    whom: [
+      {
+        icon: Sparkles,
+        title: isDE ? 'Anfänger (A1)' : 'Beginners (A1)',
+        line: isDE ? 'Starten Sie bei null — kein Vorwissen nötig.' : 'Start from zero — no prior German needed.',
+      },
+      {
+        icon: Languages,
+        title: isDE ? 'Nepali-Sprecher' : 'Nepali speakers',
+        line: isDE ? 'Erklärungen auf Englisch + Nepali.' : 'Explanations in English + Nepali.',
+      },
+      {
+        icon: Target,
+        title: isDE ? 'Im eigenen Tempo' : 'Self-paced',
+        line: isDE ? 'Kontrollpunkte geben das Tempo vor.' : 'Checkpoint gates set your pace.',
+      },
+      {
+        icon: Smartphone,
+        title: isDE ? 'Mobil & Desktop' : 'Mobile & desktop',
+        line: isDE ? 'Üben Sie auf jedem Gerät.' : 'Practice on any device.',
+      },
+    ],
     closingTitle: isDE ? 'Bereit, wenn Sie es sind.' : 'Ready when you are.',
     closingLine: isDE ? 'Starten Sie als Gast in einem Klick.' : 'Start as a guest in one click.',
     privacy: isDE ? 'Keine Kreditkarte, keine Verpflichtung.' : 'No credit card, no commitment.',
   };
 
+  // NOTE: deliberately NO overflow-x-clip/-hidden on this wrapper — ANY
+  // non-visible overflow on an ancestor makes framer-motion resolve that
+  // element as useScroll's "scroll container", which never scrolls, freezing
+  // scrollYProgress in <LandingDemoScroll/> below (transforms stay at their
+  // initial values). Hero decorations are contained by the hero section's own
+  // overflow-hidden instead; nothing else on this page overflows horizontally.
   return (
-    <div className={`${theme.layout.app} min-h-screen overflow-x-hidden`}>
+    <div className={`${theme.layout.app} min-h-screen`}>
       <SEO
         title="Learn German from zero — with Nepali support | MeroDeutsch"
         description="Guided A1 lessons, article & article training, speaking practice, and smart review — try free as a guest, no account required."
@@ -172,104 +169,98 @@ export function LandingPage() {
               </div>
             </div>
 
-            {/* Hero visual — switchable concept (A–E): ?hero= param, VITE_LANDING_HERO env, default A */}
-            <div className="relative hidden lg:block" aria-hidden="true">
-              <LandingHero />
+            {/* Hero visual — floating feature-card collage (six glass cards) */}
+            <div className="relative">
+              <HeroOptionE />
             </div>
           </div>
           </section>
-{/* TRUST STRIP */}
+{/* TRUST STRIP — slim pill row (details live in the cards below) */}
         <section className="border-y border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
-          <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:grid-cols-3 sm:px-6">
-            {t.trust.map((item) => {
-              const Icon = item.icon;
-              return (
-                <div key={item.title} className="flex items-start gap-3">
-                  <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-300">
-                    <Icon className="h-5 w-5" aria-hidden="true" />
-                  </span>
-                  <div>
-                    <h3 className="text-sm font-semibold text-slate-900 dark:text-white">{item.title}</h3>
-                    <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{item.line}</p>
-                  </div>
-                </div>
-              );
-            })}
+          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-6 gap-y-2 px-4 py-4 sm:px-6">
+            {t.trust.map((pill) => (
+              <span
+                key={pill}
+                className="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 dark:text-slate-300"
+              >
+                <span className="h-1.5 w-1.5 rounded-full bg-blue-500" aria-hidden="true" />
+                {pill}
+              </span>
+            ))}
           </div>
         </section>
 
-        {/* FEATURES (bento) */}
-        <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-24">
-          <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl dark:text-white">
-            {t.featuresHeading}
-          </h2>
-          <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {t.features.map((item, i) => {
-              const Icon = item.icon;
-              const wide = i === 0;
-              return (
-                <div
-                  key={item.title}
-                  className={`group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 ${wide ? 'md:col-span-2 lg:col-span-1' : ''}`}
-                >
-                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-300">
-                    <Icon className="h-5 w-5" aria-hidden="true" />
-                  </span>
-                  <h3 className="mt-3 text-base font-semibold text-slate-900 dark:text-white">{item.title}</h3>
-                  <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{item.line}</p>
-                </div>
-              );
-            })}
-          </div>
+        {/* PRODUCT DEMO — ConceptZilla-style scroll-linked expansion: all 5 hero
+            concepts mounted once, pinned + scaled up as the user scrolls, then
+            held for interaction (desktop); static grid on mobile/reduced-motion. */}
+        <LandingDemoScroll />
 
-          {/* HOW IT WORKS */}
-          <div className="mt-16">
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-              {t.howHeading}
-            </h3>
-            <div className="mt-6 grid gap-8 md:grid-cols-3">
-              {t.how.map((step, i) => (
-                <div key={step.title} className="relative">
-                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white">
-                    {String(i + 1).padStart(2, '0')}
-                  </span>
-                  <h4 className="mt-3 text-base font-semibold text-slate-900 dark:text-white">{step.title}</h4>
-                  <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{step.line}</p>
-                </div>
-              ))}
+        {/* WHAT YOU GET — split benefit panel (typical apps vs MeroDeutsch) */}
+        <section className="bg-white dark:bg-slate-900">
+          <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+            <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl dark:text-white">
+              {t.featuresHeading}
+            </h2>
+            <p className="mt-2 max-w-2xl text-sm text-slate-500 dark:text-slate-400 sm:text-base">
+              {t.featuresSub}
+            </p>
+            <div className="mt-8 flex justify-center">
+              <HeroOptionD />
             </div>
           </div>
         </section>
 
-        {/* FOR WHOM */}
+        {/* HOW IT WORKS — journey ribbon (guest → modules → sign in → path) */}
+        <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+          <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl dark:text-white">
+            {isDE ? 'So funktioniert es' : 'How it works'}
+          </h2>
+          <p className="mt-2 text-sm text-slate-500 dark:text-slate-400 sm:text-base">{t.howSub}</p>
+          <div className="mt-10 flex justify-center">
+            <HeroOptionC />
+          </div>
+        </section>
+
+        {/* FOR WHOM — audience mini-cards */}
         <section className="bg-white dark:bg-slate-900">
           <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
             <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">{t.whomHeading}</h2>
-            <div className="mt-6 flex flex-wrap gap-2">
-              {t.whom.map((w) => (
-                <span key={w} className="rounded-full border border-slate-200 bg-slate-50 px-4 py-1.5 text-sm font-medium text-slate-600 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-300">
-                  {w}
-                </span>
-              ))}
+            <p className="mt-2 text-sm text-slate-500 dark:text-slate-400 sm:text-base">{t.whomSub}</p>
+            <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {t.whom.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <div
+                    key={item.title}
+                    className="rounded-2xl border border-slate-200 bg-slate-50 p-5 dark:border-slate-800 dark:bg-slate-800/60"
+                  >
+                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-300">
+                      <Icon className="h-5 w-5" aria-hidden="true" />
+                    </span>
+                    <h3 className="mt-3 text-base font-semibold text-slate-900 dark:text-white">{item.title}</h3>
+                    <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{item.line}</p>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </section>
 
-        {/* FINAL CTA */}
-        <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-          <div className="rounded-3xl bg-blue-50 p-8 text-center sm:p-12 dark:bg-blue-950/30">
-            <Target className="mx-auto h-8 w-8 text-blue-600 dark:text-blue-400" aria-hidden="true" />
-            <h2 className="mt-4 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl dark:text-white">
-              {t.closingTitle}
-            </h2>
-            <p className="mx-auto mt-2 max-w-xl text-base text-slate-600 dark:text-slate-300">{t.closingLine}</p>
-            <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Link to="/home" className={`${theme.button.primary} inline-flex min-h-[48px] items-center justify-center gap-2 px-8`}>
-                {t.tryFree}
-                <ArrowRight className="h-5 w-5" aria-hidden="true" />
-              </Link>
+        {/* FINAL CTA — compact banner */}
+        <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+          <div className="flex flex-col items-start justify-between gap-6 rounded-3xl bg-blue-50 p-6 dark:bg-blue-950/30 sm:flex-row sm:items-center sm:p-8">
+            <div>
+              <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">{t.closingTitle}</h2>
+              <p className="mt-1 text-sm text-slate-600 dark:text-slate-300 sm:text-base">{t.closingLine}</p>
+              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{t.privacy}</p>
             </div>
-            <p className="mt-4 text-xs text-slate-500 dark:text-slate-400">{t.privacy}</p>
+            <Link
+              to="/home"
+              className={`${theme.button.primary} inline-flex min-h-[48px] shrink-0 items-center justify-center gap-2 px-8`}
+            >
+              {t.tryFree}
+              <ArrowRight className="h-5 w-5" aria-hidden="true" />
+            </Link>
           </div>
         </section>
       </main>

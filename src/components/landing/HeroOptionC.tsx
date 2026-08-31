@@ -2,12 +2,13 @@ import { BookA, Flag, LogIn, Zap } from 'lucide-react';
 import { useLang } from '../../hooks/useLang';
 
 /**
- * Hero option C — "Journey ribbon".
- *
- * Four illustrated steps (try as guest → explore A1 modules → sign in free →
- * guided path unlocks) that explain the sign-in gate WITHOUT jargon. The
- * final step is visually highlighted in brand blue to show what an account
- * adds. Guest-safe: presentational only, no links, no auth.
+ * "How it works" journey ribbon (chosen hero concept, formerly option C):
+ * four illustrated steps — try as guest → explore A1 modules → sign in free →
+ * guided path unlocks — explaining the sign-in gate WITHOUT jargon. One
+ * responsive list — a single column on mobile, 2-up on sm, a horizontal 4-up
+ * ribbon with connector rail on md+ — so it works as a full-width landing
+ * section. The final step is highlighted in brand blue to show what
+ * an account adds. Guest-safe: presentational only, no links, no auth.
  */
 export function HeroOptionC() {
   const { langMode } = useLang();
@@ -40,56 +41,55 @@ export function HeroOptionC() {
     },
   ];
 
-  return (
-    <div className="relative w-full max-w-[460px] rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-slate-800 dark:bg-slate-900">
-      <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">
-        {isDE ? 'So funktioniert es' : 'How it works'}
-      </p>
+  const circleCls = (highlight: boolean) =>
+    `relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full shadow-sm ${
+      highlight
+        ? 'bg-blue-600 text-white'
+        : 'border border-slate-200 bg-white text-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400'
+    }`;
 
-      <div className="relative mt-5">
-        {/* Connector rail behind the step circles */}
+  const cardCls = (highlight: boolean) =>
+    `rounded-xl border p-3 ${
+      highlight
+        ? 'border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/40'
+        : 'border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800'
+    }`;
+
+  const cardText = (step: (typeof steps)[number], index: number) => (
+    <>
+      <p
+        className={`text-sm font-bold ${
+          step.highlight ? 'text-blue-700 dark:text-blue-300' : 'text-slate-900 dark:text-white'
+        }`}
+      >
+        <span className="mr-1.5 text-xs font-black text-slate-400">{String(index + 1).padStart(2, '0')}</span>
+        {step.title}
+      </p>
+      <p
+        className={`mt-0.5 text-xs ${
+          step.highlight ? 'text-blue-700/80 dark:text-blue-300/80' : 'text-slate-500 dark:text-slate-400'
+        }`}
+      >
+        {step.line}
+      </p>
+    </>
+  );
+
+  return (
+    <div className="relative w-full max-w-4xl">
+      {/* Steps — single column on mobile, 2-up on sm, 4-up ribbon with rail on md+ */}
+      <div className="relative">
         <span
-          className="absolute bottom-5 left-[19px] top-5 w-px bg-slate-200 dark:bg-slate-700"
+          className="absolute left-5 right-5 top-[19px] h-px hidden bg-slate-200 dark:bg-slate-700 md:block"
           aria-hidden="true"
         />
-
-        <ol className="space-y-4">
+        <ol className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-4">
           {steps.map((step, i) => (
-            <li key={step.title} className="relative flex items-start gap-3">
-              <span
-                className={`relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full shadow-sm ${
-                  step.highlight
-                    ? 'bg-blue-600 text-white'
-                    : 'border border-slate-200 bg-white text-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400'
-                }`}
-              >
+            <li key={step.title} className="relative flex flex-col items-start">
+              <span className={circleCls(step.highlight)}>
                 <step.icon className="h-5 w-5" />
               </span>
-              <div
-                className={`flex-1 rounded-xl border p-3 ${
-                  step.highlight
-                    ? 'border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/40'
-                    : 'border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800'
-                }`}
-              >
-                <p
-                  className={`text-sm font-bold ${
-                    step.highlight ? 'text-blue-700 dark:text-blue-300' : 'text-slate-900 dark:text-white'
-                  }`}
-                >
-                  <span className="mr-1.5 text-xs font-black text-slate-400">
-                    {String(i + 1).padStart(2, '0')}
-                  </span>
-                  {step.title}
-                </p>
-                <p
-                  className={`mt-0.5 text-xs ${
-                    step.highlight ? 'text-blue-700/80 dark:text-blue-300/80' : 'text-slate-500 dark:text-slate-400'
-                  }`}
-                >
-                  {step.line}
-                </p>
-              </div>
+              <div className={`${cardCls(step.highlight)} mt-3 w-full flex-1`}>{cardText(step, i)}</div>
             </li>
           ))}
         </ol>
