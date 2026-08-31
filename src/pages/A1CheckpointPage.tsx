@@ -21,6 +21,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useLang } from '../hooks/useLang';
+import { useAuth } from '../hooks/useAuth';
 import { useA1Path } from '../hooks/useA1Path';
 import { curriculumService } from '../services';
 import { CHECKPOINT_PASS_THRESHOLD, A1_UNITS, type CheckpointSource, type Article } from '../data/a1Path';
@@ -216,6 +217,36 @@ export function A1CheckpointPage() {
   const { markCheckpointResult, isUnitUnlocked, isCheckpointComplete } = useA1Path();
 
   const unit = A1_UNITS[unitIndex];
+  const { isAuthenticated } = useAuth();
+
+  // Checkpoints are a signed-in benefit (locked product rule): guests who
+  // deep-link to /checkpoint/:unitIndex get a friendly sign-in gate (before
+  // any checkpoint state/quiz hooks run), never the quiz or the path.
+  if (!isAuthenticated) {
+    return (
+      <div className={theme.page.container}>
+        <div className={theme.panel.surface}>
+          <span className="text-4xl" aria-hidden="true">🔒</span>
+          <h1 className="mt-2 text-xl font-bold text-slate-900 dark:text-white">
+            {isDE ? 'Checkpoints' : 'Checkpoints'}
+          </h1>
+          <p className="mt-2 text-slate-600 dark:text-slate-300">
+            {isDE
+              ? 'Checkpoints gehören zum geführten Lernpfad. Bitte melden Sie sich an, um fortzufahren.'
+              : 'Checkpoints are part of the guided learning path. Please sign in to continue.'}
+          </p>
+          <div className="mt-4 flex flex-col gap-2">
+            <Link to="/auth" className={`${theme.button.primary} inline-flex min-h-[44px] items-center justify-center`}>
+              {isDE ? 'Anmelden / Registrieren' : 'Sign in / Register'}
+            </Link>
+            <Link to="/home" className={`${theme.button.secondary} inline-flex min-h-[44px] items-center justify-center`}>
+              {isDE ? 'Zurück zur Startseite' : 'Back to Home'}
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // A SUPPORT band (Band B) carries no checkpoint — and optionally the hard
   // deep link still loads. Show a friendly "optional" screen, not an error.

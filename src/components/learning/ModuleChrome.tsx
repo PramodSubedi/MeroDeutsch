@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useLang } from '../../hooks/useLang';
+import { useAuth } from '../../hooks/useAuth';
 
 /**
  * Shared module navigation chrome for A1 learning module routes.
@@ -13,14 +14,17 @@ import { useLang } from '../../hooks/useLang';
 export function ModuleChrome() {
   const { langMode } = useLang();
   const isDE = langMode === 'german';
+  const { isAuthenticated } = useAuth();
 
   return (
     <div className="mb-2 flex flex-wrap items-center gap-x-3 gap-y-2">
       <Link
-        to="/learn"
+        to={isAuthenticated ? '/learn' : '/home'}
         className="inline-flex shrink-0 items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-200"
       >
-        ← {isDE ? 'Zurück zum Lern-Hub' : 'Back to Learning Hub'}
+        ← {isDE
+          ? (isAuthenticated ? 'Zurück zum Lernpfad' : 'Zurück zur Startseite')
+          : (isAuthenticated ? 'Back to learning path' : 'Back to Home')}
       </Link>
     </div>
   );

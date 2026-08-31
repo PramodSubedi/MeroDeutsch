@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { Menu, Moon, Sun, Volume2, VolumeX } from 'lucide-react';
 import { theme } from '../config/theme';
 import { getModuleRoutes } from '../config/modules';
+import { contextLabelFor } from '../config/routeLabels';
 import { useDarkMode } from '../hooks/useDarkMode';
 import { useLang } from '../hooks/useLang';
 import { useAuth } from '../hooks/useAuth';
@@ -25,34 +26,7 @@ import { subscribeDailySessionActive } from '../lib/dailySessionSignal';
 
 /** Top nav + shell — branding/layout only; features live in pages/ */
 
-/** Page → header context-chip label (Converged Shell: on lg+ the header shows
-    where you are instead of duplicating nav links, which now live in the rail). */
-const CONTEXT_LABELS: ReadonlyArray<readonly [string, string, string]> = [
-  ['/home', 'Home', 'Startseite'],
-  ['/learn', 'A1 Path', 'A1-Lernpfad'],
-  ['/dashboard', 'Dashboard', 'Übersicht'],
-  ['/practice', 'Practice', 'Übung'],
-  ['/alphabet', 'Alphabet', 'Alphabet'],
-  ['/numbers', 'Numbers', 'Zahlen'],
-  ['/calendar', 'Calendar', 'Kalender'],
-  ['/articles', 'Articles', 'Artikel'],
-  ['/greetings', 'Greetings', 'Begrüßungen'],
-  ['/glossary', 'Glossary', 'Glossar'],
-  ['/dictation', 'Dictation', 'Diktat'],
-  ['/grammar', 'Grammar', 'Grammatik'],
-  ['/pronunciation', 'Pronunciation', 'Aussprache'],
-  ['/roleplay', 'Role-play', 'Rollenspiel'],
-  ['/rapid-fire', 'Rapid Fire', 'Schnellfeuer'],
-  ['/sentence-builder', 'Sentence Builder', 'Satzbau'],
-];
 
-function contextLabelFor(pathname: string, isDE: boolean): string {
-  if (pathname === '/') return isDE ? 'Startseite' : 'Home';
-  for (const [prefix, en, de] of CONTEXT_LABELS) {
-    if (pathname === prefix || pathname.startsWith(prefix + '/')) return isDE ? de : en;
-  }
-  return isDE ? 'Deutsch lernen' : 'Learn German';
-}
 
 export function Layout() {
   const { pathname } = useLocation();

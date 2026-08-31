@@ -1,5 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useLang } from '../hooks/useLang';
+import { useAuth } from '../hooks/useAuth';
+import { ROUTE_LABELS } from '../config/routeLabels';
 
 interface BreadcrumbItem {
   label: string;
@@ -15,32 +17,15 @@ export function Breadcrumb() {
   const { pathname } = useLocation();
   const { langMode } = useLang();
   const isDE = langMode === 'german';
+  const { isAuthenticated } = useAuth();
 
-  // Route label mappings
-  const routeLabels: Record<string, { en: string; de: string }> = {
-    '/': { en: 'Home', de: 'Start' },
-    '/learn': { en: 'Learn', de: 'Lernen' },
-    '/practice': { en: 'Practice Hub', de: 'Übungswerkzeuge' },
-    '/dashboard': { en: 'Dashboard', de: 'Dashboard' },
-    '/alphabet': { en: 'Alphabet', de: 'Alphabet' },
-    '/numbers': { en: 'Numbers', de: 'Zahlen' },
-    '/calendar': { en: 'Calendar', de: 'Kalender' },
-    '/articles': { en: 'Articles', de: 'Artikel' },
-    '/greetings': { en: 'Greetings', de: 'Begrüßungen' },
-    '/glossary': { en: 'Glossary', de: 'Glossar' },
-    '/dictation': { en: 'Dictation', de: 'Diktat' },
-    '/grammar': { en: 'Grammar', de: 'Grammatik' },
-    '/pronunciation': { en: 'Pronunciation', de: 'Aussprache' },
-    '/roleplay': { en: 'Role-play', de: 'Rollenspiel' },
-    '/auth': { en: 'Sign in', de: 'Anmelden' },
-    '/checkpoint': { en: 'Checkpoint', de: 'Checkpoint' },
-    '/rapid-fire': { en: 'Rapid Fire', de: 'Schnellfeuer' },
-    '/sentence-builder': { en: 'Sentence Builder', de: 'Satzbau' },
-  };
+  // Route label mappings — single source of truth from routeLabels.ts
+  const routeLabels: Record<string, { en: string; de: string }> = {};
+  for (const [prefix, labels] of ROUTE_LABELS) routeLabels[prefix] = labels;
 
   // Don't show breadcrumbs on homepage, auth, legal pages, or the hubs that
   // carry their own page context (Learn + Practice — converged shell).
-  if (pathname === '/' || pathname === '/auth' || pathname === '/privacy' || pathname === '/terms' || pathname === '/learn' || pathname === '/practice') {
+  if (pathname === '/' || pathname === '/home' || pathname === '/auth' || pathname === '/privacy' || pathname === '/terms' || pathname === '/learn' || pathname === '/practice') {
     return null;
   }
 
@@ -59,9 +44,19 @@ export function Breadcrumb() {
     const routeInfo =
       routeLabels[currentPath] ?? routeLabels[currentPath.replace(/\/\d+$/, '')];
     if (routeInfo) {
+      // The path is a signed-in benefit — guests get a guest-safe crumb so a
+      // breadcrumb never leaks a /learn / checkpoint / bonus link back.
+      const guestOverride: Record<string, { en: string; de: string; path: string }> = {
+        '/learn': { en: 'Lessons', de: 'Lektionen', path: '/home' },
+        '/checkpoint': { en: 'Sign in', de: 'Anmelden', path: '/auth' },
+        '/sentence-builder': { en: 'Practice', de: 'Übung', path: '/practice' },
+      };
+      const override = !isAuthenticated
+        ? guestOverride[currentPath] ?? guestOverride[currentPath.replace(/\/\d+$/, '')]
+        : undefined;
       breadcrumbs.push({
-        label: isDE ? routeInfo.de : routeInfo.en,
-        path: currentPath,
+        label: isDE ? (override?.de ?? routeInfo.de) : (override?.en ?? routeInfo.en),
+        path: override?.path ?? currentPath,
       });
     }
   }

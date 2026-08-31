@@ -1,11 +1,12 @@
 import { useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ArrowRight, Library, Lock, Volume2, Zap } from 'lucide-react';
+import { ArrowRight, Lock } from 'lucide-react';
 import { theme } from '../config/theme';
 import { useLang } from '../hooks/useLang';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { SEO } from '../components/common/SEO';
 import { LearningPath } from '../components/learning/LearningPath';
+import { PracticeToolsGrid } from '../components/PracticeToolsGrid';
 
 /**
  * Guest Home — the "Try free" destination.
@@ -34,12 +35,6 @@ export function GuestHomePage() {
     e.preventDefault();
     document.getElementById('learning-path')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
-
-  const practiceTools = [
-    { to: '/rapid-fire', label: isDE ? 'Schnelltest' : 'Rapid Fire', icon: Zap },
-    { to: '/dictation', label: isDE ? 'Diktat' : 'Dictation', icon: Volume2 },
-    { to: '/glossary', label: isDE ? 'Glossar' : 'Glossary', icon: Library },
-  ] as const;
 
   return (
     <div className={`${theme.page.container} w-full space-y-5 pb-8`}>
@@ -99,34 +94,12 @@ export function GuestHomePage() {
         </div>
       </section>
 
-      {/* Practice — quick look (limited tool set for guests) */}
+      {/* Practice — full tool grid (same as logged-in users) */}
       <section>
-        <div className="mb-2 flex items-center justify-between">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
-            {isDE ? 'Schnelles Üben' : 'Quick practice'}
-          </h2>
-          <Link
-            to="/practice"
-            className="text-xs font-semibold text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
-          >
-            {isDE ? 'Alle Übungen →' : 'View all →'}
-          </Link>
-        </div>
-        <div className="grid gap-3 sm:grid-cols-3">
-          {practiceTools.map((tool) => (
-            <Link
-              key={tool.to}
-              to={tool.to}
-              className="flex min-h-[44px] items-center justify-between gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 transition hover:-translate-y-0.5 hover:border-blue-300 hover:text-blue-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-blue-500 dark:hover:text-blue-300"
-            >
-              <span className="flex items-center gap-2">
-                <tool.icon className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                {tool.label}
-              </span>
-              <ArrowRight className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-            </Link>
-          ))}
-        </div>
+        <h2 className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
+          {isDE ? 'Übung' : 'Practice'}
+        </h2>
+        <PracticeToolsGrid />
       </section>
 
       {/* Sign in — the guided path is a signed-in benefit */}
