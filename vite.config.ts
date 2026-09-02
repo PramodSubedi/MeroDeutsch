@@ -12,6 +12,7 @@ export default defineConfig({
       hostname: 'https://merodeutsch.pramods.com.np',
       dynamicRoutes: [
         '/',
+        '/welcome',
         '/auth',
         '/alphabet',
         '/numbers',

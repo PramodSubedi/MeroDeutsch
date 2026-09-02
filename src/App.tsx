@@ -53,21 +53,15 @@ function RapidBlitzRedirect() {
 
 /** Routes only — do not put feature logic here */
 
-/** Landing "seen" flag — returning guests skip straight to guest Home. */
-const LANDING_SEEN_KEY = 'meroDeutschLandingSeenV1';
-
 /**
- * Root path (`/`) router: authenticated users go to the app home,
- * guests go to the marketing landing on first visit (or /home if they've
- * already seen the landing). UseAuth must be under AuthProvider (it is).
+ * Root path (`/`) router: authenticated users go straight to the app home;
+ * every guest (returning or first-time) lands on the marketing `/welcome`
+ * page — MeroDeutsch is landing-page-first. UseAuth must be under
+ * AuthProvider (it is).
  */
 function RootRedirect() {
   const { isAuthenticated } = useAuth();
-  const target = isAuthenticated
-    ? '/home'
-    : localStorage.getItem(LANDING_SEEN_KEY) === '1'
-      ? '/home'
-      : '/welcome';
+  const target = isAuthenticated ? '/home' : '/welcome';
   return <Navigate to={target} replace />;
 }
 
@@ -82,8 +76,7 @@ export default function App() {
       <BrowserRouter>
         <Suspense fallback={<SkeletonLoader />}>
           <Routes>
-            {/* Root: redirect to the app home (authed) or marketing landing
-                (guest, first visit) / guest Home (returning guest). */}
+            {/* Root: authenticated → app home; guests → marketing landing (/welcome). */}
             <Route index element={<RootRedirect />} />
             {/* Full-screen marketing landing — NO app shell, NO sidebar/bottom nav */}
             <Route path="welcome" element={<LandingPage />} />

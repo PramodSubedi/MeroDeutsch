@@ -15,6 +15,8 @@ interface GlossaryEntry {
   en: string;
   ne: string;
   source: string;
+  pos?: string;
+  level?: string;
 }
 
 export function GlossaryPage() {
@@ -24,6 +26,8 @@ export function GlossaryPage() {
   const [query, setQuery] = useState('');
   // Source filter: 'all' or a specific source name
   const [sourceFilter, setSourceFilter] = useState<string>('all');
+  // Part-of-speech filter ('all' or a POS tag); applies only to Vocabulary entries
+  const [posFilter, setPosFilter] = useState<string>('all');
   // Sort key: 'az' | 'za' | 'source'
   const [sortKey, setSortKey] = useState<string>('az');
   const parentRef = useRef<HTMLDivElement>(null);
@@ -103,13 +107,23 @@ export function GlossaryPage() {
     // Curated A1 vocabulary
     const vocabCardData = vocabularyData as any[];
     vocabCardData.forEach((item) => {
-      const entry = {
+      // tags can carry POS (noun/verb/adjective/...) and a CEFR level (A1/A2).
+      // Previously tags[0] was used as the source label, which leaked a POS tag
+      // (e.g. 'noun') into the source column and broke the 'Vocabulary' chip.
+      const tagList: string[] = item.tags ?? [];
+      const posTag = tagList.find((t) =>
+        ['noun', 'verb', 'adjective', 'phrase', 'adverb', 'preposition', 'conjunction', 'article'].includes(
+          t.toLowerCase()
+        )
+      );
+      entries.push({
         de: item.lemma || item.de,
         en: item.translation?.en || item.en,
         ne: item.translation?.np || item.ne,
-        source: item.tags[0] ?? 'Vocabulary',
-      };
-      entries.push(entry);
+        source: 'Vocabulary', // stable group label (was tags[0] = a POS tag!)
+        pos: posTag,
+        level: tagList.find((t) => /^a[1-2]$/i.test(t)),
+      });
     });
 
     // Stories - flatten all words from all stories (dynamic pool)
@@ -134,7 +148,26 @@ export function GlossaryPage() {
 
     return entries;
   }, [dataLoaded, alphabetData, numbersData, calendarData, greetingsData, articlesData, vocabularyData, storiesData]);
-  
+
+  // Derived filter options — data-driven so chips always match real entries
+  // (kills the dead 'Vocabulary' chip class of bug forever).
+  const sourceOptions = useMemo(() => {
+    const distinct = new Set(glossary.map((e) => e.source));
+    return ['all', ...Array.from(distinct).sort((a, b) => a.localeCompare(b))];
+  }, [glossary]);
+
+  const posOptions = useMemo(() => {
+    const distinct = Array.from(
+      new Set(
+        glossary
+          .filter((e) => e.source === 'Vocabulary')
+          .map((e) => e.pos)
+          .filter(Boolean) as string[]
+      )
+    );
+    return ['all', ...distinct.sort((a, b) => a.localeCompare(b))];
+  }, [glossary]);
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     let items = glossary.filter(
@@ -146,6 +179,10 @@ export function GlossaryPage() {
     // Source filter
     if (sourceFilter !== 'all') {
       items = items.filter((entry) => entry.source === sourceFilter);
+    }
+    // Part-of-speech filter — Vocabulary only; other sources always pass
+    if (posFilter !== 'all') {
+      items = items.filter((entry) => entry.source !== 'Vocabulary' || entry.pos === posFilter);
     }
     // Sort
     items = [...items].sort((a, b) => {
@@ -160,7 +197,7 @@ export function GlossaryPage() {
       }
     });
     return items;
-  }, [glossary, query, sourceFilter, sortKey]);
+  }, [glossary, query, sourceFilter, sortKey, posFilter]);
 
   // Virtualize rows for smooth scrolling with large datasets
   const rowVirtualizer = useVirtualizer({
@@ -203,8 +240,8 @@ export function GlossaryPage() {
 
       {/* Source filter chips + sort selector */}
       <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-wrap items-center gap-1.5">
-          {['all', 'Alphabet', 'Numbers', 'Calendar', 'Greetings', 'Articles', 'Vocabulary', 'Stories'].map((src) => {
+                <div className="flex flex-wrap items-center gap-1.5">
+          {sourceOptions.map((src) => {
             const active = sourceFilter === src;
             const label = src === 'all' ? (isDE ? 'Alle' : 'All') : src;
             return (
@@ -222,6 +259,30 @@ export function GlossaryPage() {
               </button>
             );
           })}
+          {/* Part-of-speech chips (Vocabulary only — shown when All/Vocabulary source is active) */}
+          {(sourceFilter === 'all' || sourceFilter === 'Vocabulary') && posOptions.length > 1 && (
+            <>
+              {posOptions.map((pos) => {
+                const active = posFilter === pos;
+                const posLabel =
+                  pos === 'all' ? (isDE ? 'Alle Wörter' : 'All words') : pos;
+                return (
+                  <button
+                    key={pos}
+                    type="button"
+                    onClick={() => setPosFilter(pos)}
+                    className={`rounded-full px-3 py-1 text-xs font-semibold transition active:scale-95 ${
+                      active
+                        ? 'bg-emerald-600 text-white'
+                        : 'border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300'
+                    }`}
+                  >
+                    {posLabel}
+                  </button>
+                );
+              })}
+            </>
+          )}
         </div>
         <select
           value={sortKey}

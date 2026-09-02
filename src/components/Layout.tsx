@@ -68,7 +68,7 @@ export function Layout() {
   useEffect(() => subscribeDailySessionActive(setDailySessionActiveState), []);
 
   // Check if current route is a quiz, blitz, or active training session (Phase D: TTS/Modal safety)
-  const isActiveQuizRoute =
+    const isActiveQuizRoute =
     dailySessionActive || // Daily review batch active (U6)
     pathname.includes('/rapid-fire') ||
     pathname.includes('/rapid-blitz') ||
@@ -76,7 +76,15 @@ export function Layout() {
     pathname.endsWith('/quiz') ||
     pathname.includes('/dictation') ||
     pathname.includes('/pronunciation') ||
-    pathname.includes('/sentence-builder');
+    pathname.includes('/sentence-builder') ||
+    // Per-module training/quiz surfaces (C2.7: level-ups here toast, never modal)
+    pathname === '/articles' ||
+    pathname === '/vocab-trainer' ||
+    pathname === '/numbers' ||
+    pathname === '/calendar' ||
+    pathname === '/alphabet' ||
+    pathname === '/greetings' ||
+    pathname === '/article-sprint';
 
   // Global level-up listener — any module that awards XP can trigger the modal.
   useEffect(() => {

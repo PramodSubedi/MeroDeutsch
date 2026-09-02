@@ -14,24 +14,12 @@ import { useLang } from '../hooks/useLang';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { SEO } from '../components/common/SEO';
 
-const LANDING_SEEN_KEY = 'meroDeutschLandingSeenV1';
-
 /** Marketing landing — why join / what it is. Hands off to Guest Home (`/home`). */
 export function LandingPage() {
   usePageTitle('Learn German from zero — with Nepali support');
   const { dark, toggle: toggleDark } = useDarkMode();
   const { langMode } = useLang();
   const isDE = langMode === 'german';
-
-  // Returning-logged-out visitors (or anyone who clicked through once) can jump
-  // straight to the guest Home; the flag is set silently on mount.
-  useEffect(() => {
-    try {
-      localStorage.setItem(LANDING_SEEN_KEY, '1');
-    } catch {
-      /* ignore */
-    }
-  }, []);
 
   const [visible, setVisible] = useState(false);
   useEffect(() => {
