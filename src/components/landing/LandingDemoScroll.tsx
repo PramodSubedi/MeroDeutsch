@@ -8,12 +8,12 @@
  *   p 0.15-0.35  Cards scale down / drift up / fade — "assembling the app"
  *   p 0.35-0.50  A single browser frame grows to full width
  *   p 0.50-0.90  Scripted demo plays inside the frame (5 scenes, scrub by scroll):
- *                guest module grid -> lesson -> smart review -> tools -> sign-in gate
+ *                home daily loop -> A1 band spine -> gender articles -> review + tools -> sign-in gate
  *   p 0.90-1.00  Settle: final caption + real CTAs (Start learning / Sign in)
  *
- * Product rules baked into the script: guests get modules + tools; the guided
- * path is introduced as the sign-in step (step 5). Scenes are static mocks
- * (aria-hidden, non-interactive) — the only real links are the final CTAs.
+ * Product rules baked into the script: guests get the daily loop + tools; the guided
+ * A1 bands and checkpoint gates are the signed-in payoff (scene 5). Scenes are static
+ * mocks (aria-hidden, non-interactive) — the only real links are the final CTAs.
  *
  * Implementation notes:
  *  - Progress comes from getBoundingClientRect() on the section inside a
@@ -31,10 +31,10 @@ import { useEffect, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  BookOpen, CalendarDays, Hash, Library,
-  Lock, MessagesSquare, Mic, PenLine, RotateCcw, Route, ScrollText,
-  Type, Volume2, Wrench, Zap,
+BookOpen, CheckCircle, Flame, Home, Lock,
+  Mic, PenLine, Route, RotateCcw, Target, Trophy, Zap,
 } from 'lucide-react';
+import { theme } from '../../config/theme';
 import { useLang } from '../../hooks/useLang';
 
 const FORCE_MOTION =
@@ -44,27 +44,27 @@ const FORCE_MOTION =
 /** Deck cards: chapter markers mirroring the five scripted demo scenes. */
 const DECK = [
   {
-    icon: BookOpen,
-    title: { en: 'A1 modules', de: 'A1-Module' },
-    sub: { en: 'Explore free', de: 'Gratis entdecken' },
-  },
-  {
-    icon: PenLine,
-    title: { en: 'Live lesson', de: 'Live-Lektion' },
-    sub: { en: 'Learn by doing', de: 'Lernen durch Machen' },
-  },
-  {
-    icon: RotateCcw,
-    title: { en: 'Smart review', de: 'Smarte Wiederholung' },
-    sub: { en: 'Misses come back', de: 'Fehler kommen zurück' },
-  },
-  {
-    icon: Wrench,
-    title: { en: 'Practice tools', de: 'Übungswerkzeuge' },
-    sub: { en: 'Blitz · speak · dictation', de: 'Blitz · Sprechen · Diktat' },
+    icon: Home,
+    title: { en: 'Daily loop', de: 'Tages-Rhythmus' },
+    sub: { en: 'Warm-up · Push · Challenge', de: 'Warm-up · Push · Challenge' },
   },
   {
     icon: Route,
+    title: { en: 'A1 campaign', de: 'A1-Kampagne' },
+    sub: { en: '6 bands, 80% gates', de: '6 Bänder, 80%-Pforten' },
+  },
+  {
+    icon: BookOpen,
+    title: { en: 'Gender articles', de: 'Artikel & Genus' },
+    sub: { en: 'der · die · das colors', de: 'der · die · das mit Farbe' },
+  },
+  {
+    icon: RotateCcw,
+    title: { en: 'Review + tools', de: 'Wiederholung + Tools' },
+    sub: { en: 'Misses come back · Blitz', de: 'Fehler kommen zurück · Blitz' },
+  },
+  {
+    icon: Lock,
     title: { en: 'Guided path', de: 'Geführter Pfad' },
     sub: { en: 'Sign in to unlock', de: 'Anmelden zum Freischalten' },
   },
@@ -72,10 +72,10 @@ const DECK = [
 
 /** Captions for the five scripted demo scenes (scrubbed by scroll). */
 const STEPS = [
-  { cap: { en: 'Explore A1 lessons free', de: 'A1-Lektionen kostenlos entdecken' } },
-  { cap: { en: 'Learn by doing', de: 'Lernen durch Machen' } },
-  { cap: { en: 'Misses come back', de: 'Fehler kommen zurück' } },
-  { cap: { en: 'Practice tools', de: 'Übungswerkzeuge' } },
+  { cap: { en: "Your daily loop — start today's session", de: 'Dein Tages-Rhythmus — Sitzung heute starten' } },
+  { cap: { en: 'One band at a time — gates at ≥80%', de: 'Band für Band — Pforten bei ≥80%' } },
+  { cap: { en: 'Pick the right article — colors teach gender', de: 'Den richtigen Artikel wählen — Farbe lehrt Genus' } },
+  { cap: { en: 'Review misses come back + quick tools', de: 'Fehler kommen zurück + schnelle Tools' } },
   { cap: { en: 'Unlock the guided path — sign in', de: 'Geführten Pfad freischalten — anmelden' } },
 ] as const;
 
@@ -219,16 +219,26 @@ export function LandingDemoScroll() {
               style={frameStyle ?? { opacity: 1 }}
               className="relative z-10 mx-auto flex max-w-4xl flex-col items-center"
             >
+              {/* Ambient brand glow behind the assembled frame */}
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute -inset-6 -z-10 rounded-[2rem] bg-gradient-to-tr from-blue-500/15 via-sky-400/10 to-transparent blur-2xl"
+              />
+
               {/* Browser chrome */}
-              <div className="w-full rounded-t-2xl border border-b-0 border-slate-200 bg-slate-100 px-4 py-2.5 dark:border-slate-800 dark:bg-slate-800/80">
+              <div className="w-full rounded-t-2xl border border-b-0 border-slate-200 bg-white/90 px-4 py-2.5 backdrop-blur dark:border-slate-800 dark:bg-slate-800/80">
                 <div className="flex items-center gap-3">
                   <span className="flex gap-1.5" aria-hidden="true">
                     <span className="h-2.5 w-2.5 rounded-full bg-red-400" />
                     <span className="h-2.5 w-2.5 rounded-full bg-amber-400" />
                     <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
                   </span>
-                  <span className="mx-auto rounded-md bg-white px-3 py-0.5 text-[11px] font-medium text-slate-500 dark:bg-slate-900 dark:text-slate-400">
-                    merodeutsch.app
+                  <span className="mx-auto flex min-w-0 items-center gap-1.5 rounded-md border border-slate-200 bg-white px-3 py-1 text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
+                    <Lock className="h-3 w-3 shrink-0 text-emerald-500" aria-hidden="true" />
+                    <span className="truncate text-[11px] font-medium">
+                      merodeutsch.app
+                      <span className="text-slate-400 dark:text-slate-500">/welcome</span>
+                    </span>
                   </span>
                   <span className="w-10" aria-hidden="true" />
                 </div>
@@ -243,10 +253,10 @@ export function LandingDemoScroll() {
                     style={{ opacity: s === step ? 1 : 0 }}
                     className="pointer-events-none absolute inset-0 p-6 transition-opacity duration-300"
                   >
-                    {s === 0 && <SceneGuestHome isDE={isDE} />}
-                    {s === 1 && <SceneLesson isDE={isDE} />}
-                    {s === 2 && <SceneReview isDE={isDE} />}
-                    {s === 3 && <SceneTools isDE={isDE} />}
+                    {s === 0 && <SceneHome isDE={isDE} />}
+                    {s === 1 && <ScenePath isDE={isDE} />}
+                    {s === 2 && <SceneArticles isDE={isDE} />}
+                    {s === 3 && <SceneReview isDE={isDE} />}
                     {s === 4 && <SceneGate isDE={isDE} />}
                   </div>
                 ))}
@@ -305,28 +315,109 @@ export function LandingDemoScroll() {
 
 /* ---------------- Scripted demo scenes (static mocks) ---------------- */
 
-function SceneGuestHome({ isDE }: { isDE: boolean }) {
-  const mods = [
-    { icon: MessagesSquare, label: isDE ? 'Grüße' : 'Greetings' },
-    { icon: Type, label: 'Alphabet' },
-    { icon: Hash, label: isDE ? 'Zahlen' : 'Numbers' },
-    { icon: CalendarDays, label: isDE ? 'Kalender' : 'Calendar' },
-    { icon: Library, label: isDE ? 'Artikel' : 'Articles' },
-    { icon: ScrollText, label: isDE ? 'Geschichten' : 'Stories' },
+function SceneHome({ isDE }: { isDE: boolean }) {
+  return (
+    <div className="flex h-full flex-col">
+      <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-slate-800">
+        <span className="text-sm font-black text-blue-600 dark:text-blue-400">MeroDeutsch</span>
+        <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] font-semibold text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+          <Flame className="h-3 w-3 text-amber-500" aria-hidden="true" /> {isDE ? '3-Tage-Strähne' : '3-day streak'}
+        </span>
+      </div>
+      <button
+        type="button"
+        className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow-lg shadow-blue-600/25"
+      >
+        <Target className="h-3.5 w-3.5" aria-hidden="true" />
+        {isDE ? "Starte die heutige Sitzung" : "Start today's session"}
+        <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-white/20 px-1.5 text-[10px] font-bold text-white">5</span>
+      </button>
+      <div className="mt-2.5 flex-1 space-y-2">
+          <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 dark:border-slate-800 dark:bg-slate-800/50">
+          <span className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-700 dark:text-slate-200">
+            <RotateCcw className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" aria-hidden="true" />
+            {isDE ? 'Warm-up' : 'Warm-up'}
+          </span>
+          <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">
+            5 {isDE ? 'fällig' : 'due'}
+          </span>
+        </div>
+        <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 dark:border-slate-800 dark:bg-slate-800/50">
+          <span className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-700 dark:text-slate-200">
+            <Route className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" aria-hidden="true" />
+            {isDE ? 'Push' : 'Push'}
+          </span>
+          <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">
+            {isDE ? 'Weiter: Grüße' : 'Next: Greetings'}
+          </span>
+        </div>
+        <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 dark:border-slate-800 dark:bg-slate-800/50">
+          <span className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-700 dark:text-slate-200">
+            <Zap className="h-3.5 w-3.5 text-orange-500 dark:text-orange-400" aria-hidden="true" /> {isDE ? 'Herausforderung' : 'Challenge'}
+          </span>
+          <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">Rapid Blitz</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ScenePath({ isDE }: { isDE: boolean }) {
+  const bands = [
+    { code: 'A', en: 'First Contact', de: 'Erster Kontakt', state: 'done' },
+    { code: 'B', en: 'Script & Sound', de: 'Schrift & Klang', state: 'support' },
+    { code: 'C', en: 'Name the World', de: 'Die Welt benennen', state: 'current' },
+    { code: 'D', en: 'Time & Routine', de: 'Zeit & Alltag', state: 'locked' },
+    { code: 'E', en: 'Situations', de: 'Situationen', state: 'locked' },
+    { code: 'F', en: 'Control & Accuracy', de: 'Präzision & Aussprache', state: 'locked' },
   ];
   return (
     <div className="flex h-full flex-col">
-      <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-slate-800">
-        <span className="text-sm font-black text-blue-600 dark:text-blue-400">MeroDeutsch</span>
-        <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] font-semibold text-slate-500 dark:bg-slate-800 dark:text-slate-400">
-          {isDE ? 'Gast-Modus' : 'Guest mode'}
+      <div className="flex items-center justify-between">
+        <span className="text-sm font-bold text-slate-900 dark:text-white">
+          {isDE ? 'Dein A1-Lernpfad' : 'Your A1 path'}
+        </span>
+        <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+          {isDE ? 'Pforte: ≥80%' : 'Gate: ≥80%'}
         </span>
       </div>
-      <div className="mt-4 grid flex-1 grid-cols-3 gap-2.5">
-        {mods.map((m) => (
-          <div key={m.label} className="flex flex-col items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-800/50">
-            <m.icon className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-            <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">{m.label}</span>
+      <div className="mt-3 flex-1 space-y-1.5">
+        {bands.map((b) => (
+          <div
+            key={b.code}
+            className={`flex items-center gap-2 rounded-xl border px-3 py-1.5 text-xs ${
+              b.state === 'done'
+                ? 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/40 dark:bg-emerald-950/30 dark:text-emerald-300'
+                : b.state === 'current'
+                  ? 'border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-900/40 dark:bg-blue-950/30 dark:text-blue-300'
+                  : b.state === 'support'
+                    ? 'border-slate-200 bg-slate-50 text-slate-500 dark:border-slate-700 dark:bg-slate-800/40 dark:text-slate-400'
+                    : 'border-slate-200 bg-white text-slate-400 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-500'
+            }`}
+          >
+            <span
+              className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${
+                b.state === 'done'
+                  ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
+                  : b.state === 'current'
+                    ? 'bg-blue-600 text-white'
+                    : b.state === 'support'
+                      ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300'
+                      : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'
+              }`}
+            >
+              {b.state === 'done' ? <CheckCircle className="h-3 w-3" aria-hidden="true" /> : b.code}
+            </span>
+            <span className="flex-1 truncate font-semibold">{isDE ? b.de : b.en}</span>
+            {b.state === 'done' && (
+              <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">80%</span>
+            )}
+            {b.state === 'current' && (
+              <span className="text-[10px] font-bold text-blue-600 dark:text-blue-300">
+                {isDE ? 'aktuell' : 'current'}
+              </span>
+            )}
+            {b.state === 'locked' && <Lock className="h-3 w-3 text-slate-400" aria-hidden="true" />}
           </div>
         ))}
       </div>
@@ -334,37 +425,47 @@ function SceneGuestHome({ isDE }: { isDE: boolean }) {
   );
 }
 
-function SceneLesson({ isDE }: { isDE: boolean }) {
+function SceneArticles({ isDE }: { isDE: boolean }) {
+  const articles = [
+    { key: 'der', token: theme.gender.der },
+    { key: 'die', token: theme.gender.dieF },
+    { key: 'das', token: theme.gender.das },
+  ];
   return (
     <div className="flex h-full flex-col">
       <div className="flex items-center justify-between">
         <span className="text-sm font-bold text-slate-900 dark:text-white">
-          {isDE ? 'Grüße · Lektion 2' : 'Greetings · Lesson 2'}
+          {isDE ? 'Artikel · Einheit C' : 'Articles · Unit C'}
         </span>
-        <span className="text-xs font-semibold text-slate-400">40%</span>
-      </div>
-      <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
-        <div className="h-full w-[40%] rounded-full bg-blue-600" />
-      </div>
-      <div className="mt-5 flex flex-1 flex-col items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-center dark:border-slate-800 dark:bg-slate-800/50">
-        <span className="flex items-center gap-2 text-2xl font-bold text-slate-900 dark:text-white">
-          Guten Morgen!
-          <Volume2 className="h-5 w-5 text-blue-500" aria-hidden="true" />
+        <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+          der · die · das
         </span>
-        <span className="text-sm text-slate-500 dark:text-slate-400">शुभ प्रभात</span>
-        <div className="mt-1 flex flex-wrap justify-center gap-2">
-          {['Guten Tag', 'Gute Nacht', 'Danke'].map((o, i) => (
+      </div>
+      <div className="mt-3 flex flex-1 flex-col items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-center dark:border-slate-800 dark:bg-slate-800/50">
+        <span className="text-2xl font-bold text-slate-900 dark:text-white">Tisch</span>
+        <span className="text-xs text-slate-500 dark:text-slate-400">{isDE ? 'Welcher Artikel?' : 'Which article?'}</span>
+        <div className="mt-1 flex gap-2">
+          {articles.map((a) => (
             <span
-              key={o}
-              className={`rounded-lg border px-3 py-1.5 text-xs font-semibold ${
-                i === 0
-                  ? 'border-blue-500 bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300'
-                  : 'border-slate-200 text-slate-600 dark:border-slate-700 dark:text-slate-300'
+              key={a.key}
+              className={`inline-flex items-center gap-1 rounded-lg border-2 px-4 py-1.5 text-xs font-bold ${a.token.text} ${a.token.darkText} ${a.token.border} ${
+                a.key === 'der' ? 'ring-2 ring-offset-1 ring-blue-600/30' : 'opacity-70'
               }`}
             >
-              {o}
+              {a.key === 'der' && <CheckCircle className="h-3 w-3" aria-hidden="true" />}
+              {a.key}
             </span>
           ))}
+        </div>
+        <div className="mt-2 flex flex-wrap items-center justify-center gap-2.5 text-[10px] font-semibold text-slate-500 dark:text-slate-400">
+          {articles.map((a) => (
+            <span key={a.key} className="inline-flex items-center gap-1">
+              <span className={`h-2 w-2 rounded-full ${a.token.bg}`} aria-hidden="true" /> {a.key}
+            </span>
+          ))}
+          <span className="inline-flex items-center gap-1">
+            <span className={`h-2 w-2 rounded-full ${theme.gender.diePl.bg}`} aria-hidden="true" /> pl
+          </span>
         </div>
       </div>
     </div>
@@ -378,50 +479,34 @@ function SceneReview({ isDE }: { isDE: boolean }) {
     { w: 'das Wasser', ok: false },
   ];
   return (
-    <div className="flex h-full flex-col items-center justify-center gap-4">
+    <div className="flex h-full flex-col items-center justify-center gap-3">
       <div className="flex items-center gap-2.5">
-        <RotateCcw className="h-5 w-5 text-blue-600 dark:text-blue-400" aria-hidden="true" />
-        <span className="text-base font-bold text-slate-900 dark:text-white">
-          {isDE ? 'Smarte Wiederholung' : 'Smart review'}
-        </span>
-        <span className="rounded-full bg-blue-600 px-2 py-0.5 text-[11px] font-bold text-white">5</span>
+        <Trophy className="h-5 w-5 text-amber-500" aria-hidden="true" />
+        <span className="rounded-full bg-blue-600 px-2 py-0.5 text-[11px] font-bold text-white">XP 320</span>
       </div>
-      <div className="w-full max-w-sm space-y-2">
+      <div className="w-full max-w-sm space-y-1.5">
         {rows.map((r) => (
-          <div key={r.w} className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 dark:border-slate-800 dark:bg-slate-800/50">
+          <div key={r.w} className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 dark:border-slate-800 dark:bg-slate-800/50">
             <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">{r.w}</span>
-            <span
-              className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
-                r.ok
-                  ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300'
-                  : 'bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300'
-              }`}
-            >
+            <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
+              r.ok
+                ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300'
+                : 'bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300'
+            }`}>
               {r.ok ? '✓' : isDE ? 'morgen' : 'tomorrow'}
             </span>
           </div>
         ))}
       </div>
-    </div>
-  );
-}
-
-function SceneTools({ isDE }: { isDE: boolean }) {
-  const tools = [
-    { icon: Zap, label: 'Rapid Blitz' },
-    { icon: Mic, label: isDE ? 'Sprechen' : 'Speak' },
-    { icon: PenLine, label: isDE ? 'Diktat' : 'Dictation' },
-  ];
-  return (
-    <div className="flex h-full flex-col items-center justify-center gap-5">
-      <span className="text-base font-bold text-slate-900 dark:text-white">
-        {isDE ? 'Übungswerkzeuge' : 'Practice tools'}
-      </span>
-      <div className="flex gap-3">
-        {tools.map((t) => (
-          <div key={t.label} className="flex flex-col items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-6 py-5 dark:border-slate-800 dark:bg-slate-800/50">
-            <t.icon className="h-6 w-6 text-blue-600 dark:text-blue-400" aria-hidden="true" />
-            <span className="text-xs font-bold text-slate-700 dark:text-slate-200">{t.label}</span>
+      <div className="flex gap-2">
+        {[
+          { icon: Zap, label: 'Rapid Blitz' },
+          { icon: Mic, label: isDE ? 'Sprechen' : 'Speak' },
+          { icon: PenLine, label: isDE ? 'Diktat' : 'Dictation' },
+        ].map((t) => (
+          <div key={t.label} className="flex flex-1 flex-col items-center gap-1 rounded-xl border border-slate-200 bg-slate-50 px-2 py-1.5 dark:border-slate-800 dark:bg-slate-800/50">
+            <t.icon className="h-4 w-4 text-blue-600 dark:text-blue-400" aria-hidden="true" />
+            <span className="text-[10px] font-bold text-slate-700 dark:text-slate-200">{t.label}</span>
           </div>
         ))}
       </div>
@@ -449,3 +534,4 @@ function SceneGate({ isDE }: { isDE: boolean }) {
     </div>
   );
 }
+

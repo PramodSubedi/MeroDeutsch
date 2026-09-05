@@ -43,6 +43,12 @@ interface VocabRow {
   translation_np?: string | null;
   translation_ne_roman?: string | null;
   example_de?: string | null;
+  example_en?: string | null;
+  example_np?: string | null;
+  /** Noun plural (migration 016, NotebookLM import) — null when unknown. */
+  plural_form?: string | null;
+  /** Raw tags[] (migration 010) — preserved through to the Dexie cache. */
+  tags?: string[] | null;
 }
 
 /** Raw shape of a `sentences` row returned by the RPC/table. */
@@ -66,23 +72,46 @@ function rowToArticle(row: VocabRow): ArticleItem {
 }
 
 /** Maps a `vocabulary` row onto the enriched VocabCard schema for the Dexie cache. */
-function rowToVocabCard(row: VocabRow & { part_of_speech: string; level?: string; category?: string }): VocabCard {
+function rowToVocabCard(
+  row: VocabRow & { part_of_speech: string; level?: string; category?: string; tags?: string[] | null }
+): VocabCard {
   const art = (row.article || null) as VocabCard['article'];
+  // Category first so Glossary category detection (first non-POS/level tag)
+  // still resolves to the topical slug; DB structural tags (unit-2, verbs)
+  // stay available for feature filtering without polluting the category.
+  const mergedTags = Array.from(
+    new Set(
+      [row.category ?? '', row.part_of_speech, ...(row.tags ?? [])].filter(
+        (t) => t && t.length > 0
+      )
+    )
+  );
   return {
     id: row.word,
     lemma: row.word,
     article: art,
-    plural: null,
+    plural: row.plural_form ?? null,
     partOfSpeech: row.part_of_speech as VocabCard['partOfSpeech'],
     cefrLevel: (row.level as VocabCard['cefrLevel']) ?? 'A1',
     translation: { en: row.translation_en, np: row.translation_np ?? '' },
     translationNeRoman: row.translation_ne_roman ?? undefined,
     phonetics: { ipa: '', devanagari: '' },
-    tags: row.category ? [row.category, row.part_of_speech] : [row.part_of_speech],
+    tags: mergedTags,
     examples: row.example_de
-      ? [{ de: row.example_de, en: row.translation_en, np: row.translation_np ?? '' }]
+      ? [{ de: row.example_de, en: row.example_en ?? '', np: row.example_np ?? '' }]
       : [],
   };
+}
+
+/**
+ * True when a vocab word is a corrupt DB fragment (digits, stray separators,
+ * punctuation leftovers from bad imports). These rows exist in the live table
+ * (e.g. "1/2", "Berlin,") and must never surface in the Glossary or Trainer.
+ */
+function isLikelyJunkWord(word: string): boolean {
+  const t = word.trim();
+  if (t.length < 2) return true;
+  return /[0-9/,_]/.test(t);
 }
 
 /** Maps a rich VocabCard onto the legacy VocabEntry shape consumed by
@@ -217,7 +246,7 @@ export class SupabaseCurriculumService implements CurriculumService {
         // Fallback: full table SELECT (online — so we can still cache).
         const { data: fbData, error: fbError } = await supabase
           .from('vocabulary')
-          .select('word, article, translation_en, translation_np, example_de, part_of_speech, level, category')
+          .select('word, article, translation_en, translation_np, example_de, part_of_speech, level, category, plural_form')
           .eq('part_of_speech', 'noun')
           .not('article', 'is', null);
 
@@ -293,6 +322,12 @@ export class SupabaseCurriculumService implements CurriculumService {
 
   /** Raw `vocabulary` row shape used by the filtered trainer fetch. */
   private async fetchVocabRows(filters: VocabularyFilter): Promise<VocabCard[]> {
+    // Reference surfaces (Glossary, Pronunciation, legacy VocabEntry consumers)
+    // request 400–2000 rows. The quiz RPC clamps at 100 rows and randomizes
+    // order, so large requests use the deterministic full-pool fetch instead.
+    if ((filters.limit ?? 25) > 100) {
+      return this.fetchFullPoolVocabRows(filters);
+    }
     try {
       if (!supabase) throw new Error('no client');
       const { data, error } = await supabase.rpc('get_random_vocabulary', {
@@ -302,44 +337,110 @@ export class SupabaseCurriculumService implements CurriculumService {
         p_category: filters.category ?? null,
         p_limit: filters.limit ?? 25,
       });
-      if (error || !data || (data as unknown[]).length === 0) {
+      const rows = (data as unknown) as VocabRow[];
+      if (error || !data || rows.length === 0) {
         // Fallback: table SELECT with the same filters (online — can still cache).
         let q = supabase
           .from('vocabulary')
           .select(
-            'word, article, translation_en, translation_np, translation_ne_roman, example_de, part_of_speech, level, category'
+            'word, article, translation_en, translation_np, translation_ne_roman, example_de, example_en, example_np, part_of_speech, level, category, plural_form, tags'
           );
         if (filters.pos) q = q.eq('part_of_speech', filters.pos);
         if (filters.level) q = q.eq('level', filters.level);
         if (filters.category) q = q.eq('category', filters.category);
         const { data: fbData, error: fbError } = await q.limit(filters.limit ?? 25);
-        if (fbError || !fbData || fbData.length === 0) {
-          throw new Error('table fallback also empty');
-        }
-        const rows = fbData as (VocabRow & { part_of_speech: string; level?: string; category?: string })[];
-        void this.cacheVocab(rows);
-        return rows.map(rowToVocabCard);
+        if (fbError || !fbData || fbData.length === 0) throw new Error('table fallback also empty');
+        return this.toCards(fbData as VocabRow[]);
       }
-      const rows = (data as unknown) as (VocabRow & { part_of_speech: string; level?: string; category?: string })[];
-      void this.cacheVocab(rows);
-      return rows.map(rowToVocabCard);
+      return this.toCards(rows);
     } catch (err) {
       console.warn('Supabase filtered vocab fetch failed, using Dexie cache:', err);
-      // Dexie offline fallback: filter cached VocabCards locally.
-      const db = openDb();
-      if (!db) return [];
-      try {
-        let coll = db.vocab.toCollection();
-        const cached = await coll.toArray();
-        return cached.filter((c) => {
-          if (filters.pos && c.partOfSpeech !== filters.pos) return false;
-          if (filters.level && c.cefrLevel !== filters.level) return false;
-          if (filters.category && !c.tags.includes(filters.category)) return false;
-          return true;
-        });
-      } catch {
-        return [];
+      return this.vocabFromDexie(filters);
+    }
+  }
+
+  /**
+   * Deterministic full-pool vocabulary fetch for reference surfaces (Glossary,
+   * Pronunciation, legacy VocabEntry consumers). The quiz RPC caps at 100 rows
+   * and randomizes order — a legitimate >100-row request must bypass it.
+   *
+   * Strategy: prefer migration 017's `get_vocabulary_glossary` RPC (word-ordered,
+   * junk-filtered server-side); otherwise fall back to a single word-ordered
+   * table SELECT (PostgREST caps a page at 1000 rows; the live table holds
+   * ~1060 so this covers presumably everything until the migration applies).
+   * Either path write-through-caches into Dexie for offline reuse.
+   */
+  private async fetchFullPoolVocabRows(filters: VocabularyFilter): Promise<VocabCard[]> {
+    const target = Math.min(Math.max(filters.limit ?? 2000, 1), 2000);
+    try {
+      if (!supabase) throw new Error('no client');
+
+      // Preferred (post-migration-017): deterministic, active-only RPC.
+      const { data, error } = await supabase.rpc('get_vocabulary_glossary', {
+        p_pos: filters.pos ?? null,
+        p_level: filters.level ?? null,
+        p_category: filters.category ?? null,
+        p_limit: target,
+      });
+      if (!error && data && (data as unknown[]).length > 0) {
+        return this.toCards(data as VocabRow[]);
       }
+
+      // Fallback (pre-migration): single word-ordered table SELECT.
+      let q = supabase
+        .from('vocabulary')
+        .select(
+          'word, article, translation_en, translation_np, translation_ne_roman, example_de, example_en, example_np, part_of_speech, level, category, plural_form, tags'
+        )
+        .order('word', { ascending: true })
+        .limit(Math.min(target, 1000));
+      if (filters.pos) q = q.eq('part_of_speech', filters.pos);
+      if (filters.level) q = q.eq('level', filters.level);
+      if (filters.category) q = q.eq('category', filters.category);
+      const { data: fbData, error: fbError } = await q;
+      if (fbError || !fbData || fbData.length === 0) throw new Error('full-pool SELECT empty');
+      return this.toCards(fbData as VocabRow[]);
+    } catch (err) {
+      console.warn('Supabase full vocab fetch failed, using Dexie cache:', err);
+      return this.vocabFromDexie(filters);
+    }
+  }
+
+  /** Casts raw rows to VocabCards (junk-filtered first, then write-through-cached). */
+  private toCards(rows: VocabRow[]): VocabCard[] {
+    const clean = rows.filter((r) => !isLikelyJunkWord(r.word));
+    void this.cacheVocab(
+      clean as (VocabRow & { part_of_speech: string; level?: string; category?: string })[]
+    );
+    return clean.map((r) =>
+      rowToVocabCard(r as VocabRow & { part_of_speech: string; level?: string; category?: string })
+    );
+  }
+
+  /** Offline fallback: filter cached Dexie vocab rows (junk-filtered, deduped). */
+  private async vocabFromDexie(filters: VocabularyFilter): Promise<VocabCard[]> {
+    const db = openDb();
+    if (!db) return [];
+    try {
+      const cached = await db.vocab.toArray();
+      const seen = new Set<string>();
+      const filtered: VocabCard[] = [];
+      for (const c of cached) {
+        if (isLikelyJunkWord(c.lemma)) continue;
+        if (filters.pos && c.partOfSpeech !== filters.pos) continue;
+        if (filters.level && c.cefrLevel !== filters.level) continue;
+        if (filters.category && !c.tags.includes(filters.category)) continue;
+        // Dedupe by lemma so DB-row and enriched-seed entries sharing a word
+        // never double up in the Glossary.
+        const key = c.lemma.trim().toLowerCase();
+        if (seen.has(key)) continue;
+        seen.add(key);
+        filtered.push(c);
+      }
+      if (filters.limit && filters.limit > 0) return filtered.slice(0, filters.limit);
+      return filtered;
+    } catch {
+      return [];
     }
   }
 
@@ -380,7 +481,7 @@ export class SupabaseCurriculumService implements CurriculumService {
           let q = supabase
             .from('vocabulary')
             .select(
-              'word, article, translation_en, translation_np, translation_ne_roman, example_de, part_of_speech, level, category'
+              'word, article, translation_en, translation_np, translation_ne_roman, example_de, part_of_speech, level, category, plural_form'
             )
             .in('category', cats)
             .limit(limit);
@@ -454,6 +555,9 @@ export class SupabaseCurriculumService implements CurriculumService {
       options.levels = Array.from(levels)
         .sort((a, b) => (a < b ? -1 : 1))
         .filter((l) => ['A1', 'A2', 'B1', 'B2'].includes(l));
+      // 'general' is the uncategorized bucket in the DB, not a topic the
+      // learner can meaningfully filter by.
+      categories.delete('general');
       options.categories = Array.from(categories).sort((a, b) => (a < b ? -1 : 1));
       return options;
     } catch (err) {

@@ -23,6 +23,13 @@ import type {
 } from '../types/curriculum';
 import { openDb, getCachedContent } from '../lib/db';
 
+/** True when a vocab word is a corrupt DB fragment (digits, stray separators). */
+function isLikelyJunkWord(word: string): boolean {
+  const t = word.trim();
+  if (t.length < 2) return true;
+  return /[0-9/,_]/.test(t);
+}
+
 /**
  * Local-only curriculum service.
  *
@@ -73,12 +80,20 @@ export class LocalCurriculumService implements CurriculumService {
     const db = openDb();
     if (!db) return [];
     const cached = await db.vocab.toArray();
-    return cached.filter((c) => {
-      if (filters.pos && c.partOfSpeech !== filters.pos) return false;
-      if (filters.level && c.cefrLevel !== filters.level) return false;
-      if (filters.category && !c.tags.includes(filters.category)) return false;
-      return true;
-    });
+    const seen = new Set<string>();
+    const filtered: VocabCard[] = [];
+    for (const c of cached) {
+      if (isLikelyJunkWord(c.lemma)) continue;
+      if (filters.pos && c.partOfSpeech !== filters.pos) continue;
+      if (filters.level && c.cefrLevel !== filters.level) continue;
+      if (filters.category && !c.tags.includes(filters.category)) continue;
+      const key = c.lemma.trim().toLowerCase();
+      if (seen.has(key)) continue;
+      seen.add(key);
+      filtered.push(c);
+    }
+    if (filters.limit && filters.limit > 0) return filtered.slice(0, filters.limit);
+    return filtered;
   }
 
   /** Distinct level + category values from the offline Dexie cache. */
@@ -88,11 +103,17 @@ export class LocalCurriculumService implements CurriculumService {
     const cached = await db.vocab.toArray();
     const levels = new Set<string>();
     const categories = new Set<string>();
+    // Tags that are neither topics nor categories: POS tags + CEFR levels.
+    const excludedTags = new Set([
+      'noun', 'verb', 'adjective', 'phrase', 'expression', 'adverb', 'preposition',
+      // 'general' is the uncategorized bucket in the DB, not a topic.
+      'general', 'A1', 'A2', 'B1', 'B2',
+    ]);
     for (const c of cached) {
       levels.add(c.cefrLevel);
       for (const t of c.tags) {
-        // Skip POS tags — categories only.
-        if (!['noun', 'verb', 'adjective', 'phrase', 'expression', 'adverb', 'preposition'].includes(t)) {
+        // Skip POS + CEFR tags — topical categories only.
+        if (!excludedTags.has(t)) {
           categories.add(t);
         }
       }

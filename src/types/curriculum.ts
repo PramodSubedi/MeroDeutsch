@@ -216,7 +216,8 @@ export type { VocabularyEntity } from '../types/content';
 
 /** Filter params for the leveled/topical vocab trainer (Phase 3). */
 export interface VocabularyFilter {
-  pos?: 'noun' | 'verb' | 'adjective' | 'phrase';
+  /** Values match the vocabulary part_of_speech CHECK (016 added 'adverb'; interjections map to 'expression'). */
+  pos?: 'noun' | 'verb' | 'adjective' | 'phrase' | 'adverb' | 'expression';
   level?: 'A1' | 'A2' | 'B1' | 'B2';
   category?: string;
   limit?: number;

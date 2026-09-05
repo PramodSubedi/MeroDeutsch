@@ -33,7 +33,7 @@ import type { VocabCard } from '../types';
 import type { VocabularyFilterOptions } from '../types/curriculum';
 
 type TrainerMode = 'flashcards' | 'quiz';
-type PosFilter = '' | 'noun' | 'verb' | 'adjective' | 'phrase';
+type PosFilter = '' | 'noun' | 'verb' | 'adjective' | 'phrase' | 'adverb' | 'expression';
 
 /** Gender color token lookup (theme.ts locked tokens — no one-off hexes). */
 function genderToken(article: string | null): { text: string; label: string } {
@@ -50,6 +50,8 @@ const POS_OPTIONS: { value: PosFilter; label: string }[] = [
   { value: 'verb', label: 'Verbs' },
   { value: 'adjective', label: 'Adjectives' },
   { value: 'phrase', label: 'Phrases' },
+  { value: 'adverb', label: 'Adverbs' },
+  { value: 'expression', label: 'Expressions' },
 ];
 
 interface McqQuestion {
