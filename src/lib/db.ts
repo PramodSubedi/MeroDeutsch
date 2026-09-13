@@ -25,6 +25,7 @@ import type {
   WrongAnswerItem,
   Progress,
   MigrationResult,
+  VocabStatusRow,
 } from '../types';
 import { getItem, removeItem, setItem } from '../utils/safeStorage';
 import { scopedKey } from '../utils/userStorage';
@@ -95,6 +96,8 @@ export class MeroDeutschDB extends Dexie {
   sentences!: Table<SentenceRow, string>;
   /** Offline cache for generic content pools (alphabet, numbers, stories…). */
   contentItems!: Table<ContentItemRow, string>;
+  /** Per-word learning status (Glossary / Vocab Trainer mastery bookkeeping). */
+  vocabStats!: Table<VocabStatusRow, string>;
 
   constructor() {
     super(DB_NAME);
@@ -126,6 +129,12 @@ export class MeroDeutschDB extends Dexie {
     // the Supabase get_content_items RPC so offline mode keeps working).
     this.version(5).stores({
       contentItems: 'id, contentType, sortOrder',
+    });
+    // version(6) adds the per-word learning status table for the Glossary /
+    // Vocab Trainer checklist (coarse new/learning/known/mastered bookkeeping,
+    // separate from the SRS box model in userProgress).
+    this.version(6).stores({
+      vocabStats: 'id, userId, wordId, status, [userId+status]',
     });
   }
 }

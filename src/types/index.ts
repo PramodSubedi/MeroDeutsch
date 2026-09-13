@@ -192,3 +192,35 @@ export interface MigrationResult {
   alreadyMigrated: boolean;
   message?: string;
 }
+
+/**
+ * Per-word learning status stored in IndexedDB `vocabStats` table.
+ *
+ * Lightweight, device-local mastery bookkeeping for the Glossary / Vocab
+ * Trainer surfaces. Deliberately separate from the Leitner `userProgress`
+ * box model (SRS) — this is a coarse "known / learning / due for review"
+ * signal keyed by `VocabCard.id`, not a graded scheduler.
+ */
+export type VocabStatusValue = 'new' | 'learning' | 'known' | 'mastered';
+
+export interface VocabStatusRow {
+  /** Unique row id: `${userId}:${wordId}`. */
+  id: string;
+  /** Owning user id (or 'guest') — keeps the table multi-user safe. */
+  userId: string;
+  /** References `VocabCard.id`. */
+  wordId: string;
+  status: VocabStatusValue;
+  /** ISO timestamp of the last interaction (learn / review / mark). */
+  lastReviewed: string;
+  /** Total times the word has been answered / practiced. */
+  repetitionCount: number;
+  /** Times answered correctly (drives status derivation). */
+  correctCount: number;
+  /** Times answered incorrectly (drives status derivation). */
+  wrongCount: number;
+  /** Running Ease Factor (1.0–3.0) — a coarse retention proxy. */
+  easeFactor: number;
+  /** Monotonic revision counter for UI freshness checks. */
+  updateSeq: number;
+}

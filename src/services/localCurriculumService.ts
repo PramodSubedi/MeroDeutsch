@@ -22,6 +22,7 @@ import type {
   ConversationVocab,
 } from '../types/curriculum';
 import { openDb, getCachedContent } from '../lib/db';
+import { isTopicalTag } from '../utils/vocabTags';
 
 /** True when a vocab word is a corrupt DB fragment (digits, stray separators). */
 function isLikelyJunkWord(word: string): boolean {
@@ -103,17 +104,12 @@ export class LocalCurriculumService implements CurriculumService {
     const cached = await db.vocab.toArray();
     const levels = new Set<string>();
     const categories = new Set<string>();
-    // Tags that are neither topics nor categories: POS tags + CEFR levels.
-    const excludedTags = new Set([
-      'noun', 'verb', 'adjective', 'phrase', 'expression', 'adverb', 'preposition',
-      // 'general' is the uncategorized bucket in the DB, not a topic.
-      'general', 'A1', 'A2', 'B1', 'B2',
-    ]);
     for (const c of cached) {
       levels.add(c.cefrLevel);
+      // Topical categories only — the shared classifier filters out POS/CEFR/
+      // structural tags so the offline option list matches the online one.
       for (const t of c.tags) {
-        // Skip POS + CEFR tags — topical categories only.
-        if (!excludedTags.has(t)) {
+        if (isTopicalTag(t)) {
           categories.add(t);
         }
       }

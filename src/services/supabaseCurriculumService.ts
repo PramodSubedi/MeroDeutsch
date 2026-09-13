@@ -23,6 +23,7 @@ import type {
   ConversationVocab,
 } from '../types/curriculum';
 import { supabase } from '../lib/supabase';
+import { isTopicalTag } from '../utils/vocabTags';
 import { openDb, seedVocab, seedSentences, seedContentItems } from '../lib/db';
 import type { SentenceRow } from '../lib/db';
 import { LocalCurriculumService } from './localCurriculumService';
@@ -347,7 +348,7 @@ export class SupabaseCurriculumService implements CurriculumService {
           );
         if (filters.pos) q = q.eq('part_of_speech', filters.pos);
         if (filters.level) q = q.eq('level', filters.level);
-        if (filters.category) q = q.eq('category', filters.category);
+        if (filters.category) q = q.overlaps('tags', [filters.category]);
         const { data: fbData, error: fbError } = await q.limit(filters.limit ?? 25);
         if (fbError || !fbData || fbData.length === 0) throw new Error('table fallback also empty');
         return this.toCards(fbData as VocabRow[]);
@@ -396,7 +397,7 @@ export class SupabaseCurriculumService implements CurriculumService {
         .limit(Math.min(target, 1000));
       if (filters.pos) q = q.eq('part_of_speech', filters.pos);
       if (filters.level) q = q.eq('level', filters.level);
-      if (filters.category) q = q.eq('category', filters.category);
+      if (filters.category) q = q.overlaps('tags', [filters.category]);
       const { data: fbData, error: fbError } = await q;
       if (fbError || !fbData || fbData.length === 0) throw new Error('full-pool SELECT empty');
       return this.toCards(fbData as VocabRow[]);
@@ -452,7 +453,7 @@ export class SupabaseCurriculumService implements CurriculumService {
    * Unit-themed vocabulary for checkpoint `vocab-translation` items (v0.2.0).
    *
    * Pass order (each pass dedupes into the same map):
-   *  1. categories (+ pos when given) — one `.in('category', …)` SELECT online,
+   *  1. categories (+ pos when given) — one `.overlaps('tags', …)` SELECT online,
    *     Dexie tag-intersection offline.
    *  2. pos only — catches units themed by part of speech (e.g. U5 verbs)
    *     even when no category tags exist yet.
@@ -474,16 +475,16 @@ export class SupabaseCurriculumService implements CurriculumService {
       }
     };
 
-    // Pass 1: configured categories (online table SELECT with .in()).
+    // Pass 1: configured categories (online table SELECT with .overlaps(tags)).
     if (cats.length > 0) {
       try {
         if (supabase) {
           let q = supabase
             .from('vocabulary')
             .select(
-              'word, article, translation_en, translation_np, translation_ne_roman, example_de, part_of_speech, level, category, plural_form'
+              'word, article, translation_en, translation_np, translation_ne_roman, example_de, part_of_speech, level, category, plural_form, tags'
             )
-            .in('category', cats)
+            .overlaps('tags', cats)
             .limit(limit);
           if (pos) q = q.eq('part_of_speech', pos);
           const { data, error } = await q;
@@ -537,27 +538,50 @@ export class SupabaseCurriculumService implements CurriculumService {
   }
 
   async getVocabFilterOptions(): Promise<VocabularyFilterOptions> {
-    // Single source of truth: fetch a decent random sample, derive options
-    // from the rows actually present so stale categories never show.
+    // Single source of truth: the tags[] array (migration 010), not the legacy
+    // `category` column. The server classifier (get_vocab_filter_options) is
+    // preferred; when that RPC is unavailable the client classifier scans tags
+    // directly. Either path yields TOPICAL tags only, so the Trainer's option
+    // list matches the offline Dexie list exactly.
+    const options: VocabularyFilterOptions = { levels: [], categories: [] };
     try {
-      const options: VocabularyFilterOptions = { levels: [], categories: [] };
       if (!supabase) return options;
-      const { data, error } = await supabase
-        .from('vocabulary')
-        .select('level, category');
-      if (error || !data) return options;
-      const levels = new Set<string>();
+
       const categories = new Set<string>();
-      for (const r of data) {
-        if (r.level) levels.add(r.level);
-        if (r.category) categories.add(r.category);
+      const { data, error } = await supabase.rpc('get_vocab_filter_options');
+      if (!error && Array.isArray(data)) {
+        for (const row of data) {
+          const t = (row as { category?: string }).category;
+          if (t) {
+            if (isTopicalTag(t)) categories.add(t);
+          }
+        }
+      } else {
+        // Fallback: scan the tags column directly with the client classifier.
+        const { data: rows, error: rowsError } = await supabase
+          .from('vocabulary')
+          .select('level, tags');
+        if (rowsError || !rows) throw new Error(rowsError?.message);
+        for (const r of rows) {
+          for (const t of r.tags ?? []) {
+            if (isTopicalTag(t)) categories.add(t);
+          }
+        }
+      }
+
+      // Levels come from the rows' `level` column (same in both paths).
+      const levels = new Set<string>();
+      const { data: levelsData, error: levelsError } = await supabase
+        .from('vocabulary')
+        .select('level');
+      if (!levelsError && levelsData) {
+        for (const r of levelsData) {
+          if (r.level) levels.add(r.level);
+        }
       }
       options.levels = Array.from(levels)
         .sort((a, b) => (a < b ? -1 : 1))
         .filter((l) => ['A1', 'A2', 'B1', 'B2'].includes(l));
-      // 'general' is the uncategorized bucket in the DB, not a topic the
-      // learner can meaningfully filter by.
-      categories.delete('general');
       options.categories = Array.from(categories).sort((a, b) => (a < b ? -1 : 1));
       return options;
     } catch (err) {

@@ -19,7 +19,8 @@
     "import-notebooklm": "tsx scripts/importNotebookLm.ts",
     "extract-pdf": "tsx scripts/extractPdfVocab.ts",
     "preview": "vite preview",
-    "import-csv": "tsx scripts/import-csv.ts"
+    "import-csv": "tsx scripts/import-csv.ts",
+    "run-sql": "tsx scripts/runSql.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.112.3",

@@ -29,11 +29,36 @@ import { useReviewQueue } from '../hooks/useReviewQueue';
 import { speakWord } from '../hooks/useSpeech';
 import { curriculumService } from '../services';
 import { pickNUnique } from '../utils/questionGenerator';
+import { useVocabularyStatus } from '../hooks/useVocabularyStatus';
 import type { VocabCard } from '../types';
 import type { VocabularyFilterOptions } from '../types/curriculum';
 
 type TrainerMode = 'flashcards' | 'quiz';
+/** Five MCQ variants (deep-linkable via ?type=). */
+type QuestionVariant = 'de-to-en' | 'en-to-de' | 'article' | 'plural' | 'listen';
+/** Session pool selection (deep-linkable via ?pool=). */
+type PoolMode = 'all' | 'fresh' | 'due' | 'mixed';
 type PosFilter = '' | 'noun' | 'verb' | 'adjective' | 'phrase' | 'adverb' | 'expression';
+
+const VARIANT_LABELS: { value: QuestionVariant; labelEn: string; labelDe: string }[] = [
+  { value: 'de-to-en', labelEn: 'DE → EN', labelDe: 'DE → EN' },
+  { value: 'en-to-de', labelEn: 'EN → DE', labelDe: 'EN → DE' },
+  { value: 'article', labelEn: 'Article', labelDe: 'Artikel' },
+  { value: 'plural', labelEn: 'Plural', labelDe: 'Plural' },
+  { value: 'listen', labelEn: 'Listen', labelDe: 'Hören' },
+];
+
+const POOL_LABELS: { value: PoolMode; labelEn: string; labelDe: string }[] = [
+  { value: 'all', labelEn: 'All words', labelDe: 'Alle Wörter' },
+  { value: 'fresh', labelEn: 'Fresh', labelDe: 'Neu' },
+  { value: 'due', labelEn: 'Due', labelDe: 'Fällig' },
+  { value: 'mixed', labelEn: 'Mixed', labelDe: 'Gemischt' },
+];
+
+/** Distinct helper: unique strings from a list (for decoy pools). */
+function uniqueStrings(values: string[]): string[] {
+  return Array.from(new Set(values.filter((v) => v && v.trim())));
+}
 
 /** Gender color token lookup (theme.ts locked tokens — no one-off hexes). */
 function genderToken(article: string | null): { text: string; label: string } {
@@ -58,6 +83,8 @@ interface McqQuestion {
   card: VocabCard;
   options: string[];
   correctIndex: number;
+  /** Which answer surface this question tests (deep-linking + prompt render). */
+  variant: QuestionVariant;
 }
 
 export function VocabTrainerPage() {
@@ -74,15 +101,8 @@ export function VocabTrainerPage() {
   const [pos, setPos] = useState<PosFilter>('');
   const [options, setOptions] = useState<VocabularyFilterOptions>({ levels: [], categories: [] });
 
-  useEffect(() => {
-    let cancelled = false;
-    curriculumService.getVocabFilterOptions().then((opts) => {
-      if (!cancelled) setOptions(opts);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  // Per-word learning status powers the Fresh / Due / Mixed pools below.
+  const { statsByWord, recordAttempt } = useVocabularyStatus();
 
   // ── Session state ──────────────────────────────────────────────────────
   const [mode, setMode] = useState<TrainerMode>('flashcards');
@@ -93,44 +113,159 @@ export function VocabTrainerPage() {
   const [score, setScore] = useState({ correct: 0, total: 0 });
   const [finished, setFinished] = useState(false);
 
+  // MCQ variant driven by ?type= (deep-linkable: de-to-en|en-to-de|article|plural|listen).
+  const [variant, setVariant] = useState<QuestionVariant>(
+    (['de-to-en', 'en-to-de', 'article', 'plural', 'listen'] as const).includes(
+      (searchParams.get('type') ?? '') as QuestionVariant
+    )
+      ? (searchParams.get('type') as QuestionVariant)
+      : 'de-to-en'
+  );
+  // Pool selection driven by ?pool= (deep-linkable: all|fresh|due|mixed).
+  const [poolMode, setPoolMode] = useState<PoolMode>(
+    (['all', 'fresh', 'due', 'mixed'] as const).includes(
+      (searchParams.get('pool') ?? '') as PoolMode
+    )
+      ? (searchParams.get('pool') as PoolMode)
+      : 'all'
+  );
+  // Cards answered incorrectly this session (for "retry misses").
+  const [missedCards, setMissedCards] = useState<VocabCard[]>([]);
+  // True once the user has hit Start (distinguishes "never started" from
+  // "started, but the pool filtered to zero rows").
+  const [started, setStarted] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    curriculumService.getVocabFilterOptions().then((opts) => {
+      if (!cancelled) setOptions(opts);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const current = pool[index] ?? null;
 
-  /** Build one MCQ question: correct answer + 3 distractors from the pool. */
+  /**
+   * Build one MCQ question for the active variant. Options are shuffled at
+   * question create and stable afterwards (locked rule C2.9). Falls back to
+   * a DE→EN question when the card lacks the data a variant needs (e.g. an
+   * article-less form for the Article variant).
+   */
   const buildQuestion = useCallback(
     (card: VocabCard, all: VocabCard[]): McqQuestion => {
-      const distractorPool = all.filter((c) => c.id !== card.id && c.translation.en !== card.translation.en);
+      const others = all.filter((c) => c.id !== card.id);
+      // The variant actually exercised. Fallback branches below (card lacks the
+      // data a variant needs) degrade to a plain DE→EN question but must label
+      // the prompt accordingly instead of lying about the variant.
+      let resolvedVariant: QuestionVariant = variant;
+
+      // ── Article variant: pick der/die/das for a noun ────────────────
+      if (variant === 'article' && (card.article === 'der' || card.article === 'die' || card.article === 'das')) {
+        const correct = card.article ?? 'der';
+        const opts = ['der', 'die', 'das'];
+        // Shuffle at question create, stable afterwards — no always-A (C2.9).
+        for (let i = opts.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [opts[i], opts[j]] = [opts[j], opts[i]];
+        }
+        return { card, options: opts, correctIndex: opts.indexOf(correct), variant };
+      }
+
+      // ── Plural variant: pick the correct plural of a noun ────────────
+      if (variant === 'plural' && card.plural && card.plural !== '-') {
+        const otherPlurals = uniqueStrings(others.map((c) => c.plural ?? '').filter((p) => p && p !== '-'));
+        const decoys = pickNUnique({ items: otherPlurals.filter((p) => p !== card.plural), count: 3 });
+        const opts = [...decoys, card.plural];
+        for (let i = opts.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [opts[i], opts[j]] = [opts[j], opts[i]];
+        }
+        return { card, options: opts, correctIndex: opts.indexOf(card.plural), variant };
+      }
+
+      // ── EN → DE variant: prompt is the English translation ──────────
+      if (variant === 'en-to-de') {
+        const distinctLemmas = uniqueStrings(others.map((c) => c.lemma));
+        const decoys = pickNUnique({ items: distinctLemmas.filter((l) => l !== card.lemma), count: 3 });
+        const opts = [...decoys, card.lemma];
+        for (let i = opts.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [opts[i], opts[j]] = [opts[j], opts[i]];
+        }
+        return { card, options: opts, correctIndex: opts.indexOf(card.lemma), variant };
+      }
+
+      // ── DE → EN (default) / Listen variant: pick the English meaning ──
+      // Non-article/non-plural cards that fall through here get a plain DE→EN
+      // surface; disclose that in the prompt (resolve the variant).
+      resolvedVariant = variant === 'article' || variant === 'plural' ? 'de-to-en' : variant;
+      const distractorEn = uniqueStrings(others.map((c) => c.translation.en));
       const distractors = pickNUnique({
-        items: distractorPool.map((c) => c.translation.en),
+        items: distractorEn.filter((e) => e !== card.translation.en),
         count: 3,
       });
       const opts = [...distractors, card.translation.en];
-      // Shuffle at question create; stable afterwards (locked rule C2.9).
       for (let i = opts.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [opts[i], opts[j]] = [opts[j], opts[i]];
       }
-      return { card, options: opts, correctIndex: opts.indexOf(card.translation.en) };
+      // 'listen' keeps the same option surface as DE→EN; the render layer adds
+      // a speaker button. If the card has no audio, we still show the word.
+      return { card, options: opts, correctIndex: opts.indexOf(card.translation.en), variant: resolvedVariant };
     },
-    []
+    [variant]
   );
 
   const [question, setQuestion] = useState<McqQuestion | null>(null);
   const [selected, setSelected] = useState<number | null>(null);
 
-  /** Start a session with the current filters. */
+  /**
+   * Apply the active pool mode on top of fetched cards:
+   *   - all:    every fetched card.
+   *   - fresh:  words never practiced (no row or status 'new').
+   *   - due:    words in 'learning'/'known' (practiced but not mastered).
+   *   - mixed:  fresh + due (everything except mastered).
+   * The `statsByWord` map comes from the reactive vocab-status provider.
+   */
+  const applyPoolMode = useCallback(
+    (cards: VocabCard[]): VocabCard[] => {
+      if (poolMode === 'all') return cards;
+      return cards.filter((card) => {
+        const stat = statsByWord[card.id];
+        switch (poolMode) {
+          case 'fresh':
+            return !stat || stat.status === 'new';
+          case 'due':
+            return !!stat && (stat.status === 'learning' || stat.status === 'known');
+          case 'mixed':
+            return !stat || stat.status !== 'mastered';
+          default:
+            return true;
+        }
+      });
+    },
+    [poolMode, statsByWord]
+  );
+
+  /** Start a session with the current filters + pool mode. */
   const startSession = useCallback(async () => {
     setLoading(true);
     setFinished(false);
+    setStarted(true);
     setScore({ correct: 0, total: 0 });
     setFlipped(false);
     setSelected(null);
+    setMissedCards([]);
     try {
-      const cards = await curriculumService.getVocabularyFiltered({
+      const rawCards = await curriculumService.getVocabularyFiltered({
         pos: pos || undefined,
         level: level ? (level as VocabCard['cefrLevel']) : undefined,
         category: category || undefined,
         limit: 20,
       });
+      const cards = applyPoolMode(rawCards);
       setPool(cards);
       setIndex(0);
       if (mode === 'quiz' && cards.length > 0) {
@@ -141,7 +276,23 @@ export function VocabTrainerPage() {
     } finally {
       setLoading(false);
     }
-  }, [pos, level, category, mode, buildQuestion]);
+  }, [pos, level, category, mode, buildQuestion, applyPoolMode]);
+
+  /** Rebuild the session pool from the questions answered wrong this round. */
+  const retryMisses = useCallback(() => {
+    if (missedCards.length === 0) return;
+    setFinished(false);
+    setStarted(true);
+    setScore({ correct: 0, total: 0 });
+    setFlipped(false);
+    setSelected(null);
+    setPool(missedCards);
+    setIndex(0);
+    setMissedCards([]);
+    if (mode === 'quiz') {
+      setQuestion(buildQuestion(missedCards[0], missedCards));
+    }
+  }, [missedCards, mode, buildQuestion]);
 
   /** Advance to the next card/question or finish the session. */
   const advance = useCallback(
@@ -170,6 +321,8 @@ export function VocabTrainerPage() {
       setSelected(choiceIdx);
       const correct = choiceIdx === question.correctIndex;
       reportAnswer({ correct, module: 'vocab-trainer' });
+      // Per-word learning status — feeds Fresh/Due/Mixed pools + glossary badges.
+      recordAttempt(question.card.id, correct);
       if (!correct) {
         addWrongAnswer({
           moduleType: 'vocab-trainer',
@@ -177,11 +330,17 @@ export function VocabTrainerPage() {
           userAnswer: question.options[choiceIdx],
           correctAnswer: question.card.translation.en,
         });
+        // Track misses for the "retry misses" summary action.
+        setMissedCards((prev) =>
+          prev.some((c) => c.id === question.card.id)
+            ? prev
+            : [...prev, question.card]
+        );
       }
       // Brief feedback pause so the user sees right/wrong before advancing.
       setTimeout(() => advance(correct), 900);
     },
-    [question, selected, reportAnswer, addWrongAnswer, advance]
+    [question, selected, reportAnswer, addWrongAnswer, advance, recordAttempt]
   );
 
   const handleFlip = useCallback(() => {
@@ -194,12 +353,14 @@ export function VocabTrainerPage() {
     setPool([]);
     setIndex(0);
     setFinished(false);
+    setStarted(false);
     setFlipped(false);
     setSelected(null);
     setQuestion(null);
+    setMissedCards([]);
   }, []);
 
-  const hasFilters = Boolean(level || category || pos);
+  const hasFilters = Boolean(level || category || pos || poolMode !== 'all');
   const pct = score.total > 0 ? Math.round((score.correct / score.total) * 100) : 0;
 
   // ── Render helpers ─────────────────────────────────────────────────────
@@ -276,6 +437,50 @@ export function VocabTrainerPage() {
           </div>
         )}
 
+        {/* Quiz variant selector (deep-linked via ?type=) */}
+        <div>
+          <div className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-slate-400">
+            {isDE ? 'Quiztyp' : 'Quiz type'}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {VARIANT_LABELS.map((v) => (
+              <button
+                key={v.value}
+                type="button"
+                className={chip(variant === v.value)}
+                onClick={() => {
+                  setVariant(v.value);
+                  reset();
+                }}
+              >
+                {isDE ? v.labelDe : v.labelEn}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Pool selector (deep-linked via ?pool=) */}
+        <div>
+          <div className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-slate-400">
+            {isDE ? 'Wortpool' : 'Pool'}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {POOL_LABELS.map((p) => (
+              <button
+                key={p.value}
+                type="button"
+                className={chip(poolMode === p.value)}
+                onClick={() => {
+                  setPoolMode(p.value);
+                  reset();
+                }}
+              >
+                {isDE ? p.labelDe : p.labelEn}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Mode toggle */}
         <div className="flex flex-wrap items-center gap-2 pt-1">
           {(
@@ -316,9 +521,13 @@ export function VocabTrainerPage() {
       {/* ── Empty state ────────────────────────────────────────────── */}
       {!loading && pool.length === 0 && !finished && (
         <div className={`${theme.panel.muted} mt-4 text-center text-sm text-slate-500 dark:text-slate-400`}>
-          {isDE
-            ? 'Wähle Filter und tippe auf Starten, um eine Übungssitzung zu beginnen.'
-            : 'Pick your filters and hit Start to begin a practice session.'}
+          {started && hasFilters
+            ? isDE
+              ? 'Kein Wort in diesem Pool — versuche einen anderen Pool oder Filter.'
+              : 'No words in this pool — try another pool or filter.'
+            : isDE
+              ? 'Wähle Filter und tippe auf Starten, um eine Übungssitzung zu beginnen.'
+              : 'Pick your filters and hit Start to begin a practice session.'}
         </div>
       )}
 
@@ -337,7 +546,18 @@ export function VocabTrainerPage() {
             {score.correct}/{score.total}{' '}
             {isDE ? 'richtig' : 'correct'} · {mode === 'flashcards' ? (isDE ? 'Karteikarten' : 'Flashcards') : 'Quiz'}
           </p>
-          <button type="button" onClick={reset} className={`${theme.button.secondary} mt-4 min-h-[44px]`}>
+          {missedCards.length > 0 && (
+            <button
+              type="button"
+              onClick={retryMisses}
+              className={`${theme.button.primary} mt-4 min-h-[44px]`}
+            >
+              {isDE
+                ? `Falsche wiederholen (${missedCards.length})`
+                : `Retry misses (${missedCards.length})`}
+            </button>
+          )}
+          <button type="button" onClick={reset} className={`${theme.button.secondary} mt-4 ml-2 min-h-[44px]`}>
             {isDE ? 'Zurück zu den Filtern' : 'Back to filters'}
           </button>
         </div>
@@ -426,11 +646,71 @@ export function VocabTrainerPage() {
           </div>
 
           <div className={`${theme.panel.surface} text-center`}>
-            <div className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-              {isDE ? 'Was bedeutet dieses Wort?' : 'What does this mean?'}
-            </div>
-            <div className="mt-2 text-3xl font-bold text-slate-900 dark:text-white">{question.card.lemma}</div>
-            <div className="mt-1 text-xs uppercase tracking-wider text-slate-400">{question.card.partOfSpeech}</div>
+            {question.variant === 'article' && (
+              <>
+                <div className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                  {isDE ? 'Welcher Artikel?' : 'Which article?'}
+                </div>
+                <div className="mt-2 text-3xl font-bold text-slate-900 dark:text-white">
+                  {(() => {
+                    const m = question.card.lemma.match(/^(der|die|das)\s+(.+)$/i);
+                    return m ? m[2] : question.card.lemma;
+                  })()}
+                </div>
+                <div className="mt-1 text-xs uppercase tracking-wider text-slate-400">{question.card.partOfSpeech}</div>
+              </>
+            )}
+            {question.variant === 'plural' && (
+              <>
+                <div className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                  {isDE ? 'Welche Pluralform?' : 'Which plural?'}
+                </div>
+                <div className="mt-2 text-3xl font-bold text-slate-900 dark:text-white">
+                  {(() => {
+                    const m = question.card.lemma.match(/^(der|die|das)\s+(.+)$/i);
+                    return m ? `${m[1]} ${m[2]}` : question.card.lemma;
+                  })()}
+                </div>
+                <div className="mt-1 text-xs uppercase tracking-wider text-slate-400">{isDE ? 'Singular' : 'Singular'}</div>
+              </>
+            )}
+            {question.variant === 'en-to-de' && (
+              <>
+                <div className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                  {isDE ? 'Was heißt das auf Deutsch?' : 'What is this in German?'}
+                </div>
+                <div className="mt-2 text-3xl font-bold text-slate-900 dark:text-white">{question.card.translation.en}</div>
+                <div className="mt-1 text-xs uppercase tracking-wider text-slate-400">{question.card.partOfSpeech}</div>
+              </>
+            )}
+            {question.variant === 'listen' && (
+              <>
+                <div className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                  {isDE ? 'Was hast du gehört?' : 'What did you hear?'}
+                </div>
+                <div className="mt-2 flex items-center justify-center gap-3">
+                  <span className="text-3xl font-bold text-slate-900 dark:text-white">{question.card.lemma}</span>
+                  <button
+                    type="button"
+                    onClick={() => speakWord(question.card.lemma)}
+                    className={`${theme.button.icon} min-h-[44px]`}
+                    aria-label={`Speak ${question.card.lemma}`}
+                  >
+                    <Volume2 className="h-5 w-5" aria-hidden="true" />
+                  </button>
+                </div>
+                <div className="mt-1 text-xs uppercase tracking-wider text-slate-400">{question.card.partOfSpeech}</div>
+              </>
+            )}
+            {question.variant === 'de-to-en' && (
+              <>
+                <div className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                  {isDE ? 'Was bedeutet dieses Wort?' : 'What does this mean?'}
+                </div>
+                <div className="mt-2 text-3xl font-bold text-slate-900 dark:text-white">{question.card.lemma}</div>
+                <div className="mt-1 text-xs uppercase tracking-wider text-slate-400">{question.card.partOfSpeech}</div>
+              </>
+            )}
           </div>
 
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -460,8 +740,8 @@ export function VocabTrainerPage() {
         </div>
       )}
 
-      {/* Offline hint when a filtered session comes back empty */}
-      {!loading && hasFilters && pool.length === 0 && !finished && (
+      {/* Offline hint when a started session comes back empty after filtering */}
+      {!loading && started && hasFilters && pool.length === 0 && !finished && (
         <p className="mt-3 text-center text-xs text-slate-400">
           {isDE
             ? 'Keine Treffer — versuche andere Filter (offline? Cache füllt sich beim ersten Online-Besuch).'

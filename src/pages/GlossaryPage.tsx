@@ -2,14 +2,17 @@ import { useMemo, useState, useRef, useEffect } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { curriculumService } from '../services';
 import type { MicroStory } from '../types/curriculum';
-import type { VocabCard, AlphabetItem, NumberItem, CalendarItem, GreetingItem } from '../types';
+import type { VocabCard, AlphabetItem, NumberItem, CalendarItem, GreetingItem, VocabStatusValue } from '../types';
 import { speakWord } from '../hooks/useSpeech';
 import { useLang } from '../hooks/useLang';
 import { triggerHaptic } from '../utils/haptic';
 import { theme } from '../config/theme';
+import { firstTopicalTag } from '../utils/vocabTags';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { SEO } from '../components/common/SEO';
 import { GlossaryFilterPanel, type FilterOption } from '../components/glossary/GlossaryFilterPanel';
+import { rankedSearch, normalizeTerm } from '../utils/searchScore';
+import { useVocabularyStatus } from '../hooks/useVocabularyStatus';
 
 interface GlossaryEntry {
   de: string;
@@ -23,6 +26,8 @@ interface GlossaryEntry {
   exampleEn?: string;
   category?: string;
   neRoman?: string;
+  /** VocabCard.id when this entry maps to a vocabulary card (status lookup). */
+  wordId?: string;
 }
 
 function levelBadge(level?: string): string {
@@ -33,6 +38,101 @@ function levelBadge(level?: string): string {
     case 'B2': return 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300';
     default: return '';
   }
+}
+
+/** Tailwind classes per VocabStatusValue (Glossary/Vocab Trainer badges). */
+function vocabStatusBadge(status: VocabStatusValue | undefined): string {
+  switch (status) {
+    case 'new':
+      return 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400';
+    case 'learning':
+      return 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300';
+    case 'known':
+      return 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300';
+    case 'mastered':
+      return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300';
+    default:
+      return 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400';
+  }
+}
+
+/** Human label per status (German-friendly when isDE). */
+function vocabStatusLabel(status: VocabStatusValue | undefined, isDE: boolean): string {
+  switch (status) {
+    case 'new':
+      return isDE ? 'Neu' : 'New';
+    case 'learning':
+      return isDE ? 'Lernt' : 'Learning';
+    case 'known':
+      return isDE ? 'Bekannt' : 'Known';
+    case 'mastered':
+      return isDE ? 'Gemeistert' : 'Mastered';
+    default:
+      return isDE ? 'Neu' : 'New';
+  }
+}
+
+/**
+ * Highlight the active search query (accent/case-insensitive) inside `text`.
+ * Renders <mark> spans around the first normalized match. Non-matching text
+ * passes through unchanged (cheap to call on every row).
+ *
+ * Handles German umlauts/ß: the search value "fur"/"strasse" still highlights
+ * the original "für"/"Straße" by walking normalized→original index mapping.
+ */
+function HighlightText({ text, query }: { text: string; query: string }) {
+  const q = query.trim();
+  if (!q) return <>{text}</>;
+  const normQuery = normalizeTerm(q);
+  if (!normQuery) return <>{text}</>;
+
+  // Build normalized text aligned 1:1 with original chars (low = lowercase).
+  const normParts: { char: string; low: string }[] = [];
+  for (const ch of text) {
+    const low = ch.toLowerCase();
+    const noAccent = low
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/ß/g, 'ss');
+    normParts.push({ char: ch, low: noAccent });
+  }
+  const normText = normParts.map((p) => p.low).join('');
+
+  const start = normText.indexOf(normQuery);
+  if (start === -1) return <>{text}</>;
+
+  // Map normalized start/end back to original char indices, handling the
+  // ß→"ss" length expansion (norm units equal original index here except ß
+  // maps to a single original char for 2 norm units).
+  let origStart = 0;
+  let normPos = 0;
+  while (normPos < start) {
+    normPos += normParts[origStart].low.length;
+    origStart++;
+  }
+  let origEnd = origStart;
+  let cursor = 0;
+  while (cursor < normQuery.length && origEnd < normParts.length) {
+    cursor += normParts[origEnd].low.length;
+    origEnd++;
+  }
+  if (cursor !== normQuery.length) return <>{text}</>;
+
+  const before = text.slice(0, origStart);
+  const match = text.slice(origStart, origEnd);
+  // Safety: mid-ß index alignment can split a ß→"ss" pair; fall back to no
+  // highlight when the extracted run does not normalize to the query.
+  if (normalizeTerm(match) !== normQuery) return <>{text}</>;
+  const after = text.slice(origEnd);
+  return (
+    <>
+      {before}
+      <mark className="rounded bg-blue-100 px-0.5 text-blue-800 dark:bg-blue-900/50 dark:text-blue-200">
+        {match}
+      </mark>
+      {after}
+    </>
+  );
 }
 
 export function GlossaryPage() {
@@ -61,6 +161,9 @@ export function GlossaryPage() {
   const [vocabularyData, setVocabularyData] = useState<VocabCard[]>([]);
   const [storiesData, setStoriesData] = useState<MicroStory[]>([]);
   const [dataLoaded, setDataLoaded] = useState(false);
+
+  // Per-word learning status (reactive Dexie live query, current user).
+  const { statsByWord } = useVocabularyStatus();
 
   // Fetch data from curriculumService. Articles are derived from the same vocab
   // pool below (nouns with der/die/das) — the quiz RPC caps at a small deck,
@@ -131,11 +234,7 @@ export function GlossaryPage() {
         (card.article === 'der' || card.article === 'die' || card.article === 'das')
       ) {
         const artTags = card.tags ?? [];
-        const artExcluded = new Set([
-          'noun', 'verb', 'adjective', 'phrase', 'adverb', 'expression', 'preposition',
-          'general', 'A1', 'A2', 'B1', 'B2',
-        ]);
-        const artCategory = artTags.find((t) => !artExcluded.has(t));
+        const artCategory = firstTopicalTag(artTags);
         entries.push({
           de: `${card.article} ${card.lemma}`,
           en: card.translation.en,
@@ -148,21 +247,17 @@ export function GlossaryPage() {
           exampleDe: card.examples?.[0]?.de,
           exampleEn: card.examples?.[0]?.en,
           category: artCategory,
+          wordId: card.id,
         });
       }
     });
 
     // Curated A1 vocabulary (VocabCard[] from getVocabularyFiltered)
     vocabularyData.forEach((card) => {
-      const tagList: string[] = card.tags ?? [];
       // Category is the first tag that is neither a POS tag nor a CEFR level
-      // tag (see rowToVocabCard — tags are [category?, partOfSpeech, A1?]).
+      // tag (see utils/vocabTags.ts — shared classifier across all surfaces).
       const posTag = card.partOfSpeech;
-      const excludedTags = new Set([
-        'noun', 'verb', 'adjective', 'phrase', 'adverb', 'expression', 'preposition',
-        'general', 'A1', 'A2', 'B1', 'B2',
-      ]);
-      const categoryTag = tagList.find((t) => !excludedTags.has(t));
+      const categoryTag = firstTopicalTag(card.tags);
       entries.push({
         de: card.lemma,
         en: card.translation.en,
@@ -175,6 +270,7 @@ export function GlossaryPage() {
         exampleDe: card.examples?.[0]?.de,
         exampleEn: card.examples?.[0]?.en,
         category: categoryTag,
+        wordId: card.id,
       });
     });
 
@@ -198,7 +294,33 @@ export function GlossaryPage() {
       });
     });
 
-    return entries;
+    // Cross-source dedupe. Two cases:
+    //  - Both entries carry a VocabCard wordId (Articles "der Hund" + Vocabulary
+    //    "Hund") → they are COMPLEMENTARY views of the same noun; keep both so
+    //    the gender-colored article display and the Articles source filter stay
+    //    intact.
+    //  - A metadata-poor duplicate (Alphabet / Stories line without wordId) vs
+    //    the same lemma from Vocabulary/Articles → keep the RICHER wordId entry.
+    const bestByKey = new Map<string, GlossaryEntry>();
+    for (const entry of entries) {
+      // Fold the leading article away so "der Hund" and "Hund" collide.
+      const key = normalizeTerm(entry.de).replace(/^(der|die|das)\s+/, '');
+      const existing = bestByKey.get(key);
+      if (!existing) {
+        bestByKey.set(key, entry);
+        continue;
+      }
+      const existingHasCard = Boolean(existing.wordId);
+      const entryHasCard = Boolean(entry.wordId);
+      if (existingHasCard && entryHasCard) {
+        continue; // complementary views — keep both (first one already stored)
+      }
+      if (entryHasCard && !existingHasCard) {
+        bestByKey.set(key, entry); // upgrade to the card-backed entry
+      }
+      // If neither has a card (e.g. Alphabet vs Stories), keep the first.
+    }
+    return Array.from(bestByKey.values());
   }, [dataLoaded, alphabetData, numbersData, calendarData, greetingsData, vocabularyData, storiesData]);
 
   // Derived filter options — data-driven so chips always match real entries
@@ -259,25 +381,34 @@ export function GlossaryPage() {
   }, [glossary, isDE]);
 
   const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    let items = glossary.filter(
-      (entry) =>
-        (entry.de.toLowerCase().includes(q) ||
-          entry.en.toLowerCase().includes(q) ||
-          entry.ne.toLowerCase().includes(q))
-    );
+    // Smart search: ranked fuzzy match over German / English / Nepali fields.
+    // Empty query passes everything through (score 0) so filters/sort still act
+    // on the full pool.
+    const searchMatches = rankedSearch({
+      query,
+      items: glossary,
+      fields: [
+        { label: 'de', get: (e) => e.de, weight: 3 },
+        { label: 'en', get: (e) => e.en, weight: 2 },
+        { label: 'ne', get: (e) => e.ne, weight: 1 },
+        { label: 'neRoman', get: (e) => e.neRoman ?? '', weight: 1 },
+      ],
+    });
+    // Carry score through the filter pipeline so a non-empty query keeps the
+    // relevance ranking at the end (A–Z would defeat smart search otherwise).
+    let items = searchMatches.map((m) => ({ entry: m.item, score: m.score }));
     // Source filter
     if (sourceFilter !== 'all') {
-      items = items.filter((entry) => entry.source === sourceFilter);
+      items = items.filter(({ entry }) => entry.source === sourceFilter);
     }
     // Part-of-speech filter — entries that carry a POS (Vocabulary + Articles);
     // other sources (Alphabet/Numbers/Calendar/Greetings/Stories) have none.
     if (posFilter !== 'all') {
-      items = items.filter((entry) => entry.pos === posFilter);
+      items = items.filter(({ entry }) => entry.pos === posFilter);
     }
     // Level filter
     if (levelFilter !== 'all') {
-      items = items.filter((entry) => entry.level === levelFilter);
+      items = items.filter(({ entry }) => entry.level === levelFilter);
     }
     // Category filter — maps the generated 'other' bucket back to the small
     // categories it aggregates (entries whose category has < MIN_COUNT items).
@@ -289,25 +420,29 @@ export function GlossaryPage() {
             .map((o) => o.value)
         );
         items = items.filter(
-          (entry) => entry.category !== undefined && !mainCatValues.has(entry.category)
+          ({ entry }) => entry.category !== undefined && !mainCatValues.has(entry.category)
         );
       } else {
-        items = items.filter((entry) => entry.category === categoryFilter);
+        items = items.filter(({ entry }) => entry.category === categoryFilter);
       }
     }
-    // Sort
+    // Sort — relevance when searching; the chosen key otherwise.
+    const searching = query.trim().length > 0;
     items = [...items].sort((a, b) => {
+      if (searching) return b.score - a.score;
+      const x = a.entry;
+      const y = b.entry;
       switch (sortKey) {
         case 'za':
-          return b.de.localeCompare(a.de);
+          return y.de.localeCompare(x.de);
         case 'source':
-          return a.source.localeCompare(b.source) || a.de.localeCompare(b.de);
+          return x.source.localeCompare(y.source) || x.de.localeCompare(y.de);
         case 'az':
         default:
-          return a.de.localeCompare(b.de);
+          return x.de.localeCompare(y.de);
       }
     });
-    return items;
+    return items.map((m) => m.entry);
   }, [glossary, query, sourceFilter, sortKey, posFilter, levelFilter, categoryFilter, filterOptions]);
 
   // Virtualize rows for smooth scrolling with large datasets
@@ -363,6 +498,18 @@ export function GlossaryPage() {
         <span className={theme.gender.dieF.text}>die</span>
         <span className={theme.gender.das.text}>das</span>
         <span className={theme.gender.diePl.text}>pl.</span>
+      </div>
+
+      {/* Learning-status legend (vocab-status tracking is opt-in per word) */}
+      <div className="mt-2 flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+        <span className="font-semibold uppercase tracking-wider">
+          {isDE ? 'Status' : 'Status'}:
+        </span>
+        {(['new', 'learning', 'known', 'mastered'] as const).map((s) => (
+          <span key={s} className={`rounded-full px-2 py-0.5 font-bold uppercase tracking-wider ${vocabStatusBadge(s)}`}>
+            {vocabStatusLabel(s, isDE)}
+          </span>
+        ))}
       </div>
 
             {/* Compact filter bar: source chips + sort + filter toggle */}
@@ -470,13 +617,15 @@ export function GlossaryPage() {
                         <div className="text-lg font-semibold text-slate-950 dark:text-white">
                           {(() => {
                             const m = entry.de.match(/^(der|die|das)\s+(.+)$/i);
-                            if (!m) return entry.de;
+                            if (!m) {
+                              return <HighlightText text={entry.de} query={query} />;
+                            }
                             const key = m[1].toLowerCase() === 'die' ? 'dieF' : m[1].toLowerCase();
                             const token = theme.gender[key as keyof typeof theme.gender];
                             return (
                               <>
                                 <span className={token.text}>{m[1]} </span>
-                                {m[2]}
+                                <HighlightText text={m[2]} query={query} />
                               </>
                             );
                           })()}
@@ -490,8 +639,10 @@ export function GlossaryPage() {
                         {/* Translations */}
                         {!isDE && (
                           <div className="mt-1 text-sm text-slate-600 dark:text-slate-300">
-                            <div>{entry.en}</div>
-                            <div className="text-slate-500 dark:text-slate-400">{entry.ne}</div>
+                            <div><HighlightText text={entry.en} query={query} /></div>
+                            <div className="text-slate-500 dark:text-slate-400">
+                              <HighlightText text={entry.ne} query={query} />
+                            </div>
                             {entry.neRoman && (
                               <div className="text-xs italic text-slate-400 dark:text-slate-500">{entry.neRoman}</div>
                             )}
@@ -526,6 +677,14 @@ export function GlossaryPage() {
                           {entry.category && (
                             <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-700 dark:bg-amber-950/40 dark:text-amber-300">
                               {entry.category}
+                            </span>
+                          )}
+                          {entry.wordId && (
+                            <span
+                              title={isDE ? 'Lernstatus' : 'Learning status'}
+                              className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${vocabStatusBadge(statsByWord[entry.wordId]?.status)}`}
+                            >
+                              {vocabStatusLabel(statsByWord[entry.wordId]?.status, isDE)}
                             </span>
                           )}
                         </div>
