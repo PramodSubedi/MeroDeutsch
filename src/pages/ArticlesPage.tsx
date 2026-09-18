@@ -12,6 +12,8 @@ import { theme } from '../config/theme';
 import { curriculumService } from '../services';
 import { CompactAudioButton } from '../components/CompactAudioButton';
 import { GenderLegend } from '../components/ui/GenderBadge';
+import { MatchPairs, type MatchPair } from '../components/exercises/MatchPairs';
+import { GENDER_PRONOUNS } from '../data/genderPronouns';
 import { pickRandom } from '../utils/questionGenerator';
 import { getHint } from '../data/hints';
 import type { ArticleItem } from '../types';
@@ -44,7 +46,7 @@ export function ArticlesPage() {
   const { langMode } = useLang();
   const { isDE, t } = useTranslation(langMode);
   const { quests, reportAccuracy, claimReward } = useDailyQuests();
-  const [mode, setMode] = useState<'learn' | 'quiz'>('quiz');
+  const [mode, setMode] = useState<'learn' | 'quiz' | 'pronouns'>('quiz');
   const [articlesData, setArticlesData] = useState<ArticleItem[]>([]);
   const [currentItem, setCurrentItem] = useState<ArticleItem | null>(null);
   const [articleScore, setArticleScore] = useState(0);
@@ -225,6 +227,18 @@ export function ArticlesPage() {
 
   const articlePercent = articleTotal ? Math.round((articleScore / articleTotal) * 100) : 0;
 
+  // Gender → pronoun matching pairs (first 8 hand-verified person nouns;
+  // right column = the matching personal pronoun er/sie/es).
+  const pronounPairs = useMemo<MatchPair[]>(
+    () =>
+      GENDER_PRONOUNS.slice(0, 8).map((p) => ({
+        id: p.noun,
+        de: `${p.article} ${p.noun}`,
+        en: p.pronoun,
+      })),
+    []
+  );
+
   const title = isDE ? 'Der, Die, Das' : sharedTextDatabase.articles.title;
   const description = isDE
     ? 'Lerne deutsche Substantive zusammen with ihrem Artikel.'
@@ -264,6 +278,17 @@ export function ArticlesPage() {
               >
                 {isDE ? '⚡ Quiz' : '⚡ Quiz'}
               </button>
+              <button
+                type="button"
+                onClick={() => setMode('pronouns')}
+                className={`px-4 py-2 rounded-full font-semibold text-sm transition-all ${
+                  mode === 'pronouns'
+                    ? 'bg-white text-blue-600 shadow-sm dark:bg-slate-900 dark:text-blue-300'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                }`}
+              >
+                {isDE ? '🔤 Pronomen' : '🔤 Pronouns'}
+              </button>
             </div>
           </div>
         </div>
@@ -302,6 +327,23 @@ export function ArticlesPage() {
               <div>das Mädchen</div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* PRONOUNS MODE: gender → personal pronoun matching (der → er …) */}
+      {mode === 'pronouns' && (
+        <div className="mx-auto max-w-lg space-y-4">
+          <p className="text-center text-sm text-slate-600 dark:text-slate-300">
+            {isDE
+              ? 'der → er · die → sie · das → es — das Pronomen folgt dem Genus.'
+              : 'der → er · die → sie · das → es — the pronoun follows the gender.'}
+          </p>
+          <MatchPairs
+            pairs={pronounPairs}
+            module="articles"
+            speakOnMatch={false}
+            columnLabels={{ left: isDE ? 'Nomen' : 'Noun', right: isDE ? 'Pronomen' : 'Pronoun' }}
+          />
         </div>
       )}
 

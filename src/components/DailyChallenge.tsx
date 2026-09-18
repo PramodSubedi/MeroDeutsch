@@ -10,6 +10,7 @@ import { getItem, setItem } from '../utils/safeStorage';
 import { useAuth } from '../hooks/useAuth';
 import { theme } from '../config/theme';
 import { buildMcq } from '../utils/questionGenerator';
+import { pickWordOfDay } from '../utils/wordOfDay';
 
 // Article mapping for common German nouns
 const articleMap: Record<string, string> = {
@@ -34,8 +35,10 @@ const daySeed = () => {
   const s = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
   let h = 0;
   for (let i = 0; i < s.length; i += 1) h = (h << 5) - h + s.charCodeAt(i);
-  return Math.abs(h);
+      return Math.abs(h);
 };
+
+// Seeded one-element picker (no replacement) used by the daily-challenge quiz.
 const pick = <T,>(arr: T[], seed: number): T => arr[seed % arr.length];
 
 function buildQuestions(
@@ -119,19 +122,31 @@ export function DailyChallenge({ variant = 'normal' }: DailyChallengeProps) {
   useEffect(() => {
     const loadData = async () => {
       const [vocabCards, alpha, nums] = await Promise.all([
-        curriculumService.getVocabularyFiltered({}),
+                curriculumService.getVocabularyFiltered({ limit: 2000 }),
         curriculumService.getAlphabet(),
         curriculumService.getNumbers(),
       ]);
-      // Map VocabCard[] to VocabEntry[] shape for compatibility with existing state
-      const vocab: VocabEntry[] = vocabCards.map((c) => ({
-        id: c.id,
-        de: c.lemma,
-        en: c.translation?.en ?? '',
-        ne: c.translation?.np ?? '',
-        tags: c.tags ?? [],
-        level: 'A1',
-      }));
+            // Map VocabCard[] to VocabEntry[] shape for compatibility with existing state.
+      // Deduplicate by lemma and drop rows with no English gloss: the larger
+      // full-pool deck can contain duplicates / incomplete rows that would
+      // otherwise surface identical MCQ options or a blank "correct" answer.
+      const seen = new Set<string>();
+      const vocab: VocabEntry[] = [];
+      for (const c of vocabCards) {
+        const de = c.lemma ?? '';
+        const en = c.translation?.en ?? '';
+        const key = de.trim().toLowerCase();
+        if (!key || !en.trim() || seen.has(key)) continue;
+        seen.add(key);
+        vocab.push({
+          id: c.id,
+          de,
+          en,
+          ne: c.translation?.np ?? '',
+          tags: c.tags ?? [],
+          level: 'A1',
+        });
+      }
       setVocabularyData(vocab);
       setAlphabetData(alpha);
       setNumbersData(nums);
@@ -140,10 +155,13 @@ export function DailyChallenge({ variant = 'normal' }: DailyChallengeProps) {
     loadData();
   }, []);
 
-  // Empty-pool safe: wordOfDay stays null until the vocab pool has rows.
+    // Empty-pool safe: wordOfDay stays null until the vocab pool has rows.
+  // Uses the SAME deterministic selector as HomeExtras so "Word of the Day"
+  // is identical across surfaces. The pool is fetched via getVocabularyFiltered({ limit: 2000 })
+  // (word-ordered `get_vocabulary_glossary`), so this is stable across refreshes.
   const wordOfDay = useMemo(
-    () => (dataLoaded && vocabularyData.length > 0 ? pick(vocabularyData, seed) : null),
-    [vocabularyData, seed, dataLoaded]
+    () => (dataLoaded && vocabularyData.length > 0 ? pickWordOfDay(vocabularyData, (v) => v.id ?? v.de) : null),
+    [vocabularyData, dataLoaded]
   );
   const questions = useMemo(() => dataLoaded ? buildQuestions(seed, vocabularyData, alphabetData, numbersData) : [],
     [seed, vocabularyData, alphabetData, numbersData, dataLoaded]);

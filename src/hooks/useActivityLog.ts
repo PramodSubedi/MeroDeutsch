@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { getItem, setItem } from '../utils/safeStorage';
 import { scopedKey } from '../utils/userStorage';
 import { useAuth } from './useAuth';
@@ -60,6 +60,62 @@ export function useActivityLog() {
   useEffect(() => {
     setActivities(loadLocal(key));
   }, [key]);
+
+  // ── Debounced cloud flush ──────────────────────────────────────────────
+  // Activity events fire per quiz answer (XP + review queue + trainer). The
+  // old code sent one SELECT + UPDATE/INSERT pair per event — ~2 round trips
+  // per answer. Accumulate per-day deltas and send ONE request 900ms after
+  // the last event, so a 15-question session costs 1 network call.
+  const ACTIVITY_FLUSH_DEBOUNCE_MS = 900;
+  const pendingActivityRef = useRef(new Map<string, number>());
+  const activityFlushTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const userRef = useRef(user);
+  useEffect(() => {
+    userRef.current = user;
+  }, [user]);
+  const isAuthedRef = useRef(isAuthenticated);
+  useEffect(() => {
+    isAuthedRef.current = isAuthenticated;
+  }, [isAuthenticated]);
+
+  const flushPendingActivity = useCallback(async () => {
+    const activeUser = userRef.current;
+    if (!isAuthedRef.current || !activeUser) return;
+    const pending = pendingActivityRef.current;
+    if (pending.size === 0) return;
+    pendingActivityRef.current = new Map<string, number>();
+    for (const [date, count] of Array.from(pending.entries())) {
+      try {
+        await userDataService.upsertActivityDay(activeUser.userId, date, count);
+      } catch (error) {
+        console.warn('Failed to sync activity to Supabase:', error);
+      }
+    }
+  }, []);
+
+  const scheduleActivityFlush = useCallback(() => {
+    if (!isAuthedRef.current || !userRef.current) return;
+    if (activityFlushTimerRef.current) clearTimeout(activityFlushTimerRef.current);
+    activityFlushTimerRef.current = setTimeout(
+      () => void flushPendingActivity(),
+      ACTIVITY_FLUSH_DEBOUNCE_MS
+    );
+  }, [flushPendingActivity]);
+
+  // Drop pending writes on user switch / unmount (never flush to another user).
+  useEffect(() => {
+    if (activityFlushTimerRef.current) {
+      clearTimeout(activityFlushTimerRef.current);
+      activityFlushTimerRef.current = null;
+    }
+    pendingActivityRef.current.clear();
+  }, [key]);
+  useEffect(
+    () => () => {
+      if (activityFlushTimerRef.current) clearTimeout(activityFlushTimerRef.current);
+    },
+    []
+  );
 
   // On login: fetch last 90 days from Supabase, merge with local (max), re-cache.
   useEffect(() => {
@@ -129,16 +185,17 @@ export function useActivityLog() {
         return filtered;
       });
 
-      // Supabase upsert for authenticated users
+      // Cloud: coalesce per-day deltas and flush once after the burst (single
+      // atomic RPC call instead of SELECT + UPDATE/INSERT per answer).
       if (isAuthenticated && user) {
-        try {
-          await userDataService.upsertActivityDay(user.userId, today, delta);
-        } catch (error) {
-          console.warn('Failed to sync activity to Supabase:', error);
-        }
+        pendingActivityRef.current.set(
+          today,
+          (pendingActivityRef.current.get(today) ?? 0) + delta
+        );
+        scheduleActivityFlush();
       }
     },
-    [isAuthenticated, user, key],
+    [isAuthenticated, user, key, scheduleActivityFlush],
   );
 
   return { activities, recordActivity };

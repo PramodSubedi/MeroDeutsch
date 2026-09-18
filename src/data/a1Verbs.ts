@@ -133,3 +133,76 @@ export function getSubjectPerson(token: string): SubjectPersonGroup[] | null {
     default: return null;
   }
 }
+
+/**
+ * A1 separable verbs (trennbare Verben) — hand-verified metadata.
+ *
+ * Used by the Sentence Builder page's "Trennbare Verben" focus to detect which
+ * cached sentence exercises drill a separable verb (deterministic check — NO
+ * generative grammar logic):
+ *   1. the sentence's LAST word equals the verb's prefix (main-clause rule:
+ *      the prefix always lands at the very end), AND
+ *   2. some other word starts with the verb's bare stem.
+ *
+ * `stem` is the infinitive minus prefix minus the "-en" ending (e.g.
+ * aufstehen → "steh"), matched with startsWith so the conjugated form
+ * (stehe/stehst/steht) is caught regardless of ending.
+ */
+export interface SeparableVerbMeta {
+  /** Detachable prefix (Position "end" of the main clause). */
+  prefix: string;
+  /** Bare stem used for startsWith detection (case-insensitive). */
+  stem: string;
+}
+
+export const A1_SEPARABLE: Record<string, SeparableVerbMeta> = {
+  aufstehen: { prefix: 'auf', stem: 'steh' },
+  aufhören: { prefix: 'auf', stem: 'hör' },
+  aufmachen: { prefix: 'auf', stem: 'mach' },
+  einkaufen: { prefix: 'ein', stem: 'kauf' },
+  einladen: { prefix: 'ein', stem: 'lad' },
+  anrufen: { prefix: 'an', stem: 'ruf' },
+  ankommen: { prefix: 'an', stem: 'komm' },
+  abholen: { prefix: 'ab', stem: 'hol' },
+  abgeben: { prefix: 'ab', stem: 'geb' },
+  aussteigen: { prefix: 'aus', stem: 'steig' },
+  ausfüllen: { prefix: 'aus', stem: 'füll' },
+  ausgehen: { prefix: 'aus', stem: 'geh' },
+  mitkommen: { prefix: 'mit', stem: 'komm' },
+  mitnehmen: { prefix: 'mit', stem: 'nehm' },
+  fernsehen: { prefix: 'fern', stem: 'seh' },
+  umsteigen: { prefix: 'um', stem: 'steig' },
+  vorstellen: { prefix: 'vor', stem: 'stell' },
+  zuhören: { prefix: 'zu', stem: 'hör' },
+};
+
+/**
+ * Detect whether a German sentence (as a word array) drills a separable verb.
+ * Returns the matched infinitive or null. Deterministic — see docs above.
+ */
+export function detectSeparableVerb(words: string[]): string | null {
+  if (words.length < 2) return null;
+  const last = (words[words.length - 1] ?? '').toLowerCase().replace(/[.!?]/g, '');
+  for (const [infinitive, meta] of Object.entries(A1_SEPARABLE)) {
+    if (last !== meta.prefix) continue;
+    const hasStem = words
+      .slice(0, -1)
+      .some((w) => w.toLowerCase().replace(/[.!?]/g, '').startsWith(meta.stem));
+    if (hasStem) return infinitive;
+  }
+  return null;
+}
+
+/**
+ * The 8 fixed INSEPARABLE prefixes (untrennbare Vorsilben) — be- emp- ent-
+ * er- ge- miss- ver- zer- (A1 Resource Pack Unit 4).
+ *
+ * Unlike separable prefixes, these NEVER split: the conjugated form keeps the
+ * stress on the stem and the whole verb stays together at Position 2
+ * ("Ich besuche den Kurs." / "Ich verstehe das."). Prefix classifiers and the
+ * Sentence Builder note use this list to teach the contrast with
+ * `A1_SEPARABLE`.
+ */
+export const A1_INSEPARABLE_PREFIXES = [
+  'be', 'emp', 'ent', 'er', 'ge', 'miss', 'ver', 'zer',
+] as const;

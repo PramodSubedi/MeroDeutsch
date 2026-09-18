@@ -197,6 +197,19 @@ async function main() {
       existing.phonetics.devanagari = curNp;
       changed = true;
     }
+    // Devanagari hygiene: some legacy rows carry the GERMAN lemma (plain
+    // Latin) in phonetics.devanagari — that field must hold Devanagari
+    // script. Repair from the Nepali translation (this script's own
+    // convention, see above) whenever the field is empty, Latin, or a
+    // duplicate of the lemma. Rows with real Devanagari (Nepali glosses or
+    // German pronunciation guides like "लईबएन") are left untouched.
+    const npNow = existing.translation.np || curNp;
+    const dev = (existing.phonetics && existing.phonetics.devanagari) || '';
+    if (npNow && (!dev || !DEVA.test(dev) || dev.toLowerCase() === String(existing.lemma).toLowerCase())) {
+      existing.phonetics = existing.phonetics || { ipa: '', devanagari: '' };
+      existing.phonetics.devanagari = npNow;
+      changed = true;
+    }
     if (pos === 'noun' && !existing.article && /^(der|die|das)$/i.test(r.article || '')) {
       existing.article = r.article.toLowerCase();
       changed = true;

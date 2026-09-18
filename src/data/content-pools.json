@@ -1707,6 +1707,278 @@
           "category": "cases"
         },
         "sort": 4
+      },
+      {
+        "id": "grammar-stem-0",
+        "payload": {
+          "prompt": "du ___ (lesen)",
+          "options": [
+            "liest",
+            "lesst",
+            "lesest"
+          ],
+          "correct": "liest",
+          "category": "stem"
+        },
+        "sort": 0
+      },
+      {
+        "id": "grammar-stem-1",
+        "payload": {
+          "prompt": "er ___ (sehen)",
+          "options": [
+            "sieht",
+            "seht",
+            "sehet"
+          ],
+          "correct": "sieht",
+          "category": "stem"
+        },
+        "sort": 1
+      },
+      {
+        "id": "grammar-stem-2",
+        "payload": {
+          "prompt": "du ___ (sprechen)",
+          "options": [
+            "sprichst",
+            "sprechst",
+            "sprecht"
+          ],
+          "correct": "sprichst",
+          "category": "stem"
+        },
+        "sort": 2
+      },
+      {
+        "id": "grammar-stem-3",
+        "payload": {
+          "prompt": "du ___ (fahren)",
+          "options": [
+            "fährst",
+            "fahrst",
+            "fahrt"
+          ],
+          "correct": "fährst",
+          "category": "stem"
+        },
+        "sort": 3
+      },
+      {
+        "id": "grammar-stem-4",
+        "payload": {
+          "prompt": "er ___ (essen)",
+          "options": [
+            "isst",
+            "esst",
+            "essen"
+          ],
+          "correct": "isst",
+          "category": "stem"
+        },
+        "sort": 4
+      },
+      {
+        "id": "grammar-stem-5",
+        "payload": {
+          "prompt": "du ___ (nehmen)",
+          "options": [
+            "nimmst",
+            "nehmst",
+            "nimmt"
+          ],
+          "correct": "nimmst",
+          "category": "stem"
+        },
+        "sort": 5
+      },
+      {
+        "id": "grammar-stem-6",
+        "payload": {
+          "prompt": "er ___ (schlafen)",
+          "options": [
+            "schläft",
+            "schlaft",
+            "schlafst"
+          ],
+          "correct": "schläft",
+          "category": "stem"
+        },
+        "sort": 6
+      },
+      {
+        "id": "grammar-stem-7",
+        "payload": {
+          "prompt": "du ___ (laufen)",
+          "options": [
+            "läufst",
+            "lauft",
+            "laufst"
+          ],
+          "correct": "läufst",
+          "category": "stem"
+        },
+        "sort": 7
+      },
+      {
+        "id": "grammar-modals-0",
+        "payload": {
+          "prompt": "Ich ___ gut schwimmen. (können)",
+          "options": [
+            "kann",
+            "kannst",
+            "könne"
+          ],
+          "correct": "kann",
+          "category": "modals"
+        },
+        "sort": 0
+      },
+      {
+        "id": "grammar-modals-1",
+        "payload": {
+          "prompt": "Du ___ heute Hausaufgaben machen. (müssen)",
+          "options": [
+            "musst",
+            "müsst",
+            "müsse"
+          ],
+          "correct": "musst",
+          "category": "modals"
+        },
+        "sort": 1
+      },
+      {
+        "id": "grammar-modals-2",
+        "payload": {
+          "prompt": "Er ___ ein Auto kaufen. (wollen)",
+          "options": [
+            "will",
+            "willst",
+            "wollen"
+          ],
+          "correct": "will",
+          "category": "modals"
+        },
+        "sort": 2
+      },
+      {
+        "id": "grammar-modals-3",
+        "payload": {
+          "prompt": "Wir ___ hier nicht rauchen. (dürfen)",
+          "options": [
+            "dürfen",
+            "darft",
+            "dürft"
+          ],
+          "correct": "dürfen",
+          "category": "modals"
+        },
+        "sort": 3
+      },
+      {
+        "id": "grammar-prefix-0",
+        "payload": {
+          "prompt": "___ (aufstehen) — trennbar oder untrennbar?",
+          "options": [
+            "Separable",
+            "Inseparable"
+          ],
+          "correct": "Separable",
+          "category": "prefix"
+        },
+        "sort": 0
+      },
+      {
+        "id": "grammar-prefix-1",
+        "payload": {
+          "prompt": "ver- (verstehen) — trennbar oder untrennbar?",
+          "options": [
+            "Separable",
+            "Inseparable"
+          ],
+          "correct": "Inseparable",
+          "category": "prefix"
+        },
+        "sort": 1
+      },
+      {
+        "id": "grammar-prefix-2",
+        "payload": {
+          "prompt": "ein- (einkaufen) — trennbar oder untrennbar?",
+          "options": [
+            "Separable",
+            "Inseparable"
+          ],
+          "correct": "Separable",
+          "category": "prefix"
+        },
+        "sort": 2
+      },
+      {
+        "id": "grammar-prefix-3",
+        "payload": {
+          "prompt": "be- (besuchen) — trennbar oder untrennbar?",
+          "options": [
+            "Separable",
+            "Inseparable"
+          ],
+          "correct": "Inseparable",
+          "category": "prefix"
+        },
+        "sort": 3
+      },
+      {
+        "id": "grammar-prefix-4",
+        "payload": {
+          "prompt": "an- (anrufen) — trennbar oder untrennbar?",
+          "options": [
+            "Separable",
+            "Inseparable"
+          ],
+          "correct": "Separable",
+          "category": "prefix"
+        },
+        "sort": 4
+      },
+      {
+        "id": "grammar-prefix-5",
+        "payload": {
+          "prompt": "ge- (gefallen) — trennbar oder untrennbar?",
+          "options": [
+            "Separable",
+            "Inseparable"
+          ],
+          "correct": "Inseparable",
+          "category": "prefix"
+        },
+        "sort": 5
+      },
+      {
+        "id": "grammar-prefix-6",
+        "payload": {
+          "prompt": "zer- (zerbrechen) — trennbar oder untrennbar?",
+          "options": [
+            "Separable",
+            "Inseparable"
+          ],
+          "correct": "Inseparable",
+          "category": "prefix"
+        },
+        "sort": 6
+      },
+      {
+        "id": "grammar-prefix-7",
+        "payload": {
+          "prompt": "mit- (mitkommen) — trennbar oder untrennbar?",
+          "options": [
+            "Separable",
+            "Inseparable"
+          ],
+          "correct": "Separable",
+          "category": "prefix"
+        },
+        "sort": 7
       }
     ]
   },
@@ -2535,6 +2807,108 @@
           ]
         },
         "sort": 3
+      },
+      {
+        "id": "rapid-verb-5",
+        "payload": {
+          "id": "verb-5",
+          "type": "verb-conjugation",
+          "timeLimit": 5000,
+          "pronoun": "du",
+          "verb": "lesen",
+          "conjugated": "liest",
+          "options": [
+            "liest",
+            "lesst",
+            "lesest"
+          ]
+        },
+        "sort": 4
+      },
+      {
+        "id": "rapid-verb-6",
+        "payload": {
+          "id": "verb-6",
+          "type": "verb-conjugation",
+          "timeLimit": 5000,
+          "pronoun": "du",
+          "verb": "sprechen",
+          "conjugated": "sprichst",
+          "options": [
+            "sprichst",
+            "sprechst",
+            "sprecht"
+          ]
+        },
+        "sort": 5
+      },
+      {
+        "id": "rapid-verb-7",
+        "payload": {
+          "id": "verb-7",
+          "type": "verb-conjugation",
+          "timeLimit": 5000,
+          "pronoun": "er",
+          "verb": "fahren",
+          "conjugated": "fährt",
+          "options": [
+            "fährt",
+            "fährst",
+            "fahrt"
+          ]
+        },
+        "sort": 6
+      },
+      {
+        "id": "rapid-verb-8",
+        "payload": {
+          "id": "verb-8",
+          "type": "verb-conjugation",
+          "timeLimit": 5000,
+          "pronoun": "du",
+          "verb": "nehmen",
+          "conjugated": "nimmst",
+          "options": [
+            "nimmst",
+            "nehmst",
+            "nimmt"
+          ]
+        },
+        "sort": 7
+      },
+      {
+        "id": "rapid-verb-9",
+        "payload": {
+          "id": "verb-9",
+          "type": "verb-conjugation",
+          "timeLimit": 5000,
+          "pronoun": "er",
+          "verb": "schlafen",
+          "conjugated": "schläft",
+          "options": [
+            "schläft",
+            "schlaft",
+            "schlafen"
+          ]
+        },
+        "sort": 8
+      },
+      {
+        "id": "rapid-verb-10",
+        "payload": {
+          "id": "verb-10",
+          "type": "verb-conjugation",
+          "timeLimit": 5000,
+          "pronoun": "du",
+          "verb": "geben",
+          "conjugated": "gibst",
+          "options": [
+            "gibst",
+            "gebst",
+            "gebt"
+          ]
+        },
+        "sort": 9
       },
       {
         "id": "rapid-pron-1",

@@ -215,10 +215,10 @@ const addWrongAnswer = useCallback((item: Omit<WrongAnswerItem, 'id' | 'timestam
     // Phase C: Infer error tag
     let inferredTag: WrongAnswerItem['errorTag'] = 'other';
     const m = (item.moduleType ?? '').toLowerCase();
-    if (m === 'articles' || m === 'blitz' || m === 'rapid-fire' || m === 'rapid-blitz') inferredTag = 'article';
-    else if (m === 'grammar') inferredTag = 'verb';
-    else if (m === 'alphabet' || m === 'spelling') inferredTag = 'spelling';
-    else if (m === 'dictation' || m === 'pronunciation') inferredTag = 'listening';
+    if (m === 'articles' || m === 'blitz' || m === 'rapid-fire' || m === 'rapid-blitz' || m === 'pronoun-traps') inferredTag = 'article';
+    else if (m === 'grammar' || m === 'verb-tictactoe' || m === 'verb-dice') inferredTag = 'verb';
+    else if (m === 'alphabet' || m === 'spelling' || m === 'email-builder' || m === 'email-evaluator') inferredTag = 'spelling';
+    else if (m === 'dictation' || m === 'pronunciation' || m === 'phonetic-traps') inferredTag = 'listening';
 
     db.userProgress.put({
       id,
@@ -259,8 +259,11 @@ const markCorrect = useCallback((id: string) => {
       // out-of-range box 5 (which would produce LEITNER_INTERVALS[4] === undefined
       // → Invalid Date → silent put failure, so mastered items could never leave the queue).
       // Cap advancement at box 4; a correct answer at box 4 graduates (removes from queue).
-      if (currentBox >= LEITNER_INTERVALS.length) {
-        localDb.userProgress.delete(id);
+            if (currentBox >= LEITNER_INTERVALS.length) {
+        // Graduation: delete remotely first, then locally. If the remote
+        // delete fails (offline / 401 / …), keep the local row so a later
+        // sync can retry it — otherwise the login-merge bulk-upsert would
+        // resurrect the item (same "Bug B" ordering used by clearQueue below).
         if (isAuthenticated) {
           supabase
             .from('review_queue')
@@ -268,8 +271,14 @@ const markCorrect = useCallback((id: string) => {
             .eq('id', id)
             .eq('user_id', effectiveUserId)
             .then(({ error }) => {
-              if (error) console.warn('Failed to retire graduated review item remotely:', error.message);
+              if (error) {
+                console.warn('Failed to retire graduated review item remotely:', error.message);
+                return; // keep local row; retry on next sync
+              }
+              localDb.userProgress.delete(id);
             });
+        } else {
+          localDb.userProgress.delete(id);
         }
         return;
       }
@@ -298,10 +307,10 @@ const markResolved = useCallback((id: string) => {
     const effectiveUserId = userId ?? 'guest';
     localDb.userProgress.get(id).then((row) => {
       // Only delete rows belonging to the current user.
-      if (row && row.userId === effectiveUserId) {
-        localDb.userProgress.delete(id);
-        // Delete remotely too — otherwise the login merge re-inserts the row
-        // and "resolved" items resurrect after reload (Bug B fix).
+            if (row && row.userId === effectiveUserId) {
+        // Delete remotely first; only drop locally on success. If the cloud
+        // delete fails, keep the local row so the next sync retries it and the
+        // login-merge cannot resurrect a "resolved" item (Bug B ordering).
         if (isAuthenticated) {
           supabase
             .from('review_queue')
@@ -309,8 +318,14 @@ const markResolved = useCallback((id: string) => {
             .eq('id', id)
             .eq('user_id', effectiveUserId)
             .then(({ error }) => {
-              if (error) console.warn('Failed to delete review item remotely:', error.message);
+              if (error) {
+                console.warn('Failed to delete review item remotely:', error.message);
+                return; // keep local row; retry on next sync
+              }
+              localDb.userProgress.delete(id);
             });
+        } else {
+          localDb.userProgress.delete(id);
         }
       }
     });

@@ -194,12 +194,21 @@ export const userDataService = {
   },
 
   /**
-   * Upsert today's activity row. The `delta` is added to the existing
-   * event_count (or starts at `delta` if no row exists yet). For
-   * authenticated users only — guests never touch Supabase.
+   * Increment today's activity row (or start it at `delta`). Uses the atomic
+   * `increment_activity` RPC (migration 020) — ONE round trip, no read-modify-
+   * write race across devices. Falls back to select → update / insert when the
+   * RPC isn't applied yet.
    */
   async upsertActivityDay(userId: string, dateStr: string, delta: number = 1): Promise<void> {
-    // Try UPDATE first (increment), fall back to INSERT.
+    // Preferred path: atomic single-statement increment.
+    const { error: rpcError } = await supabase.rpc('increment_activity', {
+      p_user_id: userId,
+      p_date: dateStr,
+      p_delta: delta,
+    });
+    if (!rpcError) return;
+
+    // Fallback (migration 020 not yet applied): select → update / insert.
     const { data: existing, error: selectError } = await supabase
       .from('user_activity_days')
       .select('event_count')
@@ -214,7 +223,10 @@ export const userDataService = {
     if (existing) {
       const { error: updateError } = await supabase
         .from('user_activity_days')
-        .update({ event_count: existing.event_count + delta, updated_at: new Date().toISOString() })
+        .update({
+          event_count: (existing.event_count ?? 0) + delta,
+          updated_at: new Date().toISOString(),
+        })
         .eq('user_id', userId)
         .eq('activity_date', dateStr);
       if (updateError) throw updateError;

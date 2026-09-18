@@ -930,9 +930,14 @@ const verbRows = Array.from(
   }
   console.log(`[seedCurriculum] sentences: ${SENTENCES.length} exercises upserted.`);
 
-  // 4. Smoke-test the randomized RPC endpoints.
+  // 4. Smoke-test the randomized RPC endpoints. Pass all five params so the
+  // call targets the (TEXT, TEXT, TEXT, TEXT, INT) overload unambiguously
+  // (see supabase/migrations/019_drop_stale_get_random_vocabulary.sql).
   const { data: randVocab, error: rpcVocabErr } = await admin.rpc('get_random_vocabulary', {
     p_pos: 'noun',
+    p_tag: null,
+    p_level: null,
+    p_category: null,
     p_limit: 15,
   });
   if (rpcVocabErr) {
@@ -943,6 +948,9 @@ const verbRows = Array.from(
 
   const { data: randVerbs, error: rpcVerbErr } = await admin.rpc('get_random_vocabulary', {
     p_pos: 'verb',
+    p_tag: null,
+    p_level: null,
+    p_category: null,
     p_limit: 10,
   });
   if (rpcVerbErr) {

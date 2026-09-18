@@ -7,6 +7,8 @@ import { curriculumService } from '../../services';
 import { speakWord } from '../../hooks/useSpeech';
 import { DailyQuestsWidget } from '../DailyQuestsWidget';
 import { theme } from '../../config/theme';
+import { pickWordOfDay } from '../../utils/wordOfDay';
+import type { VocabCard } from '../../types';
 
 /**
  * HomeExtras - logged-in extras mounted on Home below the main layout.
@@ -17,6 +19,13 @@ import { theme } from '../../config/theme';
  *    with TTS. Guest-safe (works without auth).
  * 3. Daily quests: the existing XP-linked quest widget (practice a lesson,
  *    use tools, review ...) with tick marks on completed quests.
+ *
+ * WOD data source: `getVocabularyFiltered({ limit: 2000 })`, which routes to
+ * the word-ordered `get_vocabulary_glossary` RPC (migration 017) — a STABLE,
+ * non-randomized pool. Indexing it via `pickWordOfDay` yields the same word
+ * per local day across refreshes and matches DailyChallenge's pick. (Using
+ * `{}` here previously hit the random quiz RPC and also read VocabCard fields
+ * that do not exist — `de` instead of `lemma` — so the card never rendered.)
  */
 export function HomeExtras() {
   const { langMode } = useLang();
@@ -26,17 +35,31 @@ export function HomeExtras() {
   const cefrState = useCefrLevel() as unknown as { level?: string } | string | undefined;
   const cefrLevel = typeof cefrState === 'string' ? cefrState : (cefrState?.level ?? 'A1');
 
-  const [wod, setWod] = useState<{ de: string; en: string; ne: string } | null>(null);
+  const [wod, setWod] =
+    useState<{ lemma: string; en: string; ne: string; article: VocabCard['article'] } | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     curriculumService
-      .getVocabularyFiltered({})
-      .then((items) => {
-        if (cancelled || !items || items.length === 0) return;
-        const dayIndex = Math.floor(Date.now() / 86400000);
-        const pick = items[dayIndex % items.length] as { de?: string; en?: string; ne?: string };
-        if (pick?.de) setWod({ de: pick.de, en: pick.en ?? '', ne: pick.ne ?? '' });
+      .getVocabularyFiltered({ limit: 2000 })
+      .then((cards) => {
+        if (cancelled || !cards || cards.length === 0) return;
+        // Deduplicate by lemma so duplicate DB rows can't surface two words.
+        const byLemma = new Map<string, (typeof cards)[number]>();
+        for (const c of cards) {
+          const k = (c.lemma ?? '').trim().toLowerCase();
+          if (k && !byLemma.has(k)) byLemma.set(k, c);
+        }
+        const pool = [...byLemma.values()];
+        const pick = pickWordOfDay(pool, (c) => c.id ?? c.lemma);
+        if (pick) {
+          setWod({
+            lemma: pick.lemma,
+            en: pick.translation?.en ?? '',
+            ne: pick.translation?.np ?? '',
+            article: pick.article ?? null,
+          });
+        }
       })
       .catch(() => undefined);
     return () => {
@@ -71,7 +94,22 @@ export function HomeExtras() {
               <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
                 {isDE ? 'Wort des Tages' : 'Word of the day'}
               </div>
-              <div className="mt-1 truncate text-lg font-bold text-slate-950 dark:text-white">{wod.de}</div>
+              <div className="mt-1 flex items-baseline gap-2 truncate">
+                  {wod.article === 'der' ? (
+                    <span className={`truncate text-lg font-bold ${theme.gender.der.text} ${theme.gender.der.darkText}`}>
+                      {wod.article}
+                    </span>
+                  ) : wod.article === 'die' ? (
+                    <span className={`truncate text-lg font-bold ${theme.gender.dieF.text} ${theme.gender.dieF.darkText}`}>
+                      {wod.article}
+                    </span>
+                  ) : wod.article === 'das' ? (
+                    <span className={`truncate text-lg font-bold ${theme.gender.das.text} ${theme.gender.das.darkText}`}>
+                      {wod.article}
+                    </span>
+                  ) : null}
+                  <span className="truncate text-lg font-bold text-slate-950 dark:text-white">{wod.lemma}</span>
+                </div>
               {!isDE && (wod.en || wod.ne) && (
                 <div className="truncate text-sm text-slate-500 dark:text-slate-400">
                   {[wod.en, wod.ne].filter(Boolean).join(' \u00b7 ')}
@@ -80,9 +118,9 @@ export function HomeExtras() {
             </div>
             <button
               type="button"
-              onClick={() => speakWord(wod.de)}
+                            onClick={() => speakWord(wod.lemma)}
               className={theme.button.icon}
-              aria-label={`Speak ${wod.de}`}
+                            aria-label={`Speak ${wod.lemma}`}
             >
               {'\u{1F50A}'}
             </button>

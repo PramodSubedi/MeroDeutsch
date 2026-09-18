@@ -8,6 +8,8 @@ import { drawWithoutReplacement } from '../utils/questionGenerator';
 import { theme } from '../config/theme';
 import { curriculumService } from '../services';
 import type { VocabCard } from '../types';
+import { Link } from 'react-router-dom';
+import { A1_PHONETICS, A1_SOUND_SHIFTS } from '../data/a1ResourcePack';
 
 function normalizeForCompare(input: string): string {
   return input
@@ -220,6 +222,45 @@ export function PronunciationPage() {
             : 'Speech recognition not supported — typing practice is available.'}
         </div>
       )}
+
+      {/* Diphthong + sound-shift rules from the A1 Resource Pack (Unit 1). */}
+      <div className={`${theme.panel.surface} mt-6`}>
+        <h2 className="text-lg font-semibold">
+          {isDE ? 'Diphthonge & Lautverschiebung' : 'Diphthongs & Sound Shifts'}
+        </h2>
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+          {isDE
+            ? 'Die Zweite-Regel: EI = Eye, IE = Eee, EU = Oy. W klingt wie V, V wie F, Z immer wie TS.'
+            : 'The SECOND letter wins: EI = "Eye", IE = "Eee", EU = "Oy". W sounds like V, V like F, Z is always "TS".'}
+        </p>
+        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          {A1_PHONETICS.map((r) => (
+            <div
+              key={r.combo}
+              className="rounded-xl border border-blue-100 bg-blue-50/60 p-4 text-sm dark:border-blue-900/40 dark:bg-blue-950/30"
+            >
+              <div className="font-bold text-blue-700 dark:text-blue-300">
+                {r.combo} → <span className="uppercase tracking-wide">{r.sound}</span>
+              </div>
+              <div className="mt-1 text-slate-700 dark:text-slate-200">{r.examples.join(' · ')}</div>
+            </div>
+          ))}
+          {A1_SOUND_SHIFTS.map((r) => (
+            <div
+              key={r.combo}
+              className="rounded-xl border border-indigo-100 bg-indigo-50/60 p-4 text-sm dark:border-indigo-900/40 dark:bg-indigo-950/30"
+            >
+              <div className="font-bold text-indigo-700 dark:text-indigo-300">
+                {r.combo} → <span className="uppercase tracking-wide">{r.sound}</span>
+              </div>
+              <div className="mt-1 text-slate-700 dark:text-slate-200">{r.examples.join(' · ')}</div>
+            </div>
+          ))}
+        </div>
+        <Link to="/games?game=oddoneout" className={`${theme.button.primary} mt-4 inline-flex min-h-[44px] items-center`}>
+          {isDE ? 'Spiel: Phonetik-Rätsel →' : 'Play the phonetic trap game →'}
+        </Link>
+      </div>
 
       <div className={`${theme.panel.surface} mx-auto mt-6 max-w-xl`}>
         <div className="mb-2 flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">

@@ -211,6 +211,35 @@ export const GRAMMAR_DRILLS: Record<string, GrammarDrillSeed[]> = {
     { prompt: 'Wir kaufen ___ Buch. (direct object)', options: ['das', 'die'], correct: 'das' },
     { prompt: 'Sie liebt ___ Hund. (direct object)', options: ['einen', 'ein'], correct: 'einen' },
   ],
+  // Stem-change drill (du/er singular vowel shifts — du/sie(She)/er/es only).
+  stem: [
+    { prompt: 'du ___ (lesen)', options: ['liest', 'lesst', 'lesest'], correct: 'liest' },
+    { prompt: 'er ___ (sehen)', options: ['sieht', 'seht', 'sehet'], correct: 'sieht' },
+    { prompt: 'du ___ (sprechen)', options: ['sprichst', 'sprechst', 'sprecht'], correct: 'sprichst' },
+    { prompt: 'du ___ (fahren)', options: ['fährst', 'fahrst', 'fahrt'], correct: 'fährst' },
+    { prompt: 'er ___ (essen)', options: ['isst', 'esst', 'essen'], correct: 'isst' },
+    { prompt: 'du ___ (nehmen)', options: ['nimmst', 'nehmst', 'nimmt'], correct: 'nimmst' },
+    { prompt: 'er ___ (schlafen)', options: ['schläft', 'schlaft', 'schlafst'], correct: 'schläft' },
+    { prompt: 'du ___ (laufen)', options: ['läufst', 'lauft', 'laufst'], correct: 'läufst' },
+  ],
+  // Modal verbs (Band F bonus chip /grammar?tab=modals deep-link target).
+  modals: [
+    { prompt: 'Ich ___ gut schwimmen. (können)', options: ['kann', 'kannst', 'könne'], correct: 'kann' },
+    { prompt: 'Du ___ heute Hausaufgaben machen. (müssen)', options: ['musst', 'müsst', 'müsse'], correct: 'musst' },
+    { prompt: 'Er ___ ein Auto kaufen. (wollen)', options: ['will', 'willst', 'wollen'], correct: 'will' },
+    { prompt: 'Wir ___ hier nicht rauchen. (dürfen)', options: ['dürfen', 'darft', 'dürft'], correct: 'dürfen' },
+  ],
+  // A1 Resource Pack U4 — separable vs inseparable prefix classifier.
+  prefix: [
+    { prompt: '___ (aufstehen) — trennbar oder untrennbar?', options: ['Separable', 'Inseparable'], correct: 'Separable' },
+    { prompt: 'ver- (verstehen) — trennbar oder untrennbar?', options: ['Separable', 'Inseparable'], correct: 'Inseparable' },
+    { prompt: 'ein- (einkaufen) — trennbar oder untrennbar?', options: ['Separable', 'Inseparable'], correct: 'Separable' },
+    { prompt: 'be- (besuchen) — trennbar oder untrennbar?', options: ['Separable', 'Inseparable'], correct: 'Inseparable' },
+    { prompt: 'an- (anrufen) — trennbar oder untrennbar?', options: ['Separable', 'Inseparable'], correct: 'Separable' },
+    { prompt: 'ge- (gefallen) — trennbar oder untrennbar?', options: ['Separable', 'Inseparable'], correct: 'Inseparable' },
+    { prompt: 'zer- (zerbrechen) — trennbar oder untrennbar?', options: ['Separable', 'Inseparable'], correct: 'Inseparable' },
+    { prompt: 'mit- (mitkommen) — trennbar oder untrennbar?', options: ['Separable', 'Inseparable'], correct: 'Separable' },
+  ],
 };
 
 /* ── Roleplay scenarios (former src/data/roleplay.ts) ───────── */
@@ -357,6 +386,13 @@ export const RAPID_FIRE: Record<string, unknown[]> = {
     { id: 'verb-2', type: 'verb-conjugation', timeLimit: 5000, pronoun: 'du', verb: 'haben', conjugated: 'hast', options: ['habe', 'hast', 'hat'] },
     { id: 'verb-3', type: 'verb-conjugation', timeLimit: 5000, pronoun: 'er', verb: 'machen', conjugated: 'macht', options: ['mache', 'macht', 'machen'] },
     { id: 'verb-4', type: 'verb-conjugation', timeLimit: 5000, pronoun: 'wir', verb: 'gehen', conjugated: 'gehen', options: ['gehe', 'gehen', 'geht'] },
+    // Stem-change drill items (du/er vowel shifts — e→i, e→ie, a→ä).
+    { id: 'verb-5', type: 'verb-conjugation', timeLimit: 5000, pronoun: 'du', verb: 'lesen', conjugated: 'liest', options: ['liest', 'lesst', 'lesest'] },
+    { id: 'verb-6', type: 'verb-conjugation', timeLimit: 5000, pronoun: 'du', verb: 'sprechen', conjugated: 'sprichst', options: ['sprichst', 'sprechst', 'sprecht'] },
+    { id: 'verb-7', type: 'verb-conjugation', timeLimit: 5000, pronoun: 'er', verb: 'fahren', conjugated: 'fährt', options: ['fährt', 'fährst', 'fahrt'] },
+    { id: 'verb-8', type: 'verb-conjugation', timeLimit: 5000, pronoun: 'du', verb: 'nehmen', conjugated: 'nimmst', options: ['nimmst', 'nehmst', 'nimmt'] },
+    { id: 'verb-9', type: 'verb-conjugation', timeLimit: 5000, pronoun: 'er', verb: 'schlafen', conjugated: 'schläft', options: ['schläft', 'schlaft', 'schlafen'] },
+    { id: 'verb-10', type: 'verb-conjugation', timeLimit: 5000, pronoun: 'du', verb: 'geben', conjugated: 'gibst', options: ['gibst', 'gebst', 'gebt'] },
   ],
   'pronunciation-reading': [
     { id: 'pron-1', type: 'pronunciation-reading', timeLimit: 7000, text: 'Haus', meaning: 'house', audio: 'Haus', options: ['Haus', 'Hase', 'Haut'] },

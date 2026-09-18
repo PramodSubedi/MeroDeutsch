@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { BookText, Check, RefreshCw, Layout, Globe, GitBranch } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
+import { BookText, Check, RefreshCw, Layout, Globe, GitBranch, Shuffle, Scale, Split } from 'lucide-react';
 import { useLang } from '../hooks/useLang';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { useAnswerReporter } from '../hooks/useExerciseSession';
@@ -7,6 +8,7 @@ import { TabGroup } from '../components/TabGroup';
 import { theme } from '../config/theme';
 import { curriculumService } from '../services';
 import type { GrammarDrill } from '../types/curriculum';
+import { A1_INSEPARABLE_PREFIXES } from '../data/a1Verbs';
 import { GrammarFlowchart, NOMINATIVE_ACCUSATIVE_FLOW } from '../components/exercises/GrammarFlowchart';
 
 const CASES = [
@@ -20,7 +22,22 @@ export function GrammarPage() {
   const isDE = langMode === 'german';
   // Lesson Engine integration: XP + SRS reporting via the shared reporter.
   const reportResult = useAnswerReporter();
-  const [tab, setTab] = useState<'sein' | 'haben' | 'weakVerb' | 'cases' | 'accusative' | 'bridge'>('sein');
+  // ?tab= deep-link support — /learn spine bonus chips link here with
+  // ?tab=modals / ?tab=stem. Unknown params fall back to the first tab.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const GRAMMAR_TABS = ['sein', 'haben', 'weakVerb', 'stem', 'modals', 'prefix', 'cases', 'accusative', 'bridge'] as const;
+  type GrammarTab = (typeof GRAMMAR_TABS)[number];
+  const paramTab = searchParams.get('tab');
+  const [tab, setTabState] = useState<GrammarTab>(
+    (GRAMMAR_TABS as readonly string[]).includes(paramTab ?? '')
+      ? (paramTab as GrammarTab)
+      : 'sein'
+  );
+  const setTab = (next: string) => {
+    const safe = ((GRAMMAR_TABS as readonly string[]).includes(next) ? next : 'sein') as GrammarTab;
+    setTabState(safe);
+    setSearchParams(safe === 'sein' ? {} : { tab: safe }, { replace: true });
+  };
   const [answersByTab, setAnswersByTab] = useState<Record<string, Record<number, string>>>({});
   const answers = answersByTab[tab] ?? {};
 
@@ -66,12 +83,15 @@ export function GrammarPage() {
           { id: 'sein', label: 'sein', icon: BookText },
           { id: 'haben', label: 'haben', icon: Check },
           { id: 'weakVerb', label: 'machen', icon: RefreshCw },
+          { id: 'stem', label: isDE ? 'Stammwechsel' : 'Stem change', icon: Shuffle },
+          { id: 'modals', label: isDE ? 'Modalverben' : 'Modals', icon: Scale },
+          { id: 'prefix', label: isDE ? 'Vorsilben' : 'Prefixes', icon: Split },
           { id: 'cases', label: isDE ? 'Fälle' : 'Cases', icon: Layout },
           { id: 'accusative', label: isDE ? 'Nominativ → Akkusativ' : 'Nom → Acc', icon: GitBranch },
           { id: 'bridge', label: isDE ? 'Grammatik-Brücke' : 'Grammar Bridge', icon: Globe },
         ]}
         activeTab={tab}
-        onTabChange={(newTab) => { setTab(newTab as any); }}
+        onTabChange={(newTab) => { setTab(String(newTab)); }}
       />
 
       {tab === 'cases' && (
@@ -84,6 +104,74 @@ export function GrammarPage() {
                 <div className="mt-1 text-slate-600 dark:text-slate-300">{isDE ? c.de : c.en}</div>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Stem-change explainer — du/er vowel shifts (static reference panel). */}
+      {tab === 'stem' && (
+        <div className={`${theme.panel.surface} mb-6`}>
+          <h2 className="text-lg font-semibold">
+            {isDE ? 'Stammwechsel: Vokalwechsel bei du/er' : 'Stem change: vowel shift for du/er'}
+          </h2>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+            {isDE
+              ? 'Viele starke Verben ändern den Stammvokal nur in der 2. und 3. Person Singular.'
+              : 'Many strong verbs change their stem vowel ONLY in the 2nd/3rd person singular.'}
+          </p>
+          <div className="mt-3 grid gap-3 sm:grid-cols-3">
+            {[
+              { group: 'e → i', demo: ['sprechen', 'sprichst', 'spricht'] },
+              { group: 'e → ie', demo: ['sehen', 'siehst', 'sieht'] },
+              { group: 'a → ä', demo: ['fahren', 'fährst', 'fährt'] },
+            ].map((g) => (
+              <div
+                key={g.group}
+                className="rounded-xl border border-indigo-100 bg-indigo-50/60 p-4 text-sm dark:border-indigo-900/40 dark:bg-indigo-950/30"
+              >
+                <div className="font-bold text-indigo-700 dark:text-indigo-300">{g.group}</div>
+                <div className="mt-2 text-slate-700 dark:text-slate-200">
+                  {g.demo[0]} →{' '}
+                  <span className="font-bold text-indigo-700 dark:text-indigo-300">{g.demo[1]}</span>
+                  {' / '}
+                  <span className="font-bold text-indigo-700 dark:text-indigo-300">{g.demo[2]}</span>
+                </div>
+                <div className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                  {isDE
+                    ? 'Nur du / er / sie / es — wir und ihr bleiben regelmäßig.'
+                    : 'Only du / er / sie / es — wir and ihr stay regular.'}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Separable vs inseparable prefix classifier (A1 Resource Pack U4). */}
+      {tab === 'prefix' && (
+        <div className={`${theme.panel.surface} mb-6`}>
+          <h2 className="text-lg font-semibold">
+            {isDE ? 'Trennbar oder untrennbar?' : 'Separable or inseparable?'}
+          </h2>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+            {isDE
+              ? '8 untrennbare Präfixe stehen IMMER am Verb: be-, emp-, ent-, er-, ge-, miss-, ver-, zer-. Trennbare Präfixe (an-, ein-, auf-, ab-, aus-, mit-, zu-) springen im Hauptsatz ans Satzende.'
+              : '8 inseparable prefixes NEVER leave the verb: be-, emp-, ent-, er-, ge-, miss-, ver-, zer-. Separable prefixes (an-, ein-, auf-, ab-, aus-, mit-, zu-) jump to the very end of the main clause.'}
+          </p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {A1_INSEPARABLE_PREFIXES.map((p) => (
+              <span
+                key={p}
+                className="rounded-lg border border-rose-200 bg-rose-50 px-2.5 py-1 text-xs font-bold text-rose-700 dark:border-rose-800 dark:bg-rose-950/40 dark:text-rose-300"
+              >
+                {p}-
+              </span>
+            ))}
+          </div>
+          <div className="mt-3 text-xs text-slate-500 dark:text-slate-400">
+            {isDE
+              ? 'Merkhilfe: untrennbar = Betonung auf dem VERBSTAMM (verSTEhen); trennbar = Betonung auf dem Präfix (AUFstehen).'
+              : 'Stress test: inseparable → stress the ROOT (verSTEhen); separable → stress the PREFIX (AUFstehen).'}
           </div>
         </div>
       )}

@@ -30,6 +30,7 @@ import {
   type ExerciseQuestion,
 } from '../hooks/useExerciseSession';
 import { ListenAndType } from '../components/exercises/ListenAndType';
+import { ClockDrill } from '../components/exercises/ClockDrill';
 import type { CalendarItem } from '../types';
 
 /** Engine-compatible calendar question (audio prompt = the word itself). */
@@ -49,7 +50,7 @@ export function CalendarPage() {
   const { langMode } = useLang();
   const isDE = langMode === 'german';
   const [tab, setTab] = useState<'days' | 'months' | 'uhrzeit'>('days');
-  const [mode, setMode] = useState<'learn' | 'quiz'>('learn');
+  const [mode, setMode] = useState<'learn' | 'quiz' | 'clock'>('learn');
   const [calendar, setCalendar] = useState<CalendarItem[]>([]);
   const [loaded, setLoaded] = useState(false);
   /** Telling-time phrases from the DB pool; empty until seeded (JSON fallback). */
@@ -153,6 +154,7 @@ export function CalendarPage() {
         tabs={[
           { id: 'learn', label: isDE ? 'Lernliste' : 'Learn List', icon: BookOpen },
           { id: 'quiz', label: isDE ? 'Hören & Tippen' : 'Listen & Type', icon: Sparkles },
+          { id: 'clock', label: isDE ? 'Uhr-Spiel' : 'Clock', icon: Clock },
         ]}
         activeTab={mode}
         onTabChange={setMode}
@@ -185,6 +187,13 @@ export function CalendarPage() {
             />
           ))}
         </SectionGrid>
+      )}
+
+      {/* CLOCK MODE: dual time-telling drill (spoken 12h vs official 24h). */}
+      {mode === 'clock' && (
+        <div className="mx-auto max-w-xl">
+          <ClockDrill />
+        </div>
       )}
 
       {mode === 'quiz' && (

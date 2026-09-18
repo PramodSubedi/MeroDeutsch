@@ -68,6 +68,9 @@ export function useStreak() {
     const run = async () => {
       let previous = loadStreak(key);
       let cloudLongest = 0;
+      // True when the cloud row already reflects a streak recorded today —
+      // in that case the per-mount upsert below is a no-op write we can skip.
+      let cloudAlreadyToday = false;
 
       // For authenticated users, use the cloud baseline (if any) as the starting point.
       if (isAuthenticated && user) {
@@ -85,6 +88,9 @@ export function useStreak() {
             lastVisit: data.last_activity_date ? String(data.last_activity_date).slice(0, 10) : undefined,
           };
           cloudLongest = data.longest_streak ?? 0;
+          cloudAlreadyToday =
+            Boolean(data.last_activity_date) &&
+            String(data.last_activity_date).slice(0, 10) === toLocalDateKey();
         }
       }
 
@@ -95,8 +101,9 @@ export function useStreak() {
       setStreakCount(next.streakCount);
       setLongestStreak(next.longestStreak);
 
-      // Push to Supabase for authenticated users.
-      if (isAuthenticated && user) {
+      // Push to Supabase for authenticated users — skip when the cloud row
+      // already has today's streak recorded (no-op write on every mount).
+      if (isAuthenticated && user && !cloudAlreadyToday) {
         void supabase.from('user_streaks').upsert({
           user_id: user.userId,
           current_streak: next.streakCount,

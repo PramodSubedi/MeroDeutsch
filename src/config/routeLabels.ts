@@ -27,6 +27,8 @@ export const ROUTE_LABELS: ReadonlyArray<readonly [string, { en: string; de: str
   ['/roleplay', { en: 'Role-play', de: 'Rollenspiel' }],
   ['/rapid-fire', { en: 'Rapid Fire', de: 'Schnellfeuer' }],
   ['/sentence-builder', { en: 'Sentence Builder', de: 'Satzbau' }],
+  ['/games', { en: 'German Games', de: 'Spiele' }],
+  ['/email-builder', { en: 'Email Builder', de: 'E-Mail-Trainer' }],
   ['/article-sprint', { en: 'Article Sprint', de: 'Artikel-Sprint' }],
   ['/vocab-trainer', { en: 'Vocab Trainer', de: 'Wortschatz-Trainer' }],
   // Checkpoint / auth / misc

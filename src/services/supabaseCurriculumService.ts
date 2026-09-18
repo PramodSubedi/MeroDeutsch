@@ -28,6 +28,24 @@ import { openDb, seedVocab, seedSentences, seedContentItems } from '../lib/db';
 import type { SentenceRow } from '../lib/db';
 import { LocalCurriculumService } from './localCurriculumService';
 
+/* ───────────────────────────────────────────────────────────
+ * In-memory TTL cache
+ *
+ * Curriculum content is near-static (changes only via import scripts), yet
+ * every pool was re-downloaded (and re-bulkPut into the Dexie cache) on each
+ * page mount — the full ~1MB vocabulary table came down on every Glossary /
+ * Pronunciation visit. These TTLs turn repeat mounts into cache hits.
+ * Randomized / shuffled fetches get TTL 0 (always server round-trip) so quiz
+ * variety is preserved.
+ * ─────────────────────────────────────────────────────────── */
+
+/** Deterministic content pools (alphabet, numbers, …) — refresh every 15 min. */
+const CONTENT_POOL_TTL_MS = 15 * 60 * 1000;
+/** Full vocabulary table fetch (Glossary / Pronunciation / bootstrap) — 15 min. */
+const VOCAB_FULL_TTL_MS = 15 * 60 * 1000;
+/** Randomized/small fetches — just coalesce bursts within one interaction. */
+const SHORT_FETCH_TTL_MS = 20 * 1000;
+
 /** A row from the generic `content_items` pool table (migration 011). */
 interface ContentItemRow {
   id: string;
@@ -157,6 +175,31 @@ function rowToExercise(row: SentencesRow): SentenceExercise {
 export class SupabaseCurriculumService implements CurriculumService {
   private localService = new LocalCurriculumService();
 
+  /** In-memory TTL cache (see constants above). Keyed by method + arguments. */
+  private readonly ttlCache = new Map<string, { at: number; value: unknown }>();
+
+  private async withCache<T>(
+    key: string,
+    ttlMs: number,
+    fetch: () => Promise<T>,
+    isCacheable: (value: T) => boolean = () => true
+  ): Promise<T> {
+    if (ttlMs > 0) {
+      const hit = this.ttlCache.get(key);
+      if (hit && Date.now() - hit.at < ttlMs) {
+        const cached = hit.value;
+        // Return a shallow copy for arrays so consumers mutating the result
+        // (e.g. shuffling options) can never corrupt the shared cache entry.
+        return Array.isArray(cached) ? ([...(cached as unknown[])] as T) : (cached as T);
+      }
+    }
+    const value = await fetch();
+    if (ttlMs > 0 && isCacheable(value)) {
+      this.ttlCache.set(key, { at: Date.now(), value });
+    }
+    return value;
+  }
+
   /**
    * Fetch a generic content pool from the `content_items` table via the
    * `get_content_items` RPC (migration 011), write through to the Dexie
@@ -167,27 +210,36 @@ export class SupabaseCurriculumService implements CurriculumService {
     shuffle: boolean,
     fallback: () => Promise<T[]>
   ): Promise<T[]> {
-    try {
-      if (!supabase) return fallback();
-      const { data, error } = await supabase.rpc('get_content_items', {
-        p_content_type: contentType,
-        p_limit: 500,
-        p_shuffle: shuffle,
-      });
-      if (error || !data || (data as unknown[]).length === 0) {
-        return fallback();
-      }
-      const rows = data as ContentItemRow[];
-      // Write-through cache so offline mode keeps working after this fetch.
-      void seedContentItems(
-        contentType,
-        rows.map((r) => ({ id: r.id, payload: r.payload, sort: r.sort }))
-      );
-      return rows.map((row) => row.payload as T);
-    } catch (err) {
-      console.warn(`[curriculum] ${contentType} fetch failed, using local cache:`, err);
-      return fallback();
-    }
+    // Deterministic (non-shuffled) pools are cached for CONTENT_POOL_TTL_MS;
+    // shuffled requests always hit the server so every session keeps variety.
+    return this.withCache(
+      `pool:${contentType}`,
+      shuffle ? 0 : CONTENT_POOL_TTL_MS,
+      async () => {
+        try {
+          if (!supabase) return fallback();
+          const { data, error } = await supabase.rpc('get_content_items', {
+            p_content_type: contentType,
+            p_limit: 500,
+            p_shuffle: shuffle,
+          });
+          if (error || !data || (data as unknown[]).length === 0) {
+            return fallback();
+          }
+          const rows = data as ContentItemRow[];
+          // Write-through cache so offline mode keeps working after this fetch.
+          void seedContentItems(
+            contentType,
+            rows.map((r) => ({ id: r.id, payload: r.payload, sort: r.sort }))
+          );
+          return rows.map((row) => row.payload as T);
+        } catch (err) {
+          console.warn(`[curriculum] ${contentType} fetch failed, using local cache:`, err);
+          return fallback();
+        }
+      },
+      (rows) => rows.length > 0
+    );
   }
 
   async getAlphabet(): Promise<AlphabetItem[]> {
@@ -234,39 +286,56 @@ export class SupabaseCurriculumService implements CurriculumService {
    * to a plain table SELECT; finally to the Dexie offline cache.
    */
   async getArticles(limit = 15): Promise<ArticleItem[]> {
-    try {
-      if (!supabase) return this.localService.getArticles();
+    // Short TTL: coalesces repeat calls in one interaction while keeping
+    // randomized variety across visits.
+    return this.withCache(
+      `articles:${limit}`,
+      SHORT_FETCH_TTL_MS,
+      async () => {
+        try {
+          if (!supabase) return this.localService.getArticles();
 
-      // Primary path: randomized RPC.
-      const { data, error } = await supabase.rpc('get_random_vocabulary', {
-        p_pos: 'noun',
-        p_limit: limit,
-      });
+          // Primary path: randomized RPC. Pass ALL five parameters explicitly so
+          // the call unambiguously targets the (TEXT, TEXT, TEXT, TEXT, INT)
+          // overload — migration 015/018 — instead of the stale (TEXT, TEXT, INT)
+          // overload from 010/014, which makes Postgres report a "Could not choose
+          // the best candidate function" ambiguity at runtime. See
+          // supabase/migrations/019_drop_stale_get_random_vocabulary.sql.
+          const { data, error } = await supabase.rpc('get_random_vocabulary', {
+            p_pos: 'noun',
+            p_tag: null,
+            p_level: null,
+            p_category: null,
+            p_limit: limit,
+          });
 
-      if (error || !data || (data as unknown[]).length === 0) {
-        // Fallback: full table SELECT (online — so we can still cache).
-        const { data: fbData, error: fbError } = await supabase
-          .from('vocabulary')
-          .select('word, article, translation_en, translation_np, example_de, part_of_speech, level, category, plural_form')
-          .eq('part_of_speech', 'noun')
-          .not('article', 'is', null);
+          if (error || !data || (data as unknown[]).length === 0) {
+            // Fallback: full table SELECT (online — so we can still cache).
+            const { data: fbData, error: fbError } = await supabase
+              .from('vocabulary')
+              .select('word, article, translation_en, translation_np, example_de, part_of_speech, level, category, plural_form')
+              .eq('part_of_speech', 'noun')
+              .not('article', 'is', null);
 
-        if (fbError || !fbData || fbData.length === 0) {
-          throw new Error('table fallback also empty');
+            if (fbError || !fbData || fbData.length === 0) {
+              throw new Error('table fallback also empty');
+            }
+
+            const rows = fbData as (VocabRow & { part_of_speech: string; level?: string; category?: string })[];
+            void this.cacheVocab(rows);
+            return rows.map(rowToArticle);
+          }
+
+          const rows = (data as unknown) as (VocabRow & { part_of_speech: string; level?: string; category?: string })[];
+          void this.cacheVocab(rows);
+          return rows.map(rowToArticle);
+        } catch (err) {
+          console.warn('Supabase article fetch failed, using local cache:', err);
+          return this.localService.getArticles();
         }
-
-        const rows = fbData as (VocabRow & { part_of_speech: string; level?: string; category?: string })[];
-        void this.cacheVocab(rows);
-        return rows.map(rowToArticle);
-      }
-
-      const rows = (data as unknown) as (VocabRow & { part_of_speech: string; level?: string; category?: string })[];
-      void this.cacheVocab(rows);
-      return rows.map(rowToArticle);
-    } catch (err) {
-      console.warn('Supabase article fetch failed, using local cache:', err);
-      return this.localService.getArticles();
-    }
+      },
+      (items) => items.length > 0
+    );
   }
 
   /**
@@ -275,36 +344,43 @@ export class SupabaseCurriculumService implements CurriculumService {
    * Dexie cache fallbacks.
    */
   async getSentences(grammarFocus?: string, limit = 8): Promise<SentenceExercise[]> {
-    try {
-      if (!supabase) return this.localService.getSentences(grammarFocus, limit);
+    return this.withCache(
+      `sentences:${grammarFocus ?? 'all'}:${limit}`,
+      SHORT_FETCH_TTL_MS,
+      async () => {
+        try {
+          if (!supabase) return this.localService.getSentences(grammarFocus, limit);
 
-      const { data, error } = await supabase.rpc('get_random_sentences', {
-        p_grammar_focus: grammarFocus ?? null,
-        p_limit: limit,
-      });
+          const { data, error } = await supabase.rpc('get_random_sentences', {
+            p_grammar_focus: grammarFocus ?? null,
+            p_limit: limit,
+          });
 
-      if (error || !data || (data as unknown[]).length === 0) {
-        // Fallback: table SELECT filtered by grammar focus.
-        let q = supabase.from('sentences').select('*');
-        if (grammarFocus) q = q.eq('grammar_focus', grammarFocus);
-        const { data: fbData, error: fbError } = await q.limit(limit);
+          if (error || !data || (data as unknown[]).length === 0) {
+            // Fallback: table SELECT filtered by grammar focus.
+            let q = supabase.from('sentences').select('*');
+            if (grammarFocus) q = q.eq('grammar_focus', grammarFocus);
+            const { data: fbData, error: fbError } = await q.limit(limit);
 
-        if (fbError || !fbData || fbData.length === 0) {
-          throw new Error('table fallback also empty');
+            if (fbError || !fbData || fbData.length === 0) {
+              throw new Error('table fallback also empty');
+            }
+
+            const rows = fbData as SentencesRow[];
+            void this.cacheSentences(rows);
+            return rows.map(rowToExercise);
+          }
+
+          const rows = data as SentencesRow[];
+          void this.cacheSentences(rows);
+          return rows.map(rowToExercise);
+        } catch (err) {
+          console.warn('Supabase sentence fetch failed, using local cache:', err);
+          return this.localService.getSentences(grammarFocus, limit);
         }
-
-        const rows = fbData as SentencesRow[];
-        void this.cacheSentences(rows);
-        return rows.map(rowToExercise);
-      }
-
-      const rows = data as SentencesRow[];
-      void this.cacheSentences(rows);
-      return rows.map(rowToExercise);
-    } catch (err) {
-      console.warn('Supabase sentence fetch failed, using local cache:', err);
-      return this.localService.getSentences(grammarFocus, limit);
-    }
+      },
+      (rows) => rows.length > 0
+    );
   }
 
   async getVocabulary(): Promise<VocabEntry[]> {
@@ -323,41 +399,51 @@ export class SupabaseCurriculumService implements CurriculumService {
 
   /** Raw `vocabulary` row shape used by the filtered trainer fetch. */
   private async fetchVocabRows(filters: VocabularyFilter): Promise<VocabCard[]> {
-    // Reference surfaces (Glossary, Pronunciation, legacy VocabEntry consumers)
-    // request 400–2000 rows. The quiz RPC clamps at 100 rows and randomizes
-    // order, so large requests use the deterministic full-pool fetch instead.
-    if ((filters.limit ?? 25) > 100) {
-      return this.fetchFullPoolVocabRows(filters);
-    }
-    try {
-      if (!supabase) throw new Error('no client');
-      const { data, error } = await supabase.rpc('get_random_vocabulary', {
-        p_pos: filters.pos ?? null,
-        p_tag: null,
-        p_level: filters.level ?? null,
-        p_category: filters.category ?? null,
-        p_limit: filters.limit ?? 25,
-      });
-      const rows = (data as unknown) as VocabRow[];
-      if (error || !data || rows.length === 0) {
-        // Fallback: table SELECT with the same filters (online — can still cache).
-        let q = supabase
-          .from('vocabulary')
-          .select(
-            'word, article, translation_en, translation_np, translation_ne_roman, example_de, example_en, example_np, part_of_speech, level, category, plural_form, tags'
-          );
-        if (filters.pos) q = q.eq('part_of_speech', filters.pos);
-        if (filters.level) q = q.eq('level', filters.level);
-        if (filters.category) q = q.overlaps('tags', [filters.category]);
-        const { data: fbData, error: fbError } = await q.limit(filters.limit ?? 25);
-        if (fbError || !fbData || fbData.length === 0) throw new Error('table fallback also empty');
-        return this.toCards(fbData as VocabRow[]);
-      }
-      return this.toCards(rows);
-    } catch (err) {
-      console.warn('Supabase filtered vocab fetch failed, using Dexie cache:', err);
-      return this.vocabFromDexie(filters);
-    }
+    // Deterministic full-pool requests (limit > 100) are cached 15 min;
+    // smaller randomized ones get a short coalescing TTL.
+    const bigFetch = (filters.limit ?? 25) > 100;
+    return this.withCache(
+      `vocab:${JSON.stringify(filters)}`,
+      bigFetch ? VOCAB_FULL_TTL_MS : SHORT_FETCH_TTL_MS,
+      async () => {
+        // Reference surfaces (Glossary, Pronunciation, legacy VocabEntry consumers)
+        // request 400–2000 rows. The quiz RPC clamps at 100 rows and randomizes
+        // order, so large requests use the deterministic full-pool fetch instead.
+        if ((filters.limit ?? 25) > 100) {
+          return this.fetchFullPoolVocabRows(filters);
+        }
+        try {
+          if (!supabase) throw new Error('no client');
+          const { data, error } = await supabase.rpc('get_random_vocabulary', {
+            p_pos: filters.pos ?? null,
+            p_tag: null,
+            p_level: filters.level ?? null,
+            p_category: filters.category ?? null,
+            p_limit: filters.limit ?? 25,
+          });
+          const rows = (data as unknown) as VocabRow[];
+          if (error || !data || rows.length === 0) {
+            // Fallback: table SELECT with the same filters (online — can still cache).
+            let q = supabase
+              .from('vocabulary')
+              .select(
+                'word, article, translation_en, translation_np, translation_ne_roman, example_de, example_en, example_np, part_of_speech, level, category, plural_form, tags'
+              );
+            if (filters.pos) q = q.eq('part_of_speech', filters.pos);
+            if (filters.level) q = q.eq('level', filters.level);
+            if (filters.category) q = q.overlaps('tags', [filters.category]);
+            const { data: fbData, error: fbError } = await q.limit(filters.limit ?? 25);
+            if (fbError || !fbData || fbData.length === 0) throw new Error('table fallback also empty');
+            return this.toCards(fbData as VocabRow[]);
+          }
+          return this.toCards(rows);
+        } catch (err) {
+          console.warn('Supabase filtered vocab fetch failed, using Dexie cache:', err);
+          return this.vocabFromDexie(filters);
+        }
+      },
+      (rows) => rows.length > 0
+    );
   }
 
   /**
@@ -538,56 +624,65 @@ export class SupabaseCurriculumService implements CurriculumService {
   }
 
   async getVocabFilterOptions(): Promise<VocabularyFilterOptions> {
-    // Single source of truth: the tags[] array (migration 010), not the legacy
-    // `category` column. The server classifier (get_vocab_filter_options) is
-    // preferred; when that RPC is unavailable the client classifier scans tags
-    // directly. Either path yields TOPICAL tags only, so the Trainer's option
-    // list matches the offline Dexie list exactly.
-    const options: VocabularyFilterOptions = { levels: [], categories: [] };
-    try {
-      if (!supabase) return options;
+    // The RPC + two full-table scans are expensive; the option list only
+    // changes with an import, so cache the (non-empty) result for 15 min.
+    return this.withCache(
+      'vocab-options',
+      VOCAB_FULL_TTL_MS,
+      async () => {
+        // Single source of truth: the tags[] array (migration 010), not the legacy
+        // `category` column. The server classifier (get_vocab_filter_options) is
+        // preferred; when that RPC is unavailable the client classifier scans tags
+        // directly. Either path yields TOPICAL tags only, so the Trainer's option
+        // list matches the offline Dexie list exactly.
+        const options: VocabularyFilterOptions = { levels: [], categories: [] };
+        try {
+          if (!supabase) return options;
 
-      const categories = new Set<string>();
-      const { data, error } = await supabase.rpc('get_vocab_filter_options');
-      if (!error && Array.isArray(data)) {
-        for (const row of data) {
-          const t = (row as { category?: string }).category;
-          if (t) {
-            if (isTopicalTag(t)) categories.add(t);
+          const categories = new Set<string>();
+          const { data, error } = await supabase.rpc('get_vocab_filter_options');
+          if (!error && Array.isArray(data)) {
+            for (const row of data) {
+              const t = (row as { category?: string }).category;
+              if (t) {
+                if (isTopicalTag(t)) categories.add(t);
+              }
+            }
+          } else {
+            // Fallback: scan the tags column directly with the client classifier.
+            const { data: rows, error: rowsError } = await supabase
+              .from('vocabulary')
+              .select('level, tags');
+            if (rowsError || !rows) throw new Error(rowsError?.message);
+            for (const r of rows) {
+              for (const t of r.tags ?? []) {
+                if (isTopicalTag(t)) categories.add(t);
+              }
+            }
           }
-        }
-      } else {
-        // Fallback: scan the tags column directly with the client classifier.
-        const { data: rows, error: rowsError } = await supabase
-          .from('vocabulary')
-          .select('level, tags');
-        if (rowsError || !rows) throw new Error(rowsError?.message);
-        for (const r of rows) {
-          for (const t of r.tags ?? []) {
-            if (isTopicalTag(t)) categories.add(t);
-          }
-        }
-      }
 
-      // Levels come from the rows' `level` column (same in both paths).
-      const levels = new Set<string>();
-      const { data: levelsData, error: levelsError } = await supabase
-        .from('vocabulary')
-        .select('level');
-      if (!levelsError && levelsData) {
-        for (const r of levelsData) {
-          if (r.level) levels.add(r.level);
+          // Levels come from the rows' `level` column (same in both paths).
+          const levels = new Set<string>();
+          const { data: levelsData, error: levelsError } = await supabase
+            .from('vocabulary')
+            .select('level');
+          if (!levelsError && levelsData) {
+            for (const r of levelsData) {
+              if (r.level) levels.add(r.level);
+            }
+          }
+          options.levels = Array.from(levels)
+            .sort((a, b) => (a < b ? -1 : 1))
+            .filter((l) => ['A1', 'A2', 'B1', 'B2'].includes(l));
+          options.categories = Array.from(categories).sort((a, b) => (a < b ? -1 : 1));
+          return options;
+        } catch (err) {
+          console.warn('Supabase vocab options fetch failed:', err);
+          return { levels: [], categories: [] };
         }
-      }
-      options.levels = Array.from(levels)
-        .sort((a, b) => (a < b ? -1 : 1))
-        .filter((l) => ['A1', 'A2', 'B1', 'B2'].includes(l));
-      options.categories = Array.from(categories).sort((a, b) => (a < b ? -1 : 1));
-      return options;
-    } catch (err) {
-      console.warn('Supabase vocab options fetch failed:', err);
-      return { levels: [], categories: [] };
-    }
+      },
+      (opts) => opts.levels.length > 0 || opts.categories.length > 0
+    );
   }
 
   async getGrammarDrills(category: string): Promise<GrammarDrill[]> {

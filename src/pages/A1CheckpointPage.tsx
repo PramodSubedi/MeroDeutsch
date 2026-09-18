@@ -318,7 +318,7 @@ useEffect(() => {
               unit.vocabPos,
               60
             )
-          : await curriculumService.getVocabularyFiltered({ level: 'A1' })
+          : await curriculumService.getVocabularyFiltered({ level: 'A1', limit: 120 })
         : [];
       // Map VocabCard[] to VocabEntry[] shape for compatibility with LoadedData
       const vocabEntries: VocabEntry[] = ((vocabulary ?? []) as any).map((c: { id: string; lemma: string; translation: { en: string; np: string } | undefined; tags?: string[]; audioUrl?: string }) => ({

@@ -64,7 +64,7 @@ export function useDexieInit(): boolean {
         //     → Dexie). Article / level / category survive — no lossy adapter.
         if (cards.length === 0) {
           try {
-            cards = await curriculumService.getVocabularyFiltered({});
+                        cards = await curriculumService.getVocabularyFiltered({ limit: 2000 });
           } catch {
             cards = [];
           }

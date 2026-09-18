@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { BookA, BookOpen, Mic, FileText, MessageSquare, Volume2, Zap, Layers, Puzzle } from 'lucide-react';
+import { BookA, BookOpen, Mic, FileText, MessageSquare, Volume2, Zap, Layers, Puzzle, Gamepad2, Mail } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 interface ToolItem {
@@ -96,6 +96,25 @@ const tools: ToolItem[] = [
     wellClass: 'bg-cyan-50 dark:bg-cyan-950/40 border-cyan-100 dark:border-cyan-900/50',
     href: '/sentence-builder',
     buttonText: 'Start Building',
+  },
+  // NotebookLM workbook mechanics — games hub + Goethe A1 Schreiben trainer.
+  {
+    title: 'German Games',
+    description: 'Conjugation Tic-Tac-Toe & number code cracker',
+    icon: Gamepad2,
+    iconColor: 'text-teal-600 dark:text-teal-400',
+    wellClass: 'bg-teal-50 dark:bg-teal-950/40 border-teal-100 dark:border-teal-900/50',
+    href: '/games',
+    buttonText: 'Play Now',
+  },
+  {
+    title: 'Email Builder',
+    description: 'Goethe A1 Schreiben — guided exam emails',
+    icon: Mail,
+    iconColor: 'text-fuchsia-600 dark:text-fuchsia-400',
+    wellClass: 'bg-fuchsia-50 dark:bg-fuchsia-950/40 border-fuchsia-100 dark:border-fuchsia-900/50',
+    href: '/email-builder',
+    buttonText: 'Start Writing',
   },
 ];
 

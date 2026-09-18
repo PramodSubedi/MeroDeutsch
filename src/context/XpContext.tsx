@@ -114,6 +114,58 @@ export function XpProvider({ children }: { children: ReactNode }) {
     totalXpRef.current = local;
   }, [key]);
 
+  // ── Debounced cloud mirror ──────────────────────────────────────────────
+  // XP awards arrive in bursts during a quiz. Coalesce them into ONE upsert
+  // 400ms after the last award (instead of one network call per answer) and
+  // target the `user_id` UNIQUE key — `user_xp`'s PK `id` is auto-generated,
+  // so an upsert without onConflict would try to INSERT on every call and die
+  // on the UNIQUE(user_id) constraint (plus the old code wrote a non-existent
+  // `last_updated` column — the real one is `updated_at`).
+  const XP_FLUSH_DEBOUNCE_MS = 400;
+  const xpFlushTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const flushXpToCloud = useCallback(async () => {
+    if (!isAuthenticated || !user) return;
+    try {
+      await supabase
+        .from('user_xp')
+        .upsert(
+          {
+            user_id: user.userId,
+            total_xp: totalXpRef.current,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: 'user_id' }
+        );
+    } catch (error) {
+      console.warn('Failed to sync XP to Supabase:', error);
+    }
+  }, [isAuthenticated, user]);
+
+  const scheduleXpFlush = useCallback(() => {
+    if (!isAuthenticated || !user) return;
+    if (xpFlushTimerRef.current) clearTimeout(xpFlushTimerRef.current);
+    xpFlushTimerRef.current = setTimeout(
+      () => void flushXpToCloud(),
+      XP_FLUSH_DEBOUNCE_MS
+    );
+  }, [isAuthenticated, user, flushXpToCloud]);
+
+  // Cancel pending flush on user switch / unmount — never write another
+  // user's XP row.
+  useEffect(() => {
+    if (xpFlushTimerRef.current) {
+      clearTimeout(xpFlushTimerRef.current);
+      xpFlushTimerRef.current = null;
+    }
+  }, [key]);
+  useEffect(
+    () => () => {
+      if (xpFlushTimerRef.current) clearTimeout(xpFlushTimerRef.current);
+    },
+    []
+  );
+
   const userXp = useMemo<UserXP>(() => {
     const levelInfo = calculateLevel(totalXp);
     const xpProgress = totalXp > 0 ? Math.round((totalXp % 250) / 250 * 100) : 0;
@@ -177,20 +229,10 @@ export function XpProvider({ children }: { children: ReactNode }) {
         levelUpCallback(newLevel);
       }
 
-      // Sync to Supabase
-      if (isAuthenticated && user) {
-        try {
-          await supabase.from('user_xp').upsert({
-            user_id: user.userId,
-            total_xp: newTotalXp,
-            last_updated: new Date().toISOString(),
-          });
-        } catch (error) {
-          console.warn('Failed to sync XP to Supabase:', error);
-        }
-      }
+      // Sync to Supabase (debounced + coalesced; targets user_id UNIQUE).
+      scheduleXpFlush();
     },
-    [isAuthenticated, user, levelUpCallback, key]
+    [key, levelUpCallback, scheduleXpFlush]
   );
 
   /**

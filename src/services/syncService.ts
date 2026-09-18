@@ -29,6 +29,47 @@ const PENDING_KEY = 'meroDeutschSyncQueue';
 const EMPTY_QUEUE: PendingSyncOp[] = [];
 
 /* ───────────────────────────────────────────────────────────
+ * Per-store last-push markers (skip unchanged stores)
+ * ─────────────────────────────────────────────────────────── */
+/**
+ * Per-user markers recording the newest local `updatedAt` that was already
+ * pushed to Supabase. On the next sync, a store is skipped entirely when no
+ * local row has a newer `updatedAt` — turning the periodic 60s flush into
+ * ~zero network calls while nothing changed.
+ */
+interface SyncMarkers {
+  reviewQueueAt: string;
+  progressAt: string;
+  a1PathAt: string;
+}
+const MARKERS_KEY = 'meroDeutschSyncMarkersV1';
+const EMPTY_MARKERS: SyncMarkers = { reviewQueueAt: '', progressAt: '', a1PathAt: '' };
+
+function loadMarkers(): Record<string, SyncMarkers> {
+  if (typeof localStorage === 'undefined') return {};
+  try {
+    const raw = localStorage.getItem(MARKERS_KEY);
+    return raw ? (JSON.parse(raw) as Record<string, SyncMarkers>) : {};
+  } catch {
+    return {};
+  }
+}
+
+function saveMarkers(markers: Record<string, SyncMarkers>) {
+  if (typeof localStorage === 'undefined') return;
+  try {
+    localStorage.setItem(MARKERS_KEY, JSON.stringify(markers));
+  } catch {
+    // best-effort — markers rebuild from the next local change
+  }
+}
+
+/** True when `timestamp` is newer than the stored last-push marker. */
+function isDirty(timestamp: string | null | undefined, lastPushed: string): boolean {
+  return timestamp !== null && timestamp !== undefined && timestamp > lastPushed;
+}
+
+/* ───────────────────────────────────────────────────────────
  * Queued offline operations (memory + localStorage persistence)
  * ─────────────────────────────────────────────────────────── */
 
@@ -77,14 +118,24 @@ export function isOnline(): boolean {
  * Adapter: Dexie `userProgress` rows → `review_queue` Postgres rows.
  * Conflict: newest `updatedAt` wins.
  */
-async function pushReviewQueue(userId: string): Promise<void> {
+async function pushReviewQueue(userId: string, lastPushed: string): Promise<string | null> {
   const store = openDb();
-  if (!store) return;
+  if (!store) return null;
 
   const rows: UserProgress[] = await store.userProgress
     .where('userId')
     .equals(userId)
     .toArray();
+
+  if (rows.length === 0) return null;
+
+  // Dirty check: skip the network call unless a local row changed since the
+  // last successful push.
+  const maxUpdatedAt = rows.reduce<string>(
+    (max, r) => (r.updatedAt && r.updatedAt > max ? r.updatedAt : max),
+    ''
+  );
+  if (!isDirty(maxUpdatedAt, lastPushed)) return null;
 
   // Map to WrongAnswerItem shape expected by userDataService.saveReviewQueue.
   const items = rows.map((r) => ({
@@ -103,20 +154,21 @@ async function pushReviewQueue(userId: string): Promise<void> {
     boxLevel: r.box,
   }));
 
-  if (items.length === 0) return;
   await userDataService.saveReviewQueue(userId, items);
+  return maxUpdatedAt || new Date().toISOString();
 }
 
 /**
  * Adapter: Dexie `a1PathState` row → `a1_path_state` Postgres row.
  * Local Dexie is primary; this pushes the latest local campaign state up.
  */
-async function pushA1PathState(userId: string): Promise<void> {
+async function pushA1PathState(userId: string, lastPushed: string): Promise<string | null> {
   const store = openDb();
-  if (!store) return;
+  if (!store) return null;
 
   const row = await store.a1PathState.get(userId);
-  if (!row) return;
+  if (!row) return null;
+  if (!isDirty(row.updatedAt, lastPushed)) return null;
 
   const state: A1PathState = {
     unlockedUnitIndex: row.unlockedUnitIndex,
@@ -124,15 +176,22 @@ async function pushA1PathState(userId: string): Promise<void> {
     checkpointBestByUnit: row.checkpointBestByUnit ?? {},
   };
   await userDataService.saveA1PathState(userId, state);
+  return row.updatedAt ?? new Date().toISOString();
 }
 
 /** Adapter local moduleProgress → `user_progress.` Uses max/union merge. */
-async function pushProgress(userId: string): Promise<void> {
+async function pushProgress(userId: string, lastPushed: string): Promise<string | null> {
   const store = openDb();
-  if (!store) return;
+  if (!store) return null;
 
   const moduleRows = await store.moduleProgress.where('userId').equals(userId).toArray();
-  if (moduleRows.length === 0) return;
+  if (moduleRows.length === 0) return null;
+
+  const maxUpdatedAt = moduleRows.reduce<string>(
+    (max, r) => (r.updatedAt && r.updatedAt > max ? r.updatedAt : max),
+    ''
+  );
+  if (!isDirty(maxUpdatedAt, lastPushed)) return null;
 
   const merged: Progress = moduleRows.reduce<Progress>(
     (acc, row) => ({
@@ -145,6 +204,7 @@ async function pushProgress(userId: string): Promise<void> {
   );
 
   await userDataService.saveProgress(userId, merged);
+  return maxUpdatedAt || new Date().toISOString();
 }
 
 /**
@@ -157,26 +217,35 @@ export async function executeSync(userId: string): Promise<string[]> {
   if (!isOnline()) return errors;
   if (!userId) return errors;
 
-  // 1. Review queue (SRS state)
+  const markers = loadMarkers();
+  const mark: SyncMarkers = { ...EMPTY_MARKERS, ...(markers[userId] ?? {}) };
+
+  // 1. Review queue (SRS state) — skipped unless a row changed since last push.
   try {
-    await pushReviewQueue(userId);
+    const pushedAt = await pushReviewQueue(userId, mark.reviewQueueAt);
+    if (pushedAt) mark.reviewQueueAt = pushedAt;
   } catch (e) {
     errors.push(`review:${e instanceof Error ? e.message : String(e)}`);
   }
 
   // 2. Progress (moduleProgress → user_progress)
   try {
-    await pushProgress(userId);
+    const pushedAt = await pushProgress(userId, mark.progressAt);
+    if (pushedAt) mark.progressAt = pushedAt;
   } catch (e) {
     errors.push(`progress:${e instanceof Error ? e.message : String(e)}`);
   }
 
   // 3. A1 campaign path state (a1PathState → a1_path_state)
   try {
-    await pushA1PathState(userId);
+    const pushedAt = await pushA1PathState(userId, mark.a1PathAt);
+    if (pushedAt) mark.a1PathAt = pushedAt;
   } catch (e) {
     errors.push(`a1path:${e instanceof Error ? e.message : String(e)}`);
   }
+
+  markers[userId] = mark;
+  saveMarkers(markers);
 
   // 4. Replay queued offline mutations (achievements / explicit a1path pushes
   //    enqueued during offline time; progress/review flush live above).
@@ -188,7 +257,7 @@ export async function executeSync(userId: string): Promise<string[]> {
       if (op.kind === 'achievement' && typeof op.payload === 'string') {
         await userDataService.unlockAchievement(userId, op.payload);
       } else if (op.kind === 'a1path') {
-        await pushA1PathState(userId);
+        await pushA1PathState(userId, mark.a1PathAt);
       }
     } catch (e) {
       errors.push(`${op.kind}:${e instanceof Error ? e.message : String(e)}`);

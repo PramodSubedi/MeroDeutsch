@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Progress } from '../types';
 import { useAuth } from './useAuth';
 import { supabase } from '../lib/supabase';
@@ -20,6 +20,15 @@ export function useProgress() {
   const moduleProgressRow = useMemo(() => rows.find(row => row.module === 'alphabet'), [rows]);
 
   const [progress, setProgress] = useState<Progress>(EMPTY_PROGRESS);
+
+  // Ref mirroring the latest progress so `markPracticed` can compute the next
+  // state from current data even across rapid successive calls (the old code
+  // read the stale render closure, so two quick calls could overwrite each
+  // other's just-added id — a lost update in Dexie AND Supabase).
+  const progressRef = useRef(progress);
+  useEffect(() => {
+    progressRef.current = progress;
+  }, [progress]);
 
   // Sync state when database row is loaded asynchronously
   useEffect(() => {
@@ -105,14 +114,14 @@ export function useProgress() {
   }, [userId, isAuthenticated]);
 
   const markPracticed = useCallback((id: string) => {
-    setProgress((prev) => {
-      if (prev.practiced.includes(id)) return prev;
-      return { ...prev, practiced: [...prev.practiced, id] };
-    });
-    // Persist after state update — never inside the updater (avoids
-    // StrictMode double-invoke and unordered async writes).
-    void save({ ...progress, practiced: [...progress.practiced, id] });
-  }, [save, progress]);
+    const prev = progressRef.current;
+    if (prev.practiced.includes(id)) return;
+    const next = { ...prev, practiced: [...prev.practiced, id] };
+    // Update the ref FIRST (synchronous) so the next rapid call sees this id.
+    progressRef.current = next;
+    setProgress(next);
+    void save(next);
+  }, [save]);
 
   const reset = useCallback(async () => {
     if (!userId) return;

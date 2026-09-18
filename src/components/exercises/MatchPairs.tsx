@@ -42,12 +42,18 @@ interface MatchPairsProps {
   onComplete?: (correct: number, missed: number) => void;
   /** Speak the German word when a pair matches. Default true. */
   speakOnMatch?: boolean;
+  /**
+   * Optional column headers (e.g. "Nomen" / "Pronomen" for the gender →
+   * pronoun mode). When omitted NO header row renders — the Greetings
+   * DE↔EN mode keeps its original layout unchanged.
+   */
+  columnLabels?: { left: string; right: string };
 }
 
 /** Tile visual state derived from match/flash/selection. */
 type TileTone = 'idle' | 'selected' | 'matched' | 'wrong';
 
-export function MatchPairs({ pairs, module, onComplete, speakOnMatch = true }: MatchPairsProps) {
+export function MatchPairs({ pairs, module, onComplete, speakOnMatch = true, columnLabels }: MatchPairsProps) {
   const { langMode } = useLang();
   const isDE = langMode === 'german';
   const reportResult = useAnswerReporter();
@@ -178,6 +184,14 @@ export function MatchPairs({ pairs, module, onComplete, speakOnMatch = true }: M
           {matchedIds.size}/{pairs.length}
         </span>
       </div>
+
+      {/* Optional column headers (gender → pronoun mode); greetings mode unchanged. */}
+      {columnLabels && (
+        <div className="grid grid-cols-2 gap-2 text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 sm:gap-3">
+          <span>{columnLabels.left}</span>
+          <span>{columnLabels.right}</span>
+        </div>
+      )}
 
       <div className="grid grid-cols-2 gap-2 sm:gap-3">
         {/* Left column — German */}

@@ -415,6 +415,13 @@ export const A1_BONUS_NODES: PathNode[] = [
   { id: 'e-vocab-drill', unitIndex: 4, kind: 'bonus', label: lbl('Vocab Drill', 'Wortschatz-Drill'), to: '/rapid-blitz?mode=vocabulary-translation', bonus: true },
   { id: 'f-modals', unitIndex: 5, kind: 'bonus', label: lbl('Modal Drills', 'Modalverben'), to: '/grammar?tab=modals', bonus: true },
   { id: 'f-blitz', unitIndex: 5, kind: 'bonus', label: lbl('Blitz Mixed', 'Mixed-Quiz'), to: '/rapid-fire', bonus: true },
+  // NotebookLM workbook mechanics — bonus chips only (never gate, never push-lock).
+  { id: 'a-cypher', unitIndex: 0, kind: 'bonus', label: lbl('Number Code Cracker', 'Zahlen-Code knacken'), to: '/games?game=cypher', bonus: true },
+  { id: 'a-oddone', unitIndex: 0, kind: 'bonus', label: lbl('Phonetic Trap Game', 'Phonetik-Rätsel'), to: '/games?game=oddoneout', bonus: true },
+  { id: 'd-separable', unitIndex: 3, kind: 'bonus', label: lbl('Separable Verbs', 'Trennbare Verben'), to: '/sentence-builder?focus=separable', bonus: true },
+  { id: 'd-dice', unitIndex: 3, kind: 'bonus', label: lbl('Verb Dice', 'Verben-Würfelspiel'), to: '/games?game=dice', bonus: true },
+  { id: 'f-tictactoe', unitIndex: 5, kind: 'bonus', label: lbl('Conjugation Tic-Tac-Toe', 'Konjugations-Spiel'), to: '/games?game=tictactoe', bonus: true },
+  { id: 'f-email', unitIndex: 5, kind: 'bonus', label: lbl('Email Builder', 'E-Mail-Trainer'), to: '/email-builder', bonus: true },
 ];
 
 function buildCurriculum(): A1Curriculum {

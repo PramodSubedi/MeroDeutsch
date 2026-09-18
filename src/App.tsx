@@ -39,6 +39,8 @@ const HelpPage = lazy(() => import('./pages/HelpPage').then(m => ({ default: m.H
 const FeedbackPage = lazy(() => import('./pages/FeedbackPage').then(m => ({ default: m.FeedbackPage })));
 const A1CheckpointPage = lazy(() => import('./pages/A1CheckpointPage').then(m => ({ default: m.A1CheckpointPage })));
 const SentenceBuilderPage = lazy(() => import('./pages/SentenceBuilderPage').then(m => ({ default: m.SentenceBuilderPage })));
+const GamesPage = lazy(() => import('./pages/GamesPage').then(m => ({ default: m.GamesPage })));
+const EmailBuilderPage = lazy(() => import('./pages/EmailBuilderPage').then(m => ({ default: m.EmailBuilderPage })));
 
 /**
  * Single canonical Rapid Blitz route is /rapid-fire.
@@ -103,6 +105,10 @@ export default function App() {
               <Route path="checkpoint/:unitIndex" element={<A1CheckpointPage />} />
               {/* Unit 2 optional practice — bonus node on the /learn spine */}
               <Route path="sentence-builder" element={<SentenceBuilderPage />} />
+              {/* NotebookLM mechanics: games hub + Goethe A1 Schreiben trainer.
+                  Bonus content — guests welcome, never gates the spine. */}
+              <Route path="games" element={<GamesPage />} />
+              <Route path="email-builder" element={<EmailBuilderPage />} />
               <Route path="practice" element={<PracticeHubPage />} />
             <Route path="article-sprint" element={<ArticleSprintPage />} />
               <Route path="rapid-fire" element={<RapidBlitzPage />} />

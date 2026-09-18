@@ -92,6 +92,18 @@ const SPECIFIC: Record<string, HintText> = {
     ne: 'क्रियालाई कर्तासँग मिलाउनुहोस् — जस्तै "ich habe", "wir haben"।',
     de: 'Passe das Verb an das Subjekt an — z. B. "ich habe", "wir haben".',
   },
+  // Sentence Builder — separable verbs (trennbare Verben).
+  'grammar:separable': {
+    en: 'Separable verbs split: the conjugated stem stays in Position 2 and the prefix goes to the END — "Ich stehe um sechs Uhr auf."',
+    ne: 'छुट्टिने क्रिया दुई भागमा विभाजित हुन्छ — क्रियाधार दोस्रो स्थानमा बस्छ, उपसर्ग वाक्यको अन्त्यमा जान्छ — "Ich stehe um sechs Uhr auf."।',
+    de: 'Trennbare Verben werden getrennt: der Stamm bleibt an Position 2, das Präfix steht am ENDE — „Ich stehe um sechs Uhr auf."',
+  },
+  // Articles page — gender → pronoun matching mode.
+  'articles:pronoun': {
+    en: 'The pronoun follows the gender: der → er · die → sie · das → es.',
+    ne: 'सर्वनाम लिङ्गअनुसार बदलिन्छ: der → er · die → sie · das → es।',
+    de: 'Das Pronomen folgt dem Genus: der → er · die → sie · das → es.',
+  },
 };
 
 /**
