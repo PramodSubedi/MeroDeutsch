@@ -21,7 +21,8 @@ import { SEO } from '../components/common/SEO';
 import { theme } from '../config/theme';
 import { curriculumService } from '../services';
 import { detectSeparableVerb } from '../data/a1Verbs';
-import type { SentenceExercise } from '../types/curriculum';
+import { TemplateResolver } from '../lib/templateResolver';
+import type { LexicalEntity, SentenceExercise } from '../types/curriculum';
 import type { SentenceItem } from '../components/exercises/SentenceBuilder';
 import { SentenceBuilder } from '../components/exercises/SentenceBuilder';
 import { GenderLegend } from '../components/ui/GenderBadge';
@@ -35,6 +36,23 @@ function toSentenceItem(ex: SentenceExercise, hint?: string): SentenceItem {
     hint,
   };
 }
+
+function toTemplateSentenceItem(ex: ReturnType<typeof TemplateResolver.resolveOriginStatement>, hint?: string): SentenceItem {
+  return {
+    id: ex.id,
+    words: ex.correctOrder,
+    distractors: ex.distractors,
+    hint,
+  };
+}
+
+const TEMPLATE_COUNTRIES: LexicalEntity[] = [
+  { id: 'country:nepal', category: 'country', lemma: 'Nepal', partOfSpeech: 'noun', gender: 'neuter', caseGovernance: { prep_aus: 'aus' }, translations: { en: 'Nepal', ne: 'नेपाल' } },
+  { id: 'country:schweiz', category: 'country', lemma: 'Schweiz', partOfSpeech: 'noun', gender: 'feminine', caseGovernance: { prep_aus: 'aus der' }, translations: { en: 'Switzerland', ne: 'स्वित्जरल्याण्ड' } },
+  { id: 'country:deutschland', category: 'country', lemma: 'Deutschland', partOfSpeech: 'noun', gender: 'neuter', caseGovernance: { prep_aus: 'aus' }, translations: { en: 'Germany', ne: 'जर्मनी' } },
+  { id: 'country:indien', category: 'country', lemma: 'Indien', partOfSpeech: 'noun', gender: 'neuter', caseGovernance: { prep_aus: 'aus' }, translations: { en: 'India', ne: 'भारत' } },
+  { id: 'country:turkei', category: 'country', lemma: 'Türkei', partOfSpeech: 'noun', gender: 'feminine', caseGovernance: { prep_aus: 'aus der' }, translations: { en: 'Turkey', ne: 'टर्की' } },
+];
 
 export function SentenceBuilderPage() {
   usePageTitle('Sentence Builder');
@@ -87,20 +105,32 @@ export function SentenceBuilderPage() {
           }
           return;
         }
+
         // Pull a randomized subset from the dynamic pipeline (Unit 2 focus).
-        const exercises = await curriculumService.getSentences('akkusativ', 4);
+        let pool: SentenceExercise[] = await curriculumService.getSentences('akkusativ', 4);
         // Top up from the full pool if the focused fetch is short.
-        let pool = exercises;
-        if (exercises.length < 4) {
-          const more = await curriculumService.getSentences(undefined, 8 - exercises.length);
-          pool = [...exercises, ...more];
+        if (pool.length < 4) {
+          const more = await curriculumService.getSentences(undefined, 8 - pool.length);
+          pool = [...pool, ...more];
         }
-        if (!cancelled) {
+
+        if (!cancelled && pool.length > 0) {
           setItems(pool.map((ex) => toSentenceItem(ex)));
+          setError(null);
+          return;
+        }
+
+        const generated = TemplateResolver.generateOriginExercises(TEMPLATE_COUNTRIES, ['ich', 'du', 'wir'], 4);
+        if (!cancelled) {
+          setItems(generated.map((exercise) => toTemplateSentenceItem(exercise, isDE ? 'Fokus: Herkunft mit "aus" / "aus der".' : 'Focus: origin with "aus" / "aus der".')));
           setError(null);
         }
       } catch (e) {
-        if (!cancelled) setError(e instanceof Error ? e.message : 'Failed to load sentences');
+        if (!cancelled) {
+          const generated = TemplateResolver.generateOriginExercises(TEMPLATE_COUNTRIES, ['ich', 'du', 'wir'], 4);
+          setItems(generated.map((exercise) => toTemplateSentenceItem(exercise, isDE ? 'Fokus: Herkunft mit "aus" / "aus der".' : 'Focus: origin with "aus" / "aus der".')));
+          setError(e instanceof Error ? e.message : 'Failed to load sentences');
+        }
       } finally {
         if (!cancelled) setLoading(false);
       }

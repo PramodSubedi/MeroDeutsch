@@ -160,6 +160,63 @@ export function buildConversationalScenarios(
  * Bundled JSON fallback — used when the DB content pools are empty (pre-seed)
  * or unreachable. Reads the two committed JSON files directly.
  */
+export function buildTemplateRoleplayScenarios(): RoleplayScenario[] {
+  return [
+    {
+      id: 'template-market',
+      title: 'Market conversation',
+      emoji: '🛒',
+      level: 'A1',
+      steps: [
+        {
+          npc: 'Guten Tag! Womit kann ich Ihnen helfen?',
+          npcEn: 'Hello! How can I help you?',
+          prompt: 'Reply politely and ask for a loaf of bread.',
+          options: [
+            { text: 'Guten Tag. Ich möchte bitte ein Brot.', ok: true, fb: 'Gut gemacht!', en: 'Hello. I would like a loaf of bread, please.' },
+            { text: 'Hallo. Ich bin Brot.', ok: false, fb: 'Fast! Try a better customer phrase.', en: 'Hello. I am bread.' },
+          ],
+        },
+        {
+          npc: 'Natürlich. Was möchten Sie noch?',
+          npcEn: 'Of course. What else would you like?',
+          prompt: 'Ask for water and say thank you.',
+          options: [
+            { text: 'Ich hätte gern Wasser, bitte. Danke!', ok: true, fb: 'Perfekt!', en: 'I would like water, please. Thank you!' },
+            { text: 'Wasser danke ich.', ok: false, fb: 'Good start, but the word order needs a small fix.', en: 'Water, thank you I.' },
+          ],
+        },
+      ],
+    },
+    {
+      id: 'template-station',
+      title: 'Train station',
+      emoji: '🚆',
+      level: 'A1',
+      steps: [
+        {
+          npc: 'Woher kommst du?',
+          npcEn: 'Where are you from?',
+          prompt: 'Answer in German with your country.',
+          options: [
+            { text: 'Ich komme aus Nepal.', ok: true, fb: 'Excellent!', en: 'I come from Nepal.' },
+            { text: 'Ich komme Nepal.', ok: false, fb: 'Almost — use the preposition "aus".', en: 'I come Nepal.' },
+          ],
+        },
+        {
+          npc: 'Danke! Wann fährt der Zug?',
+          npcEn: 'Thanks! When does the train leave?',
+          prompt: 'Ask the time politely.',
+          options: [
+            { text: 'Um acht Uhr, bitte.', ok: true, fb: 'Sehr gut!', en: 'At eight o’clock, please.' },
+            { text: 'Acht Uhr bitte du.', ok: false, fb: 'The phrase needs a smoother German structure.', en: 'Eight o’clock please you.' },
+          ],
+        },
+      ],
+    },
+  ];
+}
+
 export function buildBundledConversationalScenarios(): RoleplayScenario[] {
   return buildConversationalScenarios(
     scenarioDefsJson as unknown as ConversationScenarioSeed[],

@@ -60,6 +60,47 @@ export interface RoleplayScenario {
   roleFlip?: boolean;
 }
 
+/**
+ * Atomic lexical entity used by the template-based sentence generator.
+ * This is the canonical abstraction beneath the legacy content-pool shapes.
+ */
+export interface LexicalEntity {
+  id: string;
+  category: string;
+  lemma: string;
+  partOfSpeech?: 'noun' | 'verb' | 'adjective' | 'adverb' | 'preposition' | 'phrase' | string;
+  gender?: 'masculine' | 'feminine' | 'neuter' | 'plural' | 'none';
+  article?: 'der' | 'die' | 'das' | null;
+  plural?: string | null;
+  cefrLevel?: 'A1' | 'A2' | 'B1' | 'B2';
+  caseGovernance?: Record<string, string>;
+  conjugations?: Record<string, string>;
+  examples?: Array<{ de: string; en: string; ne: string }>;
+  translations: { en: string; ne: string };
+}
+
+export interface ResolvedExerciseTemplate {
+  id: string;
+  sentenceDe: string;
+  sentenceEn: string;
+  sentenceNe: string;
+  tokens: string[];
+  distractors: string[];
+  correctOrder: string[];
+  targetWord: string;
+}
+
+export type VocabularyQuestionVariant = 'de-to-en' | 'en-to-de' | 'article' | 'plural' | 'listen';
+
+export interface ResolvedVocabularyQuestion {
+  id: string;
+  targetId: string;
+  variant: VocabularyQuestionVariant;
+  prompt: string;
+  correctAnswer: string;
+  options: string[];
+}
+
 export interface DictationWord {
   word: string;
 }
@@ -272,9 +313,4 @@ export interface CurriculumService {
   getPronunciationTips(): Promise<Record<string, PronunciationTip>>;
   /** Rapid-fire question pools per challenge type from the dynamic table. */
   getRapidFireSections(): Promise<Record<string, unknown[]>>;
-  /**
-   * Randomized sentence-building exercises from the dynamic pipeline
-   * (Supabase `get_random_sentences` RPC with a Dexie offline cache).
-   */
-  getSentences(grammarFocus?: string, limit?: number): Promise<SentenceExercise[]>;
 }

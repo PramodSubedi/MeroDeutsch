@@ -28,7 +28,7 @@ import { useXp } from '../hooks/useXp';
 import { useReviewQueue } from '../hooks/useReviewQueue';
 import { speakWord } from '../hooks/useSpeech';
 import { curriculumService } from '../services';
-import { pickNUnique } from '../utils/questionGenerator';
+import { TemplateResolver } from '../lib/templateResolver';
 import { useVocabularyStatus } from '../hooks/useVocabularyStatus';
 import type { VocabCard } from '../types';
 import type { VocabularyFilterOptions } from '../types/curriculum';
@@ -54,11 +54,6 @@ const POOL_LABELS: { value: PoolMode; labelEn: string; labelDe: string }[] = [
   { value: 'due', labelEn: 'Due', labelDe: 'Fällig' },
   { value: 'mixed', labelEn: 'Mixed', labelDe: 'Gemischt' },
 ];
-
-/** Distinct helper: unique strings from a list (for decoy pools). */
-function uniqueStrings(values: string[]): string[] {
-  return Array.from(new Set(values.filter((v) => v && v.trim())));
-}
 
 /** Gender color token lookup (theme.ts locked tokens — no one-off hexes). */
 function genderToken(article: string | null): { text: string; label: string } {
@@ -155,65 +150,18 @@ export function VocabTrainerPage() {
    */
   const buildQuestion = useCallback(
     (card: VocabCard, all: VocabCard[]): McqQuestion => {
-      const others = all.filter((c) => c.id !== card.id);
-      // The variant actually exercised. Fallback branches below (card lacks the
-      // data a variant needs) degrade to a plain DE→EN question but must label
-      // the prompt accordingly instead of lying about the variant.
-      let resolvedVariant: QuestionVariant = variant;
-
-      // ── Article variant: pick der/die/das for a noun ────────────────
-      if (variant === 'article' && (card.article === 'der' || card.article === 'die' || card.article === 'das')) {
-        const correct = card.article ?? 'der';
-        const opts = ['der', 'die', 'das'];
-        // Shuffle at question create, stable afterwards — no always-A (C2.9).
-        for (let i = opts.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [opts[i], opts[j]] = [opts[j], opts[i]];
-        }
-        return { card, options: opts, correctIndex: opts.indexOf(correct), variant };
-      }
-
-      // ── Plural variant: pick the correct plural of a noun ────────────
-      if (variant === 'plural' && card.plural && card.plural !== '-') {
-        const otherPlurals = uniqueStrings(others.map((c) => c.plural ?? '').filter((p) => p && p !== '-'));
-        const decoys = pickNUnique({ items: otherPlurals.filter((p) => p !== card.plural), count: 3 });
-        const opts = [...decoys, card.plural];
-        for (let i = opts.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [opts[i], opts[j]] = [opts[j], opts[i]];
-        }
-        return { card, options: opts, correctIndex: opts.indexOf(card.plural), variant };
-      }
-
-      // ── EN → DE variant: prompt is the English translation ──────────
-      if (variant === 'en-to-de') {
-        const distinctLemmas = uniqueStrings(others.map((c) => c.lemma));
-        const decoys = pickNUnique({ items: distinctLemmas.filter((l) => l !== card.lemma), count: 3 });
-        const opts = [...decoys, card.lemma];
-        for (let i = opts.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [opts[i], opts[j]] = [opts[j], opts[i]];
-        }
-        return { card, options: opts, correctIndex: opts.indexOf(card.lemma), variant };
-      }
-
-      // ── DE → EN (default) / Listen variant: pick the English meaning ──
-      // Non-article/non-plural cards that fall through here get a plain DE→EN
-      // surface; disclose that in the prompt (resolve the variant).
-      resolvedVariant = variant === 'article' || variant === 'plural' ? 'de-to-en' : variant;
-      const distractorEn = uniqueStrings(others.map((c) => c.translation.en));
-      const distractors = pickNUnique({
-        items: distractorEn.filter((e) => e !== card.translation.en),
-        count: 3,
-      });
-      const opts = [...distractors, card.translation.en];
-      for (let i = opts.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [opts[i], opts[j]] = [opts[j], opts[i]];
-      }
-      // 'listen' keeps the same option surface as DE→EN; the render layer adds
-      // a speaker button. If the card has no audio, we still show the word.
-      return { card, options: opts, correctIndex: opts.indexOf(card.translation.en), variant: resolvedVariant };
+      const entities = all.map(TemplateResolver.fromVocabularyCard);
+      const generated = TemplateResolver.generateVocabularyQuestion(
+        TemplateResolver.fromVocabularyCard(card),
+        entities,
+        variant
+      );
+      return {
+        card,
+        options: generated.options,
+        correctIndex: generated.options.indexOf(generated.correctAnswer),
+        variant: generated.variant,
+      };
     },
     [variant]
   );

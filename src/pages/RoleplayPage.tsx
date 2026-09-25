@@ -6,7 +6,7 @@ import { SEO } from '../components/common/SEO';
 import { PageHeading } from '../components/common/PageHeading';
 import { curriculumService } from '../services';
 import { MessagingRoleplay } from '../components/exercises/MessagingRoleplay';
-import { buildConversationalScenarios } from '../utils/conversationalToRoleplay';
+import { buildConversationalScenarios, buildTemplateRoleplayScenarios } from '../utils/conversationalToRoleplay';
 import type {
   RoleplayScenario,
   ConversationScenarioSeed,
@@ -62,10 +62,15 @@ useEffect(() => {
         ...(vocabBankJson as unknown as ConversationVocab[]),
         ...((lifeVocabJson as unknown) as ConversationVocab[]),
       ];
+
+      const templateFallback = defs.length > 0 && vocab.length > 0
+        ? { defs, vocab }
+        : { defs: fallbackDefs.length > 0 ? fallbackDefs : [], vocab: fallbackVocab.length > 0 ? fallbackVocab : [] };
+
       setSource(
         defs.length > 0 && vocab.length > 0
           ? { defs, vocab }
-          : { defs: fallbackDefs, vocab: fallbackVocab },
+          : templateFallback,
       );
       setLoading(false);
     })();
@@ -76,7 +81,10 @@ useEffect(() => {
 
   useEffect(() => {
     if (!source) return;
-    setConversations(buildConversationalScenarios(source.defs, source.vocab));
+    const generated = source.defs.length > 0 && source.vocab.length > 0
+      ? buildConversationalScenarios(source.defs, source.vocab)
+      : buildTemplateRoleplayScenarios();
+    setConversations(generated);
   }, [source]);
 
   useEffect(() => {

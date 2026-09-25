@@ -26,6 +26,7 @@ import { usePageTitle } from '../hooks/usePageTitle';
 import { useA1Path } from '../hooks/useA1Path';
 import { curriculumService } from '../services';
 import { CHECKPOINT_PASS_THRESHOLD, A1_UNITS, type CheckpointSource, type Article } from '../data/a1Path';
+import { TemplateResolver } from '../lib/templateResolver';
 import { pickNUnique } from '../utils/questionGenerator';
 import { shuffleArray } from '../utils/shuffleArray';
 import { useExerciseSession, type ExerciseQuestion } from '../hooks/useExerciseSession';
@@ -60,6 +61,13 @@ function buildOptions(correct: string, decoyPool: string[], count: number): stri
   return [correct, ...chosen]; // final shuffle happens once at session mount
 }
 
+const TEMPLATE_COUNTRIES = [
+  { id: 'country:nepal', category: 'country', lemma: 'Nepal', partOfSpeech: 'noun', gender: 'neuter', caseGovernance: { prep_aus: 'aus' }, translations: { en: 'Nepal', ne: 'नेपाल' } },
+  { id: 'country:schweiz', category: 'country', lemma: 'Schweiz', partOfSpeech: 'noun', gender: 'feminine', caseGovernance: { prep_aus: 'aus der' }, translations: { en: 'Switzerland', ne: 'स्वित्जरल्याण्ड' } },
+  { id: 'country:deutschland', category: 'country', lemma: 'Deutschland', partOfSpeech: 'noun', gender: 'neuter', caseGovernance: { prep_aus: 'aus' }, translations: { en: 'Germany', ne: 'जर्मनी' } },
+  { id: 'country:indien', category: 'country', lemma: 'Indien', partOfSpeech: 'noun', gender: 'neuter', caseGovernance: { prep_aus: 'aus' }, translations: { en: 'India', ne: 'भारत' } },
+] as const;
+
 function buildQuestions(
   specs: { type: CheckpointSource; count: number }[],
   data: LoadedData,
@@ -85,6 +93,24 @@ function buildQuestions(
         );
         break;
       case 'number-conversion':
+        // Resolver-based fallback for origin statements when the dynamic pool is sparse.
+        if (data.numbers.length < 2) {
+          TemplateResolver.generateOriginExercises(TEMPLATE_COUNTRIES, ['ich', 'du'], spec.count).forEach((exercise) => {
+            out.push({
+              key: `template-origin:${exercise.id}`,
+              prompt: exercise.sentenceEn,
+              speakPrompt: exercise.sentenceEn,
+              speakAfter: exercise.sentenceDe,
+              options: buildOptions(exercise.sentenceDe, [
+                ...exercise.distractors,
+                ...TEMPLATE_COUNTRIES.map((country) => `${country.caseGovernance?.prep_aus ?? 'aus'} ${country.lemma}`),
+              ], 4),
+              correctAnswer: exercise.sentenceDe,
+              source: 'number-conversion',
+            });
+          });
+          break;
+        }
         // Gate A (first contact) focuses on numbers 0–12; the full range is
         // offered later as optional practice (Band D bonus), not on the gate.
         pick(
