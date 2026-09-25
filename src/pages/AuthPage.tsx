@@ -6,9 +6,12 @@ import { theme } from '../config/theme';
 import { useAuth } from '../hooks/useAuth';
 import { Logo } from '../components/common/Logo';
 import { usePageTitle } from '../hooks/usePageTitle';
+import { useLang } from '../hooks/useLang';
 
 export function AuthPage() {
-  usePageTitle('Sign in');
+  const { langMode } = useLang();
+  const isDE = langMode === 'german';
+  usePageTitle(isDE ? 'Anmelden' : 'Sign in');
   const navigate = useNavigate();
   const { register, login } = useAuth();
   const [mode, setMode] = useState<'login' | 'register'>('register');
@@ -29,22 +32,22 @@ export function AuthPage() {
     setIsLoading(true);
 
     if (!email.trim() || !password) {
-      setError('Both email and password are required.');
+      setError(isDE ? 'E-Mail-Adresse und Passwort sind erforderlich.' : 'Both email and password are required.');
       setIsLoading(false);
       return;
     }
 
     if (mode === 'register') {
       if (password !== confirmPassword) {
-        setError('Passwords do not match.');
+        setError(isDE ? 'Die Passwörter stimmen nicht überein.' : 'Passwords do not match.');
         setIsLoading(false);
         return;
       }
       try {
         await register(email, password, username);
-        setMessage('Check your email for a confirmation link!');
+        setMessage(isDE ? 'Prüfe deine E-Mails auf den Bestätigungslink.' : 'Check your email for a confirmation link!');
       } catch (registerError: unknown) {
-        setError(registerError instanceof Error ? registerError.message : 'Registration failed.');
+        setError(registerError instanceof Error ? registerError.message : isDE ? 'Registrierung fehlgeschlagen.' : 'Registration failed.');
       } finally {
         setIsLoading(false);
       }
@@ -53,10 +56,10 @@ export function AuthPage() {
 
     try {
       await login(email, password);
-      setMessage('Welcome back! Redirecting to your home...');
+      setMessage(isDE ? 'Willkommen zurück! Weiterleitung zur Startseite…' : 'Welcome back! Redirecting to your home...');
       window.setTimeout(() => navigate('/home'), 600);
     } catch (loginError: unknown) {
-      setError(loginError instanceof Error ? loginError.message : 'Login failed.');
+      setError(loginError instanceof Error ? loginError.message : isDE ? 'Anmeldung fehlgeschlagen.' : 'Login failed.');
       setIsLoading(false);
     }
   };
@@ -69,16 +72,16 @@ export function AuthPage() {
           <div className="hidden lg:block">
             <div className="rounded-3xl bg-gradient-to-br from-blue-600 via-blue-700 to-blue-900 p-10 text-white shadow-2xl">
               <Logo size="md" variant="on-dark" />
-              <h2 className="mt-8 text-3xl font-bold tracking-tight">Everything a beginner needs.</h2>
-              <p className="mt-3 max-w-sm text-blue-100">One free account, three lasting benefits.</p>
+              <h2 className="mt-8 text-3xl font-bold tracking-tight">{isDE ? 'Alles für deinen Start.' : 'Everything a beginner needs.'}</h2>
+              <p className="mt-3 max-w-sm text-blue-100">{isDE ? 'Ein kostenloses Konto, drei Vorteile.' : 'One free account, three lasting benefits.'}</p>
               <ul className="mt-8 space-y-5">
                 <li className="flex items-start gap-3">
                   <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/15">
                     <Cloud className="h-5 w-5" aria-hidden="true" />
                   </span>
                   <div>
-                    <p className="font-semibold">Progress saved &amp; synced</p>
-                    <p className="mt-0.5 text-sm text-blue-100">Pick up on any device where you left off.</p>
+                    <p className="font-semibold">{isDE ? 'Fortschritt gespeichert und synchronisiert' : 'Progress saved & synced'}</p>
+                    <p className="mt-0.5 text-sm text-blue-100">{isDE ? 'Lerne auf jedem Gerät dort weiter, wo du aufgehört hast.' : 'Pick up on any device where you left off.'}</p>
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
@@ -86,9 +89,9 @@ export function AuthPage() {
                     <Map className="h-5 w-5" aria-hidden="true" />
                   </span>
                   <div>
-                    <p className="font-semibold">Guided A1 path</p>
+                    <p className="font-semibold">{isDE ? 'Geführter A1-Lernpfad' : 'Guided A1 path'}</p>
                     <p className="mt-0.5 text-sm text-blue-100">
-                      Units in a fixed order with checkpoints that gate real progress.
+                      {isDE ? 'Einheiten in fester Reihenfolge mit Fortschrittsprüfungen.' : 'Units in a fixed order with checkpoints that gate real progress.'}
                     </p>
                   </div>
                 </li>
@@ -97,8 +100,8 @@ export function AuthPage() {
                     <RefreshCw className="h-5 w-5" aria-hidden="true" />
                   </span>
                   <div>
-                    <p className="font-semibold">Smart review queue</p>
-                    <p className="mt-0.5 text-sm text-blue-100">Missed items come back on purpose until they stick.</p>
+                    <p className="font-semibold">{isDE ? 'Intelligente Wiederholung' : 'Smart review queue'}</p>
+                    <p className="mt-0.5 text-sm text-blue-100">{isDE ? 'Falsch beantwortete Aufgaben kommen gezielt wieder.' : 'Missed items come back on purpose until they stick.'}</p>
                   </div>
                 </li>
               </ul>
@@ -111,8 +114,8 @@ export function AuthPage() {
               <Logo size="sm" />
               <p className="mt-4 text-sm leading-6 text-slate-600 dark:text-slate-300">
                 {mode === 'register'
-                  ? 'Save your progress, unlock your guided A1 path, and review mistakes smartly.'
-                  : 'Sign in to continue where you left off.'}
+                  ? isDE ? 'Speichere deinen Fortschritt, folge dem A1-Lernpfad und wiederhole Fehler gezielt.' : 'Save your progress, unlock your guided A1 path, and review mistakes smartly.'
+                  : isDE ? 'Melde dich an, um dort weiterzulernen, wo du aufgehört hast.' : 'Sign in to continue where you left off.'}
               </p>
 
               {/* Mode tabs */}
@@ -128,7 +131,7 @@ export function AuthPage() {
                       : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'
                   }`}
                 >
-                  Sign in
+                  {isDE ? 'Anmelden' : 'Sign in'}
                 </button>
                 <button
                   type="button"
@@ -141,32 +144,32 @@ export function AuthPage() {
                       : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'
                   }`}
                 >
-                  Create account
+                  {isDE ? 'Konto erstellen' : 'Create account'}
                 </button>
               </div>
 
             <form onSubmit={handleSubmit} className="mt-6 grid gap-4">
           <label className="space-y-2 text-sm font-medium text-slate-700 dark:text-slate-200">
-            Email
+            {isDE ? 'E-Mail' : 'Email'}
             <input
               type="email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               className={theme.input}
-              placeholder="e.g. learner@example.com"
+              placeholder={isDE ? 'z. B. name@beispiel.de' : 'e.g. learner@example.com'}
               disabled={isLoading}
             />
           </label>
 
           {mode === 'register' && (
             <label className="space-y-2 text-sm font-medium text-slate-700 dark:text-slate-200">
-              Username
+              {isDE ? 'Benutzername' : 'Username'}
               <input
                 type="text"
                 value={username}
                 onChange={(event) => setUsername(event.target.value)}
                 className={theme.input}
-                placeholder="e.g. learner123"
+                placeholder={isDE ? 'z. B. lernender123' : 'e.g. learner123'}
                 disabled={isLoading}
               />
             </label>
@@ -174,21 +177,21 @@ export function AuthPage() {
 
 
           <label className="space-y-2 text-sm font-medium text-slate-700 dark:text-slate-200">
-            Password
+            {isDE ? 'Passwort' : 'Password'}
             <span className="relative block">
               <input
                 type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
                 className={`${theme.input} pr-11`}
-                placeholder="Enter a secure password"
+                placeholder={isDE ? 'Sicheres Passwort eingeben' : 'Enter a secure password'}
                 disabled={isLoading}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((v) => !v)}
                 className="absolute right-2 top-1/2 -translate-y-1/2 flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg p-2 text-slate-500 transition hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-300"
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                aria-label={showPassword ? (isDE ? 'Passwort verbergen' : 'Hide password') : (isDE ? 'Passwort anzeigen' : 'Show password')}
                 aria-pressed={showPassword}
               >
                 {showPassword ? (
@@ -207,21 +210,21 @@ export function AuthPage() {
 
           {mode === 'register' && (
             <label className="space-y-2 text-sm font-medium text-slate-700 dark:text-slate-200">
-              Confirm Password
+              {isDE ? 'Passwort bestätigen' : 'Confirm Password'}
               <span className="relative block">
                 <input
                   type={showConfirmPassword ? 'text' : 'password'}
                   value={confirmPassword}
                   onChange={(event) => setConfirmPassword(event.target.value)}
                   className={`${theme.input} pr-11`}
-                  placeholder="Re-enter password"
+                  placeholder={isDE ? 'Passwort erneut eingeben' : 'Re-enter password'}
                   disabled={isLoading}
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword((v) => !v)}
                   className="absolute right-2 top-1/2 -translate-y-1/2 flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg p-2 text-slate-500 transition hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-300"
-                  aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+                  aria-label={showConfirmPassword ? (isDE ? 'Passwort verbergen' : 'Hide password') : (isDE ? 'Passwort anzeigen' : 'Show password')}
                   aria-pressed={showConfirmPassword}
                 >
                   {showConfirmPassword ? (
@@ -239,8 +242,8 @@ export function AuthPage() {
             </label>
           )}
 
-          {error && <div className="rounded-xl border border-red-300 bg-red-50 p-4 text-sm text-red-700">{error}</div>}
-          {message && <div className="rounded-xl border border-green-300 bg-green-50 p-4 text-sm text-green-700">{message}</div>}
+          {error && <div role="alert" className="rounded-xl border border-red-300 bg-red-50 p-4 text-sm text-red-700">{error}</div>}
+          {message && <div role="status" aria-live="polite" className="rounded-xl border border-green-300 bg-green-50 p-4 text-sm text-green-700">{message}</div>}
 
           <button type="submit" className={theme.button.primary} disabled={isLoading}>
             {isLoading ? (
@@ -249,10 +252,12 @@ export function AuthPage() {
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                {mode === 'register' ? 'Registering...' : 'Signing in...'}
+                {mode === 'register' ? (isDE ? 'Konto wird erstellt…' : 'Registering…') : (isDE ? 'Anmeldung läuft…' : 'Signing in…')}
               </span>
             ) : (
-              mode === 'register' ? 'Register account' : 'Sign in to continue'
+              mode === 'register'
+                ? isDE ? 'Konto erstellen' : 'Register account'
+                : isDE ? 'Anmelden und fortfahren' : 'Sign in to continue'
             )}
           </button>
         </form>
@@ -260,11 +265,11 @@ export function AuthPage() {
 
             {/* Legal - minimal, under the card */}
             <p className="mt-4 text-center text-xs leading-5 text-slate-500 dark:text-slate-400">
-              By continuing you agree to our{' '}
-              <Link to="/terms" className="font-semibold text-blue-600 hover:underline dark:text-blue-400">Terms</Link>{' '}
-              and{' '}
-              <Link to="/privacy" className="font-semibold text-blue-600 hover:underline dark:text-blue-400">Privacy Policy</Link>
-              . No credit card needed - A1 is free.
+              {isDE ? 'Mit deiner Anmeldung stimmst du unseren ' : 'By continuing you agree to our '}
+              <Link to="/terms" className="font-semibold text-blue-600 hover:underline dark:text-blue-400">{isDE ? 'Nutzungsbedingungen' : 'Terms'}</Link>{' '}
+              {isDE ? 'und der ' : 'and '}
+              <Link to="/privacy" className="font-semibold text-blue-600 hover:underline dark:text-blue-400">{isDE ? 'Datenschutzerklärung' : 'Privacy Policy'}</Link>
+              {isDE ? '. Keine Kreditkarte nötig – A1 ist kostenlos.' : '. No credit card needed - A1 is free.'}
             </p>
           </div>
         </div>

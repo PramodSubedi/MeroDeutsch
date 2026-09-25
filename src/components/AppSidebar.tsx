@@ -1,4 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
+import { useEffect, useRef } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import {
   BookA,
@@ -57,7 +58,7 @@ const activeClass = (active: boolean) =>
     ? 'bg-white font-semibold text-blue-700 shadow-sm ring-1 ring-slate-200 before:absolute before:left-0 before:top-1/2 before:h-5 before:w-1 before:-translate-y-1/2 before:rounded-full before:bg-blue-600 dark:bg-slate-800/70 dark:text-blue-300 dark:ring-slate-700/60 dark:before:bg-blue-400'
     : 'text-slate-600 hover:bg-slate-100/70 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800/70 dark:hover:text-white');
 
-function NavRow({ item, active, isDE, collapsed }: { item: NavItem; active: boolean; isDE: boolean; collapsed?: boolean }) {
+function NavRow({ item, active, isDE, collapsed, onNavigate }: { item: NavItem; active: boolean; isDE: boolean; collapsed?: boolean; onNavigate?: () => void }) {
   const Icon = item.icon;
   const count = item.countBadge ?? 0;
   const linkClass = `${activeClass(active)} ${collapsed ? 'justify-center px-0' : ''}`;
@@ -66,14 +67,14 @@ function NavRow({ item, active, isDE, collapsed }: { item: NavItem; active: bool
   // the icon stays perfectly centered (doesn't drift with the number).
   if (count <= 0) {
     return (
-      <Link to={item.anchor ? `${item.to}${item.anchor}` : item.to} className={linkClass}>
+      <Link to={item.anchor ? `${item.to}${item.anchor}` : item.to} className={linkClass} onClick={onNavigate} aria-current={active ? 'location' : undefined}>
         <Icon className="h-5 w-5 shrink-0" aria-hidden="true" />
         {!collapsed && <span className="min-w-0 flex-1 truncate">{isDE ? item.labelDe : item.labelEn}</span>}
       </Link>
     );
   }
   return (
-    <Link to={item.anchor ? `${item.to}${item.anchor}` : item.to} className={linkClass}>
+    <Link to={item.anchor ? `${item.to}${item.anchor}` : item.to} className={linkClass} onClick={onNavigate} aria-current={active ? 'location' : undefined}>
       <Icon className="h-5 w-5 shrink-0" aria-hidden="true" />
       {!collapsed ? (
         <>
@@ -132,6 +133,40 @@ export function AppSidebar({
   const { isAuthenticated } = useAuth();
   const { dueQueue } = useReviewQueue();
   const isDE = langMode === 'german';
+  const mobileDrawerRef = useRef<HTMLElement>(null);
+  const restoreFocusRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (!mobileOpen) return;
+    restoreFocusRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    mobileDrawerRef.current?.querySelector<HTMLElement>('a[href], button:not([disabled])')?.focus();
+    return () => restoreFocusRef.current?.focus();
+  }, [mobileOpen]);
+
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const trapFocus = (event: KeyboardEvent) => {
+      if (event.key !== 'Tab') return;
+      const focusable = mobileDrawerRef.current?.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      );
+      if (!focusable?.length) {
+        event.preventDefault();
+        return;
+      }
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && (document.activeElement === first || !mobileDrawerRef.current?.contains(document.activeElement))) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && (document.activeElement === last || !mobileDrawerRef.current?.contains(document.activeElement))) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    window.addEventListener('keydown', trapFocus);
+    return () => window.removeEventListener('keydown', trapFocus);
+  }, [mobileOpen]);
 
   const dueCount = dueQueue.length;
 
@@ -162,7 +197,16 @@ export function AppSidebar({
   const isActive = (item: NavItem) => {
     if (item.anchor) return false; // shortcut rows never hold the active state
     const to = item.to;
-    return to === HOME_TO ? pathname === HOME_TO || pathname === '/' : pathname === to || pathname.startsWith(to + '/');
+    if (to === HOME_TO) return pathname === HOME_TO || pathname === '/';
+    if (to === '/learn') {
+      return ['/learn', '/checkpoint', '/alphabet', '/numbers', '/calendar', '/articles', '/greetings', '/stories']
+        .some((route) => pathname === route || pathname.startsWith(`${route}/`));
+    }
+    if (to === '/practice') {
+      return ['/practice', '/glossary', '/vocab-trainer', '/dictation', '/grammar', '/pronunciation', '/roleplay', '/rapid-fire', '/rapid-blitz', '/sentence-builder', '/games', '/email-builder', '/article-sprint']
+        .some((route) => pathname === route || pathname.startsWith(`${route}/`));
+    }
+    return pathname === to || pathname.startsWith(to + '/');
   };
 
   const sections: { titleEn: string; titleDe: string; items: NavItem[] }[] = [
@@ -170,7 +214,7 @@ export function AppSidebar({
     { titleEn: 'Support', titleDe: 'Unterstützung', items: supportItems },
   ];
 
-  const renderRail = (collapsed: boolean, showCollapseToggle: boolean) => (
+  const renderRail = (collapsed: boolean, showCollapseToggle: boolean, onNavigate?: () => void) => (
     <div className="flex h-full flex-col">
       {/* Brand band — h-16 matched to the sticky header row height, with a
           hairline bottom border: the rail top + header read as ONE connected
@@ -181,13 +225,14 @@ export function AppSidebar({
         {/* Single shell brand mark — same Logo as landing/auth (one brand rules) */}
         <Link
           to={HOME_TO}
-          aria-label="MeroDeutsch – Home"
+          onClick={onClose}
+          aria-label={isDE ? 'MeroDeutsch – Startseite' : 'MeroDeutsch – Home'}
           className="flex min-w-0 items-center rounded-xl px-2 py-1.5 transition hover:bg-slate-100 dark:hover:bg-slate-800"
         >
           <Logo size="sm" showText={!collapsed} />
         </Link>
       </div>
-      <nav className="flex flex-1 flex-col overflow-y-auto p-3">
+      <nav aria-label={isDE ? 'Hauptnavigation' : 'Main navigation'} className="flex flex-1 flex-col overflow-y-auto p-3">
         {sections.map((section) => {
           const visible = section.items.filter((it) => !it.authOnly || isAuthenticated);
           if (visible.length === 0) return null;
@@ -200,7 +245,7 @@ export function AppSidebar({
               )}
               <div className="space-y-1">
                 {visible.map((item) => (
-                  <NavRow key={item.to} item={item} active={isActive(item)} isDE={isDE} collapsed={collapsed} />
+                  <NavRow key={`${item.to}${item.anchor ?? ''}`} item={item} active={isActive(item)} isDE={isDE} collapsed={collapsed} onNavigate={onNavigate} />
                 ))}
               </div>
             </div>
@@ -267,18 +312,33 @@ export function AppSidebar({
       {/* Mobile: slide-in full-screen drawer (z-[55], above header/bottom-nav
           z-50, below milestone toast z-[60]); backdrop dims the page while open */}
       <div
-        className={`lg:hidden fixed inset-0 z-[55] flex transition-transform duration-200 ease-in-out ${
-          mobileOpen ? 'translate-x-0' : 'translate-x-full'
+        className={`lg:hidden fixed inset-0 z-[55] flex overflow-x-clip transition-opacity duration-200 ease-in-out ${
+          mobileOpen ? 'opacity-100' : 'pointer-events-none invisible opacity-0'
         }`}
         inert={!mobileOpen}
+        onKeyDown={(event) => {
+          if (mobileOpen && event.key === 'Escape') {
+            event.preventDefault();
+            onClose?.();
+          }
+        }}
       >
-        <div
-          className={`flex-1 transition-colors duration-200 ${mobileOpen ? 'bg-black/40' : 'bg-transparent'}`}
+        <button
+          type="button"
+          tabIndex={-1}
+          className={`flex-1 cursor-default border-0 p-0 transition-colors duration-200 ${mobileOpen ? 'bg-black/40' : 'bg-transparent'}`}
           onClick={onClose}
           aria-label={isDE ? 'Menü schliessen' : 'Close menu'}
         />
-        <aside className="relative h-full w-64 max-w-xs overflow-y-auto border-l border-slate-200 bg-white shadow-xl dark:border-slate-800 dark:bg-slate-950">
-          {renderRail(false, false)}
+        <aside
+          id="mobile-site-navigation"
+          ref={mobileDrawerRef}
+          role={mobileOpen ? 'dialog' : undefined}
+          aria-modal={mobileOpen ? true : undefined}
+          aria-label={isDE ? 'Seitennavigation' : 'Site navigation'}
+          className={`relative h-full w-64 max-w-xs overflow-y-auto border-l border-slate-200 bg-white shadow-xl dark:border-slate-800 dark:bg-slate-950 ${mobileOpen ? 'block' : 'hidden'}`}
+        >
+          {renderRail(false, false, onClose)}
         </aside>
       </div>
     </>

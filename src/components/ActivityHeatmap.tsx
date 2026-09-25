@@ -118,6 +118,8 @@ export function ActivityHeatmap({ activities = [], days = 30 }: ActivityHeatmapP
         {heatmapData.map((day) => (
           <div
             key={day.date}
+            role="img"
+            aria-label={`${parseLocalDateKey(day.date).toLocaleDateString(isDE ? 'de-DE' : 'en-US', { dateStyle: 'long' })}: ${day.count * XP_PER_EVENT} XP`}
             className={`group relative aspect-square rounded transition-all duration-200 hover:scale-110 hover:shadow-lg ${TIER_CLASSES[tierFor(day.count)]}`}
             title={`${getDayLabel(day.date)}: ${day.count * XP_PER_EVENT} XP`}
           >

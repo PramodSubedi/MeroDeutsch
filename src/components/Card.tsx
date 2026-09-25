@@ -12,44 +12,36 @@ interface CardProps {
 }
 
 export function Card({ badge, title, lines, footer, note, onClick, onSpeak }: CardProps) {
+  const content = (
+    <>
+      <span className={theme.card.badge}>{badge}</span>
+      <span className="min-w-0 flex-1">
+        <span className={`${theme.card.title} block`}>{title}</span>
+        {lines.map((line, index) => (
+          <span key={`${index}:${line}`} className={`${theme.card.line} block`}>{line}</span>
+        ))}
+        {footer && <span className={`${theme.card.footer} block`}>{footer}</span>}
+        {note && <span className={`${theme.card.note} block`}>{note}</span>}
+      </span>
+    </>
+  );
+
   return (
-    <div
-      role={onClick ? 'button' : undefined}
-      className={theme.card.surface}
-      onClick={onClick}
-      tabIndex={onClick ? 0 : undefined}
-      onKeyDown={(event) => {
-        if (onClick && (event.key === 'Enter' || event.key === ' ')) {
-          event.preventDefault();
-          onClick();
-        }
-      }}
-    >
-      <div className="flex cursor-pointer items-center gap-3">
-        <div className={theme.card.badge}>{badge}</div>
-        <div className="min-w-0 flex-1">
-          <div className={theme.card.title}>{title}</div>
-          {lines.map((line, index) => (
-            // Stable key: index + content (duplicate line strings are legal).
-            <div key={`${index}:${line}`} className={theme.card.line}>
-              {line}
-            </div>
-          ))}
-          {footer && <div className={theme.card.footer}>{footer}</div>}
-          {note && <div className={theme.card.note}>{note}</div>}
-        </div>
-        <button
-          type="button"
-          onClick={(event) => {
-            event.stopPropagation();
-            onSpeak?.();
-          }}
-          className={theme.button.icon}
-          aria-label={`Play audio for ${title}`}
-        >
-          🔊
-        </button>
+    <article className={theme.card.surface}>
+      <div className="flex items-center gap-3">
+        {onClick ? (
+          <button type="button" onClick={onClick} className="flex min-w-0 flex-1 items-center gap-3 rounded-lg text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500">
+            {content}
+          </button>
+        ) : (
+          <div className="flex min-w-0 flex-1 items-center gap-3">{content}</div>
+        )}
+        {onSpeak && (
+          <button type="button" onClick={onSpeak} className={theme.button.icon} aria-label={`Play audio for ${title}`}>
+            🔊
+          </button>
+        )}
       </div>
-    </div>
+    </article>
   );
 }

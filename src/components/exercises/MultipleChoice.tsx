@@ -107,7 +107,7 @@ export function MultipleChoice<Q extends ExerciseQuestion>({
 
       {/* Post-lock feedback + answer speaker + U4 micro-hint */}
       {locked && (
-        <div className="mt-4 rounded-xl bg-slate-50 p-3 text-sm dark:bg-slate-800/60">
+        <div role="status" aria-live="polite" aria-atomic="true" className="mt-4 rounded-xl bg-slate-50 p-3 text-sm dark:bg-slate-800/60">
           {isCorrect
             ? isDE
               ? '🎉 Richtig!'

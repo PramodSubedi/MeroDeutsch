@@ -51,23 +51,39 @@ export function ArticlesPage() {
   const [mode, setMode] = useState<'learn' | 'quiz' | 'pronouns'>('quiz');
   const [articlesData, setArticlesData] = useState<ArticleItem[]>([]);
   const [currentItem, setCurrentItem] = useState<ArticleItem | null>(null);
+  const [articlesLoading, setArticlesLoading] = useState(true);
+  const [articlesFailed, setArticlesFailed] = useState(false);
+  const [reloadArticles, setReloadArticles] = useState(0);
   const [articleScore, setArticleScore] = useState(0);
   const [articleTotal, setArticleTotal] = useState(0);
 
   useEffect(() => {
+    let cancelled = false;
+    setArticlesLoading(true);
+    setArticlesFailed(false);
     curriculumService
       .getArticles()
       .then((data) => {
         // Dynamic + offline-first: RPC -> table SELECT -> Dexie cache.
         // No bundled JSON fallback — an empty pool renders a friendly state.
-        setArticlesData(data);
-        if (data.length > 0) setCurrentItem(pickRandom(data));
+        if (!cancelled) {
+          setArticlesData(data);
+          if (data.length > 0) setCurrentItem(pickRandom(data));
+          else setCurrentItem(null);
+        }
       })
       .catch(() => {
-        setArticlesData([]);
-        setCurrentItem(null);
+        if (!cancelled) {
+          setArticlesData([]);
+          setCurrentItem(null);
+          setArticlesFailed(true);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setArticlesLoading(false);
       });
-  }, []);
+    return () => { cancelled = true; };
+  }, [reloadArticles]);
 
   // Report Accuracy Master quest on quiz completion (no auto-play).
   // Auto-play was causing premature audio before user opened quiz.
@@ -352,9 +368,22 @@ export function ArticlesPage() {
       {/* QUIZ MODE: Interactive trainer */}
       {mode === 'quiz' && !currentItem && (
         <div className={theme.page.container}>
-          <div className="text-center text-slate-500 dark:text-slate-400">
-            {isDE ? 'Wörter werden geladen…' : 'Loading words...'}
-          </div>
+          {articlesLoading ? (
+            <p role="status" aria-live="polite" className="text-center text-sm text-slate-500 dark:text-slate-400">
+              {isDE ? 'Wörter werden geladen…' : 'Loading words…'}
+            </p>
+          ) : articlesFailed ? (
+            <div role="alert" className="text-center text-sm text-amber-700 dark:text-amber-300">
+              <p>{isDE ? 'Artikel konnten nicht geladen werden.' : 'Articles could not be loaded.'}</p>
+              <button type="button" onClick={() => setReloadArticles((attempt) => attempt + 1)} className={`${theme.button.secondary} mt-3`}>
+                {isDE ? 'Erneut versuchen' : 'Retry'}
+              </button>
+            </div>
+          ) : (
+            <p className="text-center text-sm text-slate-500 dark:text-slate-400">
+              {isDE ? 'Keine Artikel verfügbar.' : 'No article entries are available.'}
+            </p>
+          )}
         </div>
       )}
 

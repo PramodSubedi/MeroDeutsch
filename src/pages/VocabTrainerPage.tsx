@@ -29,6 +29,7 @@ import { useReviewQueue } from '../hooks/useReviewQueue';
 import { speakWord } from '../hooks/useSpeech';
 import { curriculumService } from '../services';
 import { TemplateResolver } from '../lib/templateResolver';
+import { topicalTagLabel } from '../utils/vocabTags';
 import { useVocabularyStatus } from '../hooks/useVocabularyStatus';
 import type { VocabCard } from '../types';
 import type { VocabularyFilterOptions } from '../types/curriculum';
@@ -378,7 +379,7 @@ export function VocabTrainerPage() {
               <option value="">{isDE ? 'Alle Themen' : 'All topics'}</option>
               {options.categories.map((c) => (
                 <option key={c} value={c}>
-                  {c}
+                  {topicalTagLabel(c, isDE)}
                 </option>
               ))}
             </select>

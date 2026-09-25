@@ -15,6 +15,7 @@ export function BottomNav() {
   const { user } = useAuth();
   const { langMode } = useLang();
   const isDE = langMode === 'german';
+  const isWithin = (routes: string[]) => routes.some((route) => pathname === route || pathname.startsWith(`${route}/`));
 
   // Mobile bottom nav — keep ≤5 tabs so every item is fully visible at 360px.
   // Analytics + Import live in the UserMenu dropdown (desktop header) only.
@@ -30,32 +31,24 @@ export function BottomNav() {
       to: user ? '/learn' : '/home',
       icon: BookOpen,
       label: isDE ? 'Lernen' : 'Learn',
-      active: pathname.startsWith('/learn') || 
-              pathname.startsWith('/alphabet') || 
-              pathname.startsWith('/numbers') ||
-              pathname.startsWith('/calendar') ||
-              pathname.startsWith('/articles') ||
-              pathname.startsWith('/greetings') ||
-              pathname.startsWith('/stories'),
+      active: isWithin(['/learn', '/checkpoint', '/alphabet', '/numbers', '/calendar', '/articles', '/greetings', '/stories']),
     },
     {
       to: '/practice',
       icon: Target,
       label: isDE ? 'Üben' : 'Practice',
-      active: pathname.startsWith('/practice') ||
-              pathname.startsWith('/glossary') ||
-              pathname.startsWith('/dictation') ||
-              pathname.startsWith('/grammar') ||
-              pathname.startsWith('/pronunciation') ||
-              pathname.startsWith('/roleplay') ||
-              pathname.startsWith('/rapid-fire'),
+      active: isWithin([
+        '/practice', '/glossary', '/vocab-trainer', '/dictation', '/grammar',
+        '/pronunciation', '/roleplay', '/rapid-fire', '/rapid-blitz',
+        '/sentence-builder', '/games', '/email-builder', '/article-sprint',
+      ]),
     },
     ...(user
       ? [
           {
             to: '/dashboard',
             icon: LayoutDashboard,
-            label: 'Dashboard',
+            label: isDE ? 'Übersicht' : 'Dashboard',
             active: pathname.startsWith('/dashboard'),
           },
         ]
@@ -63,14 +56,15 @@ export function BottomNav() {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white shadow-[0_-4px_16px_rgba(15,23,42,0.08)] md:hidden dark:bg-slate-900">
+    <nav aria-label={isDE ? 'Hauptnavigation' : 'Main navigation'} className="fixed bottom-0 left-0 right-0 z-50 bg-white pb-[env(safe-area-inset-bottom)] shadow-[0_-4px_16px_rgba(15,23,42,0.08)] md:hidden dark:bg-slate-900">
       <div className="flex items-center justify-around">
-        {navItems.map((item) => {
+        {navItems.map((item, index) => {
           const Icon = item.icon;
           return (
             <Link
-              key={item.to}
+              key={`${index}:${item.to}`}
               to={item.to}
+              aria-current={item.active ? 'location' : undefined}
               className={`flex min-h-[56px] min-w-[56px] flex-1 flex-col items-center justify-center gap-1 px-2 py-2 transition-colors ${
                 item.active
                   ? 'text-blue-600 dark:text-blue-400'

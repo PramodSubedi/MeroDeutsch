@@ -62,6 +62,9 @@ export function PronunciationPage() {
   // Lesson Engine integration: XP + SRS reporting via the shared reporter.
   const reportResult = useAnswerReporter();
   const [word, setWord] = useState<any>(null);
+  const [loadingWords, setLoadingWords] = useState(true);
+  const [wordLoadFailed, setWordLoadFailed] = useState(false);
+  const [reloadWords, setReloadWords] = useState(0);
   const [score, setScore] = useState(0);
   const [total, setTotal] = useState(0);
   const [result, setResult] = useState<null | 'correct' | 'partial' | 'wrong'>(null);
@@ -72,6 +75,8 @@ export function PronunciationPage() {
 
   useEffect(() => {
     let cancelled = false;
+    setLoadingWords(true);
+    setWordLoadFailed(false);
     // Prefer an A1-lemma pool (mapped to the {id,de,en,ne} shape the page renders)
     // so practice stays A1-level; fall back to the general vocab table when the
     // A1 pool is thin/offline (legacy behavior). (Phase 4)
@@ -99,18 +104,27 @@ export function PronunciationPage() {
           );
       })
       .then((pool) => {
-        if (cancelled || !pool || pool.length === 0) return;
+        if (cancelled) return;
+        if (!pool || pool.length === 0) {
+          setWordLoadFailed(false);
+          setLoadingWords(false);
+          return;
+        }
         vocabRef.current = pool;
         const first = drawWithoutReplacement(pool, usedWordKeysRef.current, (v) => v.id);
         setWord(first ?? pool[0]);
+        setLoadingWords(false);
       })
       .catch(() => {
-        /* Offline / schema variance: keep empty state -> page shows Loading. */
+        if (!cancelled) {
+          setWordLoadFailed(true);
+          setLoadingWords(false);
+        }
       });
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [reloadWords]);
 
   const supported = useMemo(isSpeechRecognitionSupported, []);
   const supportsNative = typeof window !== 'undefined' && 'speechSynthesis' in window;
@@ -204,7 +218,24 @@ export function PronunciationPage() {
   };
 
   if (!word) {
-    return <LoadingBlock />;
+    if (loadingWords) {
+      return <LoadingBlock label={isDE ? 'Wörter werden geladen…' : 'Loading words…'} />;
+    }
+    return (
+      <div className={theme.page.container}>
+        <h1 className="text-2xl font-semibold tracking-tight text-slate-950 dark:text-white">
+          {isDE ? 'Aussprache-Übung' : 'Pronunciation Practice'}
+        </h1>
+        <div role="alert" className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800 dark:border-amber-700 dark:bg-amber-900/20 dark:text-amber-300">
+          {wordLoadFailed
+            ? isDE ? 'Wörter konnten nicht geladen werden. Prüfe deine Verbindung und versuche es erneut.' : 'Words could not be loaded. Check your connection and try again.'
+            : isDE ? 'Keine Wörter verfügbar.' : 'No words are available.'}
+        </div>
+        <button type="button" onClick={() => setReloadWords((attempt) => attempt + 1)} className={`${theme.button.secondary} mt-4`}>
+          {isDE ? 'Erneut versuchen' : 'Retry'}
+        </button>
+      </div>
+    );
   }
 
   return (

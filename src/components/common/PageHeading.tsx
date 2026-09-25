@@ -29,11 +29,11 @@ export function PageHeading({ title, subtitle, backTo, backLabel }: PageHeadingP
           {back}
         </Link>
       )}
-      <h1 className="mt-1 text-3xl font-bold tracking-tight text-slate-950 dark:text-white">
+      <h1 className="mt-1 text-2xl font-bold text-slate-950 dark:text-white">
         {title}
       </h1>
       {subtitle && (
-        <p className="mt-1 text-base leading-7 text-slate-600 dark:text-slate-300">{subtitle}</p>
+        <p className="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-300">{subtitle}</p>
       )}
     </header>
   );

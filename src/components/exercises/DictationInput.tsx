@@ -130,6 +130,9 @@ export function DictationInput<Q extends ExerciseQuestion>({
       {/* Post-lock feedback — reveals the written word ONLY after lock */}
       {locked && (
         <div
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
           className={`mt-4 rounded-xl p-3 text-center text-sm font-semibold ${
             isCorrect
               ? 'bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-300'

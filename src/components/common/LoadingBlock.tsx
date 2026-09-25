@@ -33,10 +33,10 @@ export function LoadingBlock({ label = 'Loading…', className = '' }: LoadingBl
  */
 export function ContentPending({ isDE, className = 'mt-4' }: { isDE: boolean; className?: string }) {
   return (
-    <p className={`${className} text-sm text-slate-500 dark:text-slate-400`}>
+    <p role="status" className={`${className} text-sm text-slate-500 dark:text-slate-400`}>
       {isDE
-        ? 'Inhalte werden noch geladen — verbinde dich einmal mit dem Internet.'
-        : 'Content is still loading — connect to the internet once to populate it.'}
+        ? 'Noch keine Inhalte im Cache. Verbinde dich mit dem Internet, um Inhalte zu laden.'
+        : 'No content is cached yet. Connect to the internet to load it.'}
     </p>
   );
 }

@@ -21,6 +21,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (typeof document !== 'undefined' && document.body) {
+      document.documentElement.lang = langMode === 'german' ? 'de' : 'en';
       document.body.classList.toggle('lang-normal', langMode === 'normal');
       document.body.classList.toggle('lang-german', langMode === 'german');
     }

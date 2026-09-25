@@ -7,7 +7,7 @@ import { speakWord } from '../hooks/useSpeech';
 import { useLang } from '../hooks/useLang';
 import { triggerHaptic } from '../utils/haptic';
 import { theme } from '../config/theme';
-import { firstTopicalTag } from '../utils/vocabTags';
+import { getTopicalTags, topicalTagLabel } from '../utils/vocabTags';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { SEO } from '../components/common/SEO';
 import { GlossaryFilterPanel, type FilterOption } from '../components/glossary/GlossaryFilterPanel';
@@ -24,7 +24,7 @@ interface GlossaryEntry {
   plural?: string;
   exampleDe?: string;
   exampleEn?: string;
-  category?: string;
+  categories?: string[];
   neRoman?: string;
   /** VocabCard.id when this entry maps to a vocabulary card (status lookup). */
   wordId?: string;
@@ -161,6 +161,8 @@ export function GlossaryPage() {
   const [vocabularyData, setVocabularyData] = useState<VocabCard[]>([]);
   const [storiesData, setStoriesData] = useState<MicroStory[]>([]);
   const [dataLoaded, setDataLoaded] = useState(false);
+  const [loadFailed, setLoadFailed] = useState(false);
+  const [reloadData, setReloadData] = useState(0);
 
   // Per-word learning status (reactive Dexie live query, current user).
   const { statsByWord } = useVocabularyStatus();
@@ -169,6 +171,9 @@ export function GlossaryPage() {
   // pool below (nouns with der/die/das) — the quiz RPC caps at a small deck,
   // which would otherwise starve the glossary's Articles source.
   useEffect(() => {
+    let cancelled = false;
+    setDataLoaded(false);
+    setLoadFailed(false);
     const loadData = async () => {
       const [alpha, nums, cal, greet, vocab, stories] = await Promise.all([
         curriculumService.getAlphabet(),
@@ -181,6 +186,7 @@ export function GlossaryPage() {
         curriculumService.getVocabularyFiltered({ limit: 2000 }),
         curriculumService.getStories(),
       ]);
+      if (cancelled) return;
       setAlphabetData(alpha);
       setNumbersData(nums);
       setCalendarData(cal);
@@ -189,8 +195,14 @@ export function GlossaryPage() {
       setStoriesData(stories);
       setDataLoaded(true);
     };
-    loadData().catch(() => setDataLoaded(true));
-  }, []);
+    loadData().catch(() => {
+      if (!cancelled) {
+        setLoadFailed(true);
+        setDataLoaded(true);
+      }
+    });
+    return () => { cancelled = true; };
+  }, [reloadData]);
   
   const glossary = useMemo(() => {
     if (!dataLoaded) return [];
@@ -234,7 +246,7 @@ export function GlossaryPage() {
         (card.article === 'der' || card.article === 'die' || card.article === 'das')
       ) {
         const artTags = card.tags ?? [];
-        const artCategory = firstTopicalTag(artTags);
+        const artCategories = getTopicalTags(artTags);
         entries.push({
           de: `${card.article} ${card.lemma}`,
           en: card.translation.en,
@@ -246,7 +258,7 @@ export function GlossaryPage() {
           plural: card.plural ?? undefined,
           exampleDe: card.examples?.[0]?.de,
           exampleEn: card.examples?.[0]?.en,
-          category: artCategory,
+          categories: artCategories,
           wordId: card.id,
         });
       }
@@ -254,10 +266,9 @@ export function GlossaryPage() {
 
     // Curated A1 vocabulary (VocabCard[] from getVocabularyFiltered)
     vocabularyData.forEach((card) => {
-      // Category is the first tag that is neither a POS tag nor a CEFR level
-      // tag (see utils/vocabTags.ts — shared classifier across all surfaces).
+      // Keep every valid theme so multi-topic words remain filterable.
       const posTag = card.partOfSpeech;
-      const categoryTag = firstTopicalTag(card.tags);
+      const categories = getTopicalTags(card.tags);
       entries.push({
         de: card.lemma,
         en: card.translation.en,
@@ -269,7 +280,7 @@ export function GlossaryPage() {
         plural: card.plural ?? undefined,
         exampleDe: card.examples?.[0]?.de,
         exampleEn: card.examples?.[0]?.en,
-        category: categoryTag,
+        categories,
         wordId: card.id,
       });
     });
@@ -336,7 +347,7 @@ export function GlossaryPage() {
   const filterOptions = useMemo(() => {
     const levelCounts: Record<string, number> = {};
     const posCounts: Record<string, number> = {};
-    const categoryCounts: Record<string, number> = {};
+    const categoryWords: Record<string, Set<string>> = {};
 
     glossary.forEach((entry) => {
       if (entry.level) {
@@ -345,8 +356,9 @@ export function GlossaryPage() {
       if (entry.pos) {
         posCounts[entry.pos] = (posCounts[entry.pos] || 0) + 1;
       }
-      if (entry.category) {
-        categoryCounts[entry.category] = (categoryCounts[entry.category] || 0) + 1;
+      for (const category of entry.categories ?? []) {
+        const key = entry.wordId ?? `${entry.source}:${normalizeTerm(entry.de)}`;
+        (categoryWords[category] ??= new Set()).add(key);
       }
     });
 
@@ -362,11 +374,12 @@ export function GlossaryPage() {
 
     const mainCategories: FilterOption[] = [];
     let otherCount = 0;
-    Object.entries(categoryCounts)
+    Object.entries(categoryWords)
       .sort(([a], [b]) => a.localeCompare(b))
-      .forEach(([value, count]) => {
+      .forEach(([value, words]) => {
+        const count = words.size;
         if (count >= MIN_COUNT) {
-          mainCategories.push({ value, label: value, count });
+          mainCategories.push({ value, label: topicalTagLabel(value, isDE), count });
         } else {
           otherCount += count;
         }
@@ -374,7 +387,13 @@ export function GlossaryPage() {
 
     const categoryOpts: FilterOption[] = [...mainCategories];
     if (otherCount > 0) {
-      categoryOpts.push({ value: 'other', label: isDE ? 'Sonstige' : 'Other', count: otherCount });
+      categoryOpts.push({ value: 'other', label: isDE ? 'Weitere Themen' : 'Other topics', count: otherCount });
+    }
+    const uncategorizedCount = new Set(
+      glossary.filter((entry) => entry.wordId && !entry.categories?.length).map((entry) => entry.wordId)
+    ).size;
+    if (uncategorizedCount > 0) {
+      categoryOpts.push({ value: 'uncategorized', label: isDE ? 'Ohne Thema' : 'No topic', count: uncategorizedCount });
     }
 
     return { levelOpts, posOpts, categoryOpts };
@@ -413,17 +432,19 @@ export function GlossaryPage() {
     // Category filter — maps the generated 'other' bucket back to the small
     // categories it aggregates (entries whose category has < MIN_COUNT items).
     if (categoryFilter !== 'all') {
-      if (categoryFilter === 'other') {
+      if (categoryFilter === 'uncategorized') {
+        items = items.filter(({ entry }) => Boolean(entry.wordId) && !entry.categories?.length);
+      } else if (categoryFilter === 'other') {
         const mainCatValues = new Set(
           filterOptions.categoryOpts
-            .filter((o) => o.value !== 'other' && o.value !== 'all')
+            .filter((o) => o.value !== 'other' && o.value !== 'uncategorized' && o.value !== 'all')
             .map((o) => o.value)
         );
         items = items.filter(
-          ({ entry }) => entry.category !== undefined && !mainCatValues.has(entry.category)
+          ({ entry }) => (entry.categories ?? []).some((category) => !mainCatValues.has(category))
         );
       } else {
-        items = items.filter(({ entry }) => entry.category === categoryFilter);
+        items = items.filter(({ entry }) => entry.categories?.includes(categoryFilter));
       }
     }
     // Sort — relevance when searching; the chosen key otherwise.
@@ -449,7 +470,8 @@ export function GlossaryPage() {
   const rowVirtualizer = useVirtualizer({
     count: filtered.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 180, // Estimated height of each card (increased for plural/example/badges)
+    estimateSize: () => 180,
+    measureElement: (element) => element.getBoundingClientRect().height,
     overscan: 5, // Render 5 extra items above/below viewport
   });
 
@@ -488,6 +510,20 @@ export function GlossaryPage() {
     );
   }
 
+  if (loadFailed) {
+    return (
+      <div className={theme.page.container}>
+        <h1 className="text-2xl font-semibold tracking-tight text-slate-950 dark:text-white">{title}</h1>
+        <p role="alert" className="mt-4 text-sm text-amber-700 dark:text-amber-300">
+          {isDE ? 'Glossardaten konnten nicht geladen werden.' : 'Glossary data could not be loaded.'}
+        </p>
+        <button type="button" onClick={() => setReloadData((attempt) => attempt + 1)} className={`${theme.button.secondary} mt-4`}>
+          {isDE ? 'Erneut versuchen' : 'Retry'}
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className={theme.page.container}>
       <SEO
@@ -507,7 +543,7 @@ export function GlossaryPage() {
       </div>
 
       {/* Learning-status legend (vocab-status tracking is opt-in per word) */}
-      <div className="mt-2 flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+      <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-slate-500 dark:text-slate-400">
         <span className="font-semibold uppercase tracking-wider">
           {isDE ? 'Status' : 'Status'}:
         </span>
@@ -518,28 +554,8 @@ export function GlossaryPage() {
         ))}
       </div>
 
-            {/* Compact filter bar: source chips + sort + filter toggle */}
-      <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-wrap items-center gap-1.5">
-          {sourceOptions.map((src) => {
-            const active = sourceFilter === src;
-            const label = src === 'all' ? (isDE ? 'Alle' : 'All') : src;
-            return (
-              <button
-                key={src}
-                type="button"
-                onClick={() => setSourceFilter(src)}
-                className={`rounded-full px-3 py-1 text-xs font-semibold transition active:scale-95 ${
-                  active
-                    ? 'bg-blue-600 text-white'
-                    : 'border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300'
-                }`}
-              >
-                {label}
-              </button>
-            );
-          })}
-        </div>
+            {/* Compact toolbar: source and content filters are tucked into one panel. */}
+            <div className="mt-3 flex items-center justify-end gap-2">
         <div className="flex items-center gap-2">
           <select
             value={sortKey}
@@ -552,13 +568,20 @@ export function GlossaryPage() {
             <option value="source">{isDE ? 'Nach Quelle' : 'By source'}</option>
           </select>
           <GlossaryFilterPanel
+            sourceFilter={sourceFilter}
             levelFilter={levelFilter}
             posFilter={posFilter}
             categoryFilter={categoryFilter}
+            onSourceChange={setSourceFilter}
             onLevelChange={setLevelFilter}
             onPosChange={setPosFilter}
             onCategoryChange={setCategoryFilter}
             onReset={handleResetFilters}
+            sourceOptions={sourceOptions.map((src) => ({
+              value: src,
+              label: src === 'all' ? (isDE ? 'Alle Quellen' : 'All sources') : src,
+              count: src === 'all' ? glossary.length : glossary.filter((entry) => entry.source === src).length,
+            }))}
             levelOptions={[
               { value: 'all', label: isDE ? 'Alle Niveaus' : 'All levels', count: glossary.length },
               ...filterOptions.levelOpts,
@@ -568,7 +591,7 @@ export function GlossaryPage() {
               ...filterOptions.posOpts,
             ]}
             categoryOptions={[
-              { value: 'all', label: isDE ? 'Alle Kategorien' : 'All categories', count: glossary.filter((e) => e.category).length },
+              { value: 'all', label: isDE ? 'Alle Themen' : 'All topics', count: glossary.filter((e) => e.categories?.length).length },
               ...filterOptions.categoryOpts,
             ]}
             isDE={isDE}
@@ -592,7 +615,7 @@ export function GlossaryPage() {
       ) : (
         <div
           ref={parentRef}
-          className="mt-4 h-[calc(100vh-340px)] overflow-auto"
+          className="mt-4 h-[70dvh] min-h-[280px] max-h-[760px] overflow-auto"
           style={{ contain: 'strict' }}
         >
           <div
@@ -608,6 +631,8 @@ export function GlossaryPage() {
               return (
                 <div
                   key={virtualRow.key}
+                  data-index={virtualRow.index}
+                  ref={rowVirtualizer.measureElement}
                   style={{
                     position: 'absolute',
                     top: 0,
@@ -680,11 +705,11 @@ export function GlossaryPage() {
                               {entry.pos}
                             </span>
                           )}
-                          {entry.category && (
-                            <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-700 dark:bg-amber-950/40 dark:text-amber-300">
-                              {entry.category}
+                          {entry.categories?.map((category) => (
+                            <span key={category} className="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-700 dark:bg-amber-950/40 dark:text-amber-300">
+                              {topicalTagLabel(category, isDE)}
                             </span>
-                          )}
+                          ))}
                           {entry.wordId && (
                             <span
                               title={isDE ? 'Lernstatus' : 'Learning status'}

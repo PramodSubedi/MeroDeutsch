@@ -39,6 +39,10 @@ const LEVEL_RE = /^[ab][12]$/i;
 /** Structural tags from the cluster/gender/unit passes that are not topics. */
 const STRUCTURAL_TAGS = new Set([
   'general',
+  'articles',
+  'core',
+  'notebooklm',
+  'unit-2',
   'unit1',
   'unit2',
   'unit3',
@@ -63,6 +67,7 @@ export function isTopicalTag(tag: string): boolean {
   if (POS_TAGS.has(t.toLowerCase())) return false;
   if (LEVEL_RE.test(t)) return false;
   if (STRUCTURAL_TAGS.has(t.toLowerCase())) return false;
+  if (/^gender-(der|die|das)$/.test(t.toLowerCase())) return false;
   // Junk fragments from bad backfills (e.g. '8/15/26,').
   if (/[0-9/,_]/.test(t)) return false;
   return true;
@@ -74,9 +79,55 @@ export function isTopicalTag(tag: string): boolean {
  * "category" badge and the Trainer's category filter source.
  */
 export function firstTopicalTag(tags: readonly string[] | undefined | null): string | undefined {
-  if (!tags) return undefined;
-  for (const t of tags) {
-    if (isTopicalTag(t)) return t;
-  }
-  return undefined;
+  return getTopicalTags(tags)[0];
+}
+
+/** Returns every topical tag while preserving its stored order. */
+export function getTopicalTags(tags: readonly string[] | undefined | null): string[] {
+  return tags ? [...new Set(tags.map((tag) => tag.trim()).filter(isTopicalTag))] : [];
+}
+
+const TOPIC_LABELS: Record<string, { en: string; de: string }> = {
+  'abstract-concepts': { en: 'Abstract concepts', de: 'Abstrakte Begriffe' },
+  'action-verbs': { en: 'Action verbs', de: 'Handlungsverben' },
+  alphabet: { en: 'Alphabet', de: 'Alphabet' },
+  'body-health': { en: 'Body and health', de: 'Körper und Gesundheit' },
+  clothing: { en: 'Clothing', de: 'Kleidung' },
+  'city-travel': { en: 'City and travel', de: 'Stadt und Reisen' },
+  colors: { en: 'Colors', de: 'Farben' },
+  'daily-routine': { en: 'Daily routine', de: 'Tagesablauf' },
+  'describing-adjectives': { en: 'Describing adjectives', de: 'Beschreibende Adjektive' },
+  'doctor-shopping-phrases': { en: 'Doctor and shopping phrases', de: 'Beim Arzt und Einkaufen' },
+  education: { en: 'Education', de: 'Bildung' },
+  'education-work': { en: 'Education and work', de: 'Bildung und Beruf' },
+  family: { en: 'Family', de: 'Familie' },
+  food: { en: 'Food', de: 'Lebensmittel' },
+  'food-drink': { en: 'Food and drink', de: 'Essen und Trinken' },
+  greetings: { en: 'Greetings', de: 'Begrüßungen' },
+  housing: { en: 'Housing', de: 'Wohnen' },
+  'hobby-verbs': { en: 'Hobby verbs', de: 'Verben zu Hobbys' },
+  'kitchen-household': { en: 'Kitchen and household', de: 'Küche und Haushalt' },
+  'nature-time': { en: 'Nature and time', de: 'Natur und Zeit' },
+  nature: { en: 'Nature', de: 'Natur' },
+  numbers: { en: 'Numbers', de: 'Zahlen' },
+  people: { en: 'People', de: 'Menschen' },
+  personal: { en: 'Personal information', de: 'Persönliche Angaben' },
+  'school-office': { en: 'School and office', de: 'Schule und Büro' },
+  'smalltalk-phrases': { en: 'Small talk', de: 'Smalltalk' },
+  'taste-texture-adjectives': { en: 'Taste and texture', de: 'Geschmack und Beschaffenheit' },
+  time: { en: 'Time', de: 'Zeit' },
+  travel: { en: 'Travel', de: 'Reisen' },
+  'travel-questions': { en: 'Travel questions', de: 'Fragen zum Reisen' },
+  weather: { en: 'Weather', de: 'Wetter' },
+  'weather-wishes': { en: 'Weather and wishes', de: 'Wetter und Wünsche' },
+  work: { en: 'Work', de: 'Beruf' },
+  professions: { en: 'Professions', de: 'Berufe' },
+};
+
+/** Localized display label; the untranslated tag remains the filter value. */
+export function topicalTagLabel(tag: string, isDE: boolean): string {
+  const known = TOPIC_LABELS[tag.toLowerCase()];
+  if (known) return isDE ? known.de : known.en;
+  const readable = tag.replace(/[-_]+/g, ' ');
+  return isDE ? readable : readable.replace(/\b\w/g, (letter) => letter.toUpperCase());
 }

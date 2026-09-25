@@ -30,10 +30,29 @@ export function AlphabetPage() {
   const [search, setSearch] = useState('');
   const [detail, setDetail] = useState<AlphabetItem | null>(null);
   const [alphabet, setAlphabet] = useState<AlphabetItem[]>([]);
+  const [alphabetLoading, setAlphabetLoading] = useState(true);
+  const [alphabetFailed, setAlphabetFailed] = useState(false);
+  const [reloadAlphabet, setReloadAlphabet] = useState(0);
 
   useEffect(() => {
-    curriculumService.getAlphabet().then(setAlphabet);
-  }, []);
+    let cancelled = false;
+    setAlphabetLoading(true);
+    setAlphabetFailed(false);
+    curriculumService.getAlphabet()
+      .then((data) => {
+        if (!cancelled) setAlphabet(data);
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setAlphabet([]);
+          setAlphabetFailed(true);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setAlphabetLoading(false);
+      });
+    return () => { cancelled = true; };
+  }, [reloadAlphabet]);
 
   const lotd = useMemo(() => {
     if (!alphabet.length) return null;
@@ -170,6 +189,25 @@ export function AlphabetPage() {
           </button>
         }
       />
+
+      {alphabetLoading && (
+        <p role="status" aria-live="polite" className="mt-3 text-sm text-slate-500 dark:text-slate-400">
+          {isDE ? 'Buchstaben werden geladen…' : 'Loading letters…'}
+        </p>
+      )}
+      {alphabetFailed && (
+        <div role="alert" className="mt-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-200">
+          <p>{isDE ? 'Alphabetdaten konnten nicht geladen werden.' : 'Alphabet data could not be loaded.'}</p>
+          <button type="button" onClick={() => setReloadAlphabet((attempt) => attempt + 1)} className={`${theme.button.secondary} mt-3`}>
+            {isDE ? 'Erneut versuchen' : 'Retry'}
+          </button>
+        </div>
+      )}
+      {!alphabetLoading && !alphabetFailed && alphabet.length === 0 && (
+        <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
+          {isDE ? 'Keine Buchstaben verfügbar.' : 'No letters are available.'}
+        </p>
+      )}
 
       {sub === 'learn' && (
         <>

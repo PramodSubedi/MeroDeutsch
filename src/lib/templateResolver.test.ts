@@ -1,5 +1,6 @@
 import { TemplateResolver } from './templateResolver';
 import type { VocabCard } from '../types';
+import { getTopicalTags, topicalTagLabel } from '../utils/vocabTags';
 
 function assert(condition: unknown, message: string): void {
   if (!condition) {
@@ -64,3 +65,7 @@ assert(translationQuestion.options.includes('Apfel'), 'English-to-German options
 
 const fallbackQuestion = TemplateResolver.generateVocabularyQuestion(entities[2], entities, 'article');
 assert(fallbackQuestion.variant === 'de-to-en', 'Unsupported article questions should fall back to a translation question.');
+
+const topicalTags = getTopicalTags(['A1', 'noun', 'food-drink', 'notebooklm', 'unit-2', 'core', 'gender-der']);
+assert(topicalTags.length === 1 && topicalTags[0] === 'food-drink', 'Source and structural tags must not be exposed as topics.');
+assert(topicalTagLabel('food-drink', true) === 'Essen und Trinken', 'German UI should show localized theme labels.');

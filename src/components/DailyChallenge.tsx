@@ -56,13 +56,13 @@ function buildQuestions(
     const vw = pick(vocabularyData, seed);
     out.push({
       prompt: `What does "${vw.de}" mean?`,
-      options: buildMcq({
+      options: Array.from(new Set(buildMcq({
         correctItem: vw,
         allItems: vocabularyData,
         getKey: (x) => x.id,
         count: 4,
         seed,
-      }).map((x) => x.en),
+      }).map((x) => x.en))),
       correct: vw.en,
     });
   }
@@ -71,13 +71,13 @@ function buildQuestions(
     const al = pick(alphabetData, seed + 1);
     out.push({
       prompt: `How is "${al.letter.split(' ')[0]}" pronounced?`,
-      options: buildMcq({
+      options: Array.from(new Set(buildMcq({
         correctItem: al,
         allItems: alphabetData,
         getKey: (x) => x.id,
         count: 4,
         seed: seed + 1,
-      }).map((x) => x.gerPhonetic),
+      }).map((x) => x.gerPhonetic))),
       correct: al.gerPhonetic,
     });
   }
@@ -86,13 +86,13 @@ function buildQuestions(
     const num = pick(numbersData, seed + 2);
     out.push({
       prompt: `Which German number is "${num.n}"?`,
-      options: buildMcq({
+      options: Array.from(new Set(buildMcq({
         correctItem: num,
         allItems: numbersData,
         getKey: (x) => String(x.n),
         count: 4,
         seed: seed + 2,
-      }).map((x) => x.de),
+      }).map((x) => x.de))),
       correct: num.de,
     });
   }
@@ -345,17 +345,17 @@ export function DailyChallenge({ variant = 'normal' }: DailyChallengeProps) {
       ) : !challengeComplete ? (
         <div className="space-y-4">
           {questions.map((q, i) => (
-            <div key={q.prompt}>
+            <div key={`${q.prompt}:${i}`}>
               <div className="mb-1.5 text-sm font-medium text-slate-700 dark:text-slate-200">{q.prompt}</div>
               <div className="grid gap-1.5 sm:grid-cols-2">
-                {q.options.map((opt) => {
+                {q.options.map((opt, optionIndex) => {
                   const chosen = answers[i] === opt;
                   const ok = q.correct === opt;
                   let cls = theme.button.pill;
                   if (chosen && ok) cls += ' border-green-500 bg-green-100 text-green-800';
                   else if (chosen && !ok) cls += ' border-red-500 bg-red-100 text-red-800';
                   return (
-                    <button key={opt} type="button" className={cls} onClick={() => choose(i, opt)}>{opt}</button>
+                    <button key={`${i}:${optionIndex}:${opt}`} type="button" className={cls} onClick={() => choose(i, opt)}>{opt}</button>
                   );
                 })}
               </div>

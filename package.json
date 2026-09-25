@@ -20,7 +20,10 @@
     "extract-pdf": "tsx scripts/extractPdfVocab.ts",
     "preview": "vite preview",
     "import-csv": "tsx scripts/import-csv.ts",
-    "run-sql": "tsx scripts/runSql.ts"
+    "run-sql": "tsx scripts/runSql.ts",
+    "audit-db": "tsx scripts/auditDatabaseState.ts",
+    "verify-seeds": "tsx scripts/verifySeeds.ts",
+    "check-migrations": "tsx scripts/checkMigrationStatus.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.112.3",

@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { theme } from '../config/theme';
+import { useLang } from '../hooks/useLang';
 
 /**
  * Unified TabGroup component for consistent tab navigation across the app.
@@ -36,14 +37,18 @@ export function TabGroup<T extends string = string>({
   className = '',
 }: TabGroupProps<T>) {
   const isCompact = variant === 'compact';
+  const { langMode } = useLang();
+  const isDE = langMode === 'german';
 
   return (
     <div className={`flex flex-wrap items-center gap-3 ${className}`}>
       {/* Tab buttons */}
       <div
+        role="group"
+        aria-label={isDE ? 'Ansichten' : 'Views'}
         className={
           isCompact
-            ? 'flex w-full gap-2 overflow-x-auto no-scrollbar pb-1 md:flex-wrap md:overflow-visible'
+            ? 'flex w-full gap-2 overflow-x-auto overscroll-x-contain pb-2 md:flex-wrap md:overflow-visible'
             : 'flex flex-wrap gap-2'
         }
       >
@@ -60,7 +65,7 @@ export function TabGroup<T extends string = string>({
               type="button"
               onClick={() => onTabChange(tab.id)}
               className={buttonClass}
-              aria-current={isActive ? 'page' : undefined}
+              aria-pressed={isActive}
             >
               <span className="flex items-center gap-1.5">
                 {Icon && (

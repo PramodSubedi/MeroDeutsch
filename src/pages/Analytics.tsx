@@ -36,6 +36,40 @@ function shortDate(dateStr: string, isDE: boolean): string {
   return d.toLocaleDateString(isDE ? 'de-DE' : 'en-US', { month: 'short', day: 'numeric' });
 }
 
+function ChartDataTable({
+  rows,
+  isDE,
+}: {
+  rows: Array<{ label: string; value: number | string }>;
+  isDE: boolean;
+}) {
+  return (
+    <details className="mt-3 text-sm">
+      <summary className="cursor-pointer rounded-md py-1 font-medium text-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:text-blue-300">
+        {isDE ? 'Datentabelle anzeigen' : 'View data table'}
+      </summary>
+      <div className="mt-2 max-h-48 overflow-auto rounded-lg border border-slate-200 dark:border-slate-700">
+        <table className="w-full text-left text-xs">
+          <thead className="sticky top-0 bg-slate-100 dark:bg-slate-800">
+            <tr>
+              <th scope="col" className="px-3 py-2">{isDE ? 'Kategorie' : 'Category'}</th>
+              <th scope="col" className="px-3 py-2">{isDE ? 'Wert' : 'Value'}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row) => (
+              <tr key={row.label} className="border-t border-slate-100 dark:border-slate-800">
+                <th scope="row" className="px-3 py-2 font-medium">{row.label}</th>
+                <td className="px-3 py-2">{row.value}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </details>
+  );
+}
+
 export function AnalyticsPage() {
   usePageTitle('Analytics');
   const { langMode } = useLang();
@@ -150,6 +184,10 @@ export function AnalyticsPage() {
                 </LineChart>
               </ResponsiveContainer>
             )}
+            <ChartDataTable
+              isDE={isDE}
+              rows={dailyActivity.map((day) => ({ label: shortDate(day.date, isDE), value: day.count }))}
+            />
           </div>
 
           {/* Module Accuracy - Bar Chart */}
@@ -173,6 +211,10 @@ export function AnalyticsPage() {
                 </BarChart>
               </ResponsiveContainer>
             )}
+            <ChartDataTable
+              isDE={isDE}
+              rows={moduleAccuracy.map((item) => ({ label: item.name, value: `${item.value}%` }))}
+            />
           </div>
 
           {/* Errors by Module - Bar Chart */}
@@ -196,6 +238,10 @@ export function AnalyticsPage() {
                 </BarChart>
               </ResponsiveContainer>
             )}
+            <ChartDataTable
+              isDE={isDE}
+              rows={errorsByModule.map((item) => ({ label: item.module, value: item.count }))}
+            />
           </div>
 
           {/* Summary Stats */}

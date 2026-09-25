@@ -42,14 +42,34 @@ export function GrammarPage() {
   const answers = answersByTab[tab] ?? {};
 
   const [drills, setDrills] = useState<GrammarDrill[]>([]);
+  const [drillsLoading, setDrillsLoading] = useState(false);
+  const [drillsFailed, setDrillsFailed] = useState(false);
+  const [reloadDrills, setReloadDrills] = useState(0);
 
   useEffect(() => {
+    let cancelled = false;
+    setDrillsFailed(false);
     if (tab === 'bridge' || tab === 'accusative') {
       setDrills([]);
+      setDrillsLoading(false);
     } else {
-      curriculumService.getGrammarDrills(tab).then(setDrills);
+      setDrillsLoading(true);
+      curriculumService.getGrammarDrills(tab)
+        .then((data) => {
+          if (!cancelled) setDrills(data);
+        })
+        .catch(() => {
+          if (!cancelled) {
+            setDrills([]);
+            setDrillsFailed(true);
+          }
+        })
+        .finally(() => {
+          if (!cancelled) setDrillsLoading(false);
+        });
     }
-  }, [tab]);
+    return () => { cancelled = true; };
+  }, [tab, reloadDrills]);
 
   const count = Object.keys(answers).length;
   const allDone = count === drills.length;
@@ -291,7 +311,23 @@ export function GrammarPage() {
         </div>
       )}
 
-      {tab !== 'bridge' && drills.length > 0 && (
+      {tab !== 'bridge' && tab !== 'accusative' && (
+        drillsLoading ? (
+          <p role="status" aria-live="polite" className="mt-4 text-sm text-slate-500 dark:text-slate-400">
+            {isDE ? 'Übungen werden geladen…' : 'Loading drills…'}
+          </p>
+        ) : drillsFailed ? (
+          <div role="alert" className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-200">
+            <p>{isDE ? 'Übungen konnten nicht geladen werden.' : 'Drills could not be loaded.'}</p>
+            <button type="button" onClick={() => setReloadDrills((attempt) => attempt + 1)} className={`${theme.button.secondary} mt-3`}>
+              {isDE ? 'Erneut versuchen' : 'Retry'}
+            </button>
+          </div>
+        ) : drills.length === 0 ? (
+          <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">
+            {isDE ? 'Für diesen Bereich sind noch keine Übungen verfügbar.' : 'No drills are available for this section yet.'}
+          </p>
+        ) : (
         <div className={`${theme.panel.surface}`}>
         <h2 className="text-lg font-semibold">{isDE ? 'Mini-Übung' : 'Mini-drill'} — {count}/{drills.length}</h2>
         <div className="mt-3 space-y-4">
@@ -317,6 +353,7 @@ export function GrammarPage() {
           )}
           </div>
         </div>
+        )
       )}
     </div>
   );

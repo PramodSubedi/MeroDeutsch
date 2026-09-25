@@ -42,6 +42,19 @@ export function Layout() {
   const [dailySessionActive, setDailySessionActiveState] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [pendingLevelUp, setPendingLevelUp] = useState<number | null>(null);
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!sidebarOpen) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setSidebarOpen(false);
+    };
+    window.addEventListener('keydown', closeOnEscape);
+    return () => window.removeEventListener('keydown', closeOnEscape);
+  }, [sidebarOpen]);
+
   // Desktop sidebar collapsed state (persisted per device).
   const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(() => {
     try {
@@ -183,15 +196,15 @@ export function Layout() {
 
           {/* Brand — header keeps the logo below lg (mobile/tablet); on lg+
               the rail owns the brand band, so it is hidden here. */}
-          <Link to="/home" aria-label="MeroDeutsch – Home" className="inline-flex h-9 items-center transition duration-200 hover:opacity-90 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none focus-visible:ring-offset-2 rounded-lg lg:hidden">
-            <Logo size="sm" variant="navbar" />
+           <Link to="/home" aria-label={isDE ? 'MeroDeutsch – Startseite' : 'MeroDeutsch – Home'} className="inline-flex h-9 items-center transition duration-200 hover:opacity-90 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none focus-visible:ring-offset-2 rounded-lg lg:hidden">
+            <Logo size="sm" variant="navbar" showText={false} />
           </Link>
 
           {/* Top-level nav links — md through lg only (rail owns nav on lg+) */}
           <nav className={`${theme.layout.nav} hidden md:flex lg:hidden`}>
-            {link('/home', 'Home')}
-            {user && link('/dashboard', 'Dashboard')}
-            {user ? link('/learn', 'Learn') : link('/auth', 'Sign in')}
+            {link('/home', isDE ? 'Startseite' : 'Home')}
+            {user && link('/dashboard', isDE ? 'Übersicht' : 'Dashboard')}
+            {user ? link('/learn', isDE ? 'Lernen' : 'Learn') : link('/auth', isDE ? 'Anmelden' : 'Sign in')}
           </nav>
 
           {/* Global utilities — every breakpoint: menu (mobile) + language + theme + audio + user */}
@@ -200,6 +213,8 @@ export function Layout() {
               type="button"
               onClick={() => setSidebarOpen(true)}
               className={`${theme.layout.themeButton} md:hidden`}
+              aria-expanded={sidebarOpen}
+              aria-controls="mobile-site-navigation"
               aria-label={isDE ? 'Menü öffnen' : 'Open menu'}
             >
               <Menu className="h-5 w-5" />
@@ -214,7 +229,7 @@ export function Layout() {
                 setAudioEnabledState(next);
               }}
               className={theme.layout.themeButton}
-              aria-label={audioEnabled ? 'Mute audio' : 'Unmute audio'}
+              aria-label={audioEnabled ? (isDE ? 'Ton ausschalten' : 'Mute audio') : (isDE ? 'Ton einschalten' : 'Unmute audio')}
             >
               {audioEnabled ? <Volume2 className="h-5 w-5" aria-hidden="true" /> : <VolumeX className="h-5 w-5" aria-hidden="true" />}
             </button>
@@ -233,7 +248,7 @@ export function Layout() {
       <main
         id="main-content"
         role="main"
-        className={`scroll-mt-24 pb-20 md:pb-8 ${sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'} ${isModuleRoute ? 'pt-8' : ''}`}
+        className={`scroll-mt-24 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-8 ${sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'} ${isModuleRoute ? 'pt-8' : ''}`}
       >
         {/* Centered content column — same max-w/px as headerInner so the page
             text shares one axis with the header (no ~72px skew). The rail
