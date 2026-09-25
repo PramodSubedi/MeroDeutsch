@@ -3,6 +3,7 @@ import { CheckCircle2 } from 'lucide-react';
 import { useDailyQuests } from '../hooks/useDailyQuests';
 import { useLang } from '../hooks/useLang';
 import { theme } from '../config/theme';
+import { ANCHORS, scrollToAnchor } from '../lib/anchors';
 
 /**
  * DailyQuestsWidget — gamified daily objective tracker for the Dashboard.
@@ -23,7 +24,7 @@ export function DailyQuestsWidget() {
       return;
     }
     if (questId === 'srs-scholar') {
-      document.getElementById('review-queue-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      scrollToAnchor(ANCHORS.reviewQueue);
       return;
     }
     navigate('/practice');

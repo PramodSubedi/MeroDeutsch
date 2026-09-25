@@ -2,8 +2,8 @@
  * src/components/glossary/GlossaryFilterPanel.tsx
  *
  * Compact, collapsible filter panel for the Glossary page.
- * Reuses patterns from CollapsibleModuleGroup (animation + localStorage)
- * and UserMenu (dropdown click-outside-to-close).
+ * Reuses the collapse animation + localStorage pattern and the
+ * UserMenu (dropdown click-outside-to-close) interaction.
  *
  * Design:
  * - Source filter chips remain visible (most frequently changed)

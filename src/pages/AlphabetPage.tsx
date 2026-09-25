@@ -10,10 +10,12 @@ import { speakLetter, speakWord, useSpeechSpeed } from '../hooks/useSpeech';
 import { useLang } from '../hooks/useLang';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { useProgress } from '../hooks/useProgress';
+import { useProgressMetrics } from '../hooks/useProgressMetrics';
 import { theme } from '../config/theme';
 import { curriculumService } from '../services';
 import { type AlphabetItem } from '../types';
 import { SEO } from '../components/common/SEO';
+import { EmptyState } from '../components/EmptyState';
 
 type Filter = 'all' | 'vowel' | 'consonant';
 type Sub = 'learn' | 'quiz' | 'spelling';
@@ -42,9 +44,7 @@ export function AlphabetPage() {
   }, [alphabet]);
 
   const isDE = langMode === 'german';
-  const quizPct = progress.quizTotal
-    ? Math.round((progress.quizCorrect / progress.quizTotal) * 100)
-    : 0;
+  const { quizPct } = useProgressMetrics();
   const pageTitle = isDE ? 'Deutsches Alphabet' : sharedTextDatabase.alphabet.title;
   const pageDescription = isDE
     ? 'Lerne das deutsche Alphabet mit Aussprachen und Beispielen.'
@@ -194,6 +194,22 @@ export function AlphabetPage() {
               ))}
             </div>
           </div>
+          {standard.length === 0 && special.length === 0 && (
+            <EmptyState
+              icon="🔍"
+              title={isDE ? 'Keine Treffer' : 'No matches'}
+              description={
+                isDE
+                  ? 'Kein Buchstabe passt zu deiner Suche — passe die Suche oder den Filter an.'
+                  : 'No letter matches your search — adjust the search or the filter.'
+              }
+              actionLabel={isDE ? 'Filter zurücksetzen' : 'Clear filters'}
+              onAction={() => {
+                setSearch('');
+                setFilter('all');
+              }}
+            />
+          )}
           {standard.length > 0 && (
             <section className="my-2">
               <h2 className="mb-3 inline-block border-b-2 border-blue-500 pb-1 text-lg font-bold">

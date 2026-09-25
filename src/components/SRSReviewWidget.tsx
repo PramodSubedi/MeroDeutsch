@@ -2,6 +2,7 @@ import { useReviewQueue } from '../hooks/useReviewQueue';
 import { useLang } from '../hooks/useLang';
 import { MasteryIndicator } from './MasteryIndicator';
 import { theme } from '../config/theme';
+import { ANCHORS, scrollToAnchor } from '../lib/anchors';
 
 /**
  * SRSReviewWidget — compact "due now" summary for the Dashboard.
@@ -34,7 +35,7 @@ export function SRSReviewWidget() {
         <button
           type="button"
           onClick={() => {
-            document.getElementById('review-queue-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            scrollToAnchor(ANCHORS.reviewQueue);
           }}
           className={theme.button.icon}
         >

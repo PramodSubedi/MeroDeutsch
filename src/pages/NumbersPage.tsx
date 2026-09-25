@@ -29,6 +29,9 @@ import {
 } from '../hooks/useExerciseSession';
 import { ListenAndType } from '../components/exercises/ListenAndType';
 import { MultipleChoice } from '../components/exercises/MultipleChoice';
+import { ExerciseRoundFooter } from '../components/exercises/ExerciseRoundFooter';
+import { LoadingBlock, ContentPending } from '../components/common/LoadingBlock';
+import { normalizeAnswer } from '../utils/answerNormalize';
 
 const ranges: { id: NumberRange; label: string }[] = [
   { id: '0-12', label: '0 – 12' },
@@ -52,10 +55,6 @@ const numberRules: Record<NumberRange, { title: string; description: string }> =
     description: '100 = hundert · 1000 = tausend · 1 000 000 = eine Million',
   },
 };
-
-function normalize(input: string): string {
-  return input.trim().toLowerCase().replace(/\s+/g, ' ');
-}
 
 /** Engine question for the listen-and-type mode. */
 interface NumberListenQuestion extends ExerciseQuestion {}
@@ -128,8 +127,8 @@ export function NumbersPage() {
     module: 'numbers',
     // Accept either the digit form or the German word.
     matches: (input, q) => {
-      const norm = normalize(input);
-      if (norm === normalize(q.correctAnswer)) return true;
+      const norm = normalizeAnswer(input);
+      if (norm === normalizeAnswer(q.correctAnswer)) return true;
       const item = numbersData.find((x) => x.de === q.correctAnswer);
       return item !== undefined && norm === String(item.n);
     },
@@ -183,7 +182,7 @@ export function NumbersPage() {
   });
 
   if (!loaded) {
-    return <div className={theme.page.container}>Loading...</div>;
+    return <LoadingBlock />;
   }
 
   // Pool empty (not seeded yet / offline before first fetch) — friendly state.
@@ -191,11 +190,7 @@ export function NumbersPage() {
     return (
       <div className={theme.page.container}>
         <h1 className={theme.page.heading}>{title}</h1>
-        <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">
-          {isDE
-            ? 'Inhalte werden noch geladen — verbinde dich einmal mit dem Internet.'
-            : 'Content is still loading — connect to the internet once to populate it.'}
-        </p>
+        <ContentPending isDE={isDE} />
       </div>
     );
   }
@@ -254,25 +249,13 @@ export function NumbersPage() {
             placeholder={isDE ? 'Tippe Zahl oder Wort…' : 'Type digit or word…'}
             hideFooter
           />
-          {/* Round footer: next/finish + play again */}
-          <div className="mt-3 flex justify-center gap-3">
-            {listenSession.locked && (
-              <button type="button" onClick={listenSession.next} className={theme.button.primary}>
-                {listenSession.index >= listenSession.total - 1
-                  ? isDE ? 'Fertig' : 'Finish'
-                  : isDE ? 'Nächste Zahl →' : 'Next Number →'}
-              </button>
-            )}
-            {!listenSession.locked && listenSession.answered > 0 && listenSession.index >= listenSession.total && (
-              <button
-                type="button"
-                onClick={() => setRunId((r) => r + 1)}
-                className={theme.button.secondary}
-              >
-                {isDE ? 'Neue Runde 🔄' : 'Play again 🔄'}
-              </button>
-            )}
-          </div>
+          {/* Round footer: next/finish + play again (shared component) */}
+          <ExerciseRoundFooter
+            session={listenSession}
+            onPlayAgain={() => setRunId((r) => r + 1)}
+            nextLabel={isDE ? 'Nächste Zahl →' : 'Next Number →'}
+            showSummary={false}
+          />
         </div>
       )}
 

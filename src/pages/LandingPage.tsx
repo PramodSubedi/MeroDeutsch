@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Languages, Moon, Smartphone, Sparkles, Sun, Target } from 'lucide-react';
+import { ArrowRight, Languages, Smartphone, Sparkles, Target } from 'lucide-react';
 import { theme } from '../config/theme';
 import { Footer } from '../components/Footer';
 import { Logo } from '../components/common/Logo';
@@ -9,7 +9,7 @@ import { HeroOptionC } from '../components/landing/HeroOptionC';
 import { HeroOptionD } from '../components/landing/HeroOptionD';
 import { HeroOptionE } from '../components/landing/HeroOptionE';
 import { LandingDemoScroll } from '../components/landing/LandingDemoScroll';
-import { useDarkMode } from '../hooks/useDarkMode';
+import { ThemeToggle } from '../components/common/ThemeToggle';
 import { useLang } from '../hooks/useLang';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { SEO } from '../components/common/SEO';
@@ -17,7 +17,6 @@ import { SEO } from '../components/common/SEO';
 /** Marketing landing — why join / what it is. Hands off to Guest Home (`/home`). */
 export function LandingPage() {
   usePageTitle('Learn German from zero — with Nepali support');
-  const { dark, toggle: toggleDark } = useDarkMode();
   const { langMode } = useLang();
   const isDE = langMode === 'german';
 
@@ -101,14 +100,7 @@ export function LandingPage() {
           </Link>
           <div className="flex items-center gap-1.5">
             <LanguageToggle />
-            <button
-              type="button"
-              onClick={toggleDark}
-              className={theme.layout.themeButton}
-              aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'}
-            >
-              {dark ? <Sun className="h-5 w-5" aria-hidden="true" /> : <Moon className="h-5 w-5" aria-hidden="true" />}
-            </button>
+            <ThemeToggle />
             <Link
               to="/auth"
               className={`${theme.button.secondary} hidden sm:inline-flex`}

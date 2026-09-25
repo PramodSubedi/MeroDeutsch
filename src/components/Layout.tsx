@@ -1,10 +1,9 @@
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { Menu, Moon, Sun, Volume2, VolumeX } from 'lucide-react';
+import { Menu, Volume2, VolumeX } from 'lucide-react';
 import { theme } from '../config/theme';
 import { getModuleRoutes } from '../config/modules';
 import { contextLabelFor } from '../config/routeLabels';
-import { useDarkMode } from '../hooks/useDarkMode';
 import { useLang } from '../hooks/useLang';
 import { useAuth } from '../hooks/useAuth';
 import { useOnlineStatus } from '../hooks/useOnlineStatus';
@@ -12,6 +11,7 @@ import { useLastModule } from '../hooks/useLastModule';
 import { useXp } from '../hooks/useXp';
 import { isAudioEnabled, setAudioEnabled } from '../utils/audioService';
 import { Logo } from './common/Logo';
+import { ThemeToggle } from './common/ThemeToggle';
 import { Footer } from './Footer';
 import { ModuleChrome } from './learning/ModuleChrome';
 import { BottomNav } from './BottomNav';
@@ -30,7 +30,6 @@ import { subscribeDailySessionActive } from '../lib/dailySessionSignal';
 
 export function Layout() {
   const { pathname } = useLocation();
-  const { dark, toggle: toggleDark } = useDarkMode();
   const { langMode } = useLang();
   const { user } = useAuth();
   const { isOnline } = useOnlineStatus();
@@ -206,14 +205,7 @@ export function Layout() {
               <Menu className="h-5 w-5" />
             </button>
             <LanguageToggle />
-            <button
-              type="button"
-              onClick={toggleDark}
-              className={theme.layout.themeButton}
-              aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'}
-            >
-              {dark ? <Sun className="h-5 w-5" aria-hidden="true" /> : <Moon className="h-5 w-5" aria-hidden="true" />}
-            </button>
+            <ThemeToggle />
             <button
               type="button"
               onClick={() => {

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useLang } from '../hooks/useLang';
 import { usePageTitle } from '../hooks/usePageTitle';
+import { speakText } from '../hooks/useSpeech';
 import { theme } from '../config/theme';
 import { curriculumService } from '../services';
 import type { MicroStory, StorySentence, StoryWord } from '../types/curriculum';
@@ -43,15 +44,9 @@ function WordTooltip({ word }: { word: StoryWord }) {
  * Sentence component with interactive word tooltips and audio playback
  */
 function SentenceCard({ sentence }: { sentence: StorySentence }) {
-  const playAudio = () => {
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(sentence.de);
-      utterance.lang = 'de-DE';
-      utterance.rate = 0.9; // Slightly slower for learning
-      window.speechSynthesis.speak(utterance);
-    }
-  };
+  // Single TTS stack: route through the shared speech utility so story audio
+  // honors the global mute toggle and reuses the preferred German voice.
+  const playAudio = () => speakText(sentence.de, 0.9);
 
   return (
     <div className="rounded-xl bg-white p-4 shadow-sm dark:bg-slate-900">

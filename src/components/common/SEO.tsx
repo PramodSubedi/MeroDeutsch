@@ -2,6 +2,15 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 
 interface SEOProps {
+  /**
+   * Social/OG/Twitter headline. Also used for `<meta name="title">`.
+   *
+   * NOTE: this component deliberately does NOT render a `<title>` element.
+   * Every page that mounts <SEO> also calls usePageTitle(), and Helmet's
+   * <title> used to race that hook for document.title — two writers for one
+   * value, so the visible title depended on effect ordering. usePageTitle is
+   * the single owner of document.title; this component owns the meta tags.
+   */
   title?: string;
   description?: string;
   canonical?: string;
@@ -24,8 +33,7 @@ export const SEO: React.FC<SEOProps> = ({
 }) => {
   return (
     <Helmet>
-      {/* Primary Meta Tags */}
-      <title>{title}</title>
+      {/* Primary Meta Tags — document.title is owned by usePageTitle() */}
       <meta name="title" content={title} />
       <meta name="description" content={description} />
       <link rel="canonical" href={canonical} />

@@ -29,7 +29,6 @@ export function ArticleSprintPage() {
       <PageHeading
         title={isDE ? 'Artikel-Sprint' : 'Article Sprint'}
         subtitle={isDE ? 'Tippe 🔊, wähle der/die/das.' : 'Tap 🔊 to hear the noun, then pick der/die/das.'}
-        backTo="/practice"
       />
       <ArticleSprint />
     </div>

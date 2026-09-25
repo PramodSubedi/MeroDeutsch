@@ -4,6 +4,7 @@ import { useLang } from '../../hooks/useLang';
 import { useLastModule } from '../../hooks/useLastModule';
 import { sharedTextDatabase } from '../../data/sharedContent';
 import type { LucideIcon } from 'lucide-react';
+import { ANCHORS } from '../../lib/anchors';
 
 /**
  * Reusable A1 Learning Path component.
@@ -32,7 +33,7 @@ export function LearningPath() {
   ];
 
   return (
-    <section className="mb-6 scroll-mt-20" id="learning-path">
+    <section className="mb-6 scroll-mt-20" id={ANCHORS.learningPath}>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {sections.map((section) => {
           const isLast = lastModulePath === section.path;

@@ -3,6 +3,7 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useReviewQueue } from '../hooks/useReviewQueue';
 import { useProgress } from '../hooks/useProgress';
+import { useProgressMetrics } from '../hooks/useProgressMetrics';
 import { useLang } from '../hooks/useLang';
 import { useStreak } from '../hooks/useStreak';
 import { useActivityLog } from '../hooks/useActivityLog';
@@ -22,10 +23,10 @@ import { A1PathProgress } from '../components/path/A1PathProgress';
 import { DailyQuestsWidget } from '../components/DailyQuestsWidget';
 import { StatTile } from '../components/ui/StatTile';
 import { ConfirmDialog } from '../components/ConfirmDialog';
-import { useDailyQuests } from '../hooks/useDailyQuests';
 import { useAchievements } from '../hooks/useAchievements';
 import { Link } from 'react-router-dom';
 import type { WrongAnswerItem } from '../types';
+import { ANCHORS } from '../lib/anchors';
 
 /** Locale-aware number formatter shared by dashboard stats + review queue counts. */
 const numberFormatter = (locale: string) => new Intl.NumberFormat(locale);
@@ -44,7 +45,6 @@ export function DashboardPage() {
   const [confirmClearOpen, setConfirmClearOpen] = useState(false);
   const { langMode } = useLang();
   const { streakCount, longestStreak } = useStreak();
-  const { reportReview } = useDailyQuests();
   const { unlockBadge } = useAchievements();
   const { activities } = useActivityLog();
   const { showToast } = useMilestoneToast();
@@ -62,9 +62,7 @@ export function DashboardPage() {
     }
   }, []);
 
-  const lettersPct = Math.min(100, Math.round((progress.practiced.length / 26) * 100));
-  const quizPctBar = progress.quizTotal ? Math.min(100, Math.round((progress.quizCorrect / progress.quizTotal) * 100)) : 0;
-  const spellingPct = Math.min(100, Math.round((progress.spellCompleted / 10) * 100));
+  const { lettersPct, quizPct: quizPctBar, spellingPct } = useProgressMetrics();
 
   // Milestone toasts (non-blocking, once per session).
   useEffect(() => {
@@ -108,7 +106,6 @@ export function DashboardPage() {
   const errorsLabel = isDE ? 'Fehler' : 'Errors';
   const dueLabel = isDE ? 'Fällig' : 'Due';
   const scheduledLabel = isDE ? 'Geplant' : 'Scheduled';
-  const gotItLabel = isDE ? 'Verstanden ✓' : 'Got it ✓';
   const isDue = (item: WrongAnswerItem) => {
     if (!item.dueAt) return true;
     return item.dueAt <= new Date().toISOString();
@@ -226,7 +223,7 @@ export function DashboardPage() {
       <SRSReviewWidget />
 
       <div
-        id="review-queue-section"
+        id={ANCHORS.reviewQueue}
         className="mt-4 rounded-2xl bg-white p-6 shadow-sm transition-shadow duration-300 hover:shadow-md dark:bg-slate-900"
       >
         <div className="mb-4 flex items-center justify-between gap-3">
@@ -351,30 +348,11 @@ export function DashboardPage() {
                     </div>
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        // SRS Scholar quest: count a completed review.
-                        reportReview(1);
-                        markCorrect(item.id);
-                        // Box 4 Master badge: check if this promotion reaches Box 4.
-                        const nextBox = Math.min((item.boxLevel ?? 1) + 1, 4);
-                        if (nextBox >= 4) unlockBadge('box4_master');
-                        // 🎓 "Mastered" celebration payoff: a correct answer while
-                        // ALREADY at box 4 truly graduates (retires) the card.
-                        if ((item.boxLevel ?? 1) >= 4) {
-                          showToast({
-                            message: isDE
-                              ? 'Karte gemeistert! Sie hat deine Review-Warteschlange verlassen. 🎓'
-                              : 'Card mastered! It graduated from your review queue. 🎓',
-                            icon: '🎓',
-                          });
-                        }
-                      }}
-                      className={theme.button.primary}
-                    >
-                      {gotItLabel}
-                    </button>
+                    {/* Triage-only action. GRADING (Got it / box promotion /
+                        graduation) happens exclusively in the ReviewSessionManager
+                        session above — one grading path, no duplicated box-4
+                        celebration logic. "Resolved" stays here because this list
+                        is its only surface (dismiss without SRS promotion). */}
                     <button type="button" onClick={() => markResolved(item.id)} className={theme.button.secondary}>
                       {resolvedLabel}
                     </button>

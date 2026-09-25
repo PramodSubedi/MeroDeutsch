@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { getItem, setItem } from '../utils/safeStorage';
 import { AUDIO_BY_LEMMA } from '../data/audioManifest';
+import { isAudioEnabled } from '../utils/audioService';
 
 export type SpeechSpeed = 'slow' | 'normal' | 'fast';
 
@@ -49,6 +50,10 @@ function getGermanVoice(): SpeechSynthesisVoice | undefined {
 
 /** Speech synthesis — change only this file for audio behavior */
 export function speakText(text: string, rateOverride?: number) {
+  // Honor the global header mute toggle. `audioService` owns that flag; without
+  // this guard the single mute button silenced only audioService.speakGerman
+  // while every module using speakWord/speakText kept talking.
+  if (!isAudioEnabled()) return;
   if (typeof window === 'undefined' || !window.speechSynthesis) return;
   const rate = rateOverride ?? SPEED_RATES[loadSpeed()];
   window.speechSynthesis.cancel();
@@ -69,6 +74,7 @@ function localAudioFor(text: string): string | null {
 
 /** Play a bundled MP3; on any playback failure, fall back to speechSynthesis. */
 function playFile(url: string, fallbackText: string) {
+  if (!isAudioEnabled()) return;
   const audio = new Audio(url);
   audio.onerror = () => speakText(fallbackText);
   audio.play().catch(() => speakText(fallbackText));
@@ -106,6 +112,24 @@ export function speakWord(text: string) {
     return;
   }
   speakText(text);
+}
+
+/**
+ * Play an arbitrary audio URL (e.g. a lesson's DB-hosted clip) honoring the
+ * global mute toggle.
+ *
+ * `fallbackText` is OPTIONAL and deliberately absent at TTS-safe call sites:
+ * speaking the target word as a fallback would reveal the answer before the
+ * question locks (.clinerules C6).
+ */
+export function playAudioUrl(url: string, fallbackText?: string) {
+  if (!isAudioEnabled()) return;
+  if (typeof window === 'undefined') return;
+  const audio = new Audio(url);
+  if (fallbackText) audio.onerror = () => speakText(fallbackText);
+  audio.play().catch(() => {
+    if (fallbackText) speakText(fallbackText);
+  });
 }
 
 /**

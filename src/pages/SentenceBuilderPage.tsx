@@ -13,10 +13,9 @@
  * builder (tiles + slots) stays fully playable.
  */
 import { useEffect, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { Grid, Keyboard, Mic, ShieldAlert } from 'lucide-react';
 import { useLang } from '../hooks/useLang';
-import { useAuth } from '../hooks/useAuth';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { SEO } from '../components/common/SEO';
 import { theme } from '../config/theme';
@@ -41,7 +40,6 @@ export function SentenceBuilderPage() {
   usePageTitle('Sentence Builder');
   const { langMode } = useLang();
   const isDE = langMode === 'german';
-  const { isAuthenticated } = useAuth();
 
   const [items, setItems] = useState<SentenceItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -119,15 +117,7 @@ export function SentenceBuilderPage() {
         description="Build German sentences tile by tile — practice articles, gender, and the Nominativ to Akkusativ rule."
       />
       <header className="mb-4">
-        <Link
-          to={isAuthenticated ? '/learn' : '/home'}
-          className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-200"
-        >
-          ← {isDE
-            ? (isAuthenticated ? 'Zurück zum Lernpfad' : 'Zurück zur Startseite')
-            : (isAuthenticated ? 'Back to learning path' : 'Back to Home')}
-        </Link>
-        <h1 className="mt-1 text-2xl font-bold text-slate-950 dark:text-white">
+        <h1 className="text-2xl font-bold text-slate-950 dark:text-white">
           {isDE ? 'Satzbau — Einheit 2' : 'Sentence Builder — Unit 2'}
         </h1>
         <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">

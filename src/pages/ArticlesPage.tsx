@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { sharedTextDatabase, sharedTranslations } from '../data/sharedContent';
 import { speakText, speakWord } from '../hooks/useSpeech';
 import { useLang } from '../hooks/useLang';
+import { usePageTitle } from '../hooks/usePageTitle';
 import { useTranslation } from '../hooks/useTranslation';
 import { useReviewQueue } from '../hooks/useReviewQueue';
 import { useXp } from '../hooks/useXp';
@@ -43,6 +44,7 @@ function playBeep(success: boolean) {
 }
 
 export function ArticlesPage() {
+  usePageTitle('Articles');
   const { langMode } = useLang();
   const { isDE, t } = useTranslation(langMode);
   const { quests, reportAccuracy, claimReward } = useDailyQuests();

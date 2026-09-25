@@ -22,12 +22,14 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useLang } from '../hooks/useLang';
 import { useAuth } from '../hooks/useAuth';
+import { usePageTitle } from '../hooks/usePageTitle';
 import { useA1Path } from '../hooks/useA1Path';
 import { curriculumService } from '../services';
 import { CHECKPOINT_PASS_THRESHOLD, A1_UNITS, type CheckpointSource, type Article } from '../data/a1Path';
 import { pickNUnique } from '../utils/questionGenerator';
 import { shuffleArray } from '../utils/shuffleArray';
 import { useExerciseSession, type ExerciseQuestion } from '../hooks/useExerciseSession';
+import { playAudioUrl } from '../hooks/useSpeech';
 import { MultipleChoice } from '../components/exercises/MultipleChoice';
 import { theme } from '../config/theme';
 import { GenderBadge } from '../components/ui/GenderBadge';
@@ -218,6 +220,9 @@ export function A1CheckpointPage() {
 
   const unit = A1_UNITS[unitIndex];
   const { isAuthenticated } = useAuth();
+
+  // Unit-derived (never a hardcoded 0) so every checkpoint shows its own name.
+  usePageTitle(unit ? `Checkpoint ${unitIndex + 1} · ${unit.title.en}` : 'Checkpoint');
 
   // Checkpoints are a signed-in benefit (locked product rule): guests who
   // deep-link to /checkpoint/:unitIndex get a friendly sign-in gate (before
@@ -553,10 +558,7 @@ useEffect(() => {
             {q.source === 'listening-gap' && q.audioUrl && (
               <button
                 type="button"
-                onClick={() => {
-                  const audio = new Audio(q.audioUrl);
-                  audio.play();
-                }}
+                onClick={() => playAudioUrl(q.audioUrl as string)}
                 className="ml-3 inline-flex items-center gap-1 rounded-lg bg-blue-100 px-3 py-1.5 text-sm font-medium text-blue-700 hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-300"
                 aria-label={isDE ? 'Audio abspielen' : 'Play audio'}
               >

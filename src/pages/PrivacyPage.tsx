@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { theme } from '../config/theme';
+import { LEGAL_LAST_UPDATED } from '../config/appInfo';
 import { useLang } from '../hooks/useLang';
 import { usePageTitle } from '../hooks/usePageTitle';
 
@@ -16,7 +17,7 @@ export function PrivacyPage() {
           {isDE ? 'Datenschutzerklärung' : 'Privacy Policy'}
         </h1>
         <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-          {isDE ? 'Stand: 2026' : 'Last updated: 2026'}
+          {isDE ? `Stand: ${LEGAL_LAST_UPDATED}` : `Last updated: ${LEGAL_LAST_UPDATED}`}
         </p>
       </div>
 
@@ -71,7 +72,7 @@ export function PrivacyPage() {
       </div>
 
       <div className="mt-6">
-        <Link to="/" className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-200">
+        <Link to="/home" className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-200">
           ← {isDE ? 'Zurück zur Startseite' : 'Back to Home'}
         </Link>
       </div>

@@ -29,6 +29,7 @@ import { HonorificsTable } from '../grammar/HonorificsTable';
 import { GrammarComparisonTable } from '../grammar/GrammarComparisonTable';
 import { GenderBadge } from '../ui/GenderBadge';
 import { theme } from '../../config/theme';
+import { ANCHORS } from '../../lib/anchors';
 
 type UnitPhase = 'locked' | 'current' | 'done';
 type PillState = 'completed' | 'active' | 'locked';
@@ -363,7 +364,7 @@ export function UnitSpine() {
   const isDE = langMode === 'german';
 
   return (
-    <section id="a1-spine" className="mx-auto w-full max-w-3xl py-8">
+    <section id={ANCHORS.a1Spine} className="mx-auto w-full max-w-3xl py-8">
       <div className="mb-6">
         <h2 className="text-xl font-bold text-slate-900 dark:text-white">
           {isDE ? 'Dein A1-Lernpfad' : 'Your A1 learning path'}

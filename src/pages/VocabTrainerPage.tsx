@@ -7,7 +7,7 @@
  *
  * Drill modes:
  *   - Flashcards: tap to flip DE → EN + Nepali (Devanagari + romanized).
- *     Reuses the FlipCard interaction model (real <button>, aria-pressed,
+ *     Reuses a button-based flip interaction model (real <button>, aria-pressed,
  *     no focus side-effects). TTS speaks the German word on reveal.
  *   - Quiz: German → English MCQ. Options shuffled at question create,
  *     without-replacement session pool (pickNUnique).

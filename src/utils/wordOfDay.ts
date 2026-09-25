@@ -1,7 +1,7 @@
 /**
  * src/utils/wordOfDay.ts
  *
- * Shared, DETERMINISTIC "Word of the Day" picker used by HomeExtras and
+ * Shared, DETERMINISTIC "Word of the Day" picker used by DailyChallenge and
  * DailyChallenge (and reusable by AlphabetPage if it ever pulls a real vocab
  * word instead of the picked letter's example).
  *

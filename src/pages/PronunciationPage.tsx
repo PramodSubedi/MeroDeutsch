@@ -5,6 +5,7 @@ import { usePageTitle } from '../hooks/usePageTitle';
 import { useAnswerReporter } from '../hooks/useExerciseSession';
 import { useSpeechRecognition, isSpeechRecognitionSupported } from '../hooks/useSpeechRecognition';
 import { drawWithoutReplacement } from '../utils/questionGenerator';
+import { LoadingBlock } from '../components/common/LoadingBlock';
 import { theme } from '../config/theme';
 import { curriculumService } from '../services';
 import type { VocabCard } from '../types';
@@ -203,7 +204,7 @@ export function PronunciationPage() {
   };
 
   if (!word) {
-    return <div className={theme.page.container}>Loading...</div>;
+    return <LoadingBlock />;
   }
 
   return (

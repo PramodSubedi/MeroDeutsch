@@ -20,16 +20,15 @@ import {
   type ExerciseQuestion,
 } from '../hooks/useExerciseSession';
 import { DictationInput } from '../components/exercises/DictationInput';
+import { ExerciseRoundFooter } from '../components/exercises/ExerciseRoundFooter';
+import { LoadingBlock, ContentPending } from '../components/common/LoadingBlock';
+import { normalizeAnswer } from '../utils/answerNormalize';
 import type { DictationWord } from '../types/curriculum';
 
 /** Engine-compatible dictation question (audio prompt = the word itself). */
 interface DictationQuestion extends ExerciseQuestion {}
 
 const DECK_SIZE = 10;
-
-function normalize(input: string): string {
-  return input.trim().toLowerCase();
-}
 
 export function DictationPage() {
   usePageTitle('Dictation');
@@ -70,7 +69,7 @@ export function DictationPage() {
     questions: deck,
     module: 'dictation',
     xpAmount: XP_REWARDS.dictation, // +50 XP dictation tier
-    matches: (input, q) => normalize(input) === normalize(q.correctAnswer),
+    matches: (input, q) => normalizeAnswer(input) === normalizeAnswer(q.correctAnswer),
   });
 
   const title = isDE ? 'Diktat' : 'Dictation';
@@ -80,7 +79,7 @@ export function DictationPage() {
 
   if (!loaded) {
     // Loading guard — avoid blank flash while dictation words load.
-    return <div className={theme.page.container}>Loading...</div>;
+    return <LoadingBlock />;
   }
 
   // Pool empty (not seeded yet / offline before first fetch) — friendly state.
@@ -88,11 +87,7 @@ export function DictationPage() {
     return (
       <div className={theme.page.container}>
         <h1 className="text-2xl font-semibold tracking-tight text-slate-950 dark:text-white">{title}</h1>
-        <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">
-          {isDE
-            ? 'Inhalte werden noch geladen — verbinde dich einmal mit dem Internet.'
-            : 'Content is still loading — connect to the internet once to populate it.'}
-        </p>
+        <ContentPending isDE={isDE} />
       </div>
     );
   }
@@ -109,32 +104,12 @@ export function DictationPage() {
           autoPlay={false}
           hideFooter
         />
-        {/* Round footer: next/finish + play again */}
-        <div className="mt-3 flex justify-center gap-3">
-          {session.locked && (
-            <button type="button" onClick={session.next} className={theme.button.primary}>
-              {session.index >= session.total - 1
-                ? isDE ? 'Fertig' : 'Finish'
-                : isDE ? 'Nächstes Wort →' : 'Next Word →'}
-            </button>
-          )}
-          {!session.locked && session.answered > 0 && session.index >= session.total && (
-            <button
-              type="button"
-              onClick={() => setRunId((r) => r + 1)}
-              className={theme.button.secondary}
-            >
-              {isDE ? 'Neue Runde 🔄' : 'Play again 🔄'}
-            </button>
-          )}
-        </div>
-        {session.index >= session.total && session.total > 0 && (
-          <p className="mt-3 text-center text-sm font-semibold text-slate-600 dark:text-slate-300">
-            {isDE
-              ? `Runde beendet — ${session.score}/${session.total} richtig.`
-              : `Round complete — ${session.score}/${session.total} correct.`}
-          </p>
-        )}
+        {/* Round footer: next/finish + play again (shared component) */}
+        <ExerciseRoundFooter
+          session={session}
+          onPlayAgain={() => setRunId((r) => r + 1)}
+          nextLabel={isDE ? 'Nächstes Wort →' : 'Next Word →'}
+        />
       </div>
     </div>
   );

@@ -8,11 +8,11 @@
  */
 
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { useLang } from '../hooks/useLang';
 import { useAuth } from '../hooks/useAuth';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { SEO } from '../components/common/SEO';
+import { PageHeading } from '../components/common/PageHeading';
 import { theme } from '../config/theme';
 import { TabGroup } from '../components/TabGroup';
 import { EmailBuilder } from '../components/exercises/EmailBuilder';
@@ -31,22 +31,14 @@ export function EmailBuilderPage() {
         title="Email Builder | MeroDeutsch"
         description="Goethe A1 Schreiben practice — build invitation, acceptance, and apology emails step by step with the right greetings and closings."
       />
-      <header className="mb-4">
-        <Link
-          to={isAuthenticated ? '/learn' : '/home'}
-          className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-200"
-        >
-          ← {isDE ? 'Lernpfad' : 'Learning path'}
-        </Link>
-        <h1 className="mt-2 text-2xl font-bold tracking-tight text-slate-950 dark:text-white">
-          {isDE ? 'E-Mail-Trainer (Goethe A1 Schreiben)' : 'Email Builder (Goethe A1 Writing)'}
-        </h1>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-          {isDE
-            ? 'Baue Prüfungs-E-Mails Schritt für Schritt: Anrede, Punkte, Schluss — formell vs. informell.'
-            : 'Build exam emails step by step: greeting, mandatory points, closing — informal vs formal.'}
-        </p>
-      </header>
+      <PageHeading
+        title={isDE ? 'E-Mail-Trainer (Goethe A1 Schreiben)' : 'Email Builder (Goethe A1 Writing)'}
+        subtitle={isDE
+          ? 'Baue Prüfungs-E-Mails Schritt für Schritt: Anrede, Punkte, Schluss — formell vs. informell.'
+          : 'Build exam emails step by step: greeting, mandatory points, closing — informal vs formal.'}
+        backTo={isAuthenticated ? '/learn' : '/home'}
+        backLabel={isDE ? 'Lernpfad' : 'Learning path'}
+      />
       <div className="mx-auto max-w-2xl">
         <TabGroup
           tabs={[

@@ -477,7 +477,13 @@ export function GlossaryPage() {
       <div className={theme.page.container}>
         <h1 className="text-2xl font-semibold tracking-tight text-slate-950 dark:text-white">{title}</h1>
         <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{description}</p>
-        <div className="mt-4">Loading...</div>
+        <p
+          className="mt-4 text-sm text-slate-500 dark:text-slate-400"
+          role="status"
+          aria-live="polite"
+        >
+          Loading…
+        </p>
       </div>
     );
   }

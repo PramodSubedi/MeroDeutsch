@@ -21,7 +21,7 @@ interface StandardStudyCardProps {
 
 /**
  * Universal StandardStudyCard with vertical stacked design.
- * Replaces minimal horizontal FlipCard for calendar, greetings, and other modules.
+ * Used by calendar, greetings, and other study modules.
  * 
  * Layout (top to bottom):
  * 1. Badge (top-left) + AudioButton (top-right)

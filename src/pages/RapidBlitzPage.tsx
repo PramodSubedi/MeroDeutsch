@@ -92,7 +92,7 @@ const MIXED_INSTRUCTIONS: { do: string; example: string } = {
 };
 
 export function RapidBlitzPage() {
-  usePageTitle('Rapid Blitz | MeroDeutsch');
+  usePageTitle('Rapid Blitz');
   const location = useLocation();
 
   // Show mode selector only when accessed from /rapid-blitz (practice tools grid)

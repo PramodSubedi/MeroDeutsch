@@ -31,6 +31,9 @@ import {
 } from '../hooks/useExerciseSession';
 import { ListenAndType } from '../components/exercises/ListenAndType';
 import { ClockDrill } from '../components/exercises/ClockDrill';
+import { ExerciseRoundFooter } from '../components/exercises/ExerciseRoundFooter';
+import { LoadingBlock, ContentPending } from '../components/common/LoadingBlock';
+import { normalizeAnswer } from '../utils/answerNormalize';
 import type { CalendarItem } from '../types';
 
 /** Engine-compatible calendar question (audio prompt = the word itself). */
@@ -40,10 +43,6 @@ interface CalendarQuestion extends ExerciseQuestion {}
 type CalendarPool = CalendarItem | UhrzeitItem;
 
 const DECK_SIZE = 10;
-
-function normalize(input: string): string {
-  return input.trim().toLowerCase().replace(/\s+/g, ' ');
-}
 
 export function CalendarPage() {
   usePageTitle('Calendar');
@@ -115,7 +114,7 @@ export function CalendarPage() {
   const session = useExerciseSession<CalendarQuestion>({
     questions: deck,
     module: 'calendar',
-    matches: (input, q) => normalize(input) === normalize(q.correctAnswer),
+    matches: (input, q) => normalizeAnswer(input) === normalizeAnswer(q.correctAnswer),
   });
 
   const title = isDE ? 'Tage & Monate' : sharedTextDatabase.calendar.title;
@@ -129,18 +128,14 @@ export function CalendarPage() {
     : 'What time is it? — hours, half past, quarter.';
 
   if (!loaded) {
-    return <div className={theme.page.container}>Loading...</div>;
+    return <LoadingBlock />;
   }
 
   if (emptyDaysMonths) {
     return (
       <div className={theme.page.container}>
         <h1 className={theme.page.heading}>{title}</h1>
-        <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">
-          {isDE
-            ? 'Inhalte werden noch geladen — verbinde dich einmal mit dem Internet.'
-            : 'Content is still loading — connect to the internet once to populate it.'}
-        </p>
+        <ContentPending isDE={isDE} />
       </div>
     );
   }
@@ -164,6 +159,7 @@ export function CalendarPage() {
         <SectionGrid
           title={tab === 'uhrzeit' ? timeTitle : title}
           description={tab === 'uhrzeit' ? timeDesc : description}
+          hideHeader={tab !== 'uhrzeit'}
           controls={
             <TabGroup
               tabs={[
@@ -212,36 +208,8 @@ export function CalendarPage() {
             }
             hideFooter
           />
-          {/* Round footer: next/finish + play again */}
-          <div className="mt-3 flex justify-center gap-3">
-            {session.locked && (
-              <button type="button" onClick={session.next} className={theme.button.primary}>
-                {session.index >= session.total - 1
-                  ? isDE
-                    ? 'Fertig'
-                    : 'Finish'
-                  : isDE
-                    ? 'Weiter →'
-                    : 'Next →'}
-              </button>
-            )}
-            {!session.locked && session.answered > 0 && session.index >= session.total && (
-              <button
-                type="button"
-                onClick={() => setRunId((r) => r + 1)}
-                className={theme.button.secondary}
-              >
-                {isDE ? 'Neue Runde 🔄' : 'Play again 🔄'}
-              </button>
-            )}
-          </div>
-          {session.index >= session.total && session.total > 0 && (
-            <p className="mt-3 text-center text-sm font-semibold text-slate-600 dark:text-slate-300">
-              {isDE
-                ? `Runde beendet — ${session.score}/${session.total} richtig.`
-                : `Round complete — ${session.score}/${session.total} correct.`}
-            </p>
-          )}
+          {/* Round footer: next/finish + play again (shared component) */}
+          <ExerciseRoundFooter session={session} onPlayAgain={() => setRunId((r) => r + 1)} />
         </div>
       )}
     </div>

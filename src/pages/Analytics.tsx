@@ -6,6 +6,7 @@ import {
 import { useLang } from '../hooks/useLang';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { useProgress } from '../hooks/useProgress';
+import { useProgressMetrics } from '../hooks/useProgressMetrics';
 import { useStreak } from '../hooks/useStreak';
 import { useReviewQueue } from '../hooks/useReviewQueue';
 import { useXp } from '../hooks/useXp';
@@ -13,6 +14,7 @@ import { useActivityLog } from '../hooks/useActivityLog';
 import { theme } from '../config/theme';
 import { BrandMark } from '../components/BrandMark';
 import { ActivityHeatmap } from '../components/ActivityHeatmap';
+import { EmptyState } from '../components/EmptyState';
 
 /** Build a last-30-day activity series from the activity log entries. */
 function buildDailySeries(activities: { date: string; count: number }[], days: number = 30) {
@@ -50,19 +52,17 @@ export function AnalyticsPage() {
   // Daily activity for the last 30 days (from activity log)
   const dailyActivity = useMemo(() => buildDailySeries(activities, 30), [activities]);
 
+  // Shared progress percentages (single source — see useProgressMetrics).
+  const { quizPct: alphabetAccuracy, spellingPct: spellingAccuracy } = useProgressMetrics();
+
   // Module accuracy bar chart data (from useProgress)
-  const moduleAccuracy = useMemo(() => {
-    const alphabetAccuracy = progress.quizTotal
-      ? Math.round((progress.quizCorrect / progress.quizTotal) * 100)
-      : 0;
-    const spellingAccuracy = progress.spellCompleted > 0
-      ? Math.round((progress.spellCompleted / 10) * 100)
-      : 0;
-    return [
+  const moduleAccuracy = useMemo(
+    () => [
       { name: isDE ? 'Alphabet-Quiz' : 'Alphabet Quiz', value: alphabetAccuracy },
       { name: isDE ? 'Rechtschreibung' : 'Spelling', value: spellingAccuracy },
-    ];
-  }, [progress, isDE]);
+    ],
+    [alphabetAccuracy, spellingAccuracy, isDE],
+  );
 
   // Wrong answers by module type (from review queue)
   const errorsByModule = useMemo(() => {
@@ -100,21 +100,17 @@ export function AnalyticsPage() {
       <p className={theme.page.description}>{description}</p>
 
       {!hasAnyData ? (
-        <div className="mt-8 rounded-xl bg-slate-50 p-8 text-center dark:bg-slate-800/60">
-          <div className="mb-4 text-5xl">📊</div>
-          <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
-            {isDE ? 'Noch keine Daten' : 'No data yet'}
-          </h3>
-          <p className="mt-2 text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto">
-            {isDE
+        <div className="mt-8">
+          <EmptyState
+            icon="📊"
+            title={isDE ? 'Noch keine Daten' : 'No data yet'}
+            description={
+              isDE
               ? 'Übe ein paar Vokabeln oder absolviere Quizze, um deine Lernanalytik hier zu sehen. Deine Aktivität wird Schritt für Schritt aufgezeichnet.'
               : 'Complete a few lessons or quizzes to see your learning analytics here. Your activity will be recorded day by day.'}
-          </p>
-          <div className="mt-4">
-            <a href="/alphabet" className={theme.button.primary}>
-              {isDE ? 'Zum Alphabet →' : 'Go to Alphabet →'}
-            </a>
-          </div>
+            actionLabel={isDE ? 'Zum Alphabet →' : 'Go to Alphabet →'}
+            actionTo="/alphabet"
+          />
         </div>
       ) : (
         <div className="mt-6 grid gap-6 lg:grid-cols-1 xl:grid-cols-2">

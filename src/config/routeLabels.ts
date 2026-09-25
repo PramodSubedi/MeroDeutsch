@@ -42,6 +42,20 @@ export const ROUTE_LABELS: ReadonlyArray<readonly [string, { en: string; de: str
   ['/terms', { en: 'Terms', de: 'AGB' }],
 ];
 
+/**
+ * Exact-or-prefix label lookup with NO fallback. Used by the module registry
+ * (practice card titles) so a card title can never disagree with the header
+ * context chip or the breadcrumb for the same route.
+ */
+export function labelForPath(pathname: string, isDE: boolean): string {
+  for (const [prefix, labels] of ROUTE_LABELS) {
+    if (pathname === prefix || pathname.startsWith(prefix + '/')) {
+      return isDE ? labels.de : labels.en;
+    }
+  }
+  return '';
+}
+
 /** Header context chip label for the current path. */
 export function contextLabelFor(pathname: string, isDE: boolean): string {
   if (pathname === '/') return isDE ? 'Startseite' : 'Home';

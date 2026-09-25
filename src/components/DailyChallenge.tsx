@@ -11,6 +11,7 @@ import { useAuth } from '../hooks/useAuth';
 import { theme } from '../config/theme';
 import { buildMcq } from '../utils/questionGenerator';
 import { pickWordOfDay } from '../utils/wordOfDay';
+import { ContentPending } from './common/LoadingBlock';
 
 // Article mapping for common German nouns
 const articleMap: Record<string, string> = {
@@ -156,7 +157,7 @@ export function DailyChallenge({ variant = 'normal' }: DailyChallengeProps) {
   }, []);
 
     // Empty-pool safe: wordOfDay stays null until the vocab pool has rows.
-  // Uses the SAME deterministic selector as HomeExtras so "Word of the Day"
+  // Uses the SAME deterministic selector as utils/wordOfDay so "Word of the Day"
   // is identical across surfaces. The pool is fetched via getVocabularyFiltered({ limit: 2000 })
   // (word-ordered `get_vocabulary_glossary`), so this is stable across refreshes.
   const wordOfDay = useMemo(
@@ -217,7 +218,11 @@ export function DailyChallenge({ variant = 'normal' }: DailyChallengeProps) {
   };
 
   if (!dataLoaded) {
-    return <div className={`${theme.panel.surface} mb-6`}>Loading...</div>;
+    return (
+      <div className={`${theme.panel.surface} mb-6`} role="status" aria-live="polite">
+        Loading…
+      </div>
+    );
   }
 
   // Pool empty (not seeded yet / offline before first fetch) — friendly state,
@@ -228,11 +233,7 @@ export function DailyChallenge({ variant = 'normal' }: DailyChallengeProps) {
         <h2 className="text-lg font-semibold text-slate-950 dark:text-white mb-2">
           {isDE ? 'Wort des Tages' : 'Word of the Day'} 🗓️
         </h2>
-        <p className="text-sm text-slate-500 dark:text-slate-400">
-          {isDE
-            ? 'Inhalte werden noch geladen — verbinde dich einmal mit dem Internet.'
-            : 'Content is still loading — connect to the internet once to populate it.'}
-        </p>
+        <ContentPending isDE={isDE} className="" />
       </div>
     );
   }

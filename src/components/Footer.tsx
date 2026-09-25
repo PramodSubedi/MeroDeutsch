@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Logo } from './common/Logo';
+import { APP_VERSION } from '../config/appInfo';
 
 interface FooterProps {
   /** Extra classes — Layout passes lg:ml-20/lg:ml-64 so the footer rides the
@@ -28,9 +29,9 @@ export function Footer({ className }: FooterProps) {
             </h4>
             <ul className="space-y-0.5 text-xs text-slate-600 dark:text-slate-400 font-medium">
               <li><Link to="/dashboard" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Dashboard</Link></li>
-              <li><Link to="/alphabet" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Alphabet & Sounds</Link></li>
-              <li><Link to="/articles" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Article Trainer</Link></li>
-              <li><Link to="/glossary" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Glossary & Words</Link></li>
+              <li><Link to="/alphabet" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Alphabet</Link></li>
+              <li><Link to="/articles" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Articles</Link></li>
+              <li><Link to="/glossary" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Glossary</Link></li>
             </ul>
           </div>
 
@@ -40,7 +41,7 @@ export function Footer({ className }: FooterProps) {
               System
             </h4>
             <div className="text-xs text-slate-600 dark:text-slate-400">
-              <p>Production v1.2.0</p>
+              <p>Production v{APP_VERSION}</p>
             </div>
           </div>
 

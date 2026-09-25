@@ -2,11 +2,11 @@ import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { theme } from '../../config/theme';
 import { RefreshCw, Target, TrendingUp, Zap } from 'lucide-react';
-import { LearningPath } from '../learning/LearningPath';
 import { useAchievements, ALL_BADGES } from '../../hooks/useAchievements';
 import { useAuth } from '../../hooks/useAuth';
 import { useLang } from '../../hooks/useLang';
 import { useProgress } from '../../hooks/useProgress';
+import { useProgressMetrics } from '../../hooks/useProgressMetrics';
 import { useReviewQueue } from '../../hooks/useReviewQueue';
 import { useStreak } from '../../hooks/useStreak';
 import { useXp } from '../../hooks/useXp';
@@ -14,42 +14,6 @@ import { DailySession } from '../path/DailySession';
 import { DailyChallenge } from '../DailyChallenge';
 import { StatTile } from '../ui/StatTile';
 import { DailyQuestsWidget } from '../DailyQuestsWidget';
-import { useA1Path } from '../../hooks/useA1Path';
-
-const PRACTICE_ITEM_STYLES = [
-  {
-    accent: 'amber',
-    styles: {
-      card: 'border-amber-200/70 bg-amber-50/60 dark:border-amber-900/50 dark:bg-amber-950/30',
-      badge: 'bg-amber-500/15 text-amber-600 dark:text-amber-300',
-      hover: 'hover:border-amber-300',
-    },
-  },
-  {
-    accent: 'indigo',
-    styles: {
-      card: 'border-indigo-200/70 bg-indigo-50/60 dark:border-indigo-900/50 dark:bg-indigo-950/30',
-      badge: 'bg-indigo-500/15 text-indigo-600 dark:text-indigo-300',
-      hover: 'hover:border-indigo-300',
-    },
-  },
-  {
-    accent: 'rose',
-    styles: {
-      card: 'border-rose-200/70 bg-rose-50/60 dark:border-rose-900/50 dark:bg-rose-950/30',
-      badge: 'bg-rose-500/15 text-rose-600 dark:text-rose-300',
-      hover: 'hover:border-rose-300',
-    },
-  },
-  {
-    accent: 'sky',
-    styles: {
-      card: 'border-sky-200/70 bg-sky-50/60 dark:border-sky-900/50 dark:bg-sky-950/30',
-      badge: 'bg-sky-500/15 text-sky-600 dark:text-sky-300',
-      hover: 'hover:border-sky-300',
-    },
-  },
-] as const;
 
 export function HomeLayoutA() {
   const { langMode } = useLang();
@@ -59,7 +23,6 @@ export function HomeLayoutA() {
   const { streakCount } = useStreak();
   const { totalXp, level, xpProgress } = useXp();
   const { unlockedBadges, checkAndUnlock } = useAchievements();
-  const { getPushNode } = useA1Path();
   const isDE = langMode === 'german';
 
   useEffect(() => {
@@ -68,14 +31,14 @@ export function HomeLayoutA() {
     }
   }, [progress, checkAndUnlock]);
 
-  const progressCount = progress?.practiced?.length ?? 0;
-  const progressPct = Math.min(100, Math.max(0, Math.round((progressCount / 26) * 100)));
-  const quizPct = progress?.quizTotal
-    ? Math.min(100, Math.max(0, Math.round(((progress.quizCorrect ?? 0) / progress.quizTotal) * 100)))
-    : 0;
+  // Alphabet progress percentages come from ONE shared selector (also used by
+  // the Dashboard, Analytics and the Alphabet page) — see useProgressMetrics.
+  const { lettersCount: progressCount, lettersPct: progressPct, quizPct } = useProgressMetrics();
   
   const reviewCount = queue?.length ?? 0;
-  const displayName = user?.username || (isAuthenticated ? 'Learner' : 'MeroDeutsch learner');
+  // This layout is only mounted for authenticated users (AppHomeSwitch routes
+  // guests to GuestHomePage), so no guest fallbacks are needed here.
+  const displayName = user?.username || 'Learner';
 
   // Time-of-day dynamic greeting (07:00–11:00 morning, 11:00–18:00 day, else evening).
   const hour = new Date().getHours();
@@ -90,51 +53,7 @@ export function HomeLayoutA() {
       : hour < 18
         ? 'Good afternoon'
         : 'Good evening';
-  const greeting = isAuthenticated
-    ? `${timeGreeting}, ${displayName}`
-    : isDE
-      ? 'Willkommen bei MeroDeutsch'
-      : 'Welcome to MeroDeutsch';
-
-  // Push: first incomplete node of the unlocked A1 path (route or checkpoint).
-  const pushNode = getPushNode();
-
-
-
-  const practiceItems = [
-    // "Continue the A1 path" — the Push card (next unlocked node). Hidden if
-    // the whole path is complete so no dead card renders.
-    ...(pushNode
-      ? [
-          {
-            title: isDE ? 'A1-Pfad fortsetzen' : 'Continue A1 Path',
-            description: isDE
-              ? `Nächster Schritt: ${pushNode.label.de}`
-              : `Next up: ${pushNode.label.en}`,
-            to: pushNode.to,
-            ...PRACTICE_ITEM_STYLES[3],
-          },
-        ]
-      : []),
-    {
-      title: isDE ? 'Schnell-Quiz' : 'Rapid‑Fire Blitz',
-      description: isDE ? 'Schnelle Artikel-Abfragen' : 'Quick article recall drills',
-      to: '/rapid-fire',
-      ...PRACTICE_ITEM_STYLES[0],
-    },
-    {
-      title: isDE ? 'Diktation' : 'Dictation',
-      description: isDE ? 'Anhören und transkribieren' : 'Listen and transcribe',
-      to: '/dictation',
-      ...PRACTICE_ITEM_STYLES[1],
-    },
-    {
-      title: isDE ? 'Aussprache' : 'Pronunciation',
-      description: isDE ? 'Aussprachetraining' : 'Pronunciation practice',
-      to: '/pronunciation',
-      ...PRACTICE_ITEM_STYLES[2],
-    },
-  ];
+  const greeting = `${timeGreeting}, ${displayName}`;
 
   return (
     <div className={`${theme.page.container} w-full space-y-5 pb-8`}>
@@ -225,34 +144,6 @@ export function HomeLayoutA() {
 
       {/* Daily quests (shared with Dashboard) — logged-in only. */}
       {isAuthenticated && <DailyQuestsWidget />}
-
-      {/* Practice tools — guest discovery only. Signed-in Home stays on the
-          daily loop: DailySession + quests; tools live in the sidebar / /practice. */}
-      {!isAuthenticated && (
-      <section className="grid gap-4 md:grid-cols-3">
-        {practiceItems.map(({ title, description, to, styles }) => (
-          <Link
-            key={title}
-            to={to}
-            className={`group block rounded-2xl border p-4 transition hover:-translate-y-0.5 sm:p-5 ${styles.card} ${styles.hover}`}
-          >
-            <div className={`mb-4 inline-flex h-10 w-10 items-center justify-center rounded-xl text-lg font-bold ${styles.badge}`}>
-              {title.charAt(0)}
-            </div>
-            <h2 className="text-lg font-semibold text-slate-950 dark:text-white">{title}</h2>
-            <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{description}</p>
-            {/* Visible click affordance — matches LearningPath.tsx "Start →" */}
-            <div className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-blue-600 transition group-hover:text-blue-800 dark:text-blue-300">
-              {isDE ? 'Starten' : 'Start'} →
-            </div>
-          </Link>
-        ))}
-      </section>
-
-      )}
-      {/* A1 module grid — guest discovery catalog. Signed-in learners use
-          the linear campaign on /learn instead. */}
-      {!isAuthenticated && <LearningPath />}
 
       <section className="rounded-2xl bg-white p-4 shadow-sm dark:bg-slate-900">
         <div className="mb-3 flex items-center justify-between gap-3">

@@ -3,6 +3,7 @@ import { Filter, Target, Award } from 'lucide-react';
 import { triggerConfetti } from '../utils/confetti';
 import { useLang } from '../hooks/useLang';
 import { useXp } from '../hooks/useXp';
+import { useDailyQuests } from '../hooks/useDailyQuests';
 import { TabGroup, type Tab } from './TabGroup';
 import type { WrongAnswerItem } from '../types';
 
@@ -108,6 +109,11 @@ export function ReviewSessionManager({
 }: ReviewSessionManagerProps) {
   const { langMode } = useLang();
   const { reportAnswer } = useXp();
+  // Quest accounting lives in THE grading path (single call site): every
+  // correct recall in any embedded session (Dashboard, DailySession) counts
+  // toward the SRS quest — previously only the Dashboard list's "Got it"
+  // button reported, so session reviews never advanced the quest.
+  const { reportReview } = useDailyQuests();
   const isDE = langMode === 'german';
 
   const [internalFilter, setInternalFilter] = useState<FilterId>('all');
@@ -155,6 +161,9 @@ export function ReviewSessionManager({
     if (isCorrect) {
       // Promote in Leitner system + award real XP (10 per correctly recalled item).
       onMarkCorrect(currentItem.id);
+      // Daily quest progress (SRS Scholar) — reported here so BOTH embedded
+      // managers count, not just the Dashboard's inline list.
+      reportReview(1);
       // 🎓 True 4-box graduation: a correct answer while already at box 4
       // retires the card — notify the parent so it can celebrate.
       if ((currentItem.boxLevel ?? 1) >= 4) onGraduate?.();

@@ -1,12 +1,30 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useLang } from '../hooks/useLang';
-import { useAuth } from '../hooks/useAuth';
 import { ROUTE_LABELS } from '../config/routeLabels';
+import { getModuleRoutes } from '../config/modules';
 
 interface BreadcrumbItem {
   label: string;
   path: string;
 }
+
+/**
+ * Routes that intentionally render NO breadcrumb trail:
+ *  - `/`, `/home`          → top of the hierarchy (nothing to trail).
+ *  - `/auth`               → standalone focus screen, no app-shell context.
+ *  - `/learn`, `/practice` → the two converged hubs carry their own header.
+ *  - `/privacy`, `/terms`  → legal pages render their own "Back to Home" link.
+ *
+ * Module routes are handled separately below: Layout swaps the breadcrumb for
+ * <ModuleChrome /> there, so a breadcrumb would duplicate that back-link.
+ */
+const NO_BREADCRUMB = new Set([
+  '/', '/home', '/auth', '/learn', '/practice', '/privacy', '/terms',
+  // /email-builder renders its own contextual "← Learning path / Home" back-link
+  // via PageHeading, which points somewhere more useful than the crumb's parent
+  // ever could.
+  '/email-builder',
+]);
 
 /**
  * Breadcrumb navigation component for hierarchical navigation.
@@ -17,48 +35,40 @@ export function Breadcrumb() {
   const { pathname } = useLocation();
   const { langMode } = useLang();
   const isDE = langMode === 'german';
-  const { isAuthenticated } = useAuth();
 
   // Route label mappings — single source of truth from routeLabels.ts
   const routeLabels: Record<string, { en: string; de: string }> = {};
   for (const [prefix, labels] of ROUTE_LABELS) routeLabels[prefix] = labels;
 
-  // Don't show breadcrumbs on homepage, auth, legal pages, or the hubs that
-  // carry their own page context (Learn + Practice — converged shell).
-  if (pathname === '/' || pathname === '/home' || pathname === '/auth' || pathname === '/privacy' || pathname === '/terms' || pathname === '/learn' || pathname === '/practice') {
+  // Module routes show <ModuleChrome /> instead (see Layout.tsx). Derived from
+  // the module registry so this rule can never drift from the router config —
+  // previously a second hand-maintained list lived here.
+  const isModuleRoute = getModuleRoutes().includes(pathname);
+
+  if (NO_BREADCRUMB.has(pathname) || isModuleRoute) {
     return null;
   }
 
   // Build breadcrumb trail
   const pathSegments = pathname.split('/').filter(Boolean);
   const breadcrumbs: BreadcrumbItem[] = [
-    { label: isDE ? 'Start' : 'Home', path: '/' },
+    // `/home` (not `/`) so the crumb lands on guest Home for guests instead of
+    // bouncing them to the marketing landing via the root redirect.
+    { label: isDE ? 'Start' : 'Home', path: '/home' },
   ];
 
   let currentPath = '';
   for (const segment of pathSegments) {
     currentPath += `/${segment}`;
-    // Resolve labels for both static routes and parameterized ones (e.g.
-    // /checkpoint/1 → label from `/checkpoint`). Numeric/dynamic segments
-    // fall back to their base route label so /:id routes keep a readable crumb.
-    const routeInfo =
-      routeLabels[currentPath] ?? routeLabels[currentPath.replace(/\/\d+$/, '')];
-    if (routeInfo) {
-      // The path is a signed-in benefit — guests get a guest-safe crumb so a
-      // breadcrumb never leaks a /learn / checkpoint / bonus link back.
-      const guestOverride: Record<string, { en: string; de: string; path: string }> = {
-        '/learn': { en: 'Lessons', de: 'Lektionen', path: '/home' },
-        '/checkpoint': { en: 'Sign in', de: 'Anmelden', path: '/auth' },
-        '/sentence-builder': { en: 'Practice', de: 'Übung', path: '/practice' },
-      };
-      const override = !isAuthenticated
-        ? guestOverride[currentPath] ?? guestOverride[currentPath.replace(/\/\d+$/, '')]
-        : undefined;
-      breadcrumbs.push({
-        label: isDE ? (override?.de ?? routeInfo.de) : (override?.en ?? routeInfo.en),
-        path: override?.path ?? currentPath,
-      });
-    }
+    // Dynamic segments (e.g. /checkpoint/1) are already covered by their parent
+    // crumb — pushing one here rendered a duplicate "Checkpoint / Checkpoint".
+    if (/^\d+$/.test(segment)) continue;
+    const routeInfo = routeLabels[currentPath];
+    if (!routeInfo) continue;
+    breadcrumbs.push({
+      label: isDE ? routeInfo.de : routeInfo.en,
+      path: currentPath,
+    });
   }
 
   return (

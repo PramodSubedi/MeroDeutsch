@@ -7,6 +7,7 @@ import { usePageTitle } from '../hooks/usePageTitle';
 import { SEO } from '../components/common/SEO';
 import { LearningPath } from '../components/learning/LearningPath';
 import { PracticeToolsGrid } from '../components/PracticeToolsGrid';
+import { ANCHORS, scrollToAnchor } from '../lib/anchors';
 
 /**
  * Guest Home — the "Try free" destination.
@@ -26,14 +27,14 @@ export function GuestHomePage() {
   // Deep links like /home#learning-path (sidebar "Lessons" shortcut) scroll
   // smoothly to the module grid after navigation.
   useEffect(() => {
-    if (hash === '#learning-path') {
-      document.getElementById('learning-path')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (hash === `#${ANCHORS.learningPath}`) {
+      scrollToAnchor(ANCHORS.learningPath);
     }
   }, [hash]);
 
   const scrollToLessons = (e: { preventDefault: () => void }) => {
     e.preventDefault();
-    document.getElementById('learning-path')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    scrollToAnchor(ANCHORS.learningPath);
   };
 
   return (
@@ -59,7 +60,7 @@ export function GuestHomePage() {
           </p>
 
           <a
-            href="#learning-path"
+            href={`#${ANCHORS.learningPath}`}
             onClick={scrollToLessons}
             className={`${theme.button.primary} mt-5 inline-flex min-h-[48px] w-full items-center justify-center gap-2 sm:w-auto sm:px-8`}
           >

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useLang } from '../hooks/useLang';
 import { useA1Path } from '../hooks/useA1Path';
+import { ANCHORS, anchorHref } from '../lib/anchors';
 import { useReviewQueue } from '../hooks/useReviewQueue';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { UnitSpine } from '../components/path/UnitSpine';
@@ -30,7 +31,7 @@ export function ContinueLearningPage() {
   // Warm-up: due reviews first -> Dashboard review slot. Otherwise Push.
   const resumePath =
     dueCount > 0
-      ? '/dashboard#review-queue-section'
+      ? anchorHref('/dashboard', ANCHORS.reviewQueue)
       : (nextNode?.to ?? '/learn');
   const resumeLabelEn =
     dueCount > 0
@@ -47,7 +48,7 @@ export function ContinueLearningPage() {
       <header className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <Link
-            to="/"
+            to="/home"
             className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-200"
           >
             ← {isDE ? 'Zurück zur Startseite' : 'Back to Home'}

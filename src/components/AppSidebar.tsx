@@ -18,6 +18,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useLang } from '../hooks/useLang';
 import { useReviewQueue } from '../hooks/useReviewQueue';
 import { A1PathProgress } from './path/A1PathProgress';
+import { ANCHORS } from '../lib/anchors';
 
 /** Guest-first split: /home is the app home (authed OR guest), /welcome is
     the marketing landing (no app shell). Home nav + brand link must point at
@@ -140,7 +141,7 @@ export function AppSidebar({
     { to: HOME_TO, labelEn: 'Home', labelDe: 'Startseite', icon: Home },
     isAuthenticated
       ? { to: '/learn', labelEn: 'Learn', labelDe: 'Lernen', icon: Play }
-      : { to: HOME_TO, anchor: '#learning-path', labelEn: 'Lessons', labelDe: 'Lektionen', icon: BookA },
+      : { to: HOME_TO, anchor: `#${ANCHORS.learningPath}`, labelEn: 'Lessons', labelDe: 'Lektionen', icon: BookA },
     { to: '/dashboard', labelEn: 'Dashboard', labelDe: 'Übersicht', icon: LayoutDashboard, authOnly: true, countBadge: dueCount },
     { to: '/practice', labelEn: 'Practice', labelDe: 'Übung', icon: Library },
   ];
