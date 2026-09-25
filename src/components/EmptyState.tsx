@@ -29,14 +29,14 @@ export function EmptyState({
   onSecondaryAction,
 }: EmptyStateProps) {
   return (
-    <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center dark:border-slate-700 dark:bg-slate-900">
+    <div className="rounded-lg border border-dashed border-ink-300 bg-ink-50 p-8 text-center dark:border-ink-700 dark:bg-ink-900">
       <div className="mx-auto mb-4 text-5xl" aria-hidden="true">
         {icon}
       </div>
-      <h3 className="mb-2 text-lg font-semibold text-slate-900 dark:text-white">
+      <h3 className="mb-2 text-lg font-semibold text-ink-900 dark:text-white">
         {title}
       </h3>
-      <p className="mb-6 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+      <p className="mb-6 text-body leading-relaxed text-ink-600 dark:text-ink-300">
         {description}
       </p>
       

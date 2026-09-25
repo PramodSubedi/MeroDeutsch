@@ -123,8 +123,8 @@ export function AlphabetQuiz({ langMode }: { langMode: LangMode }) {
 
   if (!item) {
     return (
-      <div className="mx-auto max-w-xl rounded-xl bg-white p-5 text-center shadow-sm dark:bg-slate-900">
-        <p className="text-sm text-slate-500">
+      <div className="mx-auto max-w-xl rounded-md border border-ink-200 bg-white p-5 text-center shadow-sm dark:bg-ink-900 dark:border-ink-800">
+        <p className="text-body text-ink-500">
           {langMode === 'german' ? 'Quiz wird geladen…' : 'Loading quiz…'}
         </p>
       </div>
@@ -132,23 +132,23 @@ export function AlphabetQuiz({ langMode }: { langMode: LangMode }) {
   }
 
   return (
-    <div className="mx-auto max-w-xl rounded-xl bg-white p-5 text-center shadow-sm dark:bg-slate-900">
+    <div className="mx-auto max-w-xl rounded-md bg-white p-5 text-center shadow-sm dark:bg-ink-900">
       <h2 className="text-2xl font-bold">{langMode === 'german' ? 'Alphabet-Quiz' : 'Alphabet Quiz'}</h2>
-      <p className="mb-3 text-sm text-slate-500">
+      <p className="mb-3 text-body text-ink-500">
         {langMode === 'german' ? 'Wie wird dieser Buchstabe ausgesprochen?' : 'How is this letter pronounced?'}
       </p>
       <div className="mb-4">
-        <div className="mb-1 flex justify-between text-sm text-slate-600 dark:text-slate-400">
+        <div className="mb-1 flex justify-between text-body text-ink-600 dark:text-ink-400">
           <span>
             {langMode === 'german' ? 'Punkte' : 'Score'}: <b>{sessionScore}</b> / {sessionTotal}
           </span>
           <span>{pct}%</span>
         </div>
-        <div className="h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
-          <div className="h-2 rounded-full bg-blue-500 transition-all" style={{ width: `${pct}%` }} />
+        <div className="h-2 overflow-hidden rounded-full bg-ink-200 dark:bg-ink-700">
+          <div className="h-2 rounded-full bg-accent-500 transition-all" style={{ width: `${pct}%` }} />
         </div>
       </div>
-      <div className="mb-4 text-7xl font-bold text-blue-600 dark:text-blue-400">
+      <div className="mb-4 text-7xl font-bold text-accent-600 dark:text-accent-400">
         {item.letter.split(' ')[0]}
       </div>
       <div className={`mb-4 grid grid-cols-2 gap-2 ${locked ? 'pointer-events-none opacity-50' : ''}`}>
@@ -157,17 +157,17 @@ export function AlphabetQuiz({ langMode }: { langMode: LangMode }) {
             key={o.id}
             type="button"
             onClick={() => check(o.id)}
-            className={`min-h-[44px] rounded-xl border-2 px-4 py-3 text-sm font-medium transition-colors ${
+            className={`min-h-[44px] rounded-md border-2 px-4 py-3 text-body font-medium transition-colors ${
               locked && o.id === item.id
-                ? 'border-green-500 bg-green-100'
+                ? 'border-success-500 bg-success-100'
                 : locked && o.id === wrongId
-                  ? 'border-red-500 bg-red-100'
-                  : 'border-slate-200 hover:border-blue-500 dark:border-slate-600'
+                  ? 'border-danger-500 bg-danger-100'
+                  : 'border-ink-200 hover:border-accent-500 dark:border-ink-600'
             }`}
           >
             <span className="block font-semibold">{o.gerPhonetic}</span>
             {langMode !== 'german' && (
-              <div className="mt-1 text-left text-xs text-slate-500">
+              <div className="mt-1 text-left text-meta text-ink-500">
                 <div>{o.engPhonetic}</div>
                 <div>{o.nepPhonetic}</div>
               </div>
@@ -176,13 +176,13 @@ export function AlphabetQuiz({ langMode }: { langMode: LangMode }) {
         ))}
       </div>
       {feedback && (
-        <div className={`mb-2 font-bold ${feedback.includes('Richtig') ? 'text-green-600' : 'text-red-600'}`}>
+        <div className={`mb-2 font-bold ${feedback.includes('Richtig') ? 'text-success-600' : 'text-danger-600'}`}>
           {feedback}
         </div>
       )}
       <div className="flex justify-center gap-2">
         {locked && (
-          <button type="button" onClick={next} className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white">
+          <button type="button" onClick={next} className="rounded-sm bg-accent-600 px-4 py-2 text-body font-semibold text-white">
             {langMode === 'german' ? 'Weiter →' : 'Next →'}
           </button>
         )}
@@ -193,7 +193,7 @@ export function AlphabetQuiz({ langMode }: { langMode: LangMode }) {
             setSessionTotal(0);
             next();
           }}
-          className="rounded-lg bg-slate-200 px-4 py-2 text-sm font-semibold dark:bg-slate-600"
+          className="rounded-sm bg-ink-200 px-4 py-2 text-body font-semibold dark:bg-ink-600"
         >
           {langMode === 'german' ? 'Zurücksetzen' : 'Reset'}
         </button>

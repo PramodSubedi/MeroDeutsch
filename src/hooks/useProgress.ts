@@ -39,11 +39,17 @@ export function useProgress() {
         quizTotal: moduleProgressRow.quizTotal ?? 0,
         spellCompleted: moduleProgressRow.spellCompleted ?? 0,
       });
+    } else {
+      // A new account may have no local row yet. Do not retain the previous
+      // account's in-memory metrics while that empty state is loading.
+      setProgress(EMPTY_PROGRESS);
     }
-  }, [moduleProgressRow]);
+  }, [moduleProgressRow, userId]);
 
   // Sync with Supabase on login (once)
   useEffect(() => {
+    let cancelled = false;
+
     if (isAuthenticated && user && userId) {
       supabase
         .from('user_progress')
@@ -51,7 +57,8 @@ export function useProgress() {
         .eq('user_id', user.userId)
         .single()
         .then(({ data, error }) => {
-          if (!error && data) {
+          if (!cancelled && !error && data) {
+            const local = progressRef.current;
             const remote: Progress = {
               practiced: data.practiced_ids ?? [],
               quizCorrect: data.quiz_correct ?? 0,
@@ -59,11 +66,12 @@ export function useProgress() {
               spellCompleted: data.spell_completed ?? 0,
             };
             const merged: Progress = {
-              practiced: Array.from(new Set([...progress.practiced, ...remote.practiced])),
-              quizCorrect: Math.max(progress.quizCorrect, remote.quizCorrect),
-              quizTotal: Math.max(progress.quizTotal, remote.quizTotal),
-              spellCompleted: Math.max(progress.spellCompleted, remote.spellCompleted),
+              practiced: Array.from(new Set([...local.practiced, ...remote.practiced])),
+              quizCorrect: Math.max(local.quizCorrect, remote.quizCorrect),
+              quizTotal: Math.max(local.quizTotal, remote.quizTotal),
+              spellCompleted: Math.max(local.spellCompleted, remote.spellCompleted),
             };
+            progressRef.current = merged;
             setProgress(merged);
             // Persist merged state to Dexie
             if (db) {
@@ -81,6 +89,9 @@ export function useProgress() {
           }
         });
     }
+    return () => {
+      cancelled = true;
+    };
   }, [isAuthenticated, userId]); // Keep deps clean of progress to avoid loop
 
   // Save function that persists to Dexie and Supabase

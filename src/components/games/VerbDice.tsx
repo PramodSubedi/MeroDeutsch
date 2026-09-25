@@ -162,16 +162,16 @@ export function VerbDice() {
   return (
     <div className={theme.panel.surface}>
       <div className="mb-4 flex items-center justify-between gap-3">
-        <h3 className="text-lg font-semibold text-slate-950 dark:text-white">
+        <h3 className="text-lg font-semibold text-ink-950 dark:text-white">
           {isDE ? 'Verb-Würfelspiel' : 'Verb-Dice Challenge'}
         </h3>
-        <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">
+        <span className="text-body font-semibold text-ink-500 dark:text-ink-400">
           {isDE ? 'Richtig' : 'Right'} {stats.right} · {isDE ? 'Verpasst' : 'Missed'} {stats.missed}
         </span>
       </div>
 
       {phase === 'idle' && (
-        <p className="mb-4 text-center text-xs text-slate-500 dark:text-slate-400">
+        <p className="mb-4 text-center text-meta text-ink-500 dark:text-ink-400">
           {isDE
             ? 'Würfle! Würfel 1 = Pronomen, Würfel 2 = Verb — konjugiere in 10 Sekunden!'
             : 'Roll! Dice 1 = pronoun, dice 2 = verb — conjugate within 10 seconds!'}
@@ -181,31 +181,31 @@ export function VerbDice() {
       {/* Dice display: pronoun face + verb face */}
       <div className="mx-auto flex max-w-md items-center justify-center gap-3">
         <div
-          className={`flex min-h-[76px] w-full flex-col items-center justify-center rounded-2xl border-2 border-slate-200 bg-white p-3 dark:border-slate-700 dark:bg-slate-800 ${
+          className={`flex min-h-[76px] w-full flex-col items-center justify-center rounded-lg border-2 border-ink-200 bg-white p-3 dark:border-ink-700 dark:bg-ink-800 ${
             busy ? 'animate-pulse' : ''
           }`}
         >
-          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-ink-500">
             {isDE ? 'Würfel 1' : 'Dice 1'}
           </span>
-          <span className="mt-1 text-center text-lg font-extrabold text-blue-600 dark:text-blue-300">
+          <span className="mt-1 text-center text-lg font-extrabold text-accent-600 dark:text-accent-300">
             {PRONOUN_LABELS[displayPronoun].de}
           </span>
           {!isDE && (
-            <span className="text-center text-[10px] text-slate-400">
+            <span className="text-center text-[10px] text-ink-500">
               {PRONOUN_LABELS[displayPronoun].en}
             </span>
           )}
         </div>
         <div
-          className={`flex min-h-[76px] w-full flex-col items-center justify-center rounded-2xl border-2 border-slate-200 bg-white p-3 dark:border-slate-700 dark:bg-slate-800 ${
+          className={`flex min-h-[76px] w-full flex-col items-center justify-center rounded-lg border-2 border-ink-200 bg-white p-3 dark:border-ink-700 dark:bg-ink-800 ${
             busy ? 'animate-pulse' : ''
           }`}
         >
-          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-ink-500">
             {isDE ? 'Würfel 2' : 'Dice 2'}
           </span>
-          <span className="mt-1 text-lg font-extrabold text-violet-600 dark:text-violet-300">
+          <span className="mt-1 text-lg font-extrabold text-accent-600 dark:text-accent-300">
             {displayVerb}
           </span>
         </div>
@@ -227,20 +227,20 @@ export function VerbDice() {
       {phase === 'answer' && turn && (
         <div className="mx-auto mt-4 max-w-md">
           {/* Countdown bar (10s → 0) */}
-          <div className="mb-3 h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
+          <div className="mb-3 h-2 overflow-hidden rounded-full bg-ink-200 dark:bg-ink-700">
             <div
               className={`h-full rounded-full transition-all duration-1000 ease-linear ${
                 timeLeft <= 3
-                  ? 'bg-red-500'
+                  ? 'bg-danger-500'
                   : timeLeft <= 6
-                    ? 'bg-amber-500'
-                    : 'bg-emerald-500'
+                    ? 'bg-warning-500'
+                    : 'bg-success-500'
               }`}
               style={{ width: `${(timeLeft / A1_VERB_DICE.timerSeconds) * 100}%` }}
             />
           </div>
           <div className="mb-3 flex items-center justify-between">
-            <span className="text-sm font-bold text-slate-600 dark:text-slate-300">
+            <span className="text-body font-bold text-ink-600 dark:text-ink-300">
               ⏱ {timeLeft}s
             </span>
             <button
@@ -260,16 +260,16 @@ export function VerbDice() {
               const isAnswer = opt === turn.correct;
               const bg =
                 isAnswer
-                  ? 'bg-emerald-100 text-emerald-900 dark:bg-emerald-950/30 dark:text-emerald-300'
+                  ? 'bg-success-100 text-success-900 dark:bg-success-950/30 dark:text-success-300'
                   : chosen
-                    ? 'bg-red-100 text-red-900 dark:bg-red-950/30 dark:text-red-300'
-                    : 'bg-white text-slate-800 shadow-sm hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-200';
+                    ? 'bg-danger-100 text-danger-900 dark:bg-danger-950/30 dark:text-danger-300'
+                    : 'border border-ink-200 bg-white text-ink-800 shadow-sm hover:bg-ink-50 dark:bg-ink-800 dark:border-ink-800 dark:text-ink-200';
               return (
                 <button
                   key={opt}
                   type="button"
                   onClick={() => choose(opt)}
-                  className={`min-h-[44px] rounded-xl px-4 py-2.5 text-left text-sm font-semibold transition active:scale-95 ${bg}`}
+                  className={`min-h-[44px] rounded-md px-4 py-2.5 text-left text-body font-semibold transition active:scale-95 ${bg}`}
                 >
                   {opt}
                 </button>
@@ -282,10 +282,10 @@ export function VerbDice() {
       {/* Reveal: timeout or answer shown — correct form + answer audio when wrong */}
       {phase === 'revealed' && turn && (
         <div
-          className={`mx-auto mt-4 max-w-md rounded-xl p-3 text-sm ${
+          className={`mx-auto mt-4 max-w-md rounded-md p-3 text-body ${
             wasRight
-              ? 'bg-emerald-50 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-200'
-              : 'bg-amber-50 text-amber-900 dark:bg-amber-950/40 dark:text-amber-200'
+              ? 'bg-success-50 text-success-800 dark:bg-success-950/40 dark:text-success-200'
+              : 'bg-warning-50 text-warning-900 dark:bg-warning-950/40 dark:text-warning-200'
           }`}
         >
           {wasRight

@@ -136,9 +136,9 @@ export function SpellingPractice({ langMode }: { langMode: LangMode }) {
 
   if (!word) {
     return (
-      <div className="mx-auto max-w-xl rounded-xl bg-white p-5 text-center shadow-sm dark:bg-slate-900">
+      <div className="mx-auto max-w-xl rounded-md border border-ink-200 bg-white p-5 text-center shadow-sm dark:bg-ink-900 dark:border-ink-800">
         <h2 className="text-2xl font-bold">{langMode === 'german' ? 'Rechtschreibung' : 'Spelling Practice'}</h2>
-        <p className="mt-3 text-sm text-slate-500">
+        <p className="mt-3 text-body text-ink-500">
           {langMode === 'german' ? 'Wörter werden geladen…' : 'Loading words…'}
         </p>
       </div>
@@ -146,7 +146,7 @@ export function SpellingPractice({ langMode }: { langMode: LangMode }) {
   }
 
   return (
-    <div className="mx-auto max-w-xl rounded-xl bg-white p-5 text-center shadow-sm dark:bg-slate-900">
+    <div className="mx-auto max-w-xl rounded-md border border-ink-200 bg-white p-5 text-center shadow-sm dark:bg-ink-900 dark:border-ink-800">
       <h2 className="text-2xl font-bold">{langMode === 'german' ? 'Rechtschreibung' : 'Spelling Practice'}</h2>
       <div className="mb-3 mt-2 flex justify-center gap-2">
         {(['easy', 'medium'] as const).map((d) => (
@@ -160,23 +160,23 @@ export function SpellingPractice({ langMode }: { langMode: LangMode }) {
             }}
             className={
               difficulty === d
-                ? 'rounded-lg border border-green-300 bg-green-100 px-3 py-1 text-sm font-semibold text-green-800'
-                : 'rounded-lg border border-slate-300 bg-slate-100 px-3 py-1 text-sm font-semibold dark:border-slate-600 dark:bg-slate-700'
+                ? 'rounded-sm border border-success-300 bg-success-100 px-3 py-1 text-body font-semibold text-success-800'
+                : 'rounded-sm border border-ink-300 bg-ink-100 px-3 py-1 text-body font-semibold dark:border-ink-600 dark:bg-ink-700'
             }
           >
             {d === 'easy' ? (langMode === 'german' ? 'Leicht' : 'Easy') : langMode === 'german' ? 'Mittel' : 'Medium'}
           </button>
         ))}
       </div>
-      <div className="mb-3 text-sm text-slate-600">
-        {langMode === 'german' ? 'Richtig' : 'Correct'}: <b className="text-green-600">{score}</b>
+      <div className="mb-3 text-body text-ink-600">
+        {langMode === 'german' ? 'Richtig' : 'Correct'}: <b className="text-success-600">{score}</b>
       </div>
 
       {!correct ? (
         /* Crash guard — safe error state when the letter id is missing, no white screen */
-        <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 p-6 text-center dark:border-amber-700 dark:bg-amber-900/20">
+        <div className="mb-4 rounded-md border border-warning-200 bg-warning-50 p-6 text-center dark:border-warning-700 dark:bg-warning-900/20">
           <div className="text-3xl" aria-hidden="true">⚠️</div>
-          <p className="mt-2 text-sm font-semibold text-amber-800 dark:text-amber-300">
+          <p className="mt-2 text-body font-semibold text-warning-800 dark:text-warning-300">
             {langMode === 'german'
               ? `Für den Buchstaben "${target}" wurden keine Daten gefunden.`
               : `No data found for letter "${target}".`}
@@ -184,26 +184,26 @@ export function SpellingPractice({ langMode }: { langMode: LangMode }) {
           <button
             type="button"
             onClick={() => start()}
-            className="mt-4 rounded-lg bg-amber-600 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-700"
+            className="mt-4 rounded-sm bg-warning-600 px-4 py-2 text-body font-semibold text-white hover:bg-warning-700"
           >
             {langMode === 'german' ? 'Neues Wort' : 'New Word'}
           </button>
         </div>
       ) : (
         <>
-          <div className="mb-2 text-xs uppercase text-slate-500">{langMode === 'german' ? 'Wort' : 'Spell this word'}</div>
-          <div className="text-4xl font-bold tracking-widest text-blue-700 dark:text-blue-400">{word.word}</div>
-          {langMode !== 'german' && <div className="mb-2 text-sm text-slate-500">{word.meaning}</div>}
-          <button type="button" className="mb-4 text-xs text-blue-600" onClick={() => speakWord(word.word)}>
+          <div className="mb-2 text-meta uppercase text-ink-500">{langMode === 'german' ? 'Wort' : 'Spell this word'}</div>
+          <div className="text-4xl font-bold tracking-widest text-accent-700 dark:text-accent-400">{word.word}</div>
+          {langMode !== 'german' && <div className="mb-2 text-body text-ink-500">{word.meaning}</div>}
+          <button type="button" className="mb-4 text-meta text-accent-600" onClick={() => speakWord(word.word)}>
             🔊 {langMode === 'german' ? 'Wort' : 'Hear Word'}
           </button>
           <div className="mb-4 flex flex-wrap justify-center gap-1.5">
             {word.letters.map((l, i) => {
               const ph = alphabetData.find((d) => d.id === l)?.gerPhonetic || l;
-              let cls = 'flex h-12 min-w-12 items-center justify-center rounded-lg text-sm font-bold';
-              if (i < idx) cls += ' border-2 border-green-500 bg-green-100 text-green-800';
-              else if (i === idx && !done) cls += ' border-2 border-blue-500 bg-blue-100 text-blue-800';
-              else cls += ' border-2 border-dashed border-slate-300 text-slate-400 dark:border-slate-600';
+              let cls = 'flex h-12 min-w-12 items-center justify-center rounded-sm text-body font-bold';
+              if (i < idx) cls += ' border-2 border-success-500 bg-success-100 text-success-800';
+              else if (i === idx && !done) cls += ' border-2 border-accent-500 bg-accent-100 text-accent-800';
+              else cls += ' border-2 border-dashed border-ink-300 text-ink-500 dark:border-ink-600';
               return (
                 <div key={i} className={cls}>
                   {i < idx ? ph : i === idx && !done ? l : '?'}
@@ -218,11 +218,11 @@ export function SpellingPractice({ langMode }: { langMode: LangMode }) {
                   key={o.id}
                   type="button"
                   onClick={() => check(o.id)}
-                  className="rounded-xl border-2 border-slate-200 p-2.5 text-sm font-medium transition-colors hover:border-green-500 dark:border-slate-600"
+                  className="rounded-md border-2 border-ink-200 p-2.5 text-body font-medium transition-colors hover:border-success-500 dark:border-ink-600"
                 >
                   <span className="block font-semibold">{resolvePhonetic(o.id, o.gerPhonetic)}</span>
                   {langMode !== 'german' && (
-                    <div className="mt-1 text-xs text-slate-500">
+                    <div className="mt-1 text-meta text-ink-500">
                       <div>{o.engPhonetic}</div>
                       <div>{o.nepPhonetic}</div>
                     </div>
@@ -231,14 +231,14 @@ export function SpellingPractice({ langMode }: { langMode: LangMode }) {
               ))}
             </div>
           )}
-          {feedback && <div className="mb-2 font-bold text-green-600">{feedback}</div>}
+          {feedback && <div className="mb-2 font-bold text-success-600">{feedback}</div>}
           <div className="flex justify-center gap-2">
             {done && (
-              <button type="button" onClick={() => start()} className="rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white">
+              <button type="button" onClick={() => start()} className="rounded-sm bg-success-600 px-4 py-2 text-body font-semibold text-white">
                 {langMode === 'german' ? 'Nächstes Wort →' : 'Next Word →'}
               </button>
             )}
-            <button type="button" onClick={() => start()} className="rounded-lg bg-slate-200 px-4 py-2 text-sm font-semibold dark:bg-slate-600">
+            <button type="button" onClick={() => start()} className="rounded-sm bg-ink-200 px-4 py-2 text-body font-semibold dark:bg-ink-600">
               {langMode === 'german' ? 'Neues Wort' : 'New Word'}
             </button>
           </div>

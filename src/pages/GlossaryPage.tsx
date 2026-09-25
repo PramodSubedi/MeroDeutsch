@@ -32,10 +32,10 @@ interface GlossaryEntry {
 
 function levelBadge(level?: string): string {
   switch (level) {
-    case 'A1': return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300';
-    case 'A2': return 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300';
-    case 'B1': return 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300';
-    case 'B2': return 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300';
+    case 'A1': return 'bg-success-100 text-success-700 dark:bg-success-900/40 dark:text-success-300';
+    case 'A2': return 'bg-accent-100 text-accent-700 dark:bg-accent-900/40 dark:text-accent-300';
+    case 'B1': return 'bg-warning-100 text-warning-700 dark:bg-warning-900/40 dark:text-warning-300';
+    case 'B2': return 'bg-danger-100 text-danger-700 dark:bg-danger-900/40 dark:text-danger-300';
     default: return '';
   }
 }
@@ -44,15 +44,15 @@ function levelBadge(level?: string): string {
 function vocabStatusBadge(status: VocabStatusValue | undefined): string {
   switch (status) {
     case 'new':
-      return 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400';
+      return 'bg-ink-100 text-ink-500 dark:bg-ink-800 dark:text-ink-400';
     case 'learning':
-      return 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300';
+      return 'bg-warning-100 text-warning-700 dark:bg-warning-900/40 dark:text-warning-300';
     case 'known':
-      return 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300';
+      return 'bg-accent-100 text-accent-700 dark:bg-accent-900/40 dark:text-accent-300';
     case 'mastered':
-      return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300';
+      return 'bg-success-100 text-success-700 dark:bg-success-900/40 dark:text-success-300';
     default:
-      return 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400';
+      return 'bg-ink-100 text-ink-500 dark:bg-ink-800 dark:text-ink-400';
   }
 }
 
@@ -127,7 +127,7 @@ function HighlightText({ text, query }: { text: string; query: string }) {
   return (
     <>
       {before}
-      <mark className="rounded bg-blue-100 px-0.5 text-blue-800 dark:bg-blue-900/50 dark:text-blue-200">
+      <mark className="rounded-sm bg-accent-100 px-0.5 text-accent-800 dark:bg-accent-900/50 dark:text-accent-200">
         {match}
       </mark>
       {after}
@@ -497,10 +497,10 @@ export function GlossaryPage() {
   if (!dataLoaded) {
     return (
       <div className={theme.page.container}>
-        <h1 className="text-2xl font-semibold tracking-tight text-slate-950 dark:text-white">{title}</h1>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{description}</p>
+        <h1 className="text-2xl font-semibold tracking-tight text-ink-950 dark:text-white">{title}</h1>
+        <p className="mt-1 text-body text-ink-500 dark:text-ink-400">{description}</p>
         <p
-          className="mt-4 text-sm text-slate-500 dark:text-slate-400"
+          className="mt-4 text-body text-ink-500 dark:text-ink-400"
           role="status"
           aria-live="polite"
         >
@@ -513,8 +513,8 @@ export function GlossaryPage() {
   if (loadFailed) {
     return (
       <div className={theme.page.container}>
-        <h1 className="text-2xl font-semibold tracking-tight text-slate-950 dark:text-white">{title}</h1>
-        <p role="alert" className="mt-4 text-sm text-amber-700 dark:text-amber-300">
+        <h1 className="text-2xl font-semibold tracking-tight text-ink-950 dark:text-white">{title}</h1>
+        <p role="alert" className="mt-4 text-body text-warning-700 dark:text-warning-300">
           {isDE ? 'Glossardaten konnten nicht geladen werden.' : 'Glossary data could not be loaded.'}
         </p>
         <button type="button" onClick={() => setReloadData((attempt) => attempt + 1)} className={`${theme.button.secondary} mt-4`}>
@@ -530,11 +530,11 @@ export function GlossaryPage() {
         title="German Glossary | MeroDeutsch"
         description="Search all A1 German vocabulary including alphabet, numbers, calendar, greetings, articles, and curated word lists."
       />
-      <h1 className="text-2xl font-semibold tracking-tight text-slate-950 dark:text-white">{title}</h1>
-      <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{description}</p>
+      <h1 className="text-2xl font-semibold tracking-tight text-ink-950 dark:text-white">{title}</h1>
+      <p className="mt-1 text-body text-ink-500 dark:text-ink-400">{description}</p>
 
       {/* Gender legend */}
-      <div className="mt-3 flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
+      <div className="mt-3 flex items-center gap-3 text-meta text-ink-500 dark:text-ink-400">
         <span className="font-semibold uppercase tracking-wider">{isDE ? 'Artikel' : 'Articles'}:</span>
         <span className={theme.gender.der.text}>der</span>
         <span className={theme.gender.dieF.text}>die</span>
@@ -543,7 +543,7 @@ export function GlossaryPage() {
       </div>
 
       {/* Learning-status legend (vocab-status tracking is opt-in per word) */}
-      <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-slate-500 dark:text-slate-400">
+      <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-meta text-ink-500 dark:text-ink-400">
         <span className="font-semibold uppercase tracking-wider">
           {isDE ? 'Status' : 'Status'}:
         </span>
@@ -560,7 +560,7 @@ export function GlossaryPage() {
           <select
             value={sortKey}
             onChange={(e) => setSortKey(e.target.value)}
-            className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+            className="rounded-sm border border-ink-200 bg-white px-3 py-1.5 text-body text-ink-900 dark:border-ink-700 dark:bg-ink-800 dark:text-ink-100"
             aria-label={isDE ? 'Sortieren nach' : 'Sort by'}
           >
             <option value="az">{isDE ? 'A–Z' : 'A–Z'}</option>
@@ -611,7 +611,7 @@ export function GlossaryPage() {
       </div>
 
       {filtered.length === 0 ? (
-        <p className="mt-4 text-sm italic text-slate-500">{noResults}</p>
+        <p className="mt-4 text-body italic text-ink-500">{noResults}</p>
       ) : (
         <div
           ref={parentRef}
@@ -641,11 +641,11 @@ export function GlossaryPage() {
                     transform: `translateY(${virtualRow.start}px)`,
                   }}
                 >
-                  <div className="rounded-2xl bg-white p-5 shadow-sm transition duration-300 hover:shadow-md dark:bg-slate-900 mb-3">
+                  <div className="rounded-lg border border-ink-200 bg-white p-5 shadow-sm transition duration-300 hover:shadow-md dark:bg-ink-900 dark:border-ink-800 mb-3">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0 flex-1">
                         {/* Gender-colored article prefix (der=blue, die=red, das=green). */}
-                        <div className="text-lg font-semibold text-slate-950 dark:text-white">
+                        <div className="text-lg font-semibold text-ink-950 dark:text-white">
                           {(() => {
                             const m = entry.de.match(/^(der|die|das)\s+(.+)$/i);
                             if (!m) {
@@ -663,28 +663,28 @@ export function GlossaryPage() {
                         </div>
                         {/* Plural form (nouns only) */}
                         {entry.plural && entry.plural !== '-' && !isDE && (
-                          <div className="mt-0.5 text-xs text-slate-400 dark:text-slate-500">
+                          <div className="mt-0.5 text-meta text-ink-500 dark:text-ink-500">
                             pl. {entry.plural}
                           </div>
                         )}
                         {/* Translations */}
                         {!isDE && (
-                          <div className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+                          <div className="mt-1 text-body text-ink-600 dark:text-ink-300">
                             <div><HighlightText text={entry.en} query={query} /></div>
-                            <div className="text-slate-500 dark:text-slate-400">
+                            <div className="text-ink-500 dark:text-ink-400">
                               <HighlightText text={entry.ne} query={query} />
                             </div>
                             {entry.neRoman && (
-                              <div className="text-xs italic text-slate-400 dark:text-slate-500">{entry.neRoman}</div>
+                              <div className="text-meta italic text-ink-500 dark:text-ink-500">{entry.neRoman}</div>
                             )}
                           </div>
                         )}
                         {/* Example sentence */}
                         {entry.exampleDe && (
-                          <div className="mt-2 text-sm italic text-slate-500 dark:text-slate-400">
+                          <div className="mt-2 text-body italic text-ink-500 dark:text-ink-400">
                             {entry.exampleDe}
                             {entry.exampleEn && !isDE && (
-                              <span className="block text-xs not-italic text-slate-400 dark:text-slate-500">
+                              <span className="block text-meta not-italic text-ink-500 dark:text-ink-500">
                                 {entry.exampleEn}
                               </span>
                             )}
@@ -692,7 +692,7 @@ export function GlossaryPage() {
                         )}
                         {/* Meta badges */}
                         <div className="mt-2 flex flex-wrap items-center gap-2">
-                          <span className="text-xs font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400">
+                          <span className="text-meta font-semibold uppercase tracking-wider text-accent-600 dark:text-accent-400">
                             {entry.source}
                           </span>
                           {lvlClass && (
@@ -701,12 +701,12 @@ export function GlossaryPage() {
                             </span>
                           )}
                           {entry.pos && entry.source === 'Vocabulary' && (
-                            <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-400">
+                            <span className="rounded-full bg-ink-100 px-2 py-0.5 text-[10px] font-semibold text-ink-600 dark:bg-ink-800 dark:text-ink-400">
                               {entry.pos}
                             </span>
                           )}
                           {entry.categories?.map((category) => (
-                            <span key={category} className="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-700 dark:bg-amber-950/40 dark:text-amber-300">
+                            <span key={category} className="rounded-full bg-warning-50 px-2 py-0.5 text-[10px] font-semibold text-warning-700 dark:bg-warning-950/40 dark:text-warning-300">
                               {topicalTagLabel(category, isDE)}
                             </span>
                           ))}

@@ -28,9 +28,9 @@ export const Logo: React.FC<LogoProps> = ({
   // Strictly 2 Themes: On Dark (dark surfaces) vs On Light (navbar, hero & footer)
     const isOnDark = variant === 'on-dark';
     // "Mero" = bold primary (white on dark backgrounds)
-    const meroColor = isOnDark ? 'text-white font-black' : 'text-red-600 font-black';
+    const meroColor = isOnDark ? 'text-white font-black' : 'text-danger-600 font-black';
     // "Deutsch" = charcoal on light, crisp WHITE in dark mode (Hero/Footer/navbar)
-    const deutschColor = isOnDark ? 'text-white font-black' : 'text-slate-900 font-black dark:text-white';
+    const deutschColor = isOnDark ? 'text-white font-black' : 'text-ink-900 font-black dark:text-white';
 
   const icon = (
     <div className={`relative flex-shrink-0 ${iconSizes[size]}`}>
@@ -61,10 +61,10 @@ export const Logo: React.FC<LogoProps> = ({
 
       {/* Underline locked to text width */}
       <div className="w-full h-[3px] rounded-full flex overflow-hidden mt-1">
-        <div className="w-1/4 bg-red-600 h-full" />
-        <div className="w-1/4 bg-blue-600 h-full" />
-        <div className="w-1/4 bg-red-500 h-full" />
-        <div className="w-1/4 bg-amber-400 h-full" />
+        <div className="w-1/4 bg-danger-600 h-full" />
+        <div className="w-1/4 bg-accent-600 h-full" />
+        <div className="w-1/4 bg-danger-500 h-full" />
+        <div className="w-1/4 bg-warning-400 h-full" />
       </div>
     </div>
   );

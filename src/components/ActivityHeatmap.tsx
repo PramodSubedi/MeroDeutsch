@@ -31,11 +31,11 @@ interface ActivityHeatmapProps {
 type IntensityTier = 0 | 1 | 2 | 3 | 4;
 
 const TIER_CLASSES: Record<IntensityTier, string> = {
-  0: 'bg-slate-100 dark:bg-slate-800',
-  1: 'bg-blue-200 dark:bg-blue-900/50', // #bfdbfe
-  2: 'bg-blue-400 dark:bg-blue-600/70', // #60a5fa
-  3: 'bg-blue-600 dark:bg-blue-500/90', // #2563eb (brand)
-  4: 'bg-blue-800 dark:bg-blue-300', // #1e40af (peak)
+  0: 'bg-ink-100 dark:bg-ink-800 dark:border-ink-800',
+  1: 'bg-accent-200 dark:bg-accent-900/50', // #bfdbfe
+  2: 'bg-accent-400 dark:bg-accent-600/70', // #60a5fa
+  3: 'bg-accent-600 dark:bg-accent-500/90', // #2563eb (brand)
+  4: 'bg-accent-800 dark:bg-accent-300', // #1e40af (peak)
 };
 
 function tierFor(count: number): IntensityTier {
@@ -95,21 +95,21 @@ export function ActivityHeatmap({ activities = [], days = 30 }: ActivityHeatmapP
   const totalXp = totalActivity * XP_PER_EVENT;
 
   return (
-    <div className="rounded-2xl bg-white p-6 shadow-sm dark:bg-slate-900">
+    <div className="rounded-lg border border-ink-200 bg-white p-6 shadow-sm dark:bg-ink-900">
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h3 className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">
+          <h3 className="text-body font-semibold uppercase tracking-[0.3em] text-ink-500 dark:text-ink-400">
             {isDE ? 'Aktivität' : 'Activity'}
           </h3>
-          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+          <p className="mt-1 text-meta text-ink-500 dark:text-ink-400">
             {isDE
               ? `${activeDays} aktive Tage in den letzten ${days} Tagen`
               : `${activeDays} active days in the last ${days} days`}
           </p>
         </div>
         <div className="text-right">
-          <div className="text-2xl font-bold text-slate-950 dark:text-white">{totalXp}</div>
-          <div className="text-xs text-slate-500 dark:text-slate-400">XP</div>
+          <div className="text-2xl font-bold text-ink-950 dark:text-white">{totalXp}</div>
+          <div className="text-meta text-ink-500 dark:text-ink-400">XP</div>
         </div>
       </div>
 
@@ -120,21 +120,21 @@ export function ActivityHeatmap({ activities = [], days = 30 }: ActivityHeatmapP
             key={day.date}
             role="img"
             aria-label={`${parseLocalDateKey(day.date).toLocaleDateString(isDE ? 'de-DE' : 'en-US', { dateStyle: 'long' })}: ${day.count * XP_PER_EVENT} XP`}
-            className={`group relative aspect-square rounded transition-all duration-200 hover:scale-110 hover:shadow-lg ${TIER_CLASSES[tierFor(day.count)]}`}
+            className={`group/day relative aspect-square rounded-sm transition-all duration-200 hover:scale-110 hover:shadow-lg ${TIER_CLASSES[tierFor(day.count)]}`}
             title={`${getDayLabel(day.date)}: ${day.count * XP_PER_EVENT} XP`}
           >
             {/* Tooltip on hover — exact date + XP earned */}
-            <div className="pointer-events-none absolute -top-12 left-1/2 z-10 hidden -translate-x-1/2 whitespace-nowrap rounded-lg bg-slate-900 px-2 py-1 text-xs text-white opacity-0 shadow-lg transition-opacity group-hover:block group-hover:opacity-100 dark:bg-slate-700">
+            <div className="pointer-events-none absolute left-1/2 top-full z-10 mt-2 hidden -translate-x-1/2 whitespace-nowrap rounded-sm bg-ink-900 px-2 py-1 text-meta text-white opacity-0 shadow-lg transition-opacity group-hover/day:block group-hover/day:opacity-100 dark:bg-ink-700">
               <div>{getDayLabel(day.date)}</div>
               <div className="font-semibold">{day.count * XP_PER_EVENT} XP</div>
-              <div className="absolute -bottom-1 left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 bg-slate-900 dark:bg-slate-700"></div>
+              <div className="absolute -top-1 left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 bg-ink-900 dark:bg-ink-700"></div>
             </div>
           </div>
         ))}
       </div>
 
       {/* Legend — brand-blue intensity scale */}
-      <div className="mt-4 flex items-center justify-end gap-2 text-xs text-slate-500 dark:text-slate-400">
+      <div className="mt-4 flex items-center justify-end gap-2 text-meta text-ink-500 dark:text-ink-400">
         <span>{isDE ? 'Weniger' : 'Less'}</span>
         <div className="flex gap-1">
           {(Object.keys(TIER_CLASSES) as unknown as string[])
@@ -143,7 +143,7 @@ export function ActivityHeatmap({ activities = [], days = 30 }: ActivityHeatmapP
             .map((tier) => (
               <div
                 key={tier}
-                className={`h-3 w-3 rounded ${TIER_CLASSES[tier as IntensityTier]}`}
+                className={`h-3 w-3 rounded-sm ${TIER_CLASSES[tier as IntensityTier]}`}
               ></div>
             ))}
         </div>

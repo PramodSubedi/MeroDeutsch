@@ -54,11 +54,11 @@ function resolveNodes(unitIndex: number): PathNode[] {
 /** Module pill styles — green completed vs solid blue active vs white locked. */
 const PILL_STYLES: Record<PillState, string> = {
   completed:
-    'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-300',
+    'bg-success-50 text-success-700 dark:bg-success-950/30 dark:text-success-300',
   active:
-    'bg-blue-600 text-white shadow-sm hover:bg-blue-700 dark:bg-blue-700',
+    'bg-accent-600 text-white shadow-sm hover:bg-accent-700 dark:bg-accent-700',
   locked:
-    'bg-white text-slate-400 shadow-sm dark:bg-slate-800 dark:text-slate-500',
+    'border border-ink-200 bg-white text-ink-500 shadow-sm dark:bg-ink-800 dark:border-ink-800 dark:text-ink-500',
 };
 
 import { ChevronDown, ChevronUp } from 'lucide-react';
@@ -88,24 +88,24 @@ function UnitCard({ unitIndex }: { unitIndex: number }) {
   // Node marker color follows the unit phase.
   const markerTone =
     phase === 'done'
-      ? 'bg-emerald-600 text-white'
+      ? 'bg-success-600 text-white'
       : phase === 'current'
-        ? 'bg-blue-600 text-white'
-        : 'bg-slate-200 text-slate-500 dark:bg-slate-700 dark:text-slate-400';
+        ? 'bg-accent-600 text-white'
+        : 'bg-ink-200 text-ink-500 dark:bg-ink-700 dark:text-ink-400';
 
   // Card surface: elevated white when unlocked, compact tinted when locked.
   const cardTone =
     phase === 'locked'
-      ? 'rounded-2xl bg-slate-50 p-5 dark:bg-slate-800/60'
-      : 'rounded-2xl bg-white p-6 shadow-md dark:bg-slate-900';
+      ? 'rounded-lg bg-ink-50 p-5 dark:bg-ink-800/60'
+      : 'rounded-lg border border-ink-200 bg-white p-6 dark:border-ink-800 dark:bg-ink-900';
 
   // Status pill tone.
   const statusPillTone =
     phase === 'done'
-      ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300'
+      ? 'bg-success-100 text-success-700 dark:bg-success-950/40 dark:text-success-300'
       : phase === 'current'
-        ? 'bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300'
-        : 'bg-slate-200 text-slate-500 dark:bg-slate-700 dark:text-slate-400';
+        ? 'bg-accent-100 text-accent-700 dark:bg-accent-950/40 dark:text-accent-300'
+        : 'bg-ink-200 text-ink-500 dark:bg-ink-700 dark:text-ink-400';
 
   /** Pill state per module node, derived from real path progress. */
   const pillStateFor = (node: PathNode): PillState => {
@@ -120,9 +120,9 @@ function UnitCard({ unitIndex }: { unitIndex: number }) {
       {unitIndex > 0 && (
         <span aria-hidden="true" className="absolute left-[15px] -top-10 h-14 w-[2px] sm:left-[19px]">
           {progressReached ? (
-            <span className="block h-full w-[2px] bg-blue-600" />
+            <span className="block h-full w-[2px] bg-accent-600" />
           ) : (
-            <span className="block h-full w-0 border-l-2 border-dashed border-slate-300 dark:border-slate-600" />
+            <span className="block h-full w-0 border-l-2 border-dashed border-ink-300 dark:border-ink-600" />
           )}
         </span>
       )}
@@ -130,7 +130,7 @@ function UnitCard({ unitIndex }: { unitIndex: number }) {
       {/* Timeline node (circle) */}
       <div
         aria-hidden="true"
-        className={`absolute left-0 top-4 flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold shadow-sm ring-4 ring-slate-50 transition-colors dark:ring-slate-950 ${markerTone}`}
+        className={`absolute left-0 top-4 flex h-8 w-8 items-center justify-center rounded-full text-body font-bold shadow-sm ring-4 ring-ink-50 transition-colors dark:ring-ink-950 ${markerTone}`}
       >
         {phase === 'done' ? <CheckCircle className="h-4 w-4" /> : unit.code}
       </div>
@@ -140,23 +140,23 @@ function UnitCard({ unitIndex }: { unitIndex: number }) {
         <div className="flex items-start justify-between gap-3">
           <div>
             {/* Eyebrow — band letter; SUPPORT band B is labelled optional */}
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+            <span className="text-meta font-bold uppercase tracking-wider text-ink-500 dark:text-ink-500">
               {isDE ? `BAND ${unit.code}${isSupport ? ' · OPTIONAL' : ''}` : `BAND ${unit.code}${isSupport ? ' · OPTIONAL' : ''}`}
             </span>
             <h3
               className={`mt-1 text-xl font-bold ${
                 phase === 'locked'
-                  ? 'text-slate-700 dark:text-slate-300'
-                  : 'text-slate-900 dark:text-white'
+                  ? 'text-ink-700 dark:text-ink-300'
+                  : 'text-ink-900 dark:text-white'
               }`}
             >
               {isDE ? unit.title.de : unit.title.en}
             </h3>
           </div>
           {/* Status pill */}
-          <span className={`shrink-0 rounded-md px-2.5 py-1 text-xs font-semibold ${
+          <span className={`shrink-0 rounded-sm px-2.5 py-1 text-meta font-semibold ${
             isSupport
-              ? 'bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300'
+              ? 'bg-warning-100 text-warning-800 dark:bg-warning-950/40 dark:text-warning-300'
               : statusPillTone
           }`}>
             {isSupport
@@ -169,7 +169,7 @@ function UnitCard({ unitIndex }: { unitIndex: number }) {
           </span>
         </div>
 
-        <p className="mb-5 mt-2 text-sm text-slate-500 dark:text-slate-400">
+        <p className="mb-5 mt-2 text-body text-ink-500 dark:text-ink-400">
           {isDE ? `${unit.theme.de} · ${unit.goal.de}` : `${unit.theme.en} · ${unit.goal.en}`}
         </p>
 
@@ -197,7 +197,7 @@ function UnitCard({ unitIndex }: { unitIndex: number }) {
                     <span className="truncate">{label}</span>
                   </>
                 );
-                const cls = `inline-flex min-h-[44px] items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors active:scale-95 ${PILL_STYLES[state]}`;
+                const cls = `inline-flex min-h-[44px] items-center gap-1.5 rounded-sm px-3 py-1.5 text-body font-medium transition-colors active:scale-95 ${PILL_STYLES[state]}`;
 
                 if (!navigable) {
                   return (
@@ -229,7 +229,7 @@ function UnitCard({ unitIndex }: { unitIndex: number }) {
           </div>
         ) : (
           <div className="space-y-2">
-            <div className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+            <div className="text-meta font-semibold uppercase tracking-wider text-ink-500 dark:text-ink-500">
               {isDE ? 'Vorschau der Module:' : 'Module preview:'}
             </div>
             <div className="flex flex-wrap gap-2.5">
@@ -240,7 +240,7 @@ function UnitCard({ unitIndex }: { unitIndex: number }) {
                   return (
                     <div
                       key={node.id}
-                      className="inline-flex min-h-[44px] items-center gap-1.5 rounded-lg bg-slate-100 text-slate-400 px-3 py-1.5 text-sm font-medium dark:bg-slate-800/40 dark:text-slate-500 cursor-not-allowed opacity-60"
+                      className="inline-flex min-h-[44px] items-center gap-1.5 rounded-sm bg-ink-100 text-ink-500 px-3 py-1.5 text-body font-medium dark:bg-ink-800/40 dark:text-ink-500 cursor-not-allowed opacity-60"
                     >
                       <Lock className="h-3.5 w-3.5" aria-hidden="true" />
                       <span className="truncate">{label}</span>
@@ -259,7 +259,7 @@ function UnitCard({ unitIndex }: { unitIndex: number }) {
               <Link
                 key={n.id}
                 to={n.to}
-                className="mt-3 inline-flex min-h-[44px] items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-800 transition hover:bg-amber-100 active:scale-95 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-300"
+                className="mt-3 inline-flex min-h-[44px] items-center gap-1 rounded-full border border-warning-200 bg-warning-50 px-3 py-1 text-meta font-semibold text-warning-800 transition hover:bg-warning-100 active:scale-95 dark:border-warning-900/50 dark:bg-warning-950/30 dark:text-warning-300"
               >
                 ⭐ {isDE ? n.label.de : n.label.en}
               </Link>
@@ -267,11 +267,11 @@ function UnitCard({ unitIndex }: { unitIndex: number }) {
 
         {/* Pedagogy bridges — default collapsed accordion */}
         {phase !== 'locked' && unit.pedagogy && (
-          <div className="mt-5 border-t border-slate-100 pt-4 dark:border-slate-850">
+          <div className="mt-5 border-t border-ink-100 pt-4 dark:border-ink-850">
             <button
               type="button"
               onClick={() => setPedagogyOpen((o) => !o)}
-              className="flex w-full items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+              className="flex w-full items-center justify-between text-meta font-bold uppercase tracking-wider text-ink-500 hover:text-ink-700 dark:text-ink-400 dark:hover:text-ink-200"
               aria-expanded={pedagogyOpen}
             >
               <span>📚 {isDE ? 'Einheitstipps & Erklärungen' : 'Unit Tips & Explanations'}</span>
@@ -283,25 +283,25 @@ function UnitCard({ unitIndex }: { unitIndex: number }) {
                   <HonorificsTable title={unit.pedagogy.honorifics.title} rows={unit.pedagogy.honorifics.rows} />
                 )}
                 {unit.pedagogy.genderLegend && (
-                  <div className="rounded-2xl bg-slate-50 p-3 dark:bg-slate-800/60">
+                  <div className="rounded-lg bg-ink-50 p-3 dark:bg-ink-800/60">
                     <div className="mb-2 flex flex-wrap items-center gap-2">
                       <GenderBadge article="der" />
                       <GenderBadge article="die" />
                       <GenderBadge article="das" />
                       <GenderBadge article="plural" />
                     </div>
-                    <p className="text-xs text-slate-600 dark:text-slate-300">
+                    <p className="text-meta text-ink-600 dark:text-ink-300">
                       {isDE ? unit.pedagogy.genderLegend.de : unit.pedagogy.genderLegend.en}
                     </p>
                   </div>
                 )}
                 {unit.pedagogy.umlautCallout && (
-                  <p className="rounded-xl bg-amber-50 p-3 text-xs text-amber-900 dark:bg-amber-950/30 dark:text-amber-200">
+                  <p className="rounded-md bg-warning-50 p-3 text-meta text-warning-900 dark:bg-warning-950/30 dark:text-warning-200">
                     💡 {isDE ? unit.pedagogy.umlautCallout.de : unit.pedagogy.umlautCallout.en}
                   </p>
                 )}
                 {unit.pedagogy.suffixNote && (
-                  <p className="rounded-xl bg-slate-50 p-3 text-xs text-slate-600 dark:bg-slate-800/60 dark:text-slate-300">
+                  <p className="rounded-md bg-ink-50 p-3 text-meta text-ink-600 dark:bg-ink-800/60 dark:text-ink-300">
                     📝 {isDE ? unit.pedagogy.suffixNote.de : unit.pedagogy.suffixNote.en}
                   </p>
                 )}
@@ -318,7 +318,7 @@ function UnitCard({ unitIndex }: { unitIndex: number }) {
 
         {/* Checkpoint status footer — only CORE bands carry a gate (SUPPORT = none) */}
         {isSupport ? (
-          <p className="mt-4 text-xs font-medium text-amber-700 dark:text-amber-300">
+          <p className="mt-4 text-meta font-medium text-warning-700 dark:text-warning-300">
             {isDE
               ? 'Freiwillig — dieser Band blockiert nie den Lernpfad.'
               : 'Optional — this support band never locks the path.'}
@@ -326,7 +326,7 @@ function UnitCard({ unitIndex }: { unitIndex: number }) {
         ) : (
           phase === 'current' &&
           !passed && (
-            <p className="mt-4 text-xs font-medium text-blue-700 dark:text-blue-300">
+            <p className="mt-4 text-meta font-medium text-accent-700 dark:text-accent-300">
               {isDE
                 ? `Pforte ${unit.code}: brauche ≥80% zum Freischalten des nächsten Bands.${typeof best === 'number' ? ` Bestes Ergebnis: ${Math.round(best * 100)}%.` : ''}`
                 : `Gate ${unit.code}: need ≥80% to unlock the next band.${typeof best === 'number' ? ` Best score: ${Math.round(best * 100)}%.` : ''}`}
@@ -334,7 +334,7 @@ function UnitCard({ unitIndex }: { unitIndex: number }) {
           )
         )}
         {phase === 'locked' && (
-          <p className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-slate-500 dark:text-slate-400">
+          <p className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1 text-meta text-ink-500 dark:text-ink-400">
             <span>
               {isAuthenticated
                 ? isDE
@@ -347,7 +347,7 @@ function UnitCard({ unitIndex }: { unitIndex: number }) {
             {!isAuthenticated && (
               <Link
                 to="/auth"
-                className={`inline-flex min-h-[44px] items-center rounded-lg font-semibold ${theme.button.secondary}`}
+                className={`inline-flex min-h-[44px] items-center rounded-sm font-semibold ${theme.button.secondary}`}
               >
                 {isDE ? 'Anmelden' : 'Sign in'}
               </Link>
@@ -366,10 +366,10 @@ export function UnitSpine() {
   return (
     <section id={ANCHORS.a1Spine} className="mx-auto w-full max-w-3xl py-8">
       <div className="mb-6">
-        <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+        <h2 className="text-xl font-bold text-ink-900 dark:text-white">
           {isDE ? 'Dein A1-Lernpfad' : 'Your A1 learning path'}
         </h2>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+        <p className="mt-1 text-body text-ink-500 dark:text-ink-400">
           {isDE
             ? 'Lerne Band für Band. Jede Pforte schaltet das nächste Band frei.'
             : 'Learn band by band. Each gate unlocks the next band.'}
@@ -383,7 +383,7 @@ export function UnitSpine() {
         {/* Continuous background dashed line (locked territory) */}
         <span
           aria-hidden="true"
-          className="absolute bottom-2 left-[15px] top-2 z-0 w-0 border-l-2 border-dashed border-slate-300 dark:border-slate-600 sm:left-[19px]"
+          className="absolute bottom-2 left-[15px] top-2 z-0 w-0 border-l-2 border-dashed border-ink-300 dark:border-ink-600 sm:left-[19px]"
         />
         {A1_UNITS.map((u) => (
           <UnitCard key={u.id} unitIndex={u.index} />

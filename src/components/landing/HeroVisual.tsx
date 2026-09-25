@@ -1,4 +1,4 @@
-import { BarChart3, BookOpen, Languages, MessagesSquare, Mic, RefreshCw } from 'lucide-react';
+﻿import { BarChart3, BookOpen, Languages, MessagesSquare, Mic, RefreshCw } from 'lucide-react';
 import { useLang } from '../../hooks/useLang';
 
 /**
@@ -10,12 +10,12 @@ import { useLang } from '../../hooks/useLang';
  * prefers-reduced-motion via the injected media query.
  * Guest-safe: presentational only, no links, no auth.
  */
-export function HeroOptionE() {
+export function HeroVisual() {
   const { langMode } = useLang();
   const isDE = langMode === 'german';
 
   const shell =
-    'rounded-2xl border border-white/60 bg-white/70 p-4 shadow-xl backdrop-blur dark:border-slate-700/60 dark:bg-slate-900/70';
+    'rounded-lg border border-ink-200 bg-white p-4 shadow-lg dark:border-ink-800 dark:bg-ink-900';
 
   return (
     <div className="relative h-[500px] w-full max-w-[540px]">
@@ -35,8 +35,8 @@ export function HeroOptionE() {
         {/* A1 modules */}
         <div className="hero-float-slow">
           <div className={`${shell} -rotate-2`}>
-            <p className="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white">
-              <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-600 text-white">
+            <p className="flex items-center gap-2 text-body font-bold text-ink-900 dark:text-white">
+              <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-sm bg-accent-600 text-white">
                 <BookOpen className="h-4 w-4" />
               </span>
               {isDE ? 'A1-Module' : 'A1 modules'}
@@ -46,7 +46,7 @@ export function HeroOptionE() {
                 (chip) => (
                   <span
                     key={chip}
-                    className="rounded-full bg-blue-50 px-2.5 py-1 text-[11px] font-semibold text-blue-700 dark:bg-blue-950/60 dark:text-blue-300"
+                    className="rounded-full bg-accent-50 px-2.5 py-1 text-[11px] font-semibold text-accent-700 dark:bg-accent-950/60 dark:text-accent-300"
                   >
                     {chip}
                   </span>
@@ -59,8 +59,8 @@ export function HeroOptionE() {
         {/* Speak */}
         <div className="hero-float-fast">
           <div className={`${shell} rotate-2`}>
-            <p className="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white">
-              <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-red-500 text-white">
+            <p className="flex items-center gap-2 text-body font-bold text-ink-900 dark:text-white">
+              <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-sm bg-danger-500 text-white">
                 <Mic className="h-4 w-4" />
               </span>
               {isDE ? 'Sprechen' : 'Speak'}
@@ -69,11 +69,11 @@ export function HeroOptionE() {
               {[3, 6, 4, 8, 5, 7, 3, 6].map((h, i) => (
                 <span
                   key={i}
-                  className="w-1.5 rounded-full bg-blue-400/80 dark:bg-blue-500/80"
+                  className="w-1.5 rounded-full bg-accent-400/80 dark:bg-accent-500/80"
                   style={{ height: `${h * 4}px` }}
                 />
               ))}
-              <span className="ml-2 text-xs font-semibold text-slate-500 dark:text-slate-400">„Guten Tag!“</span>
+              <span className="ml-2 text-meta font-semibold text-ink-500 dark:text-ink-400">„Guten Tag!“</span>
             </div>
           </div>
         </div>
@@ -81,8 +81,8 @@ export function HeroOptionE() {
         {/* Stats & progress */}
         <div className="hero-float-slow">
           <div className={`${shell} -rotate-2`}>
-            <p className="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white">
-              <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-500 text-white">
+            <p className="flex items-center gap-2 text-body font-bold text-ink-900 dark:text-white">
+              <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-sm bg-warning-500 text-white">
                 <BarChart3 className="h-4 w-4" />
               </span>
               {isDE ? 'Statistik & Fortschritt' : 'Stats & progress'}
@@ -90,10 +90,10 @@ export function HeroOptionE() {
             <div className="mt-3 flex items-end justify-between gap-2">
               <span className="flex items-end gap-1" aria-hidden="true">
                 {[5, 8, 6, 9, 7].map((h, i) => (
-                  <span key={i} className="w-1.5 rounded-t bg-amber-400" style={{ height: `${h * 4}px` }} />
+                  <span key={i} className="w-1.5 rounded-t bg-warning-400" style={{ height: `${h * 4}px` }} />
                 ))}
               </span>
-              <span className="rounded-full bg-amber-100 px-2.5 py-1 text-[11px] font-bold text-amber-800 dark:bg-amber-900/50 dark:text-amber-200">
+              <span className="rounded-full bg-warning-100 px-2.5 py-1 text-[11px] font-bold text-warning-800 dark:bg-warning-900/50 dark:text-warning-200">
                 {isDE ? '12-Tage-Serie' : '12-day streak'}
               </span>
             </div>
@@ -106,17 +106,17 @@ export function HeroOptionE() {
         {/* Smart review */}
         <div className="hero-float-fast">
           <div className={`${shell} rotate-2`}>
-            <p className="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white">
-              <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-600 text-white">
+            <p className="flex items-center gap-2 text-body font-bold text-ink-900 dark:text-white">
+              <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-sm bg-success-600 text-white">
                 <RefreshCw className="h-4 w-4" />
               </span>
               {isDE ? 'Kluge Wiederholung' : 'Smart review'}
             </p>
             <div className="mt-3 flex items-center justify-between">
-              <span className="rounded-full bg-amber-100 px-2.5 py-1 text-[11px] font-bold text-amber-800 dark:bg-amber-900/50 dark:text-amber-200">
+              <span className="rounded-full bg-warning-100 px-2.5 py-1 text-[11px] font-bold text-warning-800 dark:bg-warning-900/50 dark:text-warning-200">
                 {isDE ? '5 fällig' : '5 due'}
               </span>
-              <span className="text-[11px] font-medium text-slate-400">{isDE ? 'kommen zurück' : 'come back'}</span>
+              <span className="text-[11px] font-medium text-ink-500">{isDE ? 'kommen zurück' : 'come back'}</span>
             </div>
           </div>
         </div>
@@ -124,17 +124,17 @@ export function HeroOptionE() {
         {/* Conversation role-play */}
         <div className="hero-float-slow">
           <div className={`${shell} -rotate-2`}>
-            <p className="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white">
-              <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-violet-600 text-white">
+            <p className="flex items-center gap-2 text-body font-bold text-ink-900 dark:text-white">
+              <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-sm bg-accent-600 text-white">
                 <MessagesSquare className="h-4 w-4" />
               </span>
               {isDE ? 'Gesprächs-Rollenspiele' : 'Conversation role-play'}
             </p>
             <div className="mt-3 space-y-1.5">
-              <p className="w-fit rounded-lg rounded-bl-none bg-blue-50 px-2.5 py-1 text-[11px] font-semibold text-blue-800 dark:bg-blue-950/60 dark:text-blue-200">
+              <p className="w-fit rounded-sm rounded-bl-none bg-accent-50 px-2.5 py-1 text-[11px] font-semibold text-accent-800 dark:bg-accent-950/60 dark:text-accent-200">
                 „Wie geht’s?“
               </p>
-              <p className="ml-auto w-fit rounded-lg rounded-br-none bg-violet-50 px-2.5 py-1 text-[11px] font-semibold text-violet-800 dark:bg-violet-950/60 dark:text-violet-200">
+              <p className="ml-auto w-fit rounded-sm rounded-br-none bg-accent-50 px-2.5 py-1 text-[11px] font-semibold text-accent-800 dark:bg-accent-950/60 dark:text-accent-200">
                 म ठीक छु, धन्यवाद!
               </p>
             </div>
@@ -144,21 +144,21 @@ export function HeroOptionE() {
         {/* Guidance in English + Nepali */}
         <div className="hero-float-fast">
           <div className={`${shell} rotate-2`}>
-            <p className="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white">
-              <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-sky-600 text-white">
+            <p className="flex items-center gap-2 text-body font-bold text-ink-900 dark:text-white">
+              <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-sm bg-accent-600 text-white">
                 <Languages className="h-4 w-4" />
               </span>
               {isDE ? 'Hilfe: Englisch + Nepali' : 'Guidance: English + Nepali'}
             </p>
-            <div className="mt-3 space-y-1.5 text-[11px] font-semibold text-slate-600 dark:text-slate-300">
+            <div className="mt-3 space-y-1.5 text-[11px] font-semibold text-ink-600 dark:text-ink-300">
               <p className="flex items-center gap-1.5">
-                <span className="rounded bg-sky-100 px-1.5 py-0.5 text-[10px] font-bold text-sky-700 dark:bg-sky-900/60 dark:text-sky-300">
+                <span className="rounded-sm bg-accent-100 px-1.5 py-0.5 text-[10px] font-bold text-accent-700 dark:bg-accent-900/60 dark:text-accent-300">
                   EN
                 </span>
                 the table
               </p>
               <p className="flex items-center gap-1.5">
-                <span className="rounded bg-sky-100 px-1.5 py-0.5 text-[10px] font-bold text-sky-700 dark:bg-sky-900/60 dark:text-sky-300">
+                <span className="rounded-sm bg-accent-100 px-1.5 py-0.5 text-[10px] font-bold text-accent-700 dark:bg-accent-900/60 dark:text-accent-300">
                   ने
                 </span>
                 टेबल · der Tisch

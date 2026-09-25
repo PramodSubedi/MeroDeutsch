@@ -65,43 +65,43 @@ export function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="min-h-screen bg-ink-50 dark:bg-ink-950">
       <div className="mx-auto flex min-h-screen max-w-6xl items-center justify-center px-4 py-10">
         <div className="grid w-full items-center gap-10 lg:grid-cols-2">
           {/* Brand panel — desktop only (value props, no app chrome) */}
           <div className="hidden lg:block">
-            <div className="rounded-3xl bg-gradient-to-br from-blue-600 via-blue-700 to-blue-900 p-10 text-white shadow-2xl">
+            <div className="rounded-lg bg-gradient-to-br from-accent-600 via-accent-700 to-accent-900 p-10 text-white shadow-2xl">
               <Logo size="md" variant="on-dark" />
               <h2 className="mt-8 text-3xl font-bold tracking-tight">{isDE ? 'Alles für deinen Start.' : 'Everything a beginner needs.'}</h2>
-              <p className="mt-3 max-w-sm text-blue-100">{isDE ? 'Ein kostenloses Konto, drei Vorteile.' : 'One free account, three lasting benefits.'}</p>
+              <p className="mt-3 max-w-sm text-accent-100">{isDE ? 'Ein kostenloses Konto, drei Vorteile.' : 'One free account, three lasting benefits.'}</p>
               <ul className="mt-8 space-y-5">
                 <li className="flex items-start gap-3">
-                  <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/15">
+                  <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-white/15">
                     <Cloud className="h-5 w-5" aria-hidden="true" />
                   </span>
                   <div>
                     <p className="font-semibold">{isDE ? 'Fortschritt gespeichert und synchronisiert' : 'Progress saved & synced'}</p>
-                    <p className="mt-0.5 text-sm text-blue-100">{isDE ? 'Lerne auf jedem Gerät dort weiter, wo du aufgehört hast.' : 'Pick up on any device where you left off.'}</p>
+                    <p className="mt-0.5 text-body text-accent-100">{isDE ? 'Lerne auf jedem Gerät dort weiter, wo du aufgehört hast.' : 'Pick up on any device where you left off.'}</p>
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/15">
+                  <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-white/15">
                     <Map className="h-5 w-5" aria-hidden="true" />
                   </span>
                   <div>
                     <p className="font-semibold">{isDE ? 'Geführter A1-Lernpfad' : 'Guided A1 path'}</p>
-                    <p className="mt-0.5 text-sm text-blue-100">
+                    <p className="mt-0.5 text-body text-accent-100">
                       {isDE ? 'Einheiten in fester Reihenfolge mit Fortschrittsprüfungen.' : 'Units in a fixed order with checkpoints that gate real progress.'}
                     </p>
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/15">
+                  <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-white/15">
                     <RefreshCw className="h-5 w-5" aria-hidden="true" />
                   </span>
                   <div>
                     <p className="font-semibold">{isDE ? 'Intelligente Wiederholung' : 'Smart review queue'}</p>
-                    <p className="mt-0.5 text-sm text-blue-100">{isDE ? 'Falsch beantwortete Aufgaben kommen gezielt wieder.' : 'Missed items come back on purpose until they stick.'}</p>
+                    <p className="mt-0.5 text-body text-accent-100">{isDE ? 'Falsch beantwortete Aufgaben kommen gezielt wieder.' : 'Missed items come back on purpose until they stick.'}</p>
                   </div>
                 </li>
               </ul>
@@ -110,25 +110,25 @@ export function AuthPage() {
 
           {/* Card */}
           <div className="mx-auto w-full max-w-md">
-            <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-xl dark:border-slate-800 dark:bg-slate-900">
+            <div className="rounded-lg border border-ink-200 bg-white p-8 shadow-xl dark:border-ink-800 dark:bg-ink-900">
               <Logo size="sm" />
-              <p className="mt-4 text-sm leading-6 text-slate-600 dark:text-slate-300">
+              <p className="mt-4 text-body leading-6 text-ink-600 dark:text-ink-300">
                 {mode === 'register'
                   ? isDE ? 'Speichere deinen Fortschritt, folge dem A1-Lernpfad und wiederhole Fehler gezielt.' : 'Save your progress, unlock your guided A1 path, and review mistakes smartly.'
                   : isDE ? 'Melde dich an, um dort weiterzulernen, wo du aufgehört hast.' : 'Sign in to continue where you left off.'}
               </p>
 
               {/* Mode tabs */}
-              <div className="mt-6 grid grid-cols-2 gap-1 rounded-xl bg-slate-100 p-1 dark:bg-slate-800" role="tablist">
+              <div className="mt-6 grid grid-cols-2 gap-1 rounded-md bg-ink-100 p-1 dark:bg-ink-800" role="tablist">
                 <button
                   type="button"
                   onClick={() => setMode('login')}
                   role="tab"
                   aria-selected={mode === 'login'}
-                  className={`min-h-[44px] rounded-lg px-3 text-sm font-semibold transition ${
+                  className={`min-h-[44px] rounded-sm px-3 text-body font-semibold transition ${
                     mode === 'login'
-                      ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white'
-                      : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'
+                      ? 'border border-ink-200 bg-white text-ink-900 shadow-sm dark:bg-ink-700 dark:border-ink-800 dark:text-white'
+                      : 'text-ink-500 hover:text-ink-800 dark:text-ink-400 dark:hover:text-ink-200'
                   }`}
                 >
                   {isDE ? 'Anmelden' : 'Sign in'}
@@ -138,10 +138,10 @@ export function AuthPage() {
                   onClick={() => setMode('register')}
                   role="tab"
                   aria-selected={mode === 'register'}
-                  className={`min-h-[44px] rounded-lg px-3 text-sm font-semibold transition ${
+                  className={`min-h-[44px] rounded-sm px-3 text-body font-semibold transition ${
                     mode === 'register'
-                      ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white'
-                      : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'
+                      ? 'border border-ink-200 bg-white text-ink-900 shadow-sm dark:bg-ink-700 dark:border-ink-800 dark:text-white'
+                      : 'text-ink-500 hover:text-ink-800 dark:text-ink-400 dark:hover:text-ink-200'
                   }`}
                 >
                   {isDE ? 'Konto erstellen' : 'Create account'}
@@ -149,7 +149,7 @@ export function AuthPage() {
               </div>
 
             <form onSubmit={handleSubmit} className="mt-6 grid gap-4">
-          <label className="space-y-2 text-sm font-medium text-slate-700 dark:text-slate-200">
+          <label className="space-y-2 text-body font-medium text-ink-700 dark:text-ink-200">
             {isDE ? 'E-Mail' : 'Email'}
             <input
               type="email"
@@ -162,7 +162,7 @@ export function AuthPage() {
           </label>
 
           {mode === 'register' && (
-            <label className="space-y-2 text-sm font-medium text-slate-700 dark:text-slate-200">
+            <label className="space-y-2 text-body font-medium text-ink-700 dark:text-ink-200">
               {isDE ? 'Benutzername' : 'Username'}
               <input
                 type="text"
@@ -176,7 +176,7 @@ export function AuthPage() {
           )}
 
 
-          <label className="space-y-2 text-sm font-medium text-slate-700 dark:text-slate-200">
+          <label className="space-y-2 text-body font-medium text-ink-700 dark:text-ink-200">
             {isDE ? 'Passwort' : 'Password'}
             <span className="relative block">
               <input
@@ -190,7 +190,7 @@ export function AuthPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword((v) => !v)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg p-2 text-slate-500 transition hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-300"
+                className="absolute right-2 top-1/2 -translate-y-1/2 flex min-h-[44px] min-w-[44px] items-center justify-center rounded-sm p-2 text-ink-500 transition hover:text-accent-600 dark:text-ink-400 dark:hover:text-accent-300"
                 aria-label={showPassword ? (isDE ? 'Passwort verbergen' : 'Hide password') : (isDE ? 'Passwort anzeigen' : 'Show password')}
                 aria-pressed={showPassword}
               >
@@ -209,7 +209,7 @@ export function AuthPage() {
           </label>
 
           {mode === 'register' && (
-            <label className="space-y-2 text-sm font-medium text-slate-700 dark:text-slate-200">
+            <label className="space-y-2 text-body font-medium text-ink-700 dark:text-ink-200">
               {isDE ? 'Passwort bestätigen' : 'Confirm Password'}
               <span className="relative block">
                 <input
@@ -223,7 +223,7 @@ export function AuthPage() {
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword((v) => !v)}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg p-2 text-slate-500 transition hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-300"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 flex min-h-[44px] min-w-[44px] items-center justify-center rounded-sm p-2 text-ink-500 transition hover:text-accent-600 dark:text-ink-400 dark:hover:text-accent-300"
                   aria-label={showConfirmPassword ? (isDE ? 'Passwort verbergen' : 'Hide password') : (isDE ? 'Passwort anzeigen' : 'Show password')}
                   aria-pressed={showConfirmPassword}
                 >
@@ -242,8 +242,8 @@ export function AuthPage() {
             </label>
           )}
 
-          {error && <div role="alert" className="rounded-xl border border-red-300 bg-red-50 p-4 text-sm text-red-700">{error}</div>}
-          {message && <div role="status" aria-live="polite" className="rounded-xl border border-green-300 bg-green-50 p-4 text-sm text-green-700">{message}</div>}
+          {error && <div role="alert" className="rounded-md border border-danger-300 bg-danger-50 p-4 text-body text-danger-700">{error}</div>}
+          {message && <div role="status" aria-live="polite" className="rounded-md border border-success-300 bg-success-50 p-4 text-body text-success-700">{message}</div>}
 
           <button type="submit" className={theme.button.primary} disabled={isLoading}>
             {isLoading ? (
@@ -264,11 +264,11 @@ export function AuthPage() {
             </div>
 
             {/* Legal - minimal, under the card */}
-            <p className="mt-4 text-center text-xs leading-5 text-slate-500 dark:text-slate-400">
+            <p className="mt-4 text-center text-meta leading-5 text-ink-500 dark:text-ink-400">
               {isDE ? 'Mit deiner Anmeldung stimmst du unseren ' : 'By continuing you agree to our '}
-              <Link to="/terms" className="font-semibold text-blue-600 hover:underline dark:text-blue-400">{isDE ? 'Nutzungsbedingungen' : 'Terms'}</Link>{' '}
+              <Link to="/terms" className="font-semibold text-accent-600 hover:underline dark:text-accent-400">{isDE ? 'Nutzungsbedingungen' : 'Terms'}</Link>{' '}
               {isDE ? 'und der ' : 'and '}
-              <Link to="/privacy" className="font-semibold text-blue-600 hover:underline dark:text-blue-400">{isDE ? 'Datenschutzerklärung' : 'Privacy Policy'}</Link>
+              <Link to="/privacy" className="font-semibold text-accent-600 hover:underline dark:text-accent-400">{isDE ? 'Datenschutzerklärung' : 'Privacy Policy'}</Link>
               {isDE ? '. Keine Kreditkarte nötig – A1 ist kostenlos.' : '. No credit card needed - A1 is free.'}
             </p>
           </div>

@@ -230,7 +230,7 @@ export function DailyChallenge({ variant = 'normal' }: DailyChallengeProps) {
   if (!wordOfDay || questions.length === 0) {
     return (
       <div className={`${theme.panel.surface} mb-6`}>
-        <h2 className="text-lg font-semibold text-slate-950 dark:text-white mb-2">
+        <h2 className="text-lg font-semibold text-ink-950 dark:text-white mb-2">
           {isDE ? 'Wort des Tages' : 'Word of the Day'} 🗓️
         </h2>
         <ContentPending isDE={isDE} className="" />
@@ -239,17 +239,17 @@ export function DailyChallenge({ variant = 'normal' }: DailyChallengeProps) {
   }
 
   return (
-    <div className={`${isCompact ? 'rounded-2xl bg-white p-3 shadow-sm dark:bg-slate-900 mb-4' : `${theme.panel.surface} mb-6`}`}>
+    <div className={`${isCompact ? 'rounded-lg border border-ink-200 bg-white p-3 dark:border-ink-800 dark:bg-ink-900 mb-4' : `${theme.panel.surface} mb-6`}`}>
       <div className={`${isCompact ? 'flex flex-row items-center justify-between gap-3' : 'mb-4 flex flex-wrap items-start gap-4'}`}>
         <div className="flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <h2 className={`${isCompact ? 'text-sm font-bold text-slate-800 dark:text-slate-200' : 'text-lg font-semibold text-slate-950 dark:text-white mb-2'}`}>
+            <h2 className={`${isCompact ? 'text-body font-bold text-ink-800 dark:text-ink-200' : 'text-lg font-semibold text-ink-950 dark:text-white mb-2'}`}>
               {isDE ? 'Wort des Tages' : 'Word of the Day'} 🗓️
             </h2>
             {/* U6: persistent done-chip — visible even when collapsed, so a
                 returning user immediately sees the challenge is finished. */}
             {challengeComplete && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
+              <span className="inline-flex items-center gap-1 rounded-full bg-success-50 px-2 py-0.5 text-[10px] font-bold text-success-700 dark:bg-success-900/40 dark:text-success-300">
                 ✓ {isDE ? 'Heute erledigt' : 'Done for today'}
               </span>
             )}
@@ -257,7 +257,7 @@ export function DailyChallenge({ variant = 'normal' }: DailyChallengeProps) {
               <button
                 type="button"
                 onClick={() => speakWord(wordOfDay.de)}
-                className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:text-blue-800 active:scale-95"
+                className="text-meta font-bold text-accent-600 dark:text-accent-400 hover:text-accent-800 active:scale-95"
                 aria-label={isDE ? 'Wort anhören' : 'Listen to word'}
               >
                 🔊
@@ -265,18 +265,18 @@ export function DailyChallenge({ variant = 'normal' }: DailyChallengeProps) {
             )}
           </div>
           {/* German word prominently displayed with article if noun */}
-          <div className={`${isCompact ? 'text-lg font-bold text-blue-600 dark:text-blue-400' : 'text-2xl font-bold text-blue-600 dark:text-blue-400 mb-1'}`}>
+          <div className={`${isCompact ? 'text-lg font-bold text-accent-600 dark:text-accent-400' : 'text-2xl font-bold text-accent-600 dark:text-accent-400 mb-1'}`}>
             {getGermanWithArticle(wordOfDay.de)}
           </div>
           {/* Hide translations by default — reveal on click to prevent spoilers */}
-          <div className="text-sm text-slate-600 dark:text-slate-400">
+          <div className="text-body text-ink-600 dark:text-ink-400">
             {showTranslation ? (
-              <span className={isCompact ? 'text-xs font-medium' : ''}>{wordOfDay.en} • {wordOfDay.ne}</span>
+              <span className={isCompact ? 'text-meta font-medium' : ''}>{wordOfDay.en} • {wordOfDay.ne}</span>
             ) : (
               <button
                 type="button"
                 onClick={() => setShowTranslation(true)}
-                className="inline-flex min-h-[44px] items-center text-xs font-medium text-slate-600 underline decoration-dotted underline-offset-2 transition hover:text-slate-800 active:scale-95 dark:text-slate-300 dark:hover:text-slate-100"
+                className="inline-flex min-h-[44px] items-center text-meta font-medium text-ink-600 underline decoration-dotted underline-offset-2 transition hover:text-ink-800 active:scale-95 dark:text-ink-300 dark:hover:text-ink-100"
               >
                 {isDE ? 'Bedeutung anzeigen' : 'Reveal meaning'}
               </button>
@@ -288,7 +288,7 @@ export function DailyChallenge({ variant = 'normal' }: DailyChallengeProps) {
             <button
               type="button"
               onClick={() => speakWord(wordOfDay.de)}
-              className="inline-flex min-h-[44px] items-center gap-1.5 rounded-full bg-white px-4 py-2 text-xs font-semibold text-slate-700 shadow-sm transition hover:bg-blue-50 hover:text-blue-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-blue-950/40 dark:hover:text-blue-300"
+              className="inline-flex min-h-[44px] items-center gap-1.5 rounded-full border border-ink-200 bg-white px-4 py-2 text-meta font-semibold text-ink-700 shadow-sm transition hover:bg-accent-50 hover:text-accent-600 dark:bg-ink-800 dark:border-ink-800 dark:text-ink-200 dark:hover:bg-accent-950/40 dark:hover:text-accent-300"
               aria-label={isDE ? 'Wort anhören' : 'Listen to word'}
             >
               <span aria-hidden="true">🔊</span>
@@ -297,7 +297,7 @@ export function DailyChallenge({ variant = 'normal' }: DailyChallengeProps) {
             <button
               type="button"
               onClick={() => setIsExpanded((v) => !v)}
-              className="inline-flex min-h-[44px] items-center gap-1.5 rounded-full bg-white px-4 py-2 text-xs font-semibold text-slate-700 shadow-sm transition hover:bg-blue-50 hover:text-blue-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-blue-950/40 dark:hover:text-blue-300"
+              className="inline-flex min-h-[44px] items-center gap-1.5 rounded-full bg-white px-4 py-2 text-meta font-semibold text-ink-700 shadow-sm transition hover:bg-accent-50 hover:text-accent-600 dark:bg-ink-800 dark:text-ink-200 dark:hover:bg-accent-950/40 dark:hover:text-accent-300"
               aria-controls="wotd-content"
               aria-expanded={isExpanded}
             >
@@ -310,7 +310,7 @@ export function DailyChallenge({ variant = 'normal' }: DailyChallengeProps) {
           <button
             type="button"
             onClick={() => setIsExpanded((v) => !v)}
-            className="text-xs font-semibold text-slate-500 hover:text-slate-700 dark:text-slate-400"
+            className="text-meta font-semibold text-ink-500 hover:text-ink-700 dark:text-ink-400"
           >
             {isExpanded ? (isDE ? 'Ausblenden' : 'Hide') : (isDE ? 'Einblenden' : 'Show')}
           </button>
@@ -321,17 +321,17 @@ export function DailyChallenge({ variant = 'normal' }: DailyChallengeProps) {
       {isExpanded && (
         <>
           {challengeComplete ? (
-            <div className="mb-3 flex flex-wrap items-center gap-2 rounded-xl bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300">
+            <div className="mb-3 flex flex-wrap items-center gap-2 rounded-md bg-success-50 px-4 py-3 text-body font-semibold text-success-800 dark:bg-success-900/30 dark:text-success-300">
               <span aria-hidden="true">🎉</span>
               <span>{isDE ? 'Heute erledigt!' : 'Done for today!'}</span>
               {count === questions.length && !allOk && (
-                <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                <span className="text-meta font-medium text-ink-500 dark:text-ink-400">
                   {isDE ? `(${count}/${questions.length} beantwortet)` : `(${count}/${questions.length} answered)`}
                 </span>
               )}
             </div>
           ) : (
-            <div className="mb-3 text-sm font-semibold text-slate-700 dark:text-slate-200">
+            <div className="mb-3 text-body font-semibold text-ink-700 dark:text-ink-200">
               {isDE ? 'Herausforderung läuft' : 'In progress'} — {count}/{questions.length}
             </div>
           )}
@@ -346,14 +346,14 @@ export function DailyChallenge({ variant = 'normal' }: DailyChallengeProps) {
         <div className="space-y-4">
           {questions.map((q, i) => (
             <div key={`${q.prompt}:${i}`}>
-              <div className="mb-1.5 text-sm font-medium text-slate-700 dark:text-slate-200">{q.prompt}</div>
+              <div className="mb-1.5 text-body font-medium text-ink-700 dark:text-ink-200">{q.prompt}</div>
               <div className="grid gap-1.5 sm:grid-cols-2">
                 {q.options.map((opt, optionIndex) => {
                   const chosen = answers[i] === opt;
                   const ok = q.correct === opt;
                   let cls = theme.button.pill;
-                  if (chosen && ok) cls += ' border-green-500 bg-green-100 text-green-800';
-                  else if (chosen && !ok) cls += ' border-red-500 bg-red-100 text-red-800';
+                  if (chosen && ok) cls += ' border-success-500 bg-success-100 text-success-800';
+                  else if (chosen && !ok) cls += ' border-danger-500 bg-danger-100 text-danger-800';
                   return (
                     <button key={`${i}:${optionIndex}:${opt}`} type="button" className={cls} onClick={() => choose(i, opt)}>{opt}</button>
                   );
@@ -362,14 +362,14 @@ export function DailyChallenge({ variant = 'normal' }: DailyChallengeProps) {
             </div>
           ))}
           {count === questions.length && (
-            <div className={`rounded-xl p-3 text-sm font-semibold ${allOk ? 'bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-300' : 'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300'}`}>
+            <div className={`rounded-md p-3 text-body font-semibold ${allOk ? 'bg-success-50 text-success-700 dark:bg-success-900/30 dark:text-success-300' : 'bg-warning-50 text-warning-700 dark:bg-warning-900/30 dark:text-warning-300'}`}>
               {allOk
                 ? (isDE ? '🎉 Alle richtig! Badge freigeschaltet!' : '🎉 All correct! Badge unlocked!')
                 : (isDE ? 'Nicht alle richtig — versuche es morgen!' : 'Not all correct — try again tomorrow!')}
             </div>
           )}
           {!isAuthenticated && !allOk && (
-            <div className="rounded-xl border border-blue-200 bg-blue-50 p-3 text-sm text-blue-800 dark:border-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
+            <div className="rounded-md border border-accent-200 bg-accent-50 p-3 text-body text-accent-800 dark:border-accent-800 dark:bg-accent-900/30 dark:text-accent-300">
               💡 {isDE ? 'Melden Sie sich an, um Ihren Fortschritt zu speichern und Abzeichen zu sammeln!' : 'Sign in to save your progress and collect badges!'}
             </div>
           )}

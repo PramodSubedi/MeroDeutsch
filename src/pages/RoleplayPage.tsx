@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
+import { ArrowRight, MessageCircle } from 'lucide-react';
 import { useLang } from '../hooks/useLang';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { theme } from '../config/theme';
 import { SEO } from '../components/common/SEO';
-import { PageHeading } from '../components/common/PageHeading';
 import { curriculumService } from '../services';
 import { MessagingRoleplay } from '../components/exercises/MessagingRoleplay';
 import { buildConversationalScenarios, buildTemplateRoleplayScenarios } from '../utils/conversationalToRoleplay';
@@ -35,6 +35,7 @@ export function RoleplayPage() {
   const [source, setSource] = useState<ConvSource | null>(null);
   const [conversations, setConversations] = useState<RoleplayScenario[]>([]);
   const [loading, setLoading] = useState(true);
+  const [dbLoading, setDbLoading] = useState(true);
   const [levelFilter, setLevelFilter] = useState<'all' | 'A1' | 'A2' | 'B1'>('all');
   const [activeScenario, setActiveScenario] = useState<RoleplayScenario | null>(null);
 useEffect(() => {
@@ -72,7 +73,6 @@ useEffect(() => {
           ? { defs, vocab }
           : templateFallback,
       );
-      setLoading(false);
     })();
     return () => {
       cancelled = true;
@@ -81,10 +81,16 @@ useEffect(() => {
 
   useEffect(() => {
     if (!source) return;
-    const generated = source.defs.length > 0 && source.vocab.length > 0
-      ? buildConversationalScenarios(source.defs, source.vocab)
-      : buildTemplateRoleplayScenarios();
-    setConversations(generated);
+    try {
+      const generated = source.defs.length > 0 && source.vocab.length > 0
+        ? buildConversationalScenarios(source.defs, source.vocab)
+        : buildTemplateRoleplayScenarios();
+      setConversations(generated);
+    } catch {
+      setConversations([]);
+    } finally {
+      setLoading(false);
+    }
   }, [source]);
 
   useEffect(() => {
@@ -92,10 +98,16 @@ useEffect(() => {
     curriculumService
       .getRoleplayScenarios()
       .then((s) => {
-        if (!cancelled) setDbScenarios(s);
+        if (!cancelled) {
+          setDbScenarios(s);
+          setDbLoading(false);
+        }
       })
       .catch(() => {
-        if (!cancelled) setDbScenarios([]);
+        if (!cancelled) {
+          setDbScenarios([]);
+          setDbLoading(false);
+        }
       });
     return () => {
       cancelled = true;
@@ -117,7 +129,7 @@ useEffect(() => {
       if (/A2/.test(b)) s.add('A2');
       if (/B1/.test(b)) s.add('B1');
     });
-    return [...s];
+    return [...s].sort((a, b) => a.localeCompare(b));
   }, [allScenarios]);
 
   const filtered = useMemo(() => {
@@ -144,12 +156,23 @@ useEffect(() => {
     [filtered],
   );
 
+  const duplicateTitles = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const scenario of pickerScenarios) {
+      const key = scenario.title.trim().toLocaleLowerCase();
+      counts.set(key, (counts.get(key) ?? 0) + 1);
+    }
+    return counts;
+  }, [pickerScenarios]);
+
+  const showLoading = loading || (allScenarios.length === 0 && dbLoading);
+
   const levelLabel = (band?: string) => (band ?? '').trim() || 'A1';
   const levelBadgeClass = (band?: string) => {
     const b = (band ?? '').toUpperCase();
-    if (b.includes('B1')) return 'bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300';
-    if (b.includes('A2')) return 'bg-blue-100 text-blue-800 dark:bg-blue-950/40 dark:text-blue-300';
-    return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300';
+    if (b.includes('B1')) return 'bg-warning-100 text-warning-800 dark:bg-warning-950/40 dark:text-warning-300';
+    if (b.includes('A2')) return 'bg-accent-100 text-accent-800 dark:bg-accent-950/40 dark:text-accent-300';
+    return 'bg-success-100 text-success-800 dark:bg-success-950/40 dark:text-success-300';
   };
 
   const handlePick = (sc: RoleplayScenario) => setActiveScenario(sc);
@@ -165,14 +188,31 @@ useEffect(() => {
   }, [activeScenario, allScenarios]);
 return (
     <div className={theme.page.container}>
-      <PageHeading
-        title={isDE ? 'Dialoge' : 'Roleplay'}
-        subtitle={
-          isDE
-            ? 'Wähl eine Alltagssituation und übe das Gespräch.'
-            : 'Pick a real-world situation and practice the dialogue.'
-        }
-      />
+      <header className="mb-6 flex flex-wrap items-end justify-between gap-4 border-b border-ink-200/80 pb-5 dark:border-ink-800">
+        <div className="flex min-w-0 items-start gap-3.5">
+          <span className="mt-1 flex h-11 w-11 shrink-0 items-center justify-center rounded-sm bg-accent-50 text-accent-700 dark:bg-accent-950/60 dark:text-accent-300">
+            <MessageCircle className="h-5 w-5" aria-hidden="true" />
+          </span>
+          <div className="min-w-0">
+            <p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-ink-500 dark:text-ink-500">
+              {isDE ? 'Gesprächstraining' : 'Conversation practice'}
+            </p>
+            <h1 className="mt-1 text-3xl font-extrabold tracking-tight text-ink-950 dark:text-white">
+              {isDE ? 'Dialoge' : 'Roleplay'}
+            </h1>
+            <p className="mt-1 max-w-xl text-body leading-6 text-ink-600 dark:text-ink-400">
+              {isDE
+                ? 'Wähl eine Alltagssituation und übe das Gespräch.'
+                : 'Choose a real situation and practice saying the next thing.'}
+            </p>
+          </div>
+        </div>
+        {!showLoading && allScenarios.length > 0 && (
+          <div className="pb-1 text-meta font-semibold text-ink-500 dark:text-ink-400" aria-live="polite">
+            {isDE ? `${pickerScenarios.length} Gespräche` : `${pickerScenarios.length} scenarios`}
+          </div>
+        )}
+      </header>
       <SEO
         title="Roleplay German Dialogs | MeroDeutsch"
         description="Practice real-world German conversations. Role-flip scenarios let you play the staff side too."
@@ -193,60 +233,83 @@ return (
             <MessagingRoleplay key={activeScenario.id} scenarios={swapPair} module="roleplay" />
           )}
         </div>
-      ) : loading || (source !== null && conversations.length === 0 && dbScenarios.length === 0) ? (
-        <div className={`${theme.panel.muted} flex min-h-[160px] items-center justify-center text-sm`}>
-          {isDE ? 'Szenarien werden geladen…' : 'Loading conversations…'}
+      ) : showLoading ? (
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2" role="status" aria-label={isDE ? 'Dialoge werden geladen' : 'Loading scenarios'}>
+          {Array.from({ length: 6 }, (_, index) => (
+            <div key={index} className="flex min-h-[92px] items-center gap-3 rounded-sm border border-ink-200/80 bg-white p-4 dark:border-ink-800 dark:bg-ink-900">
+              <span className="h-11 w-11 shrink-0 animate-pulse rounded-sm bg-ink-100 dark:bg-ink-800" />
+              <span className="min-w-0 flex-1 space-y-2">
+                <span className="block h-4 w-2/3 animate-pulse rounded-sm bg-ink-100 dark:bg-ink-800" />
+                <span className="block h-3 w-1/3 animate-pulse rounded-sm bg-ink-100 dark:bg-ink-800" />
+              </span>
+            </div>
+          ))}
         </div>
       ) : allScenarios.length === 0 ? (
-        <div className={`${theme.panel.muted} min-h-[120px] pb-4 text-sm`}>
+        <div className={`${theme.panel.muted} min-h-[120px] pb-4 text-body`}>
           {isDE
             ? 'Noch keine Szenarien verfügbar — verbinde dich einmal mit dem Internet.'
             : 'No conversations available yet — go online once to load them.'}
         </div>
       ) : (
-<div className="mt-6">
+        <div className="mt-6">
           {availableLevels.length > 1 && (
-            <div className="mb-4 flex flex-wrap items-center gap-2">
+            <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+              <div className="inline-flex items-center rounded-sm border border-ink-200 bg-white p-1 shadow-sm dark:border-ink-800 dark:bg-ink-900" role="group" aria-label={isDE ? 'Nach Niveau filtern' : 'Filter by level'}>
               {(['all', ...availableLevels] as const).map((lv) => (
                 <button
                   key={lv}
                   type="button"
                   onClick={() => setLevelFilter(lv)}
                   aria-pressed={levelFilter === lv}
-                  className={`min-h-[44px] rounded-full px-4 text-sm font-semibold transition active:scale-95 ${
+                  className={`min-h-9 rounded-sm px-3 text-meta font-bold transition active:scale-[0.98] ${
                     levelFilter === lv
-                      ? 'bg-blue-600 text-white shadow-sm'
-                      : 'border border-slate-200 bg-white text-slate-600 hover:border-blue-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300'
+                      ? 'bg-accent-600 text-white shadow-sm dark:bg-accent-500 dark:text-white'
+                      : 'text-ink-600 hover:bg-ink-100 dark:text-ink-300 dark:hover:bg-ink-800'
                   }`}
                 >
                   {lv === 'all' ? (isDE ? 'Alle' : 'All') : lv}
+                  <span className={`ml-1.5 text-[10px] ${levelFilter === lv ? 'text-white/65 dark:text-[#1b261c]/65' : 'text-ink-500 dark:text-ink-500'}`}>
+                    {lv === 'all' ? pickerScenarios.length : pickerScenarios.filter((scenario) => (scenario.level ?? '').toUpperCase().includes(lv)).length}
+                  </span>
                 </button>
               ))}
+              </div>
+              <span className="text-meta font-medium text-ink-500 dark:text-ink-400">
+                {isDE ? 'Nach Niveau auswählen' : 'Choose your level'}
+              </span>
             </div>
           )}
 
           <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
             {pickerScenarios.map((sc) => {
               const canSwap = swapBaseIds.has(sc.id);
+              const titleKey = sc.title.trim().toLocaleLowerCase();
+              const displayTitle = (duplicateTitles.get(titleKey) ?? 0) > 1
+                ? `${sc.title} · ${levelLabel(sc.level)}`
+                : sc.title;
               return (
                 <button
                   key={sc.id}
                   type="button"
                   onClick={() => handlePick(sc)}
-                  className="group flex min-h-[72px] items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-left shadow-sm transition hover:border-blue-300 hover:bg-blue-50/40 active:scale-95 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-blue-400 dark:hover:bg-blue-950/30"
+                  className="group flex min-h-[72px] min-w-0 items-center gap-3 rounded-lg border border-ink-200 bg-white px-4 py-3 text-left shadow-sm transition hover:border-accent-300 hover:bg-accent-50/40 active:scale-95 dark:border-ink-700 dark:bg-ink-900 dark:hover:border-accent-400 dark:hover:bg-accent-950/30"
                 >
-                  <span className="text-2xl" aria-hidden="true">{sc.emoji || '💬'}</span>
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-sm bg-ink-100 text-2xl dark:bg-ink-800" aria-hidden="true">{sc.emoji || '💬'}</span>
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate font-semibold text-slate-900 dark:text-white">
-                      {sc.title}
+                    <span className="block truncate text-body font-bold text-ink-950 dark:text-white">
+                      {displayTitle}
                     </span>
-                    <span className="mt-1 flex flex-wrap items-center gap-1.5">
+                    <span className="mt-2 flex min-w-0 flex-wrap items-center gap-1.5">
                       <span className={`inline-block rounded-full px-2 py-0.5 text-[11px] font-semibold ${levelBadgeClass(sc.level)}`}>
                         {levelLabel(sc.level)}
                       </span>
+                      <span className="text-[11px] font-medium text-ink-500 dark:text-ink-400">
+                        {sc.steps.length} {isDE ? 'Schritte' : 'steps'}
+                      </span>
                       {canSwap && (
                         <span
-                          className="inline-block rounded-full bg-violet-100 px-2 py-0.5 text-[11px] font-semibold text-violet-700 dark:bg-violet-950/60 dark:text-violet-200"
+                          className="inline-block rounded-full bg-[#eef7d5] px-2 py-0.5 text-[11px] font-semibold text-[#526d21] dark:bg-[#283720] dark:text-[#d8f477]"
                           title={isDE ? 'Rollenwechsel verfügbar' : 'Role swap available'}
                         >
                           🎭 {isDE ? 'Rollenwechsel' : 'Role swap'}
@@ -254,16 +317,14 @@ return (
                       )}
                     </span>
                   </span>
-                  <span className="text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-blue-500 dark:text-slate-600">
-                    →
-                  </span>
+                  <ArrowRight className="h-4 w-4 shrink-0 text-ink-500 transition group-hover:translate-x-0.5 group-hover:text-[#526d21] dark:text-ink-500 dark:group-hover:text-[#d8f477]" aria-hidden="true" />
                 </button>
               );
             })}
           </div>
 
           {pickerScenarios.length === 0 && (
-            <div className={`${theme.panel.muted} mb-4 text-sm`}>
+            <div className={`${theme.panel.muted} mb-4 text-body`}>
               {isDE
                 ? 'Für diese Stufe gibt es noch keine Gespräche.'
                 : 'No conversations at this level yet.'}

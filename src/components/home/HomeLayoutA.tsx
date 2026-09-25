@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { theme } from '../../config/theme';
-import { RefreshCw, Target, TrendingUp, Zap } from 'lucide-react';
+import { Check, Flame, RefreshCw, Target, TrendingUp, Zap } from 'lucide-react';
 import { useAchievements, ALL_BADGES } from '../../hooks/useAchievements';
 import { useAuth } from '../../hooks/useAuth';
 import { useLang } from '../../hooks/useLang';
@@ -57,22 +57,22 @@ export function HomeLayoutA() {
 
   return (
     <div className={`${theme.page.container} w-full space-y-5 pb-8`}>
-      <section className="overflow-hidden rounded-2xl bg-gradient-to-br from-white via-slate-50 to-blue-50 p-4 shadow-sm dark:from-slate-950 dark:via-slate-950 dark:to-slate-900 sm:p-5 md:p-6">
+      <section className="relative overflow-hidden rounded-lg border border-ink-200 bg-white p-5 dark:border-ink-800 dark:bg-ink-900 sm:p-7 md:p-9">
         <div className="flex flex-col gap-5">
           <div className="flex flex-wrap items-center gap-2">
             {isAuthenticated && streakCount > 0 && (
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-300">
-                <span aria-hidden="true">🔥</span>
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-accent-200 bg-accent-50 px-3 py-1 text-meta font-semibold text-accent-700 dark:border-accent-800 dark:bg-accent-950/40 dark:text-accent-300">
+                <Flame className="h-3.5 w-3.5" aria-hidden="true" />
                 <span>{streakCount} {isDE ? 'Tage' : 'day streak'}</span>
               </span>
             )}
-            {/* "All clear" badge: emerald-800 on emerald-50 ≈ 7:1 contrast (≥ 4.5:1 WCAG AA). */}
+            {/* "All clear" badge: success-800 on success-50 ≈ 7:1 contrast (≥ 4.5:1 WCAG AA). */}
             {/* "All clear" = nothing DUE right now (same predicate as
                 DailySession's CTA branch). Items queued for the future don't
                 block the all-clear — reconciled with the dueQueue source. */}
             {dueQueue.length === 0 && (
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800 dark:border-emerald-900/50 dark:bg-emerald-950/40 dark:text-emerald-300">
-                <span aria-hidden="true">✅</span>
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-success-200 bg-success-50 px-3 py-1 text-meta font-semibold text-success-800 dark:border-success-900/50 dark:bg-success-950/40 dark:text-success-300">
+                <Check className="h-3.5 w-3.5" aria-hidden="true" />
                 <span>{isDE ? 'Alles erledigt' : 'All clear'}</span>
               </span>
             )}
@@ -82,13 +82,13 @@ export function HomeLayoutA() {
               the hero deliberately renders NO second CTA so the screen has
               exactly one primary "start" affordance (UI-clutter fix #1). */}
           <div className="max-w-2xl">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600 dark:text-blue-400">
+            <p className="text-meta font-semibold uppercase tracking-[0.18em] text-accent-600 dark:text-accent-400">
               MeroDeutsch
             </p>
-            <h1 className="mt-2 min-w-0 break-words text-3xl font-semibold tracking-[-0.04em] text-slate-950 dark:text-white sm:text-5xl">
+            <h1 className="mt-2 min-w-0 break-words text-3xl font-extrabold leading-tight text-ink-950 dark:text-white sm:text-5xl">
               {greeting}
             </h1>
-            <p className="mt-3 max-w-xl text-base leading-7 text-slate-600 dark:text-slate-300">
+            <p className="mt-3 max-w-xl text-body leading-7 text-ink-600 dark:text-ink-300">
               {isDE
                 ? 'Neue Wörter, schnelle Reviews und klare nächste Schritte — alles auf einer Seite.'
                 : 'New words, quick reviews, and the next best step — all in one place.'}
@@ -145,12 +145,12 @@ export function HomeLayoutA() {
       {/* Daily quests (shared with Dashboard) — logged-in only. */}
       {isAuthenticated && <DailyQuestsWidget />}
 
-      <section className="rounded-2xl bg-white p-4 shadow-sm dark:bg-slate-900">
+      <section className="rounded-lg border border-ink-200 bg-white p-4 shadow-sm dark:bg-ink-900 dark:border-ink-800">
         <div className="mb-3 flex items-center justify-between gap-3">
-          <h2 className="text-xl font-semibold text-slate-950 dark:text-white">
+          <h2 className="text-xl font-semibold text-ink-950 dark:text-white">
             {isDE ? 'Errungenschaften' : 'Achievements'}
           </h2>
-          <Link to="/dashboard" className="text-sm font-medium text-blue-600 dark:text-blue-400">
+          <Link to="/dashboard" className="text-body font-medium text-accent-600 dark:text-accent-400">
             {isDE ? 'Alle anzeigen' : 'See all'}
           </Link>
         </div>
@@ -160,7 +160,7 @@ export function HomeLayoutA() {
               <Link
                 key={badge.id}
                 to="/dashboard"
-                className="inline-flex items-center gap-1.5 rounded-full border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-medium text-blue-800 dark:border-blue-900/50 dark:bg-blue-950/40 dark:text-blue-200"
+                className="inline-flex items-center gap-1.5 rounded-full border border-accent-200 bg-accent-50 px-3 py-1.5 text-meta font-medium text-accent-800 dark:border-accent-900/50 dark:bg-accent-950/40 dark:text-accent-200"
               >
                 <span>{badge.icon}</span>
                 {badge.label}
@@ -173,7 +173,7 @@ export function HomeLayoutA() {
                 <span
                   key={badge.id}
                   title={badge.requirement}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-400 grayscale dark:border-slate-700 dark:bg-slate-900 dark:text-slate-500"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-ink-200 bg-ink-100 px-3 py-1.5 text-meta font-medium text-ink-500 grayscale dark:border-ink-700 dark:bg-ink-900 dark:text-ink-500"
                 >
                   <span aria-hidden="true">🔒</span>
                   {badge.label}
@@ -181,7 +181,7 @@ export function HomeLayoutA() {
               ))}
           </div>
         ) : (
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+          <p className="text-body text-ink-500 dark:text-ink-400">
             {isDE ? 'Noch keine Abzeichen — starte heute mit einem kurzen Drill.' : 'No badges yet — start with a quick drill today.'}
           </p>
         )}

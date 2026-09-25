@@ -12,24 +12,38 @@
  */
 
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import type { LucideIcon } from 'lucide-react';
+import { Progress, type ProgressTone } from './Progress';
 
-export type StatTileColor = 'blue' | 'emerald' | 'amber' | 'violet';
+/**
+ * Color-to-meaning mapping is fixed sitewide and now maps to the *restrained*
+ * 5-token palette (ink/accent/success/warning/danger):
+ *   accent  = progress / primary
+ *   success = accuracy / mastery
+ *   warning = needs attention
+ *
+ * The legacy `blue` / `emerald` / `amber` / `violet` names are still accepted so
+ * the 8 existing call sites keep working, but they all collapse onto these
+ * three tones — `violet` no longer smuggles a 5th hue back in.
+ */
+export type StatTileTone = ProgressTone;
+export type StatTileColor = 'blue' | 'emerald' | 'amber' | 'violet' | StatTileTone;
 
-const BAR_COLOR: Record<StatTileColor, string> = {
-  blue: 'bg-blue-600',
-  emerald: 'bg-emerald-500',
-  amber: 'bg-amber-500',
-  violet: 'bg-violet-500',
+const TONE_OF: Record<StatTileColor, ProgressTone> = {
+  accent: 'accent',
+  blue: 'accent',
+  violet: 'accent',
+  success: 'success',
+  emerald: 'success',
+  warning: 'warning',
+  amber: 'warning',
 };
 
-/** Icon-chip tint per color meaning (same family as BAR_COLOR). */
-const CHIP_COLOR: Record<StatTileColor, string> = {
-  blue: 'bg-blue-50 text-blue-600 dark:bg-blue-950/60 dark:text-blue-300',
-  emerald: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-300',
-  amber: 'bg-amber-50 text-amber-600 dark:bg-amber-950/60 dark:text-amber-300',
-  violet: 'bg-violet-50 text-violet-600 dark:bg-violet-950/60 dark:text-violet-300',
+/** Icon-chip tint, same tone family as the bar. */
+const CHIP: Record<ProgressTone, string> = {
+  accent: 'bg-accent-50 text-accent-600 dark:bg-accent-950/60 dark:text-accent-300',
+  success: 'bg-success-50 text-success-600 dark:bg-success-950/60 dark:text-success-300',
+  warning: 'bg-warning-50 text-warning-600 dark:bg-warning-950/60 dark:text-warning-300',
 };
 
 interface StatTileProps {
@@ -43,15 +57,16 @@ interface StatTileProps {
   color?: StatTileColor;
   /** When set, the whole tile becomes a link (e.g. Review Queue → /dashboard). */
   to?: string;
-  /** Optional icon rendered as a tinted chip (21st.dev "Progress Card" pattern).
-   *  Omit for the original chrome — fully backward-compatible (Dashboard unaffected). */
+  /** Optional icon rendered as a tinted chip.
+   *  Omit for the original chrome — fully backward-compatible. */
   icon?: LucideIcon;
 }
 
-export function StatTile({ label, value, subValue, progressPct, caption, color = 'blue', to, icon: Icon }: StatTileProps) {
+export function StatTile({ label, value, subValue, progressPct, caption, color = 'accent', to, icon: Icon }: StatTileProps) {
+  const tone = TONE_OF[color];
   const shell =
-    'rounded-2xl bg-white p-4 shadow-sm sm:p-5 dark:bg-slate-900';
-  const interactive = 'transition hover:shadow-md';
+    'rounded-lg border border-ink-200 bg-white p-4 transition-colors duration-200 hover:border-ink-300 hover:bg-ink-25 sm:p-5 dark:border-ink-800 dark:bg-ink-900 dark:hover:border-ink-700';
+  const interactive = 'hover:shadow-sm';
 
   const body = (
     <>
@@ -60,41 +75,25 @@ export function StatTile({ label, value, subValue, progressPct, caption, color =
       <div className="flex items-center gap-2.5">
         {Icon && (
           <span
-            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${CHIP_COLOR[color]}`}
+            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${CHIP[tone]}`}
             aria-hidden="true"
           >
             <Icon className="h-4 w-4" />
           </span>
         )}
-        <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
+        <div className="text-micro font-semibold uppercase tracking-[0.18em] text-ink-500 dark:text-ink-400">
           {label}
         </div>
       </div>
       <div className="mt-3 flex items-end justify-between gap-3">
-        <span className="text-3xl font-bold leading-none text-slate-900 dark:text-white">{value}</span>
-        {subValue && <span className="pb-0.5 text-sm font-medium text-slate-500 dark:text-slate-400">{subValue}</span>}
+        <span className="text-3xl font-bold leading-none tracking-[-0.02em] text-ink-900 dark:text-white">{value}</span>
+        {subValue && <span className="pb-0.5 text-body font-medium text-ink-500 dark:text-ink-400">{subValue}</span>}
       </div>
       {typeof progressPct === 'number' && (
-        <div
-          className="mt-3 h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800"
-          role="progressbar"
-          aria-valuenow={Math.round(progressPct)}
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-label={label}
-        >
-          {/* Animated fill — 21st.dev "Progress Card" pattern. framer-motion
-              is an existing dependency; no new libraries introduced. */}
-          <motion.div
-            className={`h-full rounded-full ${BAR_COLOR[color]}`}
-            initial={{ width: 0 }}
-            animate={{ width: `${Math.min(100, Math.max(0, progressPct))}%` }}
-            transition={{ duration: 0.9, ease: 'easeOut' }}
-          />
-        </div>
+        <Progress value={progressPct} tone={tone} label={label} className="mt-3" />
       )}
       {caption && (
-        <div className="mt-3 text-xs text-slate-500 dark:text-slate-400">{caption}</div>
+        <div className="mt-3 text-meta text-ink-500 dark:text-ink-400">{caption}</div>
       )}
     </>
   );

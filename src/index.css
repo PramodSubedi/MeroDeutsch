@@ -1,23 +1,159 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   QUIET PREMIUM DESIGN SYSTEM
+
+   Rules of the system:
+   1. ONE neutral ramp (`ink`) carries ~90% of every surface.
+   2. ONE accent (`accent` = brand blue #2563eb) marks only interactive /
+      active / primary-action state. Never decoration.
+   3. Surfaces are separated by HAIRLINE BORDERS, not shadows. Elevation is
+      reserved for things that actually float (overlay, popover, modal).
+   4. Four status hues only: emerald (success), amber (warning), red (danger),
+      accent (info) — plus the LOCKED German gender tokens below.
+   ═══════════════════════════════════════════════════════════════════════════ */
 @theme {
-  --font-sans: 'Inter', 'Noto Sans Devanagari', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --color-brand: #2563eb;
-  --color-mero-red: #dc2626;
-  --color-accent-gold: #f59e0b;
-  /* German gender color tokens (locked hexes per .clinerules Part E1).
-     Enables semantic utilities: bg-gender-der / text-gender-die / etc. */
+  --font-sans: 'Manrope', 'Noto Sans Devanagari', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* ── Neutral ramp (the "ink" family) ────────────────────────────────────
+     Replaces the whole `slate` palette. Cool-tinted so it sits naturally on
+     the #f7f9fb canvas without the old blue radial wash. */
+  --color-ink-0: #ffffff;
+  --color-ink-25: #fbfcfd;
+  --color-ink-50: #f7f9fb;
+  --color-ink-100: #eff2f6;
+  --color-ink-150: #e7ebf0;
+  --color-ink-200: #dde2e9;
+  --color-ink-300: #c6ced9;
+  --color-ink-400: #9aa5b4;
+  --color-ink-500: #6b7686;
+  --color-ink-600: #515c6b;
+  --color-ink-700: #3a4453;
+  --color-ink-800: #262e3a;
+  --color-ink-850: #1e252f;
+  --color-ink-900: #171d26;
+  --color-ink-925: #131922;
+  --color-ink-950: #0d1219;
+
+  /* ── Accent (brand primary) — the ONLY chromatic UI color ────────────── */
+  --color-accent-50: #eff5ff;
+  --color-accent-100: #dbe8fe;
+  --color-accent-200: #bfd7fe;
+  --color-accent-300: #93bbfd;
+  --color-accent-400: #6098fa;
+  --color-accent-500: #3b76f6;
+  --color-accent-600: #2563eb;
+  --color-accent-700: #1d4fd8;
+  --color-accent-800: #1e40af;
+  --color-accent-900: #1e3a8a;
+  --color-accent-950: #172554;
+
+  /* ── Status: success / warning / danger ─────────────────────────────── */
+  --color-success-50: #ecfdf5;
+  --color-success-100: #d1fae5;
+  --color-success-200: #a7f3d0;
+  --color-success-300: #6ee7b7;
+  --color-success-400: #34d399;
+  --color-success-500: #10b981;
+  --color-success-600: #059669;
+  --color-success-700: #047857;
+  --color-success-800: #065f46;
+  --color-success-900: #064e3b;
+  --color-success-950: #022c22;
+
+  --color-warning-50: #fffbeb;
+  --color-warning-100: #fef3c7;
+  --color-warning-200: #fde68a;
+  --color-warning-300: #fcd34d;
+  --color-warning-400: #fbbf24;
+  --color-warning-500: #f59e0b;
+  --color-warning-600: #d97706;
+  --color-warning-700: #b45309;
+  --color-warning-800: #92400e;
+  --color-warning-900: #78350f;
+  --color-warning-950: #451a03;
+
+  --color-danger-50: #fef2f2;
+  --color-danger-100: #fee2e2;
+  --color-danger-200: #fecaca;
+  --color-danger-300: #fca5a5;
+  --color-danger-400: #f87171;
+  --color-danger-500: #ef4444;
+  --color-danger-600: #dc2626;
+  --color-danger-700: #b91c1c;
+  --color-danger-800: #991b1b;
+  --color-danger-900: #7f1d1d;
+  --color-danger-950: #450a0a;
+
+  /* ── LOCKED: German gender color tokens (.clinerules Part E1) ───────────
+     These four hexes are frozen and MUST NOT change. Gender is the one place
+     where color carries pedagogical meaning, so it is exempt from the
+     "one neutral + one accent" rule above. */
   --color-gender-der: #2563eb;
   --color-gender-die: #e11d48;
   --color-gender-das: #059669;
   --color-gender-pl: #d97706;
+
+  /* ── Radius: three steps + full ────────────────────────────────────────
+     7 legacy values (rounded/md/lg/xl/2xl/3xl/full) collapse to these.
+     sm = controls · md = buttons & cards · lg = panels & overlays. */
+  --radius: 0.375rem;
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 0.875rem;
+  --radius-3xl: 0.875rem;
+  --radius-4xl: 1rem;
+
+  /* ── Elevation: only for things that genuinely float ──────────────────
+     Flat content uses borders (see Surface primitive). These redefine
+     Tailwind's built-in scale so all ~120 existing shadow-* usages inherit
+     the calmer system without a per-file rewrite. */
+  --shadow-xs: 0 1px 2px 0 rgb(16 24 40 / 0.04);
+  --shadow-sm: 0 1px 2px 0 rgb(16 24 40 / 0.05);
+  --shadow: 0 1px 3px 0 rgb(16 24 40 / 0.07), 0 1px 2px -1px rgb(16 24 40 / 0.05);
+  --shadow-md: 0 4px 8px -2px rgb(16 24 40 / 0.07), 0 2px 4px -2px rgb(16 24 40 / 0.04);
+  --shadow-lg: 0 12px 24px -6px rgb(16 24 40 / 0.10), 0 4px 8px -4px rgb(16 24 40 / 0.05);
+  --shadow-xl: 0 20px 40px -8px rgb(16 24 40 / 0.14), 0 8px 16px -8px rgb(16 24 40 / 0.06);
+  --shadow-2xl: 0 28px 56px -12px rgb(16 24 40 / 0.20), 0 10px 20px -10px rgb(16 24 40 / 0.08);
+
+  /* ── Type scale: six steps, real hierarchy ────────────────────────────
+     `body` (15px) replaces the old text-sm-everywhere pattern that made
+     73% of all text ≤14px. `meta` = 13px captions, `micro` = 11px labels.
+     The three display steps below are the "field guide" editorial tier:
+     they add WEIGHT and TRACKING contrast (tight negative tracking on large
+     text, wide tracking on the kicker) rather than more font sizes. They are
+     additive — no existing token changed, so nothing re-flows. */
+  --text-micro: 0.6875rem;
+  --text-micro--line-height: 1rem;
+  --text-meta: 0.8125rem;
+  --text-meta--line-height: 1.25rem;
+  --text-body: 0.9375rem;
+  --text-body--line-height: 1.5rem;
+  /* Editorial display tier. Negative tracking tightens as size grows — the
+     single strongest "book/field-guide" signal available without a new font. */
+  --text-section: 1.0625rem;
+  --text-section--line-height: 1.5rem;
+  --text-title: 1.375rem;
+  --text-title--line-height: 1.75rem;
+  --text-display: 2rem;
+  --text-display--line-height: 2.25rem;
+
+  /* Content column: ONE max-width, owned by the shell. */
+  --container-content: 80rem;
 }
+
 
 html {
   font-family: var(--font-sans);
+  /* Flat canvas. The old blue radial-gradient wash tinted every screen blue;
+     Quiet Premium separates surfaces with hairline borders, not tint. */
+  --app-canvas: #f7f9fb;
+  --app-canvas-dark: #0d1219;
 }
 
 * {
@@ -32,10 +168,18 @@ body {
   margin: 0;
   min-height: 100vh;
   font-family: var(--font-sans);
-  background: #f8fafc;
+  background: var(--app-canvas);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+}
+
+.app-shell {
+  background-color: var(--app-canvas);
+}
+
+.dark .app-shell {
+  background-color: var(--app-canvas-dark);
 }
 
 /* Mixed-script typography: Devanagari vertical spacing fix */
@@ -61,20 +205,20 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: rgba(156, 163, 175, 0.5);
+  background-color: rgb(154 165 180 / 0.5);
   border-radius: 10px;
   border: 4px solid transparent; 
   background-clip: content-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(107, 114, 128, 0.8);
+  background-color: rgb(154 165 180 / 0.85);
 }
 
 /* Firefox fallback */
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+  scrollbar-color: rgb(154 165 180 / 0.5) transparent;
 }
 
 /* Hide scrollbar for custom horizontal-scroll containers (Tailwind v4 utility).
@@ -90,16 +234,17 @@ body {
 }
 
 /* Keyboard Navigation & Accessibility */
-/* Global focus-visible styles for consistent keyboard navigation */
+/* Global focus-visible styles for consistent keyboard navigation.
+   Outline uses the accent token so keyboard focus always matches the brand. */
 a:focus-visible,
 button:focus-visible,
 [role="button"]:focus-visible,
 input:focus-visible,
 textarea:focus-visible,
 select:focus-visible {
-  outline: 2px solid #2563eb;
+  outline: 2px solid var(--color-accent-600);
   outline-offset: 2px;
-  border-radius: 0.25rem;
+  border-radius: 0.375rem;
 }
 
 .dark a:focus-visible,
@@ -108,7 +253,7 @@ select:focus-visible {
 .dark input:focus-visible,
 .dark textarea:focus-visible,
 .dark select:focus-visible {
-  outline-color: #60a5fa;
+  outline-color: var(--color-accent-400);
 }
 
 /* Remove default focus outline only when focus-visible is supported */
@@ -155,12 +300,12 @@ input[type="button"] {
   position: absolute;
   top: -40px;
   left: 0;
-  background: #2563eb;
+  background: var(--color-accent-600);
   color: white;
   padding: 8px 16px;
   text-decoration: none;
   z-index: 100;
-  border-radius: 0 0 4px 0;
+  border-radius: 0 0 0.375rem 0;
 }
 
 .skip-to-main:focus {

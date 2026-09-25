@@ -7,7 +7,7 @@
  * Data-driven: pages pass a `GrammarFlowchart` definition (question nodes with
  * branching options -> result nodes). The component renders the learner's PATH
  * as a vertical flow of cards connected by SVG arrows (crisp 2px strokes,
- * rounded elbows) — high-clarity, zero visual clutter.
+ * rounded-sm elbows) — high-clarity, zero visual clutter.
  *
  * Result nodes may carry an `article`, rendered with the LOCKED gender color
  * tokens (#2563eb der / #e11d48 die / #059669 das via theme.gender).
@@ -170,7 +170,7 @@ function FlowConnector() {
     <svg
       aria-hidden="true"
       viewBox="0 0 24 28"
-      className="mx-auto block h-7 w-6 text-slate-300 dark:text-slate-600"
+      className="mx-auto block h-7 w-6 text-ink-300 dark:text-ink-600"
       fill="none"
     >
       <path
@@ -214,10 +214,10 @@ export function GrammarFlowchart({ flow, title }: GrammarFlowchartProps) {
       {/* Header */}
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h3 className="text-lg font-semibold text-slate-950 dark:text-white">
+          <h3 className="text-lg font-semibold text-ink-950 dark:text-white">
             {title ?? (isDE ? 'Grammatik-Entscheidungsbaum' : 'Grammar decision tree')}
           </h3>
-          <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+          <p className="mt-0.5 text-meta text-ink-500 dark:text-ink-400">
             {isDE
               ? 'Folge den Fragen zu deiner Form.'
               : 'Follow the questions to your form.'}
@@ -226,7 +226,7 @@ export function GrammarFlowchart({ flow, title }: GrammarFlowchartProps) {
         <button
           type="button"
           onClick={restart}
-          className={`${theme.button.secondary} inline-flex min-h-[44px] items-center gap-1.5 !px-3 !py-2 text-sm`}
+          className={`${theme.button.secondary} inline-flex min-h-[44px] items-center gap-1.5 !px-3 !py-2 text-body`}
         >
           <RotateCcw className="h-4 w-4" aria-hidden="true" />
           {isDE ? 'Neustart' : 'Restart'}
@@ -235,14 +235,14 @@ export function GrammarFlowchart({ flow, title }: GrammarFlowchartProps) {
 
       {/* Breadcrumb trail (compact path summary) */}
       {trail.length > 1 && (
-        <ol className="mb-4 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-slate-500 dark:text-slate-400">
+        <ol className="mb-4 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-meta text-ink-500 dark:text-ink-400">
           {breadcrumbLabels.slice(0, -1).map((label, i) => (
             <li key={`${trail[i]}-bc`} className="flex items-center gap-1.5">
               <span className="max-w-[220px] truncate">{label}</span>
               <span aria-hidden="true">→</span>
             </li>
           ))}
-          <li className="font-semibold text-blue-600 dark:text-blue-300">
+          <li className="font-semibold text-accent-600 dark:text-accent-300">
             {breadcrumbLabels[breadcrumbLabels.length - 1]}
           </li>
         </ol>
@@ -255,7 +255,7 @@ export function GrammarFlowchart({ flow, title }: GrammarFlowchartProps) {
           if (!node || node.kind !== 'question') return null;
           return (
             <div key={id}>
-              <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm font-medium text-slate-600 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-300">
+              <div className="rounded-md border border-ink-200 bg-ink-50 p-3 text-body font-medium text-ink-600 dark:border-ink-700 dark:bg-ink-800/60 dark:text-ink-300">
                 {node.question}
               </div>
               <FlowConnector />
@@ -265,8 +265,8 @@ export function GrammarFlowchart({ flow, title }: GrammarFlowchartProps) {
 
         {/* Current node */}
         {currentNode.kind === 'question' ? (
-          <div className="rounded-2xl border-2 border-blue-200 bg-white p-4 shadow-sm dark:border-blue-800 dark:bg-slate-900">
-            <p className="text-base font-bold text-slate-900 dark:text-white">
+          <div className="rounded-lg border-2 border-accent-200 bg-white p-4 shadow-sm dark:border-accent-800 dark:bg-ink-900">
+            <p className="text-body font-bold text-ink-900 dark:text-white">
               {currentNode.question}
             </p>
             <div className="mt-3 grid gap-2 sm:grid-cols-2">
@@ -275,7 +275,7 @@ export function GrammarFlowchart({ flow, title }: GrammarFlowchartProps) {
                   key={opt.nextId}
                   type="button"
                   onClick={() => choose(opt.nextId)}
-                  className={`min-h-[44px] rounded-xl px-4 py-3 text-left text-sm font-semibold transition active:scale-95 ${theme.button.pill}`}
+                  className={`min-h-[44px] rounded-md px-4 py-3 text-left text-body font-semibold transition active:scale-95 ${theme.button.pill}`}
                 >
                   {opt.label}
                 </button>
@@ -305,18 +305,18 @@ function ResultCard({ result }: { result: FlowResult }) {
   const isDE = langMode === 'german';
 
   return (
-    <div className="rounded-2xl border-2 border-emerald-300 bg-emerald-50/60 p-4 shadow-sm dark:border-emerald-800 dark:bg-emerald-950/30">
+    <div className="rounded-lg border-2 border-success-300 bg-success-50/60 p-4 shadow-sm dark:border-success-800 dark:bg-success-950/30">
       <div className="flex flex-wrap items-center gap-2">
         {result.article && (
           <span
-            className={`inline-flex h-8 min-w-[3rem] items-center justify-center rounded-lg px-2 text-sm font-bold text-white ${theme.gender[genderKey(result.article)].bg}`}
+            className={`inline-flex h-8 min-w-[3rem] items-center justify-center rounded-sm px-2 text-body font-bold text-white ${theme.gender[genderKey(result.article)].bg}`}
           >
             {result.article}
           </span>
         )}
-        <h4 className="text-lg font-bold text-slate-900 dark:text-white">{result.title}</h4>
+        <h4 className="text-lg font-bold text-ink-900 dark:text-white">{result.title}</h4>
       </div>
-      <p className="mt-2 text-sm leading-relaxed text-slate-700 dark:text-slate-200">
+      <p className="mt-2 text-body leading-relaxed text-ink-700 dark:text-ink-200">
         {result.explanation}
       </p>
       {result.examples && result.examples.length > 0 && (
@@ -324,7 +324,7 @@ function ResultCard({ result }: { result: FlowResult }) {
           {result.examples.map((ex) => (
             <li
               key={ex}
-              className="rounded-lg bg-white px-3 py-2 text-sm font-medium text-slate-800 shadow-sm dark:bg-slate-900 dark:text-slate-100"
+              className="rounded-sm border border-ink-200 bg-white px-3 py-2 text-body font-medium text-ink-800 shadow-sm dark:bg-ink-900 dark:border-ink-800 dark:text-ink-100"
             >
               {isDE ? ex : ex}
             </li>

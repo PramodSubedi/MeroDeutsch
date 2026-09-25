@@ -269,18 +269,18 @@ export function ArticlesPage() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-xl font-bold">{title}</h1>
-            <p className="mt-2 text-sm text-slate-500">{description}</p>
+            <p className="mt-2 text-body text-ink-500">{description}</p>
           </div>
           <div className="flex flex-col gap-2 sm:items-end">
             {/* Mode Toggle: Learn vs Quiz */}
-            <div className="flex gap-2 rounded-full bg-slate-100 p-1 dark:bg-slate-800">
+            <div className="flex gap-2 rounded-full bg-ink-100 p-1 dark:bg-ink-800">
               <button
                 type="button"
                 onClick={() => setMode('learn')}
-                className={`px-4 py-2 rounded-full font-semibold text-sm transition-all ${
+                className={`px-4 py-2 rounded-full font-semibold text-body transition-all ${
                   mode === 'learn'
-                    ? 'bg-white text-blue-600 shadow-sm dark:bg-slate-900 dark:text-blue-300'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                    ? 'border border-ink-200 bg-white text-accent-600 shadow-sm dark:bg-ink-900 dark:border-ink-800 dark:text-accent-300'
+                    : 'text-ink-600 dark:text-ink-400 hover:text-ink-900 dark:hover:text-ink-200'
                 }`}
               >
                 {isDE ? '📚 Lernen' : '📚 Learn'}
@@ -288,10 +288,10 @@ export function ArticlesPage() {
               <button
                 type="button"
                 onClick={() => setMode('quiz')}
-                className={`px-4 py-2 rounded-full font-semibold text-sm transition-all ${
+                className={`px-4 py-2 rounded-full font-semibold text-body transition-all ${
                   mode === 'quiz'
-                    ? 'bg-white text-blue-600 shadow-sm dark:bg-slate-900 dark:text-blue-300'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                    ? 'border border-ink-200 bg-white text-accent-600 shadow-sm dark:bg-ink-900 dark:border-ink-800 dark:text-accent-300'
+                    : 'text-ink-600 dark:text-ink-400 hover:text-ink-900 dark:hover:text-ink-200'
                 }`}
               >
                 {isDE ? '⚡ Quiz' : '⚡ Quiz'}
@@ -299,10 +299,10 @@ export function ArticlesPage() {
               <button
                 type="button"
                 onClick={() => setMode('pronouns')}
-                className={`px-4 py-2 rounded-full font-semibold text-sm transition-all ${
+                className={`px-4 py-2 rounded-full font-semibold text-body transition-all ${
                   mode === 'pronouns'
-                    ? 'bg-white text-blue-600 shadow-sm dark:bg-slate-900 dark:text-blue-300'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                    ? 'border border-ink-200 bg-white text-accent-600 shadow-sm dark:bg-ink-900 dark:border-ink-800 dark:text-accent-300'
+                    : 'text-ink-600 dark:text-ink-400 hover:text-ink-900 dark:hover:text-ink-200'
                 }`}
               >
                 {isDE ? '🔤 Pronomen' : '🔤 Pronouns'}
@@ -316,30 +316,30 @@ export function ArticlesPage() {
       {mode === 'learn' && (
         <div className="mb-4 grid gap-4 lg:grid-cols-3">
           <div className={theme.panel.accent}>
-            <div className="mb-2 text-sm font-semibold text-blue-700 dark:text-blue-300">DER</div>
-            <div className="text-3xl font-bold text-slate-900 dark:text-white">Masculine</div>
-            <div className="mt-3 text-sm text-slate-700 dark:text-slate-300">{isDE ? 'पुलिङ्ग' : 'Masculine'}</div>
-            <div className="mt-4 space-y-2 text-sm leading-6 text-slate-600 dark:text-slate-300">
+            <div className="mb-2 text-body font-semibold text-accent-700 dark:text-accent-300">DER</div>
+            <div className="text-3xl font-bold text-ink-900 dark:text-white">Masculine</div>
+            <div className="mt-3 text-body text-ink-700 dark:text-ink-300">{isDE ? 'पुलिङ्ग' : 'Masculine'}</div>
+            <div className="mt-4 space-y-2 text-body leading-6 text-ink-600 dark:text-ink-300">
               <div>Days, months, seasons, compass points.</div>
               <div>der Mann</div>
               <div>der Tag</div>
             </div>
           </div>
           <div className={theme.panel.accent}>
-            <div className="mb-2 text-sm font-semibold text-red-700 dark:text-red-300">DIE</div>
-            <div className="text-3xl font-bold text-slate-900 dark:text-white">Feminine</div>
-            <div className="mt-3 text-sm text-slate-700 dark:text-slate-300">{isDE ? 'स्त्रीलिङ्ग' : 'Feminine'}</div>
-            <div className="mt-4 space-y-2 text-sm leading-6 text-slate-600 dark:text-slate-300">
+            <div className="mb-2 text-body font-semibold text-danger-700 dark:text-danger-300">DIE</div>
+            <div className="text-3xl font-bold text-ink-900 dark:text-white">Feminine</div>
+            <div className="mt-3 text-body text-ink-700 dark:text-ink-300">{isDE ? 'स्त्रीलिङ्ग' : 'Feminine'}</div>
+            <div className="mt-4 space-y-2 text-body leading-6 text-ink-600 dark:text-ink-300">
               <div>-ung, -heit, -keit, -schaft, -e</div>
               <div>die Frau</div>
               <div>die Zeitung</div>
             </div>
           </div>
           <div className={theme.panel.accent}>
-            <div className="mb-2 text-sm font-semibold text-green-700 dark:text-green-300">DAS</div>
-            <div className="text-3xl font-bold text-slate-900 dark:text-white">Neuter</div>
-            <div className="mt-3 text-sm text-slate-700 dark:text-slate-300">{isDE ? 'नपुंसकलिङ्ग' : 'Neuter'}</div>
-            <div className="mt-4 space-y-2 text-sm leading-6 text-slate-600 dark:text-slate-300">
+            <div className="mb-2 text-body font-semibold text-success-700 dark:text-success-300">DAS</div>
+            <div className="text-3xl font-bold text-ink-900 dark:text-white">Neuter</div>
+            <div className="mt-3 text-body text-ink-700 dark:text-ink-300">{isDE ? 'नपुंसकलिङ्ग' : 'Neuter'}</div>
+            <div className="mt-4 space-y-2 text-body leading-6 text-ink-600 dark:text-ink-300">
               <div>-chen, -lein, -ment, -um</div>
               <div>das Kind</div>
               <div>das Mädchen</div>
@@ -351,7 +351,7 @@ export function ArticlesPage() {
       {/* PRONOUNS MODE: gender → personal pronoun matching (der → er …) */}
       {mode === 'pronouns' && (
         <div className="mx-auto max-w-lg space-y-4">
-          <p className="text-center text-sm text-slate-600 dark:text-slate-300">
+          <p className="text-center text-body text-ink-600 dark:text-ink-300">
             {isDE
               ? 'der → er · die → sie · das → es — das Pronomen folgt dem Genus.'
               : 'der → er · die → sie · das → es — the pronoun follows the gender.'}
@@ -369,18 +369,18 @@ export function ArticlesPage() {
       {mode === 'quiz' && !currentItem && (
         <div className={theme.page.container}>
           {articlesLoading ? (
-            <p role="status" aria-live="polite" className="text-center text-sm text-slate-500 dark:text-slate-400">
+            <p role="status" aria-live="polite" className="text-center text-body text-ink-500 dark:text-ink-400">
               {isDE ? 'Wörter werden geladen…' : 'Loading words…'}
             </p>
           ) : articlesFailed ? (
-            <div role="alert" className="text-center text-sm text-amber-700 dark:text-amber-300">
+            <div role="alert" className="text-center text-body text-warning-700 dark:text-warning-300">
               <p>{isDE ? 'Artikel konnten nicht geladen werden.' : 'Articles could not be loaded.'}</p>
               <button type="button" onClick={() => setReloadArticles((attempt) => attempt + 1)} className={`${theme.button.secondary} mt-3`}>
                 {isDE ? 'Erneut versuchen' : 'Retry'}
               </button>
             </div>
           ) : (
-            <p className="text-center text-sm text-slate-500 dark:text-slate-400">
+            <p className="text-center text-body text-ink-500 dark:text-ink-400">
               {isDE ? 'Keine Artikel verfügbar.' : 'No article entries are available.'}
             </p>
           )}
@@ -390,20 +390,20 @@ export function ArticlesPage() {
       {mode === 'quiz' && currentItem && (
         <div className="grid gap-4 xl:grid-cols-[1.4fr_0.8fr]">
         <div className={theme.panel.surface}>
-          <div className="mb-4 text-sm uppercase tracking-wider text-slate-500">{isDE ? 'Trainer' : 'Trainer'}</div>
+          <div className="mb-4 text-body uppercase tracking-wider text-ink-500">{isDE ? 'Trainer' : 'Trainer'}</div>
           <div className={`${theme.panel.muted} text-center`}> 
             <div className="flex items-center justify-center gap-3">
-              <div className="text-4xl font-bold text-slate-900 dark:text-white">{currentItem.noun}</div>
+              <div className="text-4xl font-bold text-ink-900 dark:text-white">{currentItem.noun}</div>
               <CompactAudioButton 
                 word={currentItem.noun}
                 ariaLabel={`Hear pronunciation of ${currentItem.noun}`}
               />
             </div>
-            <div className="mt-2 text-sm text-slate-500 dark:text-slate-400">{currentItem.meaning}</div>
+            <div className="mt-2 text-body text-ink-500 dark:text-ink-400">{currentItem.meaning}</div>
             {currentItem.sentence && (
               <div className="mt-3 flex flex-col items-center gap-2">
                 {/* Hide article in displayed sentence to prevent spoiling the answer */}
-                <div className="text-base font-medium text-blue-700 dark:text-blue-300">
+                <div className="text-body font-medium text-accent-700 dark:text-accent-300">
                   {currentItem.sentence.replace(
                     new RegExp(`^(${['der', 'die', 'das'].join('|')})\\s`, 'i'),
                     '_____ '
@@ -441,11 +441,11 @@ export function ArticlesPage() {
           </div>
 
           <div className={theme.panel.muted}>
-            <div className="mb-2 flex items-center justify-between text-sm font-semibold text-slate-700 dark:text-slate-200">
+            <div className="mb-2 flex items-center justify-between text-body font-semibold text-ink-700 dark:text-ink-200">
               <span>{isDE ? 'Recorder' : 'Recorder'}</span>
               <span>{formatTime(recordingTime)}</span>
             </div>
-            <div className="mb-3 h-16 overflow-hidden rounded-2xl bg-white text-center dark:bg-slate-800">
+            <div className="mb-3 h-16 overflow-hidden rounded-lg bg-white text-center dark:bg-ink-800">
               <canvas ref={canvasRef} width={320} height={64} className="w-full h-full" />
             </div>
             <div className="flex flex-wrap gap-2">
@@ -475,11 +475,11 @@ export function ArticlesPage() {
               </button>
             </div>
             {audioUrl && (
-              <audio controls src={audioUrl} className="mt-4 w-full rounded-2xl bg-white p-2 dark:bg-slate-800" />
+              <audio controls src={audioUrl} className="mt-4 w-full rounded-lg bg-white p-2 dark:bg-ink-800" />
             )}
-            <div className="mt-3 text-sm text-slate-500 dark:text-slate-400">
+            <div className="mt-3 text-body text-ink-500 dark:text-ink-400">
               {speechMessage || status}
-              {recorderModeHint && <span className="block mt-1 font-medium text-slate-600 dark:text-slate-300">{recorderModeHint}</span>}
+              {recorderModeHint && <span className="block mt-1 font-medium text-ink-600 dark:text-ink-300">{recorderModeHint}</span>}
             </div>
           </div>
 
@@ -494,7 +494,7 @@ export function ArticlesPage() {
                   type="button"
                   onClick={() => checkArticle(choice)}
                   disabled={locked}
-                  className={`rounded-2xl px-4 py-3 text-sm font-semibold shadow-sm transition disabled:opacity-50 ${buttonClass} ${selected ? 'ring-4 ring-white/60' : ''}`}
+                  className={`rounded-lg px-4 py-3 text-body font-semibold shadow-sm transition disabled:opacity-50 ${buttonClass} ${selected ? 'ring-4 ring-white/60' : ''}`}
                 >
                   {choice.toUpperCase()}
                 </button>
@@ -503,7 +503,7 @@ export function ArticlesPage() {
           </div>
 
           {/* Gender color legend — global tokens: der=blue, die=red, das=green, Pl=amber */}
-          <div className="mt-3 flex flex-wrap items-center gap-3 text-xs font-medium text-slate-500 dark:text-slate-400">
+          <div className="mt-3 flex flex-wrap items-center gap-3 text-meta font-medium text-ink-500 dark:text-ink-400">
             <span className="inline-flex items-center gap-1">
               <span className={`h-2.5 w-2.5 rounded-full ${theme.gender.der.bg}`} aria-hidden="true" />
               der
@@ -526,11 +526,11 @@ export function ArticlesPage() {
             <div className={theme.panel.tip}>
               {feedback}
               {hint && (
-                <div className="mt-2 border-t border-slate-200 pt-2 text-xs text-slate-600 dark:border-slate-700 dark:text-slate-300">
+                <div className="mt-2 border-t border-ink-200 pt-2 text-meta text-ink-600 dark:border-ink-700 dark:text-ink-300">
                   {isDE ? hint.de : (
                     <>
                       <div>{hint.en}</div>
-                      <div className="mt-0.5 text-slate-500 dark:text-slate-400">{hint.ne}</div>
+                      <div className="mt-0.5 text-ink-500 dark:text-ink-400">{hint.ne}</div>
                     </>
                   )}
                 </div>
@@ -548,7 +548,7 @@ export function ArticlesPage() {
         </div>
 
         <div className={theme.panel.surface}>
-          <div className="space-y-2 text-sm text-slate-500 dark:text-slate-400">
+          <div className="space-y-2 text-body text-ink-500 dark:text-ink-400">
             <div>{isDE ? 'Lehrplan' : 'Learning stats'}</div>
             <div>
               {isDE ? 'Punkte: ' : 'Score: '} {articleScore} / {articleTotal}
@@ -556,15 +556,15 @@ export function ArticlesPage() {
             <div>{isDE ? 'Trefferquote: ' : 'Accuracy: '} {articlePercent}%</div>
           </div>          
           {/* Gender Legend Reference */}
-          <div className={theme.panel.muted + ' rounded-xl p-3 mt-4'}>
-            <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-300">
+          <div className={theme.panel.muted + ' rounded-md p-3 mt-4'}>
+            <div className="mb-2 text-meta font-semibold uppercase tracking-wider text-ink-600 dark:text-ink-300">
               {isDE ? 'Gender' : 'Genders'}
             </div>
             <GenderLegend />
           </div>
                     <div className={theme.panel.tip}>
             <p className="font-semibold">{isDE ? 'Tipp' : 'Tip'}:</p>
-            <p className="mt-2 text-slate-600 dark:text-slate-300">
+            <p className="mt-2 text-ink-600 dark:text-ink-300">
               {isDE
                 ? 'Sprich den Artikel zusammen mit dem Nomen: „der Tisch“, „die Sonne“, „das Buch“. '
                 : 'Speak the article together with the noun: “der Tisch”, “die Sonne”, “das Buch”.'}

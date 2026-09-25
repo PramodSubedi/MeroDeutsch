@@ -314,10 +314,10 @@ export function VocabTrainerPage() {
 
   // ── Render helpers ─────────────────────────────────────────────────────
   const chip = (active: boolean) =>
-    `min-h-[44px] rounded-full px-4 py-2 text-sm font-semibold transition active:scale-95 ${
+    `min-h-[44px] rounded-full px-4 py-2 text-body font-semibold transition active:scale-95 ${
       active
-        ? 'bg-blue-600 text-white shadow-sm'
-        : 'border border-slate-200 bg-white text-slate-600 hover:border-blue-400 hover:text-blue-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300'
+        ? 'bg-accent-600 text-white shadow-sm'
+        : 'border border-ink-200 bg-white text-ink-600 hover:border-accent-400 hover:text-accent-600 dark:border-ink-700 dark:bg-ink-900 dark:text-ink-300'
     }`;
 
   const articleBadge = current?.article ? genderToken(current.article) : null;
@@ -334,7 +334,7 @@ export function VocabTrainerPage() {
       {/* ── Filter bar ─────────────────────────────────────────────── */}
       <div className={`${theme.panel.surface} space-y-3`}>
         <div>
-          <div className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-slate-400">
+          <div className="mb-1.5 text-meta font-semibold uppercase tracking-wider text-ink-500">
             {isDE ? 'Niveau' : 'Level'}
           </div>
           <div className="flex flex-wrap gap-2">
@@ -350,7 +350,7 @@ export function VocabTrainerPage() {
         </div>
 
         <div>
-          <div className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-slate-400">
+          <div className="mb-1.5 text-meta font-semibold uppercase tracking-wider text-ink-500">
             {isDE ? 'Wortart' : 'Word type'}
           </div>
           <div className="flex flex-wrap gap-2">
@@ -366,7 +366,7 @@ export function VocabTrainerPage() {
           <div>
             <label
               htmlFor="vt-category"
-              className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-400"
+              className="mb-1.5 block text-meta font-semibold uppercase tracking-wider text-ink-500"
             >
               {isDE ? 'Thema' : 'Topic'}
             </label>
@@ -374,7 +374,7 @@ export function VocabTrainerPage() {
               id="vt-category"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="w-full max-w-xs rounded-lg border border-slate-200 bg-white p-2.5 text-sm dark:border-slate-700 dark:bg-slate-800"
+              className="w-full max-w-xs rounded-sm border border-ink-200 bg-white p-2.5 text-body dark:border-ink-700 dark:bg-ink-800"
             >
               <option value="">{isDE ? 'Alle Themen' : 'All topics'}</option>
               {options.categories.map((c) => (
@@ -388,7 +388,7 @@ export function VocabTrainerPage() {
 
         {/* Quiz variant selector (deep-linked via ?type=) */}
         <div>
-          <div className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-slate-400">
+          <div className="mb-1.5 text-meta font-semibold uppercase tracking-wider text-ink-500">
             {isDE ? 'Quiztyp' : 'Quiz type'}
           </div>
           <div className="flex flex-wrap gap-2">
@@ -410,7 +410,7 @@ export function VocabTrainerPage() {
 
         {/* Pool selector (deep-linked via ?pool=) */}
         <div>
-          <div className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-slate-400">
+          <div className="mb-1.5 text-meta font-semibold uppercase tracking-wider text-ink-500">
             {isDE ? 'Wortpool' : 'Pool'}
           </div>
           <div className="flex flex-wrap gap-2">
@@ -445,10 +445,10 @@ export function VocabTrainerPage() {
                 setMode(value);
                 reset();
               }}
-              className={`inline-flex min-h-[44px] items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition active:scale-95 ${
+              className={`inline-flex min-h-[44px] items-center gap-2 rounded-full px-4 py-2 text-body font-semibold transition active:scale-95 ${
                 mode === value
-                  ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900'
-                  : 'border border-slate-200 bg-white text-slate-600 hover:border-blue-400 hover:text-blue-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300'
+                  ? 'bg-ink-900 text-white dark:bg-white dark:text-ink-900'
+                  : 'border border-ink-200 bg-white text-ink-600 hover:border-accent-400 hover:text-accent-600 dark:border-ink-700 dark:bg-ink-900 dark:text-ink-300'
               }`}
             >
               <Icon className="h-4 w-4" aria-hidden="true" />
@@ -469,7 +469,7 @@ export function VocabTrainerPage() {
 
       {/* ── Empty state ────────────────────────────────────────────── */}
       {!loading && pool.length === 0 && !finished && (
-        <div className={`${theme.panel.muted} mt-4 text-center text-sm text-slate-500 dark:text-slate-400`}>
+        <div className={`${theme.panel.muted} mt-4 text-center text-body text-ink-500 dark:text-ink-400`}>
           {started && hasFilters
             ? isDE
               ? 'Kein Wort in diesem Pool — versuche einen anderen Pool oder Filter.'
@@ -482,7 +482,7 @@ export function VocabTrainerPage() {
 
       {/* ── Loading ────────────────────────────────────────────────── */}
       {loading && (
-        <div className={`${theme.panel.muted} mt-4 animate-pulse text-center text-sm text-slate-500`}>
+        <div className={`${theme.panel.muted} mt-4 animate-pulse text-center text-body text-ink-500`}>
           {isDE ? 'Lade Wörter…' : 'Loading words…'}
         </div>
       )}
@@ -490,8 +490,8 @@ export function VocabTrainerPage() {
       {/* ── Session summary ────────────────────────────────────────── */}
       {finished && (
         <div className={`${theme.panel.accent} mt-4 text-center`}>
-          <div className="text-3xl font-bold text-blue-700 dark:text-blue-300">{pct}%</div>
-          <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+          <div className="text-3xl font-bold text-accent-700 dark:text-accent-300">{pct}%</div>
+          <p className="mt-1 text-body text-ink-600 dark:text-ink-300">
             {score.correct}/{score.total}{' '}
             {isDE ? 'richtig' : 'correct'} · {mode === 'flashcards' ? (isDE ? 'Karteikarten' : 'Flashcards') : 'Quiz'}
           </p>
@@ -515,7 +515,7 @@ export function VocabTrainerPage() {
       {/* ── Flashcard drill ────────────────────────────────────────── */}
       {mode === 'flashcards' && current && !finished && (
         <div className="mt-6">
-          <div className="mb-2 flex items-center justify-between text-xs font-semibold text-slate-400">
+          <div className="mb-2 flex items-center justify-between text-meta font-semibold text-ink-500">
             <span>
               {index + 1} / {pool.length}
             </span>
@@ -527,7 +527,7 @@ export function VocabTrainerPage() {
             onClick={handleFlip}
             aria-pressed={flipped}
             aria-label={flipped ? 'Show German word' : 'Reveal translation'}
-            className="relative block w-full rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm transition-all duration-300 hover:shadow-md active:scale-[0.99] dark:border-slate-700 dark:bg-slate-900"
+            className="relative block w-full rounded-lg border border-ink-200 bg-white p-8 text-center shadow-sm transition-all duration-300 hover:shadow-md active:scale-[0.99] dark:border-ink-700 dark:bg-ink-900"
             style={{ minHeight: 220 }}
           >
             {!flipped ? (
@@ -537,28 +537,28 @@ export function VocabTrainerPage() {
                     {articleBadge.label}
                   </span>
                 )}
-                <span className="align-middle text-3xl font-bold text-slate-900 dark:text-white">{current.lemma}</span>
-                <span className="mt-3 block text-xs uppercase tracking-wider text-slate-400">
+                <span className="align-middle text-3xl font-bold text-ink-900 dark:text-white">{current.lemma}</span>
+                <span className="mt-3 block text-meta uppercase tracking-wider text-ink-500">
                   {current.partOfSpeech} · {isDE ? 'Tippen zum Umdrehen' : 'Tap to reveal'}
                 </span>
               </span>
             ) : (
               <span className="block">
-                <span className="block text-2xl font-bold text-blue-700 dark:text-blue-300">
+                <span className="block text-2xl font-bold text-accent-700 dark:text-accent-300">
                   {current.translation.en}
                 </span>
                 {!isDE && current.translation.np && (
-                  <span className="mt-3 block text-xl font-semibold text-slate-800 dark:text-slate-100">
+                  <span className="mt-3 block text-xl font-semibold text-ink-800 dark:text-ink-100">
                     {current.translation.np}
                   </span>
                 )}
                 {!isDE && current.translationNeRoman && (
-                  <span className="mt-1 block text-sm italic text-slate-500 dark:text-slate-400">
+                  <span className="mt-1 block text-body italic text-ink-500 dark:text-ink-400">
                     ({current.translationNeRoman})
                   </span>
                 )}
                 {current.examples[0]?.de && (
-                  <span className="mt-4 block border-t border-slate-100 pt-3 text-sm text-slate-600 dark:border-slate-800 dark:text-slate-300">
+                  <span className="mt-4 block border-t border-ink-100 pt-3 text-body text-ink-600 dark:border-ink-800 dark:text-ink-300">
                     {current.examples[0].de}
                   </span>
                 )}
@@ -585,7 +585,7 @@ export function VocabTrainerPage() {
       {/* ── Quiz drill ─────────────────────────────────────────────── */}
       {mode === 'quiz' && question && !finished && (
         <div className="mt-6">
-          <div className="mb-2 flex items-center justify-between text-xs font-semibold text-slate-400">
+          <div className="mb-2 flex items-center justify-between text-meta font-semibold text-ink-500">
             <span>
               {index + 1} / {pool.length}
             </span>
@@ -597,48 +597,48 @@ export function VocabTrainerPage() {
           <div className={`${theme.panel.surface} text-center`}>
             {question.variant === 'article' && (
               <>
-                <div className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                <div className="text-meta font-semibold uppercase tracking-wider text-ink-500">
                   {isDE ? 'Welcher Artikel?' : 'Which article?'}
                 </div>
-                <div className="mt-2 text-3xl font-bold text-slate-900 dark:text-white">
+                <div className="mt-2 text-3xl font-bold text-ink-900 dark:text-white">
                   {(() => {
                     const m = question.card.lemma.match(/^(der|die|das)\s+(.+)$/i);
                     return m ? m[2] : question.card.lemma;
                   })()}
                 </div>
-                <div className="mt-1 text-xs uppercase tracking-wider text-slate-400">{question.card.partOfSpeech}</div>
+                <div className="mt-1 text-meta uppercase tracking-wider text-ink-500">{question.card.partOfSpeech}</div>
               </>
             )}
             {question.variant === 'plural' && (
               <>
-                <div className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                <div className="text-meta font-semibold uppercase tracking-wider text-ink-500">
                   {isDE ? 'Welche Pluralform?' : 'Which plural?'}
                 </div>
-                <div className="mt-2 text-3xl font-bold text-slate-900 dark:text-white">
+                <div className="mt-2 text-3xl font-bold text-ink-900 dark:text-white">
                   {(() => {
                     const m = question.card.lemma.match(/^(der|die|das)\s+(.+)$/i);
                     return m ? `${m[1]} ${m[2]}` : question.card.lemma;
                   })()}
                 </div>
-                <div className="mt-1 text-xs uppercase tracking-wider text-slate-400">{isDE ? 'Singular' : 'Singular'}</div>
+                <div className="mt-1 text-meta uppercase tracking-wider text-ink-500">{isDE ? 'Singular' : 'Singular'}</div>
               </>
             )}
             {question.variant === 'en-to-de' && (
               <>
-                <div className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                <div className="text-meta font-semibold uppercase tracking-wider text-ink-500">
                   {isDE ? 'Was heißt das auf Deutsch?' : 'What is this in German?'}
                 </div>
-                <div className="mt-2 text-3xl font-bold text-slate-900 dark:text-white">{question.card.translation.en}</div>
-                <div className="mt-1 text-xs uppercase tracking-wider text-slate-400">{question.card.partOfSpeech}</div>
+                <div className="mt-2 text-3xl font-bold text-ink-900 dark:text-white">{question.card.translation.en}</div>
+                <div className="mt-1 text-meta uppercase tracking-wider text-ink-500">{question.card.partOfSpeech}</div>
               </>
             )}
             {question.variant === 'listen' && (
               <>
-                <div className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                <div className="text-meta font-semibold uppercase tracking-wider text-ink-500">
                   {isDE ? 'Was hast du gehört?' : 'What did you hear?'}
                 </div>
                 <div className="mt-2 flex items-center justify-center gap-3">
-                  <span className="text-3xl font-bold text-slate-900 dark:text-white">{question.card.lemma}</span>
+                  <span className="text-3xl font-bold text-ink-900 dark:text-white">{question.card.lemma}</span>
                   <button
                     type="button"
                     onClick={() => speakWord(question.card.lemma)}
@@ -648,16 +648,16 @@ export function VocabTrainerPage() {
                     <Volume2 className="h-5 w-5" aria-hidden="true" />
                   </button>
                 </div>
-                <div className="mt-1 text-xs uppercase tracking-wider text-slate-400">{question.card.partOfSpeech}</div>
+                <div className="mt-1 text-meta uppercase tracking-wider text-ink-500">{question.card.partOfSpeech}</div>
               </>
             )}
             {question.variant === 'de-to-en' && (
               <>
-                <div className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                <div className="text-meta font-semibold uppercase tracking-wider text-ink-500">
                   {isDE ? 'Was bedeutet dieses Wort?' : 'What does this mean?'}
                 </div>
-                <div className="mt-2 text-3xl font-bold text-slate-900 dark:text-white">{question.card.lemma}</div>
-                <div className="mt-1 text-xs uppercase tracking-wider text-slate-400">{question.card.partOfSpeech}</div>
+                <div className="mt-2 text-3xl font-bold text-ink-900 dark:text-white">{question.card.lemma}</div>
+                <div className="mt-1 text-meta uppercase tracking-wider text-ink-500">{question.card.partOfSpeech}</div>
               </>
             )}
           </div>
@@ -673,12 +673,12 @@ export function VocabTrainerPage() {
                   type="button"
                   onClick={() => handleQuizAnswer(i)}
                   disabled={revealed}
-                  className={`min-h-[56px] rounded-2xl border-2 p-4 text-left text-base font-semibold transition active:scale-95 ${
+                  className={`min-h-[56px] rounded-lg border-2 p-4 text-left text-body font-semibold transition active:scale-95 ${
                     revealed && isCorrect
-                      ? 'border-emerald-500 bg-emerald-50 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-200'
+                      ? 'border-success-500 bg-success-50 text-success-800 dark:bg-success-950/40 dark:text-success-200'
                       : revealed && isPicked
-                        ? 'border-red-500 bg-red-50 text-red-800 dark:bg-red-950/40 dark:text-red-200'
-                        : 'border-slate-200 bg-white text-slate-700 hover:border-blue-400 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200'
+                        ? 'border-danger-500 bg-danger-50 text-danger-800 dark:bg-danger-950/40 dark:text-danger-200'
+                        : 'border-ink-200 bg-white text-ink-700 hover:border-accent-400 dark:border-ink-700 dark:bg-ink-900 dark:text-ink-200'
                   }`}
                 >
                   {opt}
@@ -691,7 +691,7 @@ export function VocabTrainerPage() {
 
       {/* Offline hint when a started session comes back empty after filtering */}
       {!loading && started && hasFilters && pool.length === 0 && !finished && (
-        <p className="mt-3 text-center text-xs text-slate-400">
+        <p className="mt-3 text-center text-meta text-ink-500">
           {isDE
             ? 'Keine Treffer — versuche andere Filter (offline? Cache füllt sich beim ersten Online-Besuch).'
             : 'No matches — try different filters (offline? the cache fills on your first online visit).'}

@@ -69,30 +69,30 @@ export function LetterDetailModal({ item, langMode, onClose }: Props) {
           ×
         </button>
         <div className="text-center">
-          <div id="modal-title" className="text-5xl font-bold text-blue-600 dark:text-blue-400">{item.letter}</div>
+          <div id="modal-title" className="text-5xl font-bold text-accent-600 dark:text-accent-400">{item.letter}</div>
           <div className="mb-3 text-xl font-semibold">{item.gerPhonetic}</div>
           {!isDE && (
-            <div className="mb-3 rounded-lg bg-slate-100 p-3 text-left text-sm dark:bg-slate-700">
+            <div className="mb-3 rounded-sm bg-ink-100 p-3 text-left text-body dark:bg-ink-700">
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <span className="text-xs text-slate-500">Native</span>
+                  <span className="text-meta text-ink-500">Native</span>
                   <div className="font-bold">{item.nepPhonetic}</div>
                 </div>
                 <div>
-                  <span className="text-xs text-slate-500">English</span>
+                  <span className="text-meta text-ink-500">English</span>
                   <div className="font-bold">{item.engPhonetic}</div>
                 </div>
               </div>
             </div>
           )}
-          <div className="mb-3 rounded-lg border border-blue-100 bg-blue-50 p-3 text-left dark:border-blue-800 dark:bg-blue-900/30">
-            <div className="mb-1 text-xs font-bold text-blue-500">{isDE ? 'Beispiel' : 'Example'}</div>
+          <div className="mb-3 rounded-sm border border-accent-100 bg-accent-50 p-3 text-left dark:border-accent-800 dark:bg-accent-900/30">
+            <div className="mb-1 text-meta font-bold text-accent-500">{isDE ? 'Beispiel' : 'Example'}</div>
             <div className="font-bold">{isDE ? item.example : item.exampleFull}</div>
           </div>
           {tip && (
-            <div className="mb-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-left dark:border-amber-800 dark:bg-amber-900/30">
-              <div className="mb-1 text-xs font-bold text-amber-600 dark:text-amber-400">💡 {isDE ? 'Aussprache-Tipp' : 'Pronunciation Tip'}</div>
-              <div className="text-sm">
+            <div className="mb-3 rounded-sm border border-warning-200 bg-warning-50 p-3 text-left dark:border-warning-800 dark:bg-warning-900/30">
+              <div className="mb-1 text-meta font-bold text-warning-600 dark:text-warning-400">💡 {isDE ? 'Aussprache-Tipp' : 'Pronunciation Tip'}</div>
+              <div className="text-body">
                 {isDE ? tip.ne : tip.en}
               </div>
             </div>
@@ -100,14 +100,14 @@ export function LetterDetailModal({ item, langMode, onClose }: Props) {
           <div className="flex gap-2">
             <button
               type="button"
-              className="flex-1 rounded-lg bg-blue-600 py-2 text-sm font-semibold text-white"
+              className="flex-1 rounded-sm bg-accent-600 py-2 text-body font-semibold text-white"
               onClick={() => speakLetter(item.speak)}
             >
               🔊 {isDE ? 'Buchstabe' : 'Letter'}
             </button>
             <button
               type="button"
-              className="flex-1 rounded-lg bg-indigo-600 py-2 text-sm font-semibold text-white"
+              className="flex-1 rounded-sm bg-accent-600 py-2 text-body font-semibold text-white"
               onClick={() => speakWord(item.speakWord)}
             >
               🔊 {isDE ? 'Wort' : 'Word'}

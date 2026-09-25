@@ -38,7 +38,7 @@ export function CompactAudioButton({
     <button
       type="button"
       onClick={handleClick}
-      className={`inline-flex min-h-10 min-w-10 items-center justify-center rounded-full bg-blue-600 text-sm font-semibold text-white shadow transition hover:bg-blue-700 active:scale-95 focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:outline-none focus-visible:ring-offset-2 ${className}`}
+      className={`inline-flex min-h-10 min-w-10 items-center justify-center rounded-full bg-accent-600 text-body font-semibold text-white shadow transition hover:bg-accent-700 active:scale-95 focus-visible:ring-2 focus-visible:ring-accent-600 focus-visible:outline-none focus-visible:ring-offset-2 ${className}`}
       aria-label={ariaLabel || `Play pronunciation for ${word}`}
     >
       🔊

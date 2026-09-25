@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { Volume2 } from 'lucide-react';
 import { theme } from '../config/theme';
 
 interface CardProps {
@@ -30,7 +31,7 @@ export function Card({ badge, title, lines, footer, note, onClick, onSpeak }: Ca
     <article className={theme.card.surface}>
       <div className="flex items-center gap-3">
         {onClick ? (
-          <button type="button" onClick={onClick} className="flex min-w-0 flex-1 items-center gap-3 rounded-lg text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500">
+          <button type="button" onClick={onClick} className="flex min-w-0 flex-1 items-center gap-3 rounded-sm text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500">
             {content}
           </button>
         ) : (
@@ -38,7 +39,8 @@ export function Card({ badge, title, lines, footer, note, onClick, onSpeak }: Ca
         )}
         {onSpeak && (
           <button type="button" onClick={onSpeak} className={theme.button.icon} aria-label={`Play audio for ${title}`}>
-            🔊
+            {/* Lucide, not 🔊 — the app has ONE icon language (see .clinerules E4). */}
+            <Volume2 className="h-5 w-5" aria-hidden="true" />
           </button>
         )}
       </div>

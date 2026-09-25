@@ -91,9 +91,9 @@ export function DailySession() {
   // ── Active review batch (reused existing review UI) ──────────────
   if (sessionStarted && dueCount > 0 && !sessionComplete) {
     return (
-      <section id={ANCHORS.dailySession} className="rounded-2xl bg-white p-4 shadow-sm dark:bg-slate-900">
+      <section id={ANCHORS.dailySession} className="rounded-lg border border-ink-200 bg-white p-4 shadow-sm dark:bg-ink-900 dark:border-ink-800">
         <div className="mb-3 flex items-center justify-between gap-3">
-          <h2 className="text-lg font-semibold text-slate-950 dark:text-white">
+          <h2 className="text-lg font-semibold text-ink-950 dark:text-white">
             {isDE ? 'Heutige Sitzung' : "Today's session"}
           </h2>
         </div>
@@ -114,19 +114,19 @@ export function DailySession() {
   // ── Summary step after the review batch ──────────────────────────
   if (sessionComplete) {
     return (
-      <section id={ANCHORS.dailySession} className="rounded-2xl bg-white p-4 shadow-sm dark:bg-slate-900">
+      <section id={ANCHORS.dailySession} className="rounded-lg border border-ink-200 bg-white p-4 shadow-sm dark:bg-ink-900 dark:border-ink-800">
         <div className="mb-3 flex items-center justify-between gap-3">
-          <h2 className="text-lg font-semibold text-slate-950 dark:text-white">
+          <h2 className="text-lg font-semibold text-ink-950 dark:text-white">
             {isDE ? 'Heutige Sitzung' : "Today's session"}
           </h2>
         </div>
         <div className="space-y-3">
-          <div className="rounded-2xl bg-emerald-50 p-4 text-center dark:bg-emerald-950/30">
+          <div className="rounded-lg bg-success-50 p-4 text-center dark:bg-success-950/30">
             <div className="text-2xl" aria-hidden="true">✅</div>
-            <p className="mt-1 text-sm font-bold text-emerald-800 dark:text-emerald-300">
+            <p className="mt-1 text-body font-bold text-success-800 dark:text-success-300">
               {isDE ? 'Sitzung abgeschlossen!' : 'Session complete!'}
             </p>
-            <p className="mt-1 text-xs text-emerald-700 dark:text-emerald-400">
+            <p className="mt-1 text-meta text-success-700 dark:text-success-400">
               {isDE
                 ? `${answered} geprüft · ${remainingDue} noch fällig`
                 : `${answered} reviewed · ${remainingDue} still due`}
@@ -137,10 +137,10 @@ export function DailySession() {
             {pushNode && (
               <Link
                 to={pushNode.to}
-                className="inline-flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-2xl bg-blue-600 px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-blue-700 active:scale-95"
+                className="inline-flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-lg bg-accent-600 px-4 py-3 text-body font-bold text-white shadow-sm transition hover:bg-accent-700 active:scale-95"
               >
                 🚀 {isDE ? 'Weiterlernen' : 'Continue learning'}
-                <span className="truncate text-xs font-medium opacity-90">
+                <span className="truncate text-meta font-medium opacity-90">
                   {isDE ? pushNode.label.de : pushNode.label.en}
                 </span>
               </Link>
@@ -148,7 +148,7 @@ export function DailySession() {
             <button
               type="button"
               onClick={resetSession}
-              className="inline-flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50 active:scale-95 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+              className="inline-flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-lg border border-ink-200 bg-white px-4 py-3 text-body font-bold text-ink-700 transition hover:bg-ink-50 active:scale-95 dark:border-ink-700 dark:bg-ink-800 dark:text-ink-200"
             >
               🔁 {isDE ? 'Nochmal üben' : 'Review again'}
             </button>
@@ -160,9 +160,9 @@ export function DailySession() {
 
   // ── Default: primary CTA ─────────────────────────────────────────
   return (
-    <section id={ANCHORS.dailySession} className="rounded-2xl bg-white p-4 shadow-sm dark:bg-slate-900">
+    <section id={ANCHORS.dailySession} className="rounded-lg border border-ink-200 bg-white p-4 shadow-sm dark:bg-ink-900 dark:border-ink-800">
       <div className="mb-3 flex items-center justify-between gap-3">
-        <h2 className="text-lg font-semibold text-slate-950 dark:text-white">
+        <h2 className="text-lg font-semibold text-ink-950 dark:text-white">
           {isDE ? 'Heutige Sitzung' : "Today's session"}
         </h2>
       </div>
@@ -171,10 +171,10 @@ export function DailySession() {
         <button
           type="button"
           onClick={startSession}
-          className="inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-2xl bg-blue-600 px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-blue-700 active:scale-95"
+          className="inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-lg bg-accent-600 px-4 py-3 text-body font-bold text-white shadow-sm transition hover:bg-accent-700 active:scale-95"
         >
           🎯 {isDE ? 'Starte die heutige Sitzung' : "Start today's session"}
-          <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-white/20 px-1.5 text-xs font-bold text-white">
+          <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-white/20 px-1.5 text-meta font-bold text-white">
             {dueCount}
           </span>
         </button>
@@ -182,17 +182,17 @@ export function DailySession() {
         /* 0 due — CTA goes straight to the next path node only. */
         <Link
           to={pushNode.to}
-          className="inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-2xl bg-blue-600 px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-blue-700 active:scale-95"
+          className="inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-lg bg-accent-600 px-4 py-3 text-body font-bold text-white shadow-sm transition hover:bg-accent-700 active:scale-95"
         >
           🚀 {isDE ? 'Weiterlernen' : 'Continue learning'}
-          <span className="truncate text-xs font-medium opacity-90">
+          <span className="truncate text-meta font-medium opacity-90">
             {isDE ? pushNode.label.de : pushNode.label.en}
           </span>
         </Link>
       ) : (
         <Link
           to="/learn"
-          className="inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-800 transition hover:bg-emerald-100 active:scale-95 dark:border-emerald-900/50 dark:bg-emerald-950/30 dark:text-emerald-300"
+          className="inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-lg border border-success-200 bg-success-50 px-4 py-3 text-body font-bold text-success-800 transition hover:bg-success-100 active:scale-95 dark:border-success-900/50 dark:bg-success-950/30 dark:text-success-300"
         >
           ✅ {isDE ? 'Alles erledigt — zum Lernpfad' : 'All caught up — go to path'}
         </Link>

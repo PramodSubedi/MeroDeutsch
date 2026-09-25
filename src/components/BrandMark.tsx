@@ -23,7 +23,7 @@ export function BrandMark({ linked = false, light = false, className = '' }: Bra
       <span
         className={`ml-1 font-extrabold ${
           light
-            ? 'bg-gradient-to-r from-amber-300 to-amber-100 bg-clip-text text-transparent'
+            ? 'bg-gradient-to-r from-warning-300 to-warning-100 bg-clip-text text-transparent'
             : 'bg-gradient-to-r from-accent-gold to-mero-red bg-clip-text text-transparent'
         }`}
       >
@@ -38,7 +38,7 @@ export function BrandMark({ linked = false, light = false, className = '' }: Bra
     <Link
       to="/"
       aria-label="MeroDeutsch – Home"
-      className="inline-flex min-h-[44px] items-center transition duration-200 hover:opacity-90 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none focus-visible:ring-offset-2 rounded"
+      className="inline-flex min-h-[44px] items-center transition duration-200 hover:opacity-90 focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none focus-visible:ring-offset-2 rounded-sm"
     >
       {mark}
     </Link>

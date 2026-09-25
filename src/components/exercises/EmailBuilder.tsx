@@ -128,30 +128,30 @@ export function EmailBuilder() {
   if (!started) {
     return (
       <div className="space-y-4">
-        <p className="text-sm text-slate-500 dark:text-slate-400">
+        <p className="text-body text-ink-500 dark:text-ink-400">
           {isDE ? 'Wähle eine Prüfungsaufgabe:' : 'Choose an exam task:'}
         </p>
         <div className="grid gap-3 sm:grid-cols-2">
           {EMAIL_TASKS.map((t) => (
-            <div key={t.id} className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-900">
+            <div key={t.id} className="rounded-lg border border-ink-200 bg-white p-4 dark:border-ink-700 dark:bg-ink-900">
               <div className="flex items-center justify-between">
-                <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                <h3 className="text-body font-bold text-ink-900 dark:text-white">
                   {isDE ? t.title.de : t.title.en}
                 </h3>
                 <span
                   className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
                     t.recipient.formal
-                      ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300'
-                      : 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300'
+                      ? 'bg-accent-100 text-accent-700 dark:bg-accent-900/40 dark:text-accent-300'
+                      : 'bg-warning-100 text-warning-700 dark:bg-warning-900/40 dark:text-warning-300'
                   }`}
                 >
                   {t.recipient.formal ? (isDE ? 'formell' : 'formal') : isDE ? 'informell' : 'informal'}
                 </span>
               </div>
-              <p className="mt-2 text-xs leading-5 text-slate-600 dark:text-slate-300">
+              <p className="mt-2 text-meta leading-5 text-ink-600 dark:text-ink-300">
                 {isDE ? t.prompt.de : t.prompt.en}
               </p>
-              {!isDE && <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">{t.prompt.ne}</p>}
+              {!isDE && <p className="mt-1 text-meta text-ink-500 dark:text-ink-500">{t.prompt.ne}</p>}
               <button
                 type="button"
                 onClick={() => startTask(t)}
@@ -171,19 +171,19 @@ export function EmailBuilder() {
       {/* Task header + progress */}
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h3 className="text-base font-bold text-slate-900 dark:text-white">
+          <h3 className="text-body font-bold text-ink-900 dark:text-white">
             {isDE ? task.title.de : task.title.en}
           </h3>
-          <p className="text-xs text-slate-500 dark:text-slate-400">
+          <p className="text-meta text-ink-500 dark:text-ink-400">
             {isDE ? 'Empfänger: ' : 'Recipient: '}
-            <span className="font-semibold text-slate-700 dark:text-slate-200">{task.recipient.name}</span>
+            <span className="font-semibold text-ink-700 dark:text-ink-200">{task.recipient.name}</span>
             {task.recipient.formal
               ? isDE ? ' (formell — Sie)' : ' (formal — Sie)'
               : isDE ? ' (informell — du)' : ' (informal — du)'}
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+          <span className="rounded-full bg-ink-100 px-2.5 py-1 text-meta font-bold text-ink-600 dark:bg-ink-800 dark:text-ink-300">
             {Math.min(stepIndex + 1, steps.length)}/{steps.length}
           </span>
           <button type="button" onClick={retrySameTask} className={theme.button.secondarySmall}>
@@ -198,10 +198,10 @@ export function EmailBuilder() {
 
       {/* Task prompt (trilingual; EN/NE hidden in Nur DE) */}
       <div className={theme.panel.accent}>
-        <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+        <p className="text-body font-semibold text-ink-800 dark:text-ink-100">
           {isDE ? task.prompt.de : task.prompt.en}
         </p>
-        {!isDE && <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{task.prompt.ne}</p>}
+        {!isDE && <p className="mt-1 text-meta text-ink-500 dark:text-ink-400">{task.prompt.ne}</p>}
       </div>
 
       {/* Completed steps checklist */}
@@ -210,7 +210,7 @@ export function EmailBuilder() {
           {steps.slice(0, stepIndex).map((key) => (
             <span
               key={key}
-              className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"
+              className="inline-flex items-center gap-1 rounded-full bg-success-50 px-2.5 py-1 text-meta font-semibold text-success-700 dark:bg-success-950/40 dark:text-success-300"
             >
               <Check className="h-3 w-3" aria-hidden="true" />
               {picks[key]}
@@ -220,37 +220,37 @@ export function EmailBuilder() {
       )}
 
       {!review && (
-        <div className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-900">
+        <div className="rounded-lg border border-ink-200 bg-white p-4 dark:border-ink-700 dark:bg-ink-900">
           <div className="mb-3 flex items-center justify-between">
-            <h4 className="text-sm font-bold text-slate-800 dark:text-slate-100">
+            <h4 className="text-body font-bold text-ink-800 dark:text-ink-100">
               {stepKey === 'greeting'
                 ? isDE ? '1. Anrede' : '1. Greeting'
                 : stepKey === 'closing'
                   ? isDE ? '5. Grußformel' : '5. Closing'
                   : `${stepIndex + 1}. ${isDE ? currentPoint?.label.de : currentPoint?.label.en}`}
             </h4>
-            <ChevronRight className="h-4 w-4 text-slate-400" aria-hidden="true" />
+            <ChevronRight className="h-4 w-4 text-ink-500" aria-hidden="true" />
           </div>
           <div className="grid gap-2">
             {choicesFor(stepKey).map((choice) => {
               const isChosen = picks[stepKey] === choice.de;
               const isWrongFlash = flash?.key === stepKey && flash.wrongChoice === choice.de;
               const cls = isChosen
-                ? 'border-emerald-400 bg-emerald-50 text-emerald-900 dark:border-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-200'
+                ? 'border-success-400 bg-success-50 text-success-900 dark:border-success-700 dark:bg-success-950/40 dark:text-success-200'
                 : isWrongFlash
-                  ? 'border-red-400 bg-red-50 text-red-900 dark:border-red-700 dark:bg-red-950/40 dark:text-red-200'
-                  : 'border-slate-200 bg-white text-slate-800 hover:border-blue-400 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100';
+                  ? 'border-danger-400 bg-danger-50 text-danger-900 dark:border-danger-700 dark:bg-danger-950/40 dark:text-danger-200'
+                  : 'border-ink-200 bg-white text-ink-800 hover:border-accent-400 dark:border-ink-700 dark:bg-ink-800 dark:text-ink-100';
               return (
                 <button
                   key={choice.de}
                   type="button"
                   disabled={isChosen || flash !== null}
                   onClick={() => pick(stepKey, choice)}
-                  className={`min-h-[44px] rounded-xl border px-4 py-2.5 text-left text-sm font-semibold transition active:scale-95 disabled:opacity-80 ${cls}`}
+                  className={`min-h-[44px] rounded-md border px-4 py-2.5 text-left text-body font-semibold transition active:scale-95 disabled:opacity-80 ${cls}`}
                 >
                   {choice.de}
                   {!isDE && choice.en && (
-                    <span className="mt-0.5 block text-xs font-normal text-slate-500 dark:text-slate-400">
+                    <span className="mt-0.5 block text-meta font-normal text-ink-500 dark:text-ink-400">
                       {choice.en}
                     </span>
                   )}
@@ -264,28 +264,28 @@ export function EmailBuilder() {
       {/* Review: assembled email vs model + Redemittel glossary */}
       {review && (
         <div className="space-y-4">
-          <div className="rounded-2xl border border-emerald-200 bg-emerald-50/60 p-4 dark:border-emerald-800/40 dark:bg-emerald-950/20">
-            <h4 className="mb-2 text-sm font-bold text-emerald-700 dark:text-emerald-300">
+          <div className="rounded-lg border border-success-200 bg-success-50/60 p-4 dark:border-success-800/40 dark:bg-success-950/20">
+            <h4 className="mb-2 text-body font-bold text-success-700 dark:text-success-300">
               🎉 {isDE ? 'Deine E-Mail (+25 XP)' : 'Your email (+25 XP)'}
             </h4>
-            <pre className="whitespace-pre-wrap font-sans text-sm leading-6 text-slate-800 dark:text-slate-100">
+            <pre className="whitespace-pre-wrap font-sans text-body leading-6 text-ink-800 dark:text-ink-100">
               {assembled}
             </pre>
           </div>
-          <div className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-900">
-            <h4 className="mb-2 text-sm font-bold text-slate-800 dark:text-slate-100">
+          <div className="rounded-lg border border-ink-200 bg-white p-4 dark:border-ink-700 dark:bg-ink-900">
+            <h4 className="mb-2 text-body font-bold text-ink-800 dark:text-ink-100">
               {isDE ? 'Musterlösung' : 'Model answer'}
             </h4>
-            <pre className="whitespace-pre-wrap font-sans text-sm leading-6 text-slate-600 dark:text-slate-300">
+            <pre className="whitespace-pre-wrap font-sans text-body leading-6 text-ink-600 dark:text-ink-300">
               {task.model}
             </pre>
-            <h4 className="mb-1 mt-4 text-sm font-bold text-slate-800 dark:text-slate-100">
+            <h4 className="mb-1 mt-4 text-body font-bold text-ink-800 dark:text-ink-100">
               {isDE ? 'Redemittel' : 'Key phrases'}
             </h4>
-            <ul className="space-y-1 text-xs text-slate-600 dark:text-slate-300">
+            <ul className="space-y-1 text-meta text-ink-600 dark:text-ink-300">
               {task.vocabulary.map((v) => (
                 <li key={v.de}>
-                  <span className="font-semibold text-slate-800 dark:text-slate-100">{v.de}</span>
+                  <span className="font-semibold text-ink-800 dark:text-ink-100">{v.de}</span>
                   {!isDE && <> — {v.en} · {v.ne}</>}
                 </li>
               ))}

@@ -20,7 +20,7 @@ export function ModuleChrome() {
     <div className="mb-2 flex flex-wrap items-center gap-x-3 gap-y-2">
       <Link
         to={isAuthenticated ? '/learn' : '/home'}
-        className="inline-flex shrink-0 items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-200"
+        className="inline-flex shrink-0 items-center gap-1 text-meta font-semibold text-accent-600 hover:text-accent-800 dark:text-accent-300 dark:hover:text-accent-200"
       >
         ← {isDE
           ? (isAuthenticated ? 'Zurück zum Lernpfad' : 'Zurück zur Startseite')

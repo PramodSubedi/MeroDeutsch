@@ -15,9 +15,15 @@ import type { ReactElement } from 'react';
 interface A1PathProgressProps {
   /** When true, renders a compact horizontal strip (sidebar footer). */
   compact?: boolean;
+  /**
+   * Suppress the built-in "A1 Path" label. Set when the host already supplies
+   * a heading for this component — otherwise the two labels stack and read as
+   * a mistake ("YOUR COURSE" sitting directly above "A1 PATH").
+   */
+  hideLabel?: boolean;
 }
 
-export function A1PathProgress({ compact = false }: A1PathProgressProps) {
+export function A1PathProgress({ compact = false, hideLabel = false }: A1PathProgressProps) {
   const { langMode } = useLang();
   const isDE = langMode === 'german';
   const { checkpointBestByUnit, isNodeComplete, getUnitPhase } = useA1Path();
@@ -28,20 +34,22 @@ export function A1PathProgress({ compact = false }: A1PathProgressProps) {
     // Compact horizontal strip for sidebar / embedded use.
     return (
       <div className="space-y-2">
-        <div className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-          {isDE ? 'A1-Fortschritt' : 'A1 Path'}
-        </div>
+        {!hideLabel && (
+          <div className="text-meta font-semibold uppercase tracking-wider text-ink-500 dark:text-ink-400">
+            {isDE ? 'A1-Fortschritt' : 'A1 Path'}
+          </div>
+        )}
         <div className="flex items-center gap-1">
           {bands.map((band) => {
             const phase = getUnitPhase(band.index);
             return (
               <span
                 key={band.id}
-                className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold ${
-                  phase === 'current' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/40' :
-                  phase === 'done' ? 'bg-green-100 text-green-800 dark:bg-green-900/40' :
-                  band.kind === 'support' ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/40' :
-                  'bg-slate-100 text-slate-500 dark:bg-slate-800'
+                className={`flex h-7 w-7 items-center justify-center rounded-full text-meta font-bold ${
+                  phase === 'current' ? 'bg-accent-100 text-accent-800 dark:bg-accent-900/40' :
+                  phase === 'done' ? 'bg-success-100 text-success-800 dark:bg-success-900/40' :
+                  band.kind === 'support' ? 'bg-warning-100 text-warning-800 dark:bg-warning-900/40' :
+                  'bg-ink-100 text-ink-500 dark:bg-ink-800'
                 }`}
                 title={isDE ? band.title.de : band.title.en}
                 aria-label={isDE ? band.title.de : band.title.en}
@@ -56,11 +64,11 @@ export function A1PathProgress({ compact = false }: A1PathProgressProps) {
   }
 
   return (
-    <section className={`${theme.panel.surface} mb-8`}>
-      <h2 className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
+    <section className={`${theme.panel.surface} mb-0`}>
+      <h2 className="mb-2 text-meta font-semibold uppercase tracking-[0.18em] text-ink-500 dark:text-ink-400">
         {isDE ? 'Lernfortschritt' : 'Learning progress'}
       </h2>
-      <div className="space-y-3">
+      <div className="space-y-2">
         {bands.map((band) => {
           const phase = getUnitPhase(band.index);
           const done = phase === 'done';
@@ -77,45 +85,45 @@ export function A1PathProgress({ compact = false }: A1PathProgressProps) {
 
           let badge: ReactElement;
           if (done) {
-            badge = <CheckCircle className="h-5 w-5 shrink-0 text-emerald-600" />;
+            badge = <CheckCircle className="h-5 w-5 shrink-0 text-success-600" />;
           } else if (active) {
             badge = (
-              <Circle className="h-5 w-5 shrink-0 text-blue-600 fill-blue-100 dark:fill-blue-900/40" />
+              <Circle className="h-5 w-5 shrink-0 text-accent-600 fill-accent-100 dark:fill-accent-900/40" />
             );
           } else {
-            badge = <Lock className="h-5 w-5 shrink-0 text-slate-400" />;
+            badge = <Lock className="h-5 w-5 shrink-0 text-ink-500" />;
           }
 
           return (
             <Link
               key={band.id}
               to="/learn"
-              className="block rounded-xl border border-slate-200 bg-white p-4 text-start text-decoration-none transition hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:hover:bg-slate-800/60"
+              className="block rounded-md border border-ink-200 bg-white p-3 text-start text-decoration-none transition hover:bg-ink-50 dark:border-ink-800 dark:bg-ink-900 dark:hover:bg-ink-800/60 sm:p-3.5"
             >
               <div className="flex items-center gap-3">
                 <span
-                  className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
+                  className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-meta font-bold ${
                     done
-                      ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40'
+                      ? 'bg-success-100 text-success-700 dark:bg-success-900/40'
                       : active
-                        ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40'
+                        ? 'bg-accent-100 text-accent-700 dark:bg-accent-900/40'
                         : isSupport
-                          ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/40'
-                          : 'bg-slate-100 text-slate-500 dark:bg-slate-800'
+                          ? 'bg-warning-100 text-warning-700 dark:bg-warning-900/40'
+                          : 'bg-ink-100 text-ink-500 dark:bg-ink-800'
                   }`}
                 >
                   {band.code}
                 </span>
-                <span className="block font-semibold text-slate-950 dark:text-white">
+                <span className="block font-semibold text-ink-950 dark:text-white">
                   {band.title[langMode === 'german' ? 'de' : 'en']}
                 </span>
                 <span
-                  className={`ml-auto text-xs font-semibold ${
+                  className={`ml-auto text-meta font-semibold ${
                     done
-                      ? 'text-emerald-700 dark:text-emerald-400'
+                      ? 'text-success-700 dark:text-success-400'
                       : active
-                        ? 'text-blue-700 dark:text-blue-300'
-                        : 'text-slate-500 dark:text-slate-400'
+                        ? 'text-accent-700 dark:text-accent-300'
+                        : 'text-ink-500 dark:text-ink-400'
                   }`}
                 >
                   {isDE
@@ -126,15 +134,15 @@ export function A1PathProgress({ compact = false }: A1PathProgressProps) {
               </div>
 
               {hasGate && gateLabelReached && (
-                <div className="mt-2 flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300">
+                <div className="mt-1.5 flex items-center gap-2 text-meta text-ink-600 dark:text-ink-300">
                   <span className="w-32">
                     {isDE ? 'Tor' : 'Gate'}: {ckPct}%
                   </span>
                   <span
                     className={
                       gatePassed
-                        ? 'text-emerald-600 dark:text-emerald-400'
-                        : 'text-amber-600 dark:text-amber-400'
+                        ? 'text-success-600 dark:text-success-400'
+                        : 'text-warning-600 dark:text-warning-400'
                     }
                   >
                     {gatePassed
@@ -146,8 +154,8 @@ export function A1PathProgress({ compact = false }: A1PathProgressProps) {
                         : 'not passed'}
                   </span>
                   {!gatePassed && (
-                    <span className="-mb-1 h-1.5 w-16 overflow-hidden rounded bg-amber-200 dark:bg-amber-900/40">
-                      <span className="block h-full w-1/4 bg-amber-500" />
+                    <span className="-mb-1 h-1.5 w-16 overflow-hidden rounded-sm bg-warning-200 dark:bg-warning-900/40">
+                      <span className="block h-full w-1/4 bg-warning-500" />
                     </span>
                   )}
                 </div>

@@ -41,26 +41,26 @@ export function LearningPath() {
             <Link
               key={section.key}
               to={section.path}
-              className={`group relative flex h-full flex-col overflow-hidden rounded-2xl border p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950 ${
+              className={`group relative flex h-full flex-col overflow-hidden rounded-lg border p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-ink-950 ${
                 isLast
-                  ? 'border-blue-400 bg-blue-50/40 ring-2 ring-blue-500 dark:border-blue-500 dark:bg-blue-950/30'
-                  : 'border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-950'
+                  ? 'border-accent-400 bg-accent-50/40 ring-2 ring-accent-500 dark:border-accent-500 dark:bg-accent-950/30'
+                  : 'border-ink-200 bg-white dark:border-ink-700 dark:bg-ink-950'
               }`}
               aria-label={`${section.label} module${isLast ? ' — last visited' : ''}`}
             >
               {isLast && (
-                <span className="absolute right-4 top-4 rounded-full bg-blue-600 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
+                <span className="absolute right-4 top-4 rounded-full bg-accent-600 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
                   {isDE ? 'Zuletzt' : 'Last'}
                 </span>
               )}
-              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 transition-colors group-hover:bg-blue-100 dark:bg-blue-950/50 dark:text-blue-400 dark:group-hover:bg-blue-900/50" aria-hidden="true">
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-accent-50 text-accent-600 transition-colors group-hover:bg-accent-100 dark:bg-accent-950/50 dark:text-accent-400 dark:group-hover:bg-accent-900/50" aria-hidden="true">
                 <section.icon className="h-6 w-6" strokeWidth={2} />
               </div>
-              <h3 className="text-lg font-semibold tracking-tight text-slate-950 dark:text-white">{section.label}</h3>
-              <p className="mt-2 flex-1 text-sm leading-6 text-slate-600 dark:text-slate-400">
+              <h3 className="text-lg font-semibold tracking-tight text-ink-950 dark:text-white">{section.label}</h3>
+              <p className="mt-2 flex-1 text-body leading-6 text-ink-600 dark:text-ink-400">
                 {sharedTextDatabase[section.key]?.description || ''}
               </p>
-              <div className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-blue-600 transition group-hover:text-blue-800 dark:text-blue-300 dark:group-hover:text-blue-200">
+              <div className="mt-4 inline-flex items-center gap-1 text-body font-semibold text-accent-600 transition group-hover:text-accent-800 dark:text-accent-300 dark:group-hover:text-accent-200">
                 {isDE ? 'Starten' : 'Start'} →
               </div>
             </Link>

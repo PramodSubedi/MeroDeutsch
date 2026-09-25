@@ -70,11 +70,11 @@ export function OddOneOut({ set, module }: OddOneOutProps) {
   if (done) {
     return (
       <div className={theme.panel.surface}>
-        <h3 className="text-lg font-semibold text-slate-950 dark:text-white">
+        <h3 className="text-lg font-semibold text-ink-950 dark:text-white">
           {isDE ? set.title.de : set.title.en}
         </h3>
         <div className="mt-4 flex flex-col items-center gap-3">
-          <p className="text-center text-sm font-semibold text-slate-600 dark:text-slate-300">
+          <p className="text-center text-body font-semibold text-ink-600 dark:text-ink-300">
             {isDE
               ? `Runde beendet — ${score}/${set.rounds.length} richtig.`
               : `Round complete — ${score}/${set.rounds.length} correct.`}
@@ -95,19 +95,19 @@ export function OddOneOut({ set, module }: OddOneOutProps) {
   return (
     <div className={theme.panel.surface}>
       <div className="mb-2 flex items-center justify-between gap-3">
-        <h3 className="text-lg font-semibold text-slate-950 dark:text-white">
+        <h3 className="text-lg font-semibold text-ink-950 dark:text-white">
           {isDE ? set.title.de : set.title.en}
         </h3>
-        <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">
+        <span className="text-body font-semibold text-ink-500 dark:text-ink-400">
           {roundIndex + 1}/{set.rounds.length} · {score}
         </span>
       </div>
-      <p className="mb-4 text-center text-sm text-slate-500 dark:text-slate-400">
+      <p className="mb-4 text-center text-body text-ink-500 dark:text-ink-400">
         {isDE
           ? 'Tippe auf das Wort, das NICHT ins Muster passt!'
           : set.instructions.en}
         {!isDE && (
-          <span className="mt-0.5 block text-xs text-slate-400 dark:text-slate-500">
+          <span className="mt-0.5 block text-meta text-ink-500 dark:text-ink-500">
             {set.instructions.np}
           </span>
         )}
@@ -120,17 +120,17 @@ export function OddOneOut({ set, module }: OddOneOutProps) {
           const isTrap = word === oddWord;
           const bg =
             phase !== 'idle' && isTrap
-              ? 'border-emerald-400 bg-emerald-50 text-emerald-900 dark:border-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-200'
+              ? 'border-success-400 bg-success-50 text-success-900 dark:border-success-700 dark:bg-success-950/40 dark:text-success-200'
               : picked
-                ? 'border-red-400 bg-red-50 text-red-900 dark:border-red-700 dark:bg-red-950/40 dark:text-red-200'
-                : 'border-slate-200 bg-white text-slate-800 hover:border-blue-400 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100';
+                ? 'border-danger-400 bg-danger-50 text-danger-900 dark:border-danger-700 dark:bg-danger-950/40 dark:text-danger-200'
+                : 'border-ink-200 bg-white text-ink-800 hover:border-accent-400 dark:border-ink-700 dark:bg-ink-800 dark:text-ink-100';
           return (
             <div key={`${roundId}-${roundIndex}-${word}`} className="relative">
               <button
                 type="button"
                 onClick={() => pick(word)}
                 disabled={phase !== 'idle'}
-                className={`min-h-[64px] w-full rounded-xl border px-3 py-2.5 pr-9 text-left text-base font-semibold transition active:scale-95 disabled:opacity-90 ${bg}`}
+                className={`min-h-[64px] w-full rounded-md border px-3 py-2.5 pr-9 text-left text-body font-semibold transition active:scale-95 disabled:opacity-90 ${bg}`}
               >
                 {word}
               </button>
@@ -150,10 +150,10 @@ export function OddOneOut({ set, module }: OddOneOutProps) {
 
       {phase !== 'idle' && (
         <div
-          className={`mx-auto mt-4 max-w-md rounded-xl p-3 text-sm ${
+          className={`mx-auto mt-4 max-w-md rounded-md p-3 text-body ${
             phase === 'right'
-              ? 'bg-emerald-50 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-200'
-              : 'bg-amber-50 text-amber-900 dark:bg-amber-950/40 dark:text-amber-200'
+              ? 'bg-success-50 text-success-800 dark:bg-success-950/40 dark:text-success-200'
+              : 'bg-warning-50 text-warning-900 dark:bg-warning-950/40 dark:text-warning-200'
           }`}
         >
           {phase === 'right'
@@ -162,7 +162,7 @@ export function OddOneOut({ set, module }: OddOneOutProps) {
           {!isDE && (
             <>
               <span className="mt-1 block">{round.reason}</span>
-              <span className="mt-0.5 block text-xs text-slate-500 dark:text-slate-400">
+              <span className="mt-0.5 block text-meta text-ink-500 dark:text-ink-400">
                 {round.reasonNe}
               </span>
             </>

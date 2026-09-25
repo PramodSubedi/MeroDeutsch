@@ -20,8 +20,8 @@ export function MasteryIndicator({ boxLevel = 1, className = '' }: MasteryIndica
           key={box}
           className={`h-1.5 w-1.5 rounded-full transition-colors duration-200 ${
             box <= level
-              ? 'bg-blue-500 dark:bg-blue-400'
-              : 'bg-slate-300 dark:bg-slate-600'
+              ? 'bg-accent-500 dark:bg-accent-400'
+              : 'bg-ink-300 dark:bg-ink-600'
           }`}
           aria-hidden="true"
         />
@@ -38,9 +38,9 @@ export function MasteryBar({ boxLevel = 1, className = '' }: MasteryIndicatorPro
   const percentage = (level / 4) * 100;
 
   return (
-    <div className={`relative h-1 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700 ${className}`}>
+    <div className={`relative h-1 w-full overflow-hidden rounded-full bg-ink-200 dark:bg-ink-700 ${className}`}>
       <div
-        className="h-full bg-gradient-to-r from-blue-400 to-blue-600 transition-all duration-300 dark:from-blue-500 dark:to-blue-700"
+        className="h-full bg-gradient-to-r from-accent-400 to-accent-600 transition-all duration-300 dark:from-accent-500 dark:to-accent-700"
         style={{ width: `${percentage}%` }}
         title={`Mastery Level: Box ${level}/4`}
       />

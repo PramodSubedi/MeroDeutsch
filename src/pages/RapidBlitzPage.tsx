@@ -44,12 +44,12 @@ interface ModeInfo {
 }
 
 const MODE_INFO: Record<string, ModeInfo> = {
-  vocabulary: { title: 'Vocabulary Translation', description: 'Match English → German', titleDe: 'Wortschatz-Übersetzung', descriptionDe: 'Englische Wörter der deutschen Übersetzung zuordnen', icon: BookOpen, color: 'text-blue-600', bg: 'bg-blue-50 dark:bg-blue-950/40 border-blue-200 dark:border-blue-900/50' },
-  audio: { title: 'Audio Comprehension', description: 'Listen & select meaning', titleDe: 'Hörverstehen', descriptionDe: 'Anhören und Bedeutung wählen', icon: Ear, color: 'text-purple-600', bg: 'bg-purple-50 dark:bg-purple-950/40 border-purple-200 dark:border-purple-900/50' },
-  article: { title: 'Article Precision', description: 'Select der/die/das', titleDe: 'Artikeltraining', descriptionDe: 'der/die/das auswählen', icon: Tag, color: 'text-emerald-600', bg: 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-900/50' },
-  number: { title: 'Number Conversion', description: 'Digits ↔ German text', titleDe: 'Zahlen umwandeln', descriptionDe: 'Ziffern und Zahlwörter zuordnen', icon: Hash, color: 'text-amber-600', bg: 'bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-900/50' },
-  verb: { title: 'Verb Conjugation', description: 'Conjugate the verb', titleDe: 'Verbkonjugation', descriptionDe: 'Das Verb richtig konjugieren', icon: Edit3, color: 'text-indigo-600', bg: 'bg-indigo-50 dark:bg-indigo-950/40 border-indigo-200 dark:border-indigo-900/50' },
-  pronunciation: { title: 'Pronunciation & Reading', description: 'Speak the word', titleDe: 'Aussprache und Lesen', descriptionDe: 'Das Wort laut sprechen', icon: Mic, color: 'text-rose-600', bg: 'bg-rose-50 dark:bg-rose-950/40 border-rose-200 dark:border-rose-900/50' },
+  vocabulary: { title: 'Vocabulary Translation', description: 'Match English → German', titleDe: 'Wortschatz-Übersetzung', descriptionDe: 'Englische Wörter der deutschen Übersetzung zuordnen', icon: BookOpen, color: 'text-accent-600', bg: 'bg-accent-50 dark:bg-accent-950/40 border-accent-200 dark:border-accent-900/50' },
+  audio: { title: 'Audio Comprehension', description: 'Listen & select meaning', titleDe: 'Hörverstehen', descriptionDe: 'Anhören und Bedeutung wählen', icon: Ear, color: 'text-accent-600', bg: 'bg-accent-50 dark:bg-accent-950/40 border-accent-200 dark:border-accent-900/50' },
+  article: { title: 'Article Precision', description: 'Select der/die/das', titleDe: 'Artikeltraining', descriptionDe: 'der/die/das auswählen', icon: Tag, color: 'text-success-600', bg: 'bg-success-50 dark:bg-success-950/40 border-success-200 dark:border-success-900/50' },
+  number: { title: 'Number Conversion', description: 'Digits ↔ German text', titleDe: 'Zahlen umwandeln', descriptionDe: 'Ziffern und Zahlwörter zuordnen', icon: Hash, color: 'text-warning-600', bg: 'bg-warning-50 dark:bg-warning-950/40 border-warning-200 dark:border-warning-900/50' },
+  verb: { title: 'Verb Conjugation', description: 'Conjugate the verb', titleDe: 'Verbkonjugation', descriptionDe: 'Das Verb richtig konjugieren', icon: Edit3, color: 'text-accent-600', bg: 'bg-accent-50 dark:bg-accent-950/40 border-accent-200 dark:border-accent-900/50' },
+  pronunciation: { title: 'Pronunciation & Reading', description: 'Speak the word', titleDe: 'Aussprache und Lesen', descriptionDe: 'Das Wort laut sprechen', icon: Mic, color: 'text-danger-600', bg: 'bg-danger-50 dark:bg-danger-950/40 border-danger-200 dark:border-danger-900/50' },
 };
 
 const MIXED_INFO: ModeInfo = {
@@ -58,8 +58,8 @@ const MIXED_INFO: ModeInfo = {
   titleDe: 'Gemischte Runde',
   descriptionDe: 'Alle sechs Aufgabentypen gemischt',
   icon: BookOpen,
-  color: 'text-slate-700 dark:text-slate-300',
-  bg: 'bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700',
+  color: 'text-ink-700 dark:text-ink-300',
+  bg: 'bg-ink-50 dark:bg-ink-900 border-ink-200 dark:border-ink-700',
 };
 
 /** Per-mode how-to-play instructions shown during the pre-round banner. */
@@ -197,26 +197,26 @@ export function RapidBlitzPage() {
         <div className={theme.page.container}>
           <div className="mx-auto w-full max-w-xl px-2 sm:px-0">
             <div className={theme.panel.surface}>
-              <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white">Rapid Blitz</h1>
-              <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">{isDE ? '60 Sekunden gemischte Aufgaben' : '60 seconds of mixed challenges'}</p>
+              <h1 className="text-2xl font-extrabold text-ink-900 dark:text-white">Rapid Blitz</h1>
+              <p className="mt-2 text-body text-ink-500 dark:text-ink-400">{isDE ? '60 Sekunden gemischte Aufgaben' : '60 seconds of mixed challenges'}</p>
 
-              <div className="mt-4 rounded-2xl bg-slate-50 p-4 text-sm text-slate-700 dark:bg-slate-800/60">
-                <div className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">{isDE ? 'Modus: Gemischt (alle sechs Typen)' : 'Mode: Mixed (all 6 types)'}</div>
+              <div className="mt-4 rounded-lg bg-ink-50 p-4 text-body text-ink-700 dark:bg-ink-800/60">
+                <div className="text-meta uppercase tracking-wider text-ink-500 dark:text-ink-400">{isDE ? 'Modus: Gemischt (alle sechs Typen)' : 'Mode: Mixed (all 6 types)'}</div>
               </div>
 
               <div className="mt-4 grid grid-cols-2 gap-3">
-                <div className="rounded-2xl bg-slate-50 p-4 dark:bg-slate-800/60">
-                  <div className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">{isDE ? 'Bestwert' : 'Best score'}</div>
-                  <div className="mt-1 text-2xl font-bold text-blue-600">{bestScore}</div>
+                <div className="rounded-lg bg-ink-50 p-4 dark:bg-ink-800/60">
+                  <div className="text-meta uppercase tracking-wider text-ink-500 dark:text-ink-400">{isDE ? 'Bestwert' : 'Best score'}</div>
+                  <div className="mt-1 text-2xl font-bold text-accent-600">{bestScore}</div>
                 </div>
-                <div className="rounded-2xl bg-slate-50 p-4 dark:bg-slate-800/60">
-                  <div className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">{isDE ? 'Punkte' : 'Score'}</div>
-                  <div className="mt-1 text-2xl font-bold text-emerald-600">{score}</div>
+                <div className="rounded-lg bg-ink-50 p-4 dark:bg-ink-800/60">
+                  <div className="text-meta uppercase tracking-wider text-ink-500 dark:text-ink-400">{isDE ? 'Punkte' : 'Score'}</div>
+                  <div className="mt-1 text-2xl font-bold text-success-600">{score}</div>
                 </div>
               </div>
 
               {challenges.length === 0 ? (
-                <p className="mt-6 rounded-xl bg-amber-50 p-3 text-center text-sm font-medium text-amber-800 dark:bg-amber-950/40 dark:text-amber-200">
+                <p className="mt-6 rounded-md bg-warning-50 p-3 text-center text-body font-medium text-warning-800 dark:bg-warning-950/40 dark:text-warning-200">
                   {isDE ? 'Fragen werden geladen… Verbinde dich einmal mit dem Internet.' : 'Loading questions… connect to the internet once to populate them.'}
                 </p>
               ) : (
@@ -239,14 +239,14 @@ export function RapidBlitzPage() {
       <div className={theme.page.container}>
         <div className="mx-auto w-full max-w-xl px-2 sm:px-0">
           <div className={theme.panel.surface}>
-            <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white">Rapid Blitz</h1>
-            <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">{isDE ? '60 Sekunden mit wechselnden Aufgaben' : '60 seconds with rotating challenges'}</p>
+            <h1 className="text-2xl font-extrabold text-ink-900 dark:text-white">Rapid Blitz</h1>
+            <p className="mt-2 text-body text-ink-500 dark:text-ink-400">{isDE ? '60 Sekunden mit wechselnden Aufgaben' : '60 seconds with rotating challenges'}</p>
 
             <div className="mt-6">
               <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-300">{isDE ? 'Modus auswählen' : 'Choose a mode'}</h2>
+                <h2 className="text-body font-semibold uppercase tracking-wider text-ink-600 dark:text-ink-300">{isDE ? 'Modus auswählen' : 'Choose a mode'}</h2>
                 {selectedMode && (
-                  <button type="button" onClick={() => setSelectedMode(null)} className="text-xs text-slate-500 dark:text-slate-400 underline">
+                  <button type="button" onClick={() => setSelectedMode(null)} className="text-meta text-ink-500 dark:text-ink-400 underline">
                     {isDE ? '← Alle Modi' : '← Back to all modes'}
                   </button>
                 )}
@@ -257,14 +257,14 @@ export function RapidBlitzPage() {
                   {/* Mixed card */}
                   <div
                     onClick={() => setSelectedMode(null)}
-                    className={`flex cursor-pointer items-center gap-4 rounded-2xl border-2 p-4 transition-all hover:scale-[1.02] ${MIXED_INFO.bg} border-slate-300`}
+                    className={`flex cursor-pointer items-center gap-4 rounded-lg border-2 p-4 transition-all hover:scale-[1.02] ${MIXED_INFO.bg} border-ink-300`}
                   >
-                    <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-white dark:bg-slate-800">
+                    <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-md bg-white dark:bg-ink-800">
                       <MIXED_INFO.icon className={`h-6 w-6 ${MIXED_INFO.color}`} />
                     </div>
                     <div className="flex-1">
-                      <span className="block text-lg font-bold text-slate-900 dark:text-white">{isDE ? MIXED_INFO.titleDe : MIXED_INFO.title}</span>
-                      <span className="text-sm text-slate-500 dark:text-slate-400">{isDE ? MIXED_INFO.descriptionDe : MIXED_INFO.description}</span>
+                      <span className="block text-lg font-bold text-ink-900 dark:text-white">{isDE ? MIXED_INFO.titleDe : MIXED_INFO.title}</span>
+                      <span className="text-body text-ink-500 dark:text-ink-400">{isDE ? MIXED_INFO.descriptionDe : MIXED_INFO.description}</span>
                     </div>
                   </div>
 
@@ -275,16 +275,16 @@ export function RapidBlitzPage() {
                       <div
                         key={mode}
                         onClick={() => setSelectedMode(mode)}
-                        className={`flex cursor-pointer items-center gap-4 rounded-2xl border-2 p-4 transition-all hover:scale-[1.02] ${
-                          selectedMode === mode ? 'border-orange-500 ring-2 ring-orange-400' : 'border-slate-300 dark:border-slate-600'
+                        className={`flex cursor-pointer items-center gap-4 rounded-lg border-2 p-4 transition-all hover:scale-[1.02] ${
+                          selectedMode === mode ? 'border-warning-500 ring-2 ring-warning-400' : 'border-ink-300 dark:border-ink-600'
                         } ${info.bg}`}
                       >
-                        <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-white dark:bg-slate-800">
+                        <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-md bg-white dark:bg-ink-800">
                           <Icon className={`h-6 w-6 ${info.color}`} />
                         </div>
                         <div className="flex-1">
-                          <span className="block text-lg font-bold text-slate-900 dark:text-white">{isDE ? info.titleDe : info.title}</span>
-                          <span className="text-sm text-slate-500 dark:text-slate-400">{isDE ? info.descriptionDe : info.description}</span>
+                          <span className="block text-lg font-bold text-ink-900 dark:text-white">{isDE ? info.titleDe : info.title}</span>
+                          <span className="text-body text-ink-500 dark:text-ink-400">{isDE ? info.descriptionDe : info.description}</span>
                         </div>
                       </div>
                     );
@@ -293,31 +293,31 @@ export function RapidBlitzPage() {
               )}
 
               {selectedMode && (
-                <div className={`mb-4 flex cursor-pointer items-center gap-4 rounded-2xl border-2 p-4 ${modeLabel.bg} border-slate-300`}>
-                  <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-white dark:bg-slate-800">
+                <div className={`mb-4 flex cursor-pointer items-center gap-4 rounded-lg border-2 p-4 ${modeLabel.bg} border-ink-300`}>
+                  <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-md bg-white dark:bg-ink-800">
                     <modeLabel.icon className={`h-6 w-6 ${modeLabel.color}`} />
                   </div>
                   <div className="flex-1">
-                    <span className="block text-lg font-bold text-slate-900 dark:text-white">{isDE ? modeLabel.titleDe : modeLabel.title}</span>
-                    <span className="text-sm text-slate-500 dark:text-slate-400">{isDE ? modeLabel.descriptionDe : modeLabel.description}</span>
+                    <span className="block text-lg font-bold text-ink-900 dark:text-white">{isDE ? modeLabel.titleDe : modeLabel.title}</span>
+                    <span className="text-body text-ink-500 dark:text-ink-400">{isDE ? modeLabel.descriptionDe : modeLabel.description}</span>
                   </div>
                 </div>
               )}
 
               {/* Score / Best */}
               <div className="mt-4 grid grid-cols-2 gap-3">
-                <div className="rounded-2xl bg-slate-50 p-4 dark:bg-slate-800/60">
-                  <div className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">{isDE ? 'Bestwert' : 'Best score'}</div>
-                  <div className="mt-1 text-2xl font-bold text-blue-600">{bestScore}</div>
+                <div className="rounded-lg bg-ink-50 p-4 dark:bg-ink-800/60">
+                  <div className="text-meta uppercase tracking-wider text-ink-500 dark:text-ink-400">{isDE ? 'Bestwert' : 'Best score'}</div>
+                  <div className="mt-1 text-2xl font-bold text-accent-600">{bestScore}</div>
                 </div>
-                <div className="rounded-2xl bg-slate-50 p-4 dark:bg-slate-800/60">
-                  <div className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400">{isDE ? 'Punkte' : 'Score'}</div>
-                  <div className="mt-1 text-2xl font-bold text-emerald-600">{score}</div>
+                <div className="rounded-lg bg-ink-50 p-4 dark:bg-ink-800/60">
+                  <div className="text-meta uppercase tracking-wider text-ink-500 dark:text-ink-400">{isDE ? 'Punkte' : 'Score'}</div>
+                  <div className="mt-1 text-2xl font-bold text-success-600">{score}</div>
                 </div>
               </div>
 
               {challenges.length === 0 ? (
-                <p className="mt-6 rounded-xl bg-amber-50 p-3 text-center text-sm font-medium text-amber-800 dark:bg-amber-950/40 dark:text-amber-200">
+                <p className="mt-6 rounded-md bg-warning-50 p-3 text-center text-body font-medium text-warning-800 dark:bg-warning-950/40 dark:text-warning-200">
                   {isDE ? 'Fragen werden geladen… Verbinde dich einmal mit dem Internet.' : 'Loading questions… connect to the internet once to populate them.'}
                 </p>
               ) : (
@@ -356,39 +356,39 @@ export function RapidBlitzPage() {
           <div className={theme.panel.surface}>
             <div className="mb-4 flex items-center justify-between">
               <div>
-                <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white">Rapid Blitz</h1>
-                <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{isDE ? '60 Sekunden mit wechselnden Aufgaben' : '60 seconds of rotating challenges'}</p>
+                <h1 className="text-2xl font-extrabold text-ink-900 dark:text-white">Rapid Blitz</h1>
+                <p className="mt-1 text-body text-ink-500 dark:text-ink-400">{isDE ? '60 Sekunden mit wechselnden Aufgaben' : '60 seconds of rotating challenges'}</p>
               </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white dark:bg-slate-800">
+              <div className="flex h-12 w-12 items-center justify-center rounded-md bg-white dark:bg-ink-800">
                 <Icon className={`h-6 w-6 ${info.color}`} />
               </div>
             </div>
 
             {/* Mode title + description */}
             <div className="mb-6">
-              <div className="text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-300">
+              <div className="text-meta font-semibold uppercase tracking-wider text-ink-600 dark:text-ink-300">
                 {isSectionInfo
                   ? isDE ? `Abschnitt ${currentSection}/${totalSections} — ${infoTitle}` : `Section ${currentSection}/${totalSections} — ${infoTitle}`
                   : selectedMode
                     ? `${infoTitle} — ${infoDescription}`
                     : isDE ? 'Gemischte Runde — alle sechs Typen' : 'Mixed Challenge — all 6 types shuffled'}
               </div>
-              <div className="mt-1 text-lg font-bold text-slate-900 dark:text-white">{infoTitle}</div>
+              <div className="mt-1 text-lg font-bold text-ink-900 dark:text-white">{infoTitle}</div>
             </div>
 
             {/* How-to-play instructions with example */}
-            <div className="mx-auto mb-6 rounded-2xl border border-blue-200 bg-blue-50 p-4 text-left dark:border-blue-800 dark:bg-blue-950/40">
-              <div className="text-sm font-semibold text-slate-800 dark:text-slate-200">
+            <div className="mx-auto mb-6 rounded-lg border border-accent-200 bg-accent-50 p-4 text-left dark:border-accent-800 dark:bg-accent-950/40">
+              <div className="text-body font-semibold text-ink-800 dark:text-ink-200">
                 {isDE ? instructions.doDe : instructions.do}
               </div>
-              <div className="mt-1 text-xs text-slate-600 dark:text-slate-400">
+              <div className="mt-1 text-meta text-ink-600 dark:text-ink-400">
                 {isDE ? instructions.exampleDe : instructions.example}
               </div>
             </div>
 
             {/* Timer is paused here — Continue starts the countdown + timer */}
             {challenges.length === 0 ? (
-              <p className="mt-6 rounded-xl bg-amber-50 p-3 text-center text-sm font-medium text-amber-800 dark:bg-amber-950/40 dark:text-amber-200">
+              <p className="mt-6 rounded-md bg-warning-50 p-3 text-center text-body font-medium text-warning-800 dark:bg-warning-950/40 dark:text-warning-200">
                 {isDE ? 'Fragen werden geladen… Verbinde dich einmal mit dem Internet.' : 'Loading questions… connect to the internet once to populate them.'}
               </p>
             ) : (
@@ -425,7 +425,7 @@ export function RapidBlitzPage() {
   // ── Playing state ─────────────────────────────────────────────
   if (status === 'playing') {
     const comboActive = combo >= 3;
-    const timeColor = secondsLeft <= 10 ? 'text-red-500' : 'text-slate-700 dark:text-slate-200';
+    const timeColor = secondsLeft <= 10 ? 'text-danger-500' : 'text-ink-700 dark:text-ink-200';
 
     return (
       <div className={theme.page.container}>
@@ -433,30 +433,30 @@ export function RapidBlitzPage() {
           <div className={theme.panel.surface}>
             {/* Timer bar */}
             <div className="mb-4">
-              <div className="mb-1 flex items-center justify-between text-xs font-semibold text-slate-500 dark:text-slate-400">
+              <div className="mb-1 flex items-center justify-between text-meta font-semibold text-ink-500 dark:text-ink-400">
                 <span>{isDE ? 'Zeit' : 'Time'}</span>
                 <span className={timeColor}>{secondsLeft}s</span>
               </div>
-              <div className="h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
-                <div className="h-full rounded-full bg-gradient-to-r from-blue-500 to-emerald-500 transition-all duration-1000" style={{ width: `${(secondsLeft / 60) * 100}%` }} />
+              <div className="h-2 overflow-hidden rounded-full bg-ink-100 dark:bg-ink-800">
+                <div className="h-full rounded-full bg-gradient-to-r from-accent-500 to-success-500 transition-all duration-1000" style={{ width: `${(secondsLeft / 60) * 100}%` }} />
               </div>
             </div>
 
             {/* HUD */}
-            <div className="mb-4 flex flex-wrap items-center justify-between gap-2 text-sm font-semibold">
-              <span className="text-slate-700 dark:text-slate-200">{isDE ? 'Punkte' : 'Score'}: <span className="text-blue-600">{score}</span></span>
-              <span className="text-slate-700 dark:text-slate-200">{isDE ? 'Genauigkeit' : 'Accuracy'}: <span className="text-amber-600">{accuracy}%</span></span>
-              <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-extrabold ${comboActive ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300' : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'}`}>
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-2 text-body font-semibold">
+              <span className="text-ink-700 dark:text-ink-200">{isDE ? 'Punkte' : 'Score'}: <span className="text-accent-600">{score}</span></span>
+              <span className="text-ink-700 dark:text-ink-200">{isDE ? 'Genauigkeit' : 'Accuracy'}: <span className="text-warning-600">{accuracy}%</span></span>
+              <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-meta font-extrabold ${comboActive ? 'bg-warning-100 text-warning-700 dark:bg-warning-900/40 dark:text-warning-300' : 'bg-ink-100 text-ink-500 dark:bg-ink-800 dark:text-ink-400'}`}>
                 🔥 {combo}x {isDE ? 'Serie' : 'Combo'} · {multiplier}×
               </span>
             </div>
 
             {/* Section + challenge type indicator */}
-            <div className="mb-4 flex items-center justify-between rounded-lg bg-slate-100 px-3 py-2 dark:bg-slate-800">
-              <span className="text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-300">
+            <div className="mb-4 flex items-center justify-between rounded-sm bg-ink-100 px-3 py-2 dark:bg-ink-800">
+              <span className="text-meta font-semibold uppercase tracking-wider text-ink-600 dark:text-ink-300">
                 {currentChallenge ? (isDE ? MODE_INFO[currentChallenge.type.split('-')[0]]?.titleDe : MODE_INFO[currentChallenge.type.split('-')[0]]?.title) : isDE ? 'Unbekannt' : 'Unknown'}
               </span>
-              <span className="text-xs text-slate-500 dark:text-slate-400">
+              <span className="text-meta text-ink-500 dark:text-ink-400">
                 {isDE ? 'Abschnitt' : 'Section'} {currentSection}/{totalSections} · {currentIndex + 1}/{challenges.length}
               </span>
             </div>
@@ -480,50 +480,50 @@ export function RapidBlitzPage() {
       <div className="mx-auto w-full max-w-md">
         <div className={theme.panel.surface}>
           <div className="text-center">
-            <div className="text-4xl font-extrabold text-slate-900 dark:text-white">
+            <div className="text-4xl font-extrabold text-ink-900 dark:text-white">
               {selectedMode ? isDE ? `${modeLabel.titleDe} abgeschlossen!` : `${modeLabel.title} Complete!` : isDE ? 'Blitz abgeschlossen!' : 'Blitz Complete!'}
             </div>
           </div>
 
           <div className="mt-6 grid grid-cols-2 gap-3 text-center">
-            <div className="rounded-2xl border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-950/40">
-              <div className="text-xs uppercase tracking-wider text-slate-500">{isDE ? 'Punkte' : 'Score'}</div>
-              <div className="mt-1 text-2xl font-bold text-blue-600">{score}</div>
+            <div className="rounded-lg border border-accent-200 bg-accent-50 p-4 dark:border-accent-800 dark:bg-accent-950/40">
+              <div className="text-meta uppercase tracking-wider text-ink-500">{isDE ? 'Punkte' : 'Score'}</div>
+              <div className="mt-1 text-2xl font-bold text-accent-600">{score}</div>
             </div>
-            <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 dark:border-emerald-800 dark:bg-emerald-950/40">
-              <div className="text-xs uppercase tracking-wider text-slate-500">{isDE ? 'Genauigkeit' : 'Accuracy'}</div>
-              <div className="mt-1 text-2xl font-bold text-emerald-600">{accuracy}%</div>
+            <div className="rounded-lg border border-success-200 bg-success-50 p-4 dark:border-success-800 dark:bg-success-950/40">
+              <div className="text-meta uppercase tracking-wider text-ink-500">{isDE ? 'Genauigkeit' : 'Accuracy'}</div>
+              <div className="mt-1 text-2xl font-bold text-success-600">{accuracy}%</div>
             </div>
           </div>
 
           {/* Answer review summary */}
           <div className="mt-6 space-y-3">
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">{isDE ? 'Antworten' : 'Answer review'}</h3>
+            <h3 className="text-body font-semibold uppercase tracking-wider text-ink-500 dark:text-ink-400">{isDE ? 'Antworten' : 'Answer review'}</h3>
             <div className="max-h-60 space-y-2 overflow-y-auto">
               {history.length === 0 ? (
-                <p className="text-sm text-slate-500 dark:text-slate-400">{isDE ? 'Keine Antworten erfasst.' : 'No answers recorded.'}</p>
+                <p className="text-body text-ink-500 dark:text-ink-400">{isDE ? 'Keine Antworten erfasst.' : 'No answers recorded.'}</p>
               ) : (
                 history.map((record, idx) => (
                   <div
                     key={idx}
-                    className={`rounded-lg border p-3 text-xs ${
+                    className={`rounded-sm border p-3 text-meta ${
                       record.isCorrect
-                        ? 'border-emerald-200 bg-emerald-50 dark:border-emerald-900/50 dark:bg-emerald-950/40'
-                        : 'border-red-200 bg-red-50 dark:border-red-900/50 dark:bg-red-950/40'
+                        ? 'border-success-200 bg-success-50 dark:border-success-900/50 dark:bg-success-950/40'
+                        : 'border-danger-200 bg-danger-50 dark:border-danger-900/50 dark:bg-danger-950/40'
                     }`}
                   >
                     <div className="flex items-start justify-between gap-2">
-                      <span className="font-medium text-slate-700 dark:text-slate-300">
+                      <span className="font-medium text-ink-700 dark:text-ink-300">
                         {record.round !== undefined ? `Q${record.round}.${idx + 1}` : `Q${idx + 1}`}: {getChallengeQuestion(record.challenge)}
                       </span>
-                      <span className={record.isCorrect ? 'text-emerald-600 dark:text-emerald-300' : 'text-red-600 dark:text-red-300'}>
+                      <span className={record.isCorrect ? 'text-success-600 dark:text-success-300' : 'text-danger-600 dark:text-danger-300'}>
                         {record.isCorrect ? (isDE ? '✓ Richtig' : '✓ Correct') : (isDE ? '✗ Falsch' : '✗ Wrong')}
                       </span>
                     </div>
                     <div className="mt-1 space-y-1">
-                      <div className="text-slate-600 dark:text-slate-400">{isDE ? 'Deine Antwort:' : 'Your answer:'} <span className="font-medium">{record.userAnswer}</span></div>
+                      <div className="text-ink-600 dark:text-ink-400">{isDE ? 'Deine Antwort:' : 'Your answer:'} <span className="font-medium">{record.userAnswer}</span></div>
                       {!record.isCorrect && (
-                        <div className="text-emerald-700 dark:text-emerald-300">{isDE ? 'Richtige Antwort:' : 'Correct answer:'} <span className="font-medium">{record.correctAnswer}</span></div>
+                        <div className="text-success-700 dark:text-success-300">{isDE ? 'Richtige Antwort:' : 'Correct answer:'} <span className="font-medium">{record.correctAnswer}</span></div>
                       )}
                     </div>
                   </div>

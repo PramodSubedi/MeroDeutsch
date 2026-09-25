@@ -86,7 +86,7 @@ export function DictationPage() {
   if (dictationWords.length === 0) {
     return (
       <div className={theme.page.container}>
-        <h1 className="text-2xl font-semibold tracking-tight text-slate-950 dark:text-white">{title}</h1>
+        <h1 className="text-2xl font-semibold tracking-tight text-ink-950 dark:text-white">{title}</h1>
         <ContentPending isDE={isDE} />
       </div>
     );
@@ -94,8 +94,8 @@ export function DictationPage() {
 
   return (
     <div className={theme.page.container}>
-      <h1 className="text-2xl font-semibold tracking-tight text-slate-950 dark:text-white">{title}</h1>
-      <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{subtitle}</p>
+      <h1 className="text-2xl font-semibold tracking-tight text-ink-950 dark:text-white">{title}</h1>
+      <p className="mt-1 text-body text-ink-500 dark:text-ink-400">{subtitle}</p>
 
       <div className="mx-auto mt-6 max-w-xl">
         <DictationInput

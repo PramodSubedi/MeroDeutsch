@@ -89,15 +89,15 @@ export function KeyboardHint({ shortcut, className = '' }: { shortcut: string; c
     'px-1.5',
     'text-[10px]',
     'font-medium',
-    'text-slate-500',
-    'bg-slate-100',
+    'text-ink-500',
+    'bg-ink-100',
     'border',
-    'border-slate-300',
-    'rounded',
+    'border-ink-300',
+    'rounded-sm',
     'shadow-sm',
-    'dark:text-slate-400',
-    'dark:bg-slate-800',
-    'dark:border-slate-600',
+    'dark:text-ink-400',
+    'dark:bg-ink-800',
+    'dark:border-ink-600',
     className
   ].filter(Boolean).join(' ');
 

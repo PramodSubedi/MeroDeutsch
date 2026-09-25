@@ -1,13 +1,13 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Languages, Smartphone, Sparkles, Target } from 'lucide-react';
 import { theme } from '../config/theme';
 import { Footer } from '../components/Footer';
 import { Logo } from '../components/common/Logo';
 import { LanguageToggle } from '../components/LanguageToggle';
-import { HeroOptionC } from '../components/landing/HeroOptionC';
-import { HeroOptionD } from '../components/landing/HeroOptionD';
-import { HeroOptionE } from '../components/landing/HeroOptionE';
+import { JourneyRibbon } from '../components/landing/JourneyRibbon';
+import { BenefitsPanel } from '../components/landing/BenefitsPanel';
+import { HeroVisual } from '../components/landing/HeroVisual';
 import { LandingDemoScroll } from '../components/landing/LandingDemoScroll';
 import { ThemeToggle } from '../components/common/ThemeToggle';
 import { useLang } from '../hooks/useLang';
@@ -93,9 +93,9 @@ export function LandingPage() {
         description="Guided A1 lessons, article & article training, speaking practice, and smart review — try free as a guest, no account required."
       />
 {/* Minimal landing header — not the app shell */}
-      <header className="sticky top-0 z-50 h-16 border-b border-slate-200 bg-white/80 backdrop-blur dark:border-slate-800 dark:bg-slate-900/80">
+      <header className="sticky top-0 z-50 h-16 border-b border-ink-200 bg-white dark:border-ink-800 dark:bg-ink-950">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
-          <Link to="/welcome" aria-label="MeroDeutsch – Home" className="inline-flex h-9 items-center rounded-lg transition hover:opacity-90 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none">
+          <Link to="/welcome" aria-label="MeroDeutsch – Home" className="inline-flex h-9 items-center rounded-sm transition hover:opacity-90 focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:outline-none">
             <Logo size="sm" variant="navbar" />
           </Link>
           <div className="flex items-center gap-1.5">
@@ -113,22 +113,22 @@ export function LandingPage() {
 
       <main>
         {/* HERO */}
-        <section className="relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-slate-950 dark:via-slate-950 dark:to-slate-900">
+        <section className="relative overflow-hidden bg-gradient-to-br from-ink-50 via-white to-accent-50 dark:from-ink-950 dark:via-ink-950 dark:to-ink-900">
           <div className="mx-auto grid max-w-6xl gap-10 px-4 py-16 sm:px-6 md:py-24 lg:grid-cols-2 lg:items-center">
             <div className={visible ? 'animate-in fade-in slide-in-from-bottom-2 duration-500' : 'opacity-0'}>
-              <p className="inline-flex items-center gap-1.5 rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-300">
+              <p className="inline-flex items-center gap-1.5 rounded-full border border-accent-200 bg-accent-50 px-3 py-1 text-meta font-semibold text-accent-700 dark:border-accent-800 dark:bg-accent-950/40 dark:text-accent-300">
                 <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
                 {t.eyebrow}
               </p>
-              <h1 className="mt-4 text-4xl font-bold tracking-tight text-slate-950 sm:text-5xl dark:text-white">
+              <h1 className="mt-4 text-4xl font-bold tracking-tight text-ink-950 sm:text-5xl dark:text-white">
                 {t.h1}
               </h1>
-              <p className="mt-4 max-w-xl text-lg leading-7 text-slate-600 dark:text-slate-300">
+              <p className="mt-4 max-w-xl text-lg leading-7 text-ink-600 dark:text-ink-300">
                 {t.sub}
               </p>
               {/* Nepali helper line — hidden in Nur-DE mode */}
               {!isDE && (
-                <p lang="ne" className="nepali-text mt-2 text-base text-slate-500 dark:text-slate-400">
+                <p lang="ne" className="nepali-text mt-2 text-body text-ink-500 dark:text-ink-400">
                   {t.ne}
                 </p>
               )}
@@ -151,19 +151,19 @@ export function LandingPage() {
 
             {/* Hero visual — floating feature-card collage (six glass cards) */}
             <div className="relative">
-              <HeroOptionE />
+              <HeroVisual />
             </div>
           </div>
           </section>
 {/* TRUST STRIP — slim pill row (details live in the cards below) */}
-        <section className="border-y border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+        <section className="border-y border-ink-200 bg-white dark:border-ink-800 dark:bg-ink-900">
           <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-6 gap-y-2 px-4 py-4 sm:px-6">
             {t.trust.map((pill) => (
               <span
                 key={pill}
-                className="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 dark:text-slate-300"
+                className="inline-flex items-center gap-2 text-body font-semibold text-ink-600 dark:text-ink-300"
               >
-                <span className="h-1.5 w-1.5 rounded-full bg-blue-500" aria-hidden="true" />
+                <span className="h-1.5 w-1.5 rounded-full bg-accent-500" aria-hidden="true" />
                 {pill}
               </span>
             ))}
@@ -176,49 +176,49 @@ export function LandingPage() {
         <LandingDemoScroll />
 
         {/* WHAT YOU GET — split benefit panel (typical apps vs MeroDeutsch) */}
-        <section className="bg-white dark:bg-slate-900">
+        <section className="bg-white dark:bg-ink-900">
           <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-            <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl dark:text-white">
+            <h2 className="text-2xl font-bold tracking-tight text-ink-900 sm:text-3xl dark:text-white">
               {t.featuresHeading}
             </h2>
-            <p className="mt-2 max-w-2xl text-sm text-slate-500 dark:text-slate-400 sm:text-base">
+            <p className="mt-2 max-w-2xl text-body text-ink-500 dark:text-ink-400 sm:text-body">
               {t.featuresSub}
             </p>
             <div className="mt-8 flex justify-center">
-              <HeroOptionD />
+              <BenefitsPanel />
             </div>
           </div>
         </section>
 
         {/* HOW IT WORKS — journey ribbon (guest → modules → sign in → path) */}
         <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-          <h2 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl dark:text-white">
+          <h2 className="text-2xl font-bold tracking-tight text-ink-900 sm:text-3xl dark:text-white">
             {isDE ? 'So funktioniert es' : 'How it works'}
           </h2>
-          <p className="mt-2 text-sm text-slate-500 dark:text-slate-400 sm:text-base">{t.howSub}</p>
+          <p className="mt-2 text-body text-ink-500 dark:text-ink-400 sm:text-body">{t.howSub}</p>
           <div className="mt-10 flex justify-center">
-            <HeroOptionC />
+            <JourneyRibbon />
           </div>
         </section>
 
         {/* FOR WHOM — audience mini-cards */}
-        <section className="bg-white dark:bg-slate-900">
+        <section className="bg-white dark:bg-ink-900">
           <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-            <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">{t.whomHeading}</h2>
-            <p className="mt-2 text-sm text-slate-500 dark:text-slate-400 sm:text-base">{t.whomSub}</p>
+            <h2 className="text-2xl font-bold tracking-tight text-ink-900 dark:text-white">{t.whomHeading}</h2>
+            <p className="mt-2 text-body text-ink-500 dark:text-ink-400 sm:text-body">{t.whomSub}</p>
             <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {t.whom.map((item) => {
                 const Icon = item.icon;
                 return (
                   <div
                     key={item.title}
-                    className="rounded-2xl border border-slate-200 bg-slate-50 p-5 dark:border-slate-800 dark:bg-slate-800/60"
+                    className="rounded-lg border border-ink-200 bg-ink-50 p-5 dark:border-ink-800 dark:bg-ink-800/60"
                   >
-                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-300">
+                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-accent-50 text-accent-600 dark:bg-accent-950/40 dark:text-accent-300">
                       <Icon className="h-5 w-5" aria-hidden="true" />
                     </span>
-                    <h3 className="mt-3 text-base font-semibold text-slate-900 dark:text-white">{item.title}</h3>
-                    <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{item.line}</p>
+                    <h3 className="mt-3 text-body font-semibold text-ink-900 dark:text-white">{item.title}</h3>
+                    <p className="mt-1 text-body text-ink-500 dark:text-ink-400">{item.line}</p>
                   </div>
                 );
               })}
@@ -228,11 +228,11 @@ export function LandingPage() {
 
         {/* FINAL CTA — compact banner */}
         <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
-          <div className="flex flex-col items-start justify-between gap-6 rounded-3xl bg-blue-50 p-6 dark:bg-blue-950/30 sm:flex-row sm:items-center sm:p-8">
+          <div className="flex flex-col items-start justify-between gap-6 rounded-lg bg-accent-50 p-6 dark:bg-accent-950/30 sm:flex-row sm:items-center sm:p-8">
             <div>
-              <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">{t.closingTitle}</h2>
-              <p className="mt-1 text-sm text-slate-600 dark:text-slate-300 sm:text-base">{t.closingLine}</p>
-              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{t.privacy}</p>
+              <h2 className="text-2xl font-bold tracking-tight text-ink-900 dark:text-white">{t.closingTitle}</h2>
+              <p className="mt-1 text-body text-ink-600 dark:text-ink-300 sm:text-body">{t.closingLine}</p>
+              <p className="mt-1 text-meta text-ink-500 dark:text-ink-400">{t.privacy}</p>
             </div>
             <Link
               to="/home"

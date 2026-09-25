@@ -40,14 +40,14 @@ export function GetReadyCountdown({ onDone, title, subtitle }: GetReadyCountdown
 
   return (
     <div className="flex flex-col items-center justify-center gap-4">
-      <div className="text-xl font-medium text-slate-500 dark:text-slate-400">{label}</div>
-      <div className="text-8xl font-extrabold drop-shadow-2xl text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600 dark:from-blue-400 dark:to-purple-400">
+      <div className="text-xl font-medium text-ink-500 dark:text-ink-400">{label}</div>
+      <div className="text-8xl font-extrabold drop-shadow-2xl text-transparent bg-clip-text bg-gradient-to-r from-accent-500 to-accent-600 dark:from-accent-400 dark:to-accent-400">
         {display}
       </div>
       {title && (
-        <div className="text-sm text-slate-400 dark:text-slate-500">Get ready to play {title}</div>
+        <div className="text-body text-ink-500 dark:text-ink-500">Get ready to play {title}</div>
       )}
-      {subtitle && <div className="text-sm text-slate-500 dark:text-slate-400">{subtitle}</div>}
+      {subtitle && <div className="text-body text-ink-500 dark:text-ink-400">{subtitle}</div>}
     </div>
   );
 }

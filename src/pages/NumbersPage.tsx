@@ -223,7 +223,7 @@ export function NumbersPage() {
           {rule.title && (
             <div className={theme.panel.info}>
               <p className="font-semibold">{rule.title}</p>
-              <p className="mt-1 text-sm leading-relaxed">{rule.description}</p>
+              <p className="mt-1 text-body leading-relaxed">{rule.description}</p>
             </div>
           )}
           {items.map((item) => (
@@ -265,7 +265,7 @@ export function NumbersPage() {
         columns={2}
         showSpeaker={false}
         renderPrompt={(q) => (
-          <span className="text-5xl font-bold text-blue-600 dark:text-blue-400">{q.n}</span>
+          <span className="text-5xl font-bold text-accent-600 dark:text-accent-400">{q.n}</span>
         )}
         hideFooter
       />

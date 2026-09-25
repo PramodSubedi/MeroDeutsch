@@ -48,12 +48,12 @@ interface GlossaryFilterPanelProps {
 /** A removable filter chip */
 function FilterChip({ label, onRemove }: { label: string; onRemove: () => void }) {
   return (
-    <span className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2.5 py-1 text-xs font-medium text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">
+    <span className="inline-flex items-center gap-1 rounded-full bg-accent-100 px-2.5 py-1 text-meta font-medium text-accent-700 dark:bg-accent-900/40 dark:text-accent-300">
       {label}
       <button
         type="button"
         onClick={onRemove}
-        className="ml-0.5 rounded-full p-0.5 hover:bg-blue-200 dark:hover:bg-blue-800"
+        className="ml-0.5 rounded-full p-0.5 hover:bg-accent-200 dark:hover:bg-accent-800"
         aria-label={`Remove ${label} filter`}
       >
         <X className="h-3 w-3" />
@@ -80,11 +80,11 @@ function FilterSelect({
 
   return (
     <div className="flex flex-col gap-1">
-      <label className="text-xs font-medium text-slate-500 dark:text-slate-400">{label}</label>
+      <label className="text-meta font-medium text-ink-500 dark:text-ink-400">{label}</label>
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className={`${theme.input} py-2 text-sm`}
+        className={`${theme.input} py-2 text-body`}
       >
         <option value="all">
           {isDE ? 'Alle' : 'All'} ({allCount})
@@ -142,13 +142,13 @@ export function GlossaryFilterPanel({
         <button
           type="button"
           onClick={() => setIsExpanded(!isExpanded)}
-          className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs font-medium text-slate-600 transition-colors hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
+          className="inline-flex items-center gap-1.5 rounded-sm px-2 py-1 text-meta font-medium text-ink-600 transition-colors hover:bg-ink-100 dark:text-ink-400 dark:hover:bg-ink-800"
           aria-expanded={isExpanded}
         >
           {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
           {isDE ? 'Filter' : 'Filters'}
           {hasActiveFilters && (
-            <span className="ml-1 inline-flex h-5 w-5 items-center justify-center rounded-full bg-blue-600 text-[10px] font-bold text-white">
+            <span className="ml-1 inline-flex h-5 w-5 items-center justify-center rounded-full bg-accent-600 text-[10px] font-bold text-white">
               {[sourceFilter !== 'all', levelFilter !== 'all', posFilter !== 'all', categoryFilter !== 'all'].filter(Boolean).length}
             </span>
           )}
@@ -157,7 +157,7 @@ export function GlossaryFilterPanel({
           <button
             type="button"
             onClick={onReset}
-            className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-blue-600 transition-colors hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-950/40"
+            className="inline-flex items-center gap-1 rounded-sm px-2 py-1 text-meta font-medium text-accent-600 transition-colors hover:bg-accent-50 dark:text-accent-400 dark:hover:bg-accent-950/40"
           >
             <RotateCcw className="h-3 w-3" />
             {isDE ? 'Zurücksetzen' : 'Reset'}
@@ -188,7 +188,7 @@ export function GlossaryFilterPanel({
                         onRemove={() => onSourceChange('all')}
                       />
                     )}
-          <span className="text-xs text-slate-500 dark:text-slate-400">
+          <span className="text-meta text-ink-500 dark:text-ink-400">
             {isDE ? 'Aktiv:' : 'Active:'}
           </span>
           {levelFilter !== 'all' && <FilterChip label={levelFilter} onRemove={() => onLevelChange('all')} />}

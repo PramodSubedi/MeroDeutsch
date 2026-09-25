@@ -49,11 +49,11 @@ export function ArticleSprint() {
   });
 
   if (deck === null) {
-    return <p className="text-sm text-slate-500">{isDE ? 'Lade Nomina…' : 'Loading nouns…'}</p>;
+    return <p className="text-body text-ink-500">{isDE ? 'Lade Nomina…' : 'Loading nouns…'}</p>;
   }
   if (deck.length === 0) {
     return (
-      <p className="text-sm text-slate-500">
+      <p className="text-body text-ink-500">
         {isDE ? 'Keine Artikel-Daten offline verfügbar.' : 'No article data available offline.'}
       </p>
     );
@@ -61,7 +61,7 @@ export function ArticleSprint() {
   if (!session.current) {
     return (
       <div className="space-y-3">
-        <p className="rounded-xl bg-green-50 p-3 text-sm font-semibold text-green-700 dark:bg-green-900/30 dark:text-green-300">
+        <p className="rounded-md bg-success-50 p-3 text-body font-semibold text-success-700 dark:bg-success-900/30 dark:text-success-300">
           🎉 {isDE
             ? `Fertig! ${session.score}/${session.total} richtig (${session.accuracy}%).`
             : `Done! ${session.score}/${session.total} correct (${session.accuracy}%).`}

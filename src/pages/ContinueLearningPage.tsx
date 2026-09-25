@@ -5,6 +5,7 @@ import { ANCHORS, anchorHref } from '../lib/anchors';
 import { useReviewQueue } from '../hooks/useReviewQueue';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { UnitSpine } from '../components/path/UnitSpine';
+import { PracticeToolsGrid } from '../components/PracticeToolsGrid';
 import { theme } from '../config/theme';
 
 /**
@@ -49,14 +50,16 @@ export function ContinueLearningPage() {
         <div>
           <Link
             to="/home"
-            className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-200"
+            className="inline-flex items-center gap-1 text-body text-accent-600 hover:text-accent-800 dark:text-accent-300 dark:hover:text-accent-200"
           >
             ← {isDE ? 'Zurück zur Startseite' : 'Back to Home'}
           </Link>
-          <h1 className="mt-1 text-2xl font-bold text-slate-950 dark:text-white">
+          {/* Editorial voice: kicker names the stage, display names the thing. */}
+          <p className={`${theme.type.kicker} mt-3`}>{isDE ? 'A1 · Dein Kurs' : 'A1 · Your course'}</p>
+          <h1 className={`${theme.type.display} mt-1`}>
             {isDE ? 'Lernpfad' : 'Learning Path'}
           </h1>
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+          <p className="mt-2 text-body text-ink-500 dark:text-ink-400">
             {isDE
               ? 'Dein linearer A1-Kurs — ein Band nach dem anderen.'
               : 'Your linear A1 course — one band at a time.'}
@@ -64,7 +67,7 @@ export function ContinueLearningPage() {
         </div>
         <div className="flex flex-wrap items-center gap-3">
           {dueCount > 0 && (
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700 shadow-sm dark:border-amber-700/60 dark:bg-amber-900/30 dark:text-amber-300">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-warning-200 bg-warning-50 px-3 py-1 text-meta font-semibold text-warning-700 shadow-sm dark:border-warning-700/60 dark:bg-warning-900/30 dark:text-warning-300">
               <span aria-hidden="true">⚠️</span>
               {dueCount} {isDE ? 'fällig' : 'due'}
             </span>
@@ -81,7 +84,21 @@ export function ContinueLearningPage() {
       {/* A1 campaign spine — linear bands with 80% checkpoint gates */}
       <UnitSpine />
 
-
+      {/* Quick practice access. The rail and bottom bar intentionally do NOT
+          list tools (four destinations, not a catalog), so this is where a
+          learner standing on the spine jumps to a drill. Derived from the
+          module registry, so a new tool appears here automatically. */}
+      <section className="mt-10 border-t border-ink-200 pt-6 dark:border-ink-800">
+        <h2 className="mb-1 text-[10px] font-extrabold uppercase tracking-[0.16em] text-ink-500 dark:text-ink-400">
+          {isDE ? 'Schnellübung' : 'Quick practice'}
+        </h2>
+        <p className="mb-4 text-meta text-ink-500 dark:text-ink-400">
+          {isDE
+            ? 'Optionale Übungen — sie blockieren deinen Pfad nie.'
+            : 'Optional drills — they never block your path.'}
+        </p>
+        <PracticeToolsGrid limit={4} footerLink />
+      </section>
     </div>
   );
 }

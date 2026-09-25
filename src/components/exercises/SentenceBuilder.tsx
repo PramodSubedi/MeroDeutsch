@@ -369,21 +369,21 @@ export function SentenceBuilder({
   return (
     <div className={theme.panel.surface}>
       {/* Header */}
-      <div className="mb-4 flex items-center justify-between gap-3 border-b border-slate-200 pb-3 dark:border-slate-700">
+      <div className="mb-4 flex items-center justify-between gap-3 border-b border-ink-200 pb-3 dark:border-ink-700">
         <div className="flex items-center gap-2">
-          <h3 className="text-lg font-semibold text-slate-950 dark:text-white">
+          <h3 className="text-lg font-semibold text-ink-950 dark:text-white">
             {isDE ? 'Satzbau' : 'Build the sentence'}
           </h3>
-          <span className="rounded-md bg-blue-100 px-2 py-0.5 text-xs font-bold text-blue-800 dark:bg-blue-900/60 dark:text-blue-200">
+          <span className="rounded-sm bg-accent-100 px-2 py-0.5 text-meta font-bold text-accent-800 dark:bg-accent-900/60 dark:text-accent-200">
             {activeMode.toUpperCase()}
           </span>
           {difficulty === 'hard' && (
-            <span className="rounded-md bg-red-100 px-2 py-0.5 text-xs font-bold text-red-800 dark:bg-red-900/60 dark:text-red-200">
+            <span className="rounded-sm bg-danger-100 px-2 py-0.5 text-meta font-bold text-danger-800 dark:bg-danger-900/60 dark:text-danger-200">
               HARD
             </span>
           )}
         </div>
-        <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">
+        <span className="text-body font-semibold text-ink-500 dark:text-ink-400">
           {Math.min(index + 1, items.length)}/{items.length}
         </span>
       </div>
@@ -402,11 +402,11 @@ export function SentenceBuilder({
             {activeMode === 'tiles' && (
               <div className="flex flex-col gap-4 lg:flex-row lg:items-start">
                 <div className="order-1 w-full lg:order-2 lg:flex-1">
-                  <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
+                  <p className="mb-2 text-meta font-semibold uppercase tracking-[0.18em] text-ink-500 dark:text-ink-400">
                     {isDE ? 'Dein Satz' : 'Your sentence'}
                   </p>
                   <div
-                    className="flex min-h-[64px] flex-wrap content-start gap-2 rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 p-3 dark:border-slate-600 dark:bg-slate-800/40"
+                    className="flex min-h-[64px] flex-wrap content-start gap-2 rounded-lg border-2 border-dashed border-ink-300 bg-ink-50 p-3 dark:border-ink-600 dark:bg-ink-800/40"
                     onDragOver={(e) => e.preventDefault()}
                     onDrop={(e) => {
                       e.preventDefault();
@@ -414,7 +414,7 @@ export function SentenceBuilder({
                     }}
                   >
                     {placed.length === 0 && (
-                      <span className="self-center px-2 text-sm text-slate-400 dark:text-slate-500">
+                      <span className="self-center px-2 text-body text-ink-500 dark:text-ink-500">
                         {isDE ? 'Wörter hier ablegen…' : 'Drop words here…'}
                       </span>
                     )}
@@ -426,10 +426,10 @@ export function SentenceBuilder({
                           : 'filled';
                       const toneCls =
                         tone === 'wrong'
-                          ? 'border-red-400 bg-red-100 text-red-900 dark:border-red-600 dark:bg-red-950/50 dark:text-red-200'
+                          ? 'border-danger-400 bg-danger-100 text-danger-900 dark:border-danger-600 dark:bg-danger-950/50 dark:text-danger-200'
                           : tone === 'correct'
-                            ? 'border-emerald-400 bg-emerald-50 text-emerald-900 dark:border-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-200'
-                            : 'border-blue-400 bg-blue-50 text-blue-900 shadow-sm dark:border-blue-500 dark:bg-blue-950/60 dark:text-blue-100';
+                            ? 'border-success-400 bg-success-50 text-success-900 dark:border-success-600 dark:bg-success-950/40 dark:text-success-200'
+                            : 'border-accent-400 bg-accent-50 text-accent-900 shadow-sm dark:border-accent-500 dark:bg-accent-950/60 dark:text-accent-100';
                       return (
                         <motion.button
                           key={`${item.id}-slot-${slotIdx}-${tileIdx}`}
@@ -440,7 +440,7 @@ export function SentenceBuilder({
                           onDragStart={() => setDraggingTile(tileIdx)}
                           onDragEnd={() => setDraggingTile(null)}
                           onClick={() => removeTile(slotIdx)}
-                          className={`min-h-[44px] cursor-grab rounded-xl border-2 px-3 py-2 text-sm font-bold transition active:scale-95 active:cursor-grabbing hover:-translate-y-0.5 hover:shadow-md ${toneCls}`}
+                          className={`min-h-[44px] cursor-grab rounded-md border-2 px-3 py-2 text-body font-bold transition active:scale-95 active:cursor-grabbing hover:-translate-y-0.5 hover:shadow-md ${toneCls}`}
                         >
                           {deck[tileIdx]?.word}
                         </motion.button>
@@ -452,7 +452,7 @@ export function SentenceBuilder({
                       <span
                         key={`${item.id}-ghost-${i}`}
                         aria-hidden="true"
-                        className="flex min-h-[44px] items-center rounded-xl border-2 border-dashed border-slate-200 px-3 py-2 text-xs font-bold text-slate-300 dark:border-slate-700 dark:text-slate-600"
+                        className="flex min-h-[44px] items-center rounded-md border-2 border-dashed border-ink-200 px-3 py-2 text-meta font-bold text-ink-300 dark:border-ink-700 dark:text-ink-600"
                       >
                         {placed.length + i + 1}
                       </span>
@@ -461,7 +461,7 @@ export function SentenceBuilder({
                 </div>
 
                 <div className="order-2 w-full lg:order-1 lg:w-64 lg:shrink-0">
-                  <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
+                  <p className="mb-2 text-meta font-semibold uppercase tracking-[0.18em] text-ink-500 dark:text-ink-400">
                     {isDE ? 'Wörter' : 'Word tiles'}
                   </p>
                   <div className="flex flex-wrap gap-2 lg:flex-col lg:items-stretch">
@@ -476,10 +476,10 @@ export function SentenceBuilder({
                            onDragEnd={() => setDraggingTile(null)}
                            onClick={() => placeTile(index)}
                            title={used ? (isDE ? 'Zurück ins Fach' : 'Return to tray') : undefined}
-                           className={`min-h-[44px] rounded-xl border-2 px-3 py-2 text-sm font-bold transition active:scale-95 ${
+                           className={`min-h-[44px] rounded-md border-2 px-3 py-2 text-body font-bold transition active:scale-95 ${
                              used
-                               ? 'cursor-pointer border-slate-200 bg-slate-100 text-slate-400 line-through opacity-70 hover:border-red-300 hover:text-red-500 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-500 dark:hover:border-red-700 dark:hover:text-red-400'
-                               : 'cursor-grab border-slate-200 bg-white text-slate-800 shadow-sm hover:-translate-y-0.5 hover:border-blue-400 hover:shadow-md active:cursor-grabbing dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:hover:border-blue-500'
+                               ? 'cursor-pointer border-ink-200 bg-ink-100 text-ink-500 line-through opacity-70 hover:border-danger-300 hover:text-danger-500 dark:border-ink-700 dark:bg-ink-800/60 dark:text-ink-500 dark:hover:border-danger-700 dark:hover:text-danger-400'
+                               : 'cursor-grab border-ink-200 bg-white text-ink-800 shadow-sm hover:-translate-y-0.5 hover:border-accent-400 hover:shadow-md active:cursor-grabbing dark:border-ink-700 dark:bg-ink-800 dark:text-ink-100 dark:hover:border-accent-500'
                            }`}
                          >
                            {tile.word}
@@ -494,7 +494,7 @@ export function SentenceBuilder({
             {/* TYPING MODE */}
             {activeMode === 'typing' && (
               <div className="space-y-3">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
+                <p className="text-meta font-semibold uppercase tracking-[0.18em] text-ink-500 dark:text-ink-400">
                   {isDE ? 'Tippe den Satz auf Deutsch' : 'Type the sentence in German'}
                 </p>
                 <input
@@ -505,7 +505,7 @@ export function SentenceBuilder({
                     if (e.key === 'Enter' && isInputReady) check();
                   }}
                   placeholder={isDE ? 'Satz hier eingeben…' : 'Type your answer here…'}
-                  className="w-full rounded-xl border-2 border-slate-300 bg-white p-3 text-base font-medium text-slate-900 shadow-sm focus:border-blue-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                  className="w-full rounded-md border-2 border-ink-300 bg-white p-3 text-body font-medium text-ink-900 shadow-sm focus:border-accent-500 focus:outline-none dark:border-ink-700 dark:bg-ink-800 dark:text-white"
                 />
               </div>
             )}
@@ -513,11 +513,11 @@ export function SentenceBuilder({
             {/* VOICE MODE */}
             {activeMode === 'voice' && (
               <div className="space-y-4 text-center">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
+                <p className="text-meta font-semibold uppercase tracking-[0.18em] text-ink-500 dark:text-ink-400">
                   {isDE ? 'Sprich den Satz auf Deutsch' : 'Speak the sentence in German'}
                 </p>
                 {!voiceSupported ? (
-                  <div className="rounded-xl bg-amber-50 p-3 text-xs text-amber-800 dark:bg-amber-950/40 dark:text-amber-200">
+                  <div className="rounded-md bg-warning-50 p-3 text-meta text-warning-800 dark:bg-warning-950/40 dark:text-warning-200">
                     {isDE
                       ? 'Spracherkennung wird von diesem Browser nicht unterstützt. Verwende Tastatureingabe.'
                       : 'Speech recognition is not supported in this browser. Use typing fallback below.'}
@@ -529,13 +529,13 @@ export function SentenceBuilder({
                       onClick={listening ? stopListening : startListening}
                       className={`flex h-16 w-16 items-center justify-center rounded-full transition ${
                         listening
-                          ? 'animate-pulse bg-red-600 text-white shadow-lg'
-                          : 'bg-blue-600 text-white hover:bg-blue-700'
+                          ? 'animate-pulse bg-danger-600 text-white shadow-lg'
+                          : 'bg-accent-600 text-white hover:bg-accent-700'
                       }`}
                     >
                       {listening ? <MicOff className="h-8 w-8" /> : <Mic className="h-8 w-8" />}
                     </button>
-                    <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                    <span className="text-meta font-medium text-ink-500 dark:text-ink-400">
                       {listening
                         ? isDE
                           ? 'Zuhören… Spreche jetzt!'
@@ -551,21 +551,21 @@ export function SentenceBuilder({
                   onChange={(e) => setVoiceInput(e.target.value)}
                   placeholder={isDE ? 'Transkript erscheint hier…' : 'Transcript will appear here…'}
                   rows={2}
-                  className="w-full rounded-xl border-2 border-slate-300 bg-white p-3 text-sm font-medium text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                  className="w-full rounded-md border-2 border-ink-300 bg-white p-3 text-body font-medium text-ink-900 dark:border-ink-700 dark:bg-ink-800 dark:text-white"
                 />
               </div>
             )}
 
             {/* Hint & TTS prompt */}
             {item.hint && difficulty !== 'hard' && (
-              <div className="mt-3 flex items-center justify-between rounded-xl bg-slate-100 p-2.5 dark:bg-slate-800/60">
-                <span className="text-xs font-medium text-slate-600 dark:text-slate-300">
+              <div className="mt-3 flex items-center justify-between rounded-md bg-ink-100 p-2.5 dark:bg-ink-800/60">
+                <span className="text-meta font-medium text-ink-600 dark:text-ink-300">
                   💡 {item.hint}
                 </span>
                 <button
                   type="button"
                   onClick={speakHintPrompt}
-                  className="p-1.5 text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-300"
+                  className="p-1.5 text-ink-500 hover:text-accent-600 dark:text-ink-400 dark:hover:text-accent-300"
                   title={isDE ? 'Hinweis anhören' : 'Listen to hint prompt'}
                 >
                   <Volume2 className="h-4 w-4" />
@@ -578,21 +578,21 @@ export function SentenceBuilder({
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className={`mt-3 rounded-xl p-3 text-sm font-bold ${
+                className={`mt-3 rounded-md p-3 text-body font-bold ${
                   feedback.isError
-                    ? 'bg-red-100 text-red-900 dark:bg-red-950/60 dark:text-red-200'
-                    : 'bg-emerald-100 text-emerald-900 dark:bg-emerald-950/60 dark:text-emerald-200'
+                    ? 'bg-danger-100 text-danger-900 dark:bg-danger-950/60 dark:text-danger-200'
+                    : 'bg-success-100 text-success-900 dark:bg-success-950/60 dark:text-success-200'
                 }`}
               >
                 {feedback.message}
                 {feedback.isError && hintReason && (
-                  <div className="mt-2 border-t border-red-200 pt-2 text-xs font-medium text-red-800 dark:border-red-800/60 dark:text-red-200">
+                  <div className="mt-2 border-t border-danger-200 pt-2 text-meta font-medium text-danger-800 dark:border-danger-800/60 dark:text-danger-200">
                     {(() => {
                       const hint = getHint('grammar', hintReason);
                       return isDE ? hint.de : (
                         <>
                           <div>{hint.en}</div>
-                          <div className="mt-0.5 text-red-700/80 dark:text-red-300/80">{hint.ne}</div>
+                          <div className="mt-0.5 text-danger-700/80 dark:text-danger-300/80">{hint.ne}</div>
                         </>
                       );
                     })()}
@@ -622,7 +622,7 @@ export function SentenceBuilder({
       {/* Round complete */}
       {done && (
         <div className="mt-4 flex flex-col items-center gap-3">
-          <p className="text-center text-sm font-semibold text-emerald-700 dark:text-emerald-300">
+          <p className="text-center text-body font-semibold text-success-700 dark:text-success-300">
             🎉{' '}
             {isDE
               ? `Alle Sätze gebaut! Fehler: ${items.length - solvedIds.size}`

@@ -41,7 +41,7 @@ export function GenderBadge({ article, labeled = true, dot = false, className }:
     article === 'plural' ? 'pl.' : GENDER_LABEL[article as Article];
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-bold ${t.bg} text-white ${className ?? ''}`}
+      className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-meta font-bold ${t.bg} text-white ${className ?? ''}`}
       aria-label={`gender ${article}`}
     >
       {labelText}
@@ -52,7 +52,7 @@ export function GenderBadge({ article, labeled = true, dot = false, className }:
 /** Render the full gender legend (der/die/das/plural) using theme tokens. */
 export function GenderLegend() {
   return (
-    <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+    <div className="flex flex-wrap items-center gap-2 text-meta text-ink-500 dark:text-ink-400">
       <GenderBadge article="der" />
       <GenderBadge article="die" />
       <GenderBadge article="das" />

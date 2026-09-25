@@ -53,7 +53,7 @@ export function MultipleChoice<Q extends ExerciseQuestion>({
   return (
     <div className={theme.panel.surface}>
       {/* Progress header */}
-      <div className="mb-4 flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
+      <div className="mb-4 flex items-center justify-between text-body text-ink-500 dark:text-ink-400">
         <span>
           {isDE ? 'Frage' : 'Question'} {index + 1} / {total}
         </span>
@@ -64,7 +64,7 @@ export function MultipleChoice<Q extends ExerciseQuestion>({
 
       {/* Prompt + optional pre-lock speaker */}
       <div className="mb-6 flex items-start justify-between gap-3">
-        <div className="min-w-0 break-words text-2xl font-bold text-slate-900 dark:text-white">
+        <div className="min-w-0 break-words text-2xl font-bold text-ink-900 dark:text-white">
           {renderPrompt ? renderPrompt(current) : <PromptText question={current} />}
         </div>
         {showSpeaker && current.speakPrompt && !locked && (
@@ -87,17 +87,17 @@ export function MultipleChoice<Q extends ExerciseQuestion>({
           const isAnswer = opt === current.correctAnswer;
           const bg =
             locked && isAnswer
-              ? 'bg-emerald-100 text-emerald-900 dark:bg-emerald-950/30 dark:text-emerald-300'
+              ? 'bg-success-100 text-success-900 dark:bg-success-950/30 dark:text-success-300'
               : chosen
-                ? 'bg-red-100 text-red-900 dark:bg-red-950/30 dark:text-red-300'
-                : 'bg-white text-slate-800 shadow-sm hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-200';
+                ? 'bg-danger-100 text-danger-900 dark:bg-danger-950/30 dark:text-danger-300'
+                : 'border border-ink-200 bg-white text-ink-800 shadow-sm hover:bg-ink-50 dark:bg-ink-800 dark:border-ink-800 dark:text-ink-200';
           return (
             <button
               key={opt}
               type="button"
               disabled={locked}
               onClick={() => session.select(opt)}
-              className={`min-h-[44px] rounded-xl px-4 py-3 text-left text-sm font-semibold transition active:scale-95 disabled:opacity-70 ${bg}`}
+              className={`min-h-[44px] rounded-md px-4 py-3 text-left text-body font-semibold transition active:scale-95 disabled:opacity-70 ${bg}`}
             >
               {opt}
             </button>
@@ -107,20 +107,20 @@ export function MultipleChoice<Q extends ExerciseQuestion>({
 
       {/* Post-lock feedback + answer speaker + U4 micro-hint */}
       {locked && (
-        <div role="status" aria-live="polite" aria-atomic="true" className="mt-4 rounded-xl bg-slate-50 p-3 text-sm dark:bg-slate-800/60">
+        <div role="status" aria-live="polite" aria-atomic="true" className="mt-4 rounded-md bg-ink-50 p-3 text-body dark:bg-ink-800/60">
           {isCorrect
             ? isDE
               ? '🎉 Richtig!'
               : '🎉 Correct!'
             : `${isDE ? '✅ Richtig:' : '✅ Correct:'} ${current.correctAnswer}`}
           {!isCorrect && hintReason && (
-            <div className="mt-2 border-t border-slate-200 pt-2 text-xs text-slate-600 dark:border-slate-700 dark:text-slate-300">
+            <div className="mt-2 border-t border-ink-200 pt-2 text-meta text-ink-600 dark:border-ink-700 dark:text-ink-300">
               {(() => {
                 const hint = getHint('a1-checkpoint', hintReason);
                 return isDE ? hint.de : (
                   <>
                     <div>{hint.en}</div>
-                    <div className="mt-0.5 text-slate-500 dark:text-slate-400">{hint.ne}</div>
+                    <div className="mt-0.5 text-ink-500 dark:text-ink-400">{hint.ne}</div>
                   </>
                 );
               })()}

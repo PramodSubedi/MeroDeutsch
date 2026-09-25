@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { DailyQuest, DailyQuestState } from '../types/quests';
 import { getItem, setItem } from '../utils/safeStorage';
 import { scopedKey } from '../utils/userStorage';
@@ -104,12 +104,14 @@ export function useDailyQuests() {
   const userId = user?.userId ?? null;
   const key = scopedKey(QUEST_STORAGE_KEY, userId);
   const { awardXp } = useXp();
+  const claimingRef = useRef(new Set<string>());
 
   const [state, setState] = useState<DailyQuestState>(() => loadQuests(key));
 
   // Reload (and auto-reset at midnight) whenever the user scoped key changes.
   useEffect(() => {
     setState(loadQuests(key));
+    claimingRef.current.clear();
   }, [key]);
 
   // Persist on any state change.
@@ -171,25 +173,21 @@ export function useDailyQuests() {
   /** Claim the bonus XP for a completed quest (one-time per quest per day). */
   const claimReward = useCallback(
     (questId: string) => {
-      let rewardXp = 0;
-      let shouldAward = false;
-      setState((prev) => {
-        const quest = prev.quests.find((q) => q.id === questId);
-        if (!quest || !quest.completed || quest.claimed) return prev;
-        rewardXp = quest.rewardXp;
-        shouldAward = true;
-        return {
-          quests: prev.quests.map((q) => (q.id === questId ? { ...q, claimed: true } : q)),
-          lastReset: prev.lastReset,
-        };
-      });
-      // Award XP *after* the state update, once per claim — never inside the
-      // updater (avoids StrictMode double-award and unordered async writes).
-      if (shouldAward) {
-        void awardXp(rewardXp, `quest:${questId}`);
-      }
+      const quest = state.quests.find((candidate) => candidate.id === questId);
+      if (!quest || !quest.completed || quest.claimed || claimingRef.current.has(questId)) return;
+
+      // Claiming is guarded synchronously so a double click cannot award twice
+      // before React commits the state update.
+      claimingRef.current.add(questId);
+      setState((prev) => ({
+        quests: prev.quests.map((candidate) =>
+          candidate.id === questId ? { ...candidate, claimed: true } : candidate
+        ),
+        lastReset: prev.lastReset,
+      }));
+      void awardXp(quest.rewardXp, `quest:${questId}`);
     },
-    [awardXp]
+    [awardXp, state]
   );
 
   const totalRewardXp = useMemo(

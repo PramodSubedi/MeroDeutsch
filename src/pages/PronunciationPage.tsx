@@ -195,7 +195,7 @@ export function PronunciationPage() {
     return (
       <div className={theme.page.container}>
         <h1 className="text-2xl font-bold">{isDE ? 'Aussprache' : 'Pronunciation'}</h1>
-        <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800 dark:border-amber-700 dark:bg-amber-900/20 dark:text-amber-300">
+        <div className="mt-4 rounded-md border border-warning-200 bg-warning-50 p-4 text-body text-warning-800 dark:border-warning-700 dark:bg-warning-900/20 dark:text-warning-300">
           {isDE ? 'Dein Browser unterstützt keine Sprachsynthese.' : 'Your browser does not support speech synthesis.'}
         </div>
       </div>
@@ -223,10 +223,10 @@ export function PronunciationPage() {
     }
     return (
       <div className={theme.page.container}>
-        <h1 className="text-2xl font-semibold tracking-tight text-slate-950 dark:text-white">
+        <h1 className="text-2xl font-semibold tracking-tight text-ink-950 dark:text-white">
           {isDE ? 'Aussprache-Übung' : 'Pronunciation Practice'}
         </h1>
-        <div role="alert" className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800 dark:border-amber-700 dark:bg-amber-900/20 dark:text-amber-300">
+        <div role="alert" className="mt-4 rounded-md border border-warning-200 bg-warning-50 p-4 text-body text-warning-800 dark:border-warning-700 dark:bg-warning-900/20 dark:text-warning-300">
           {wordLoadFailed
             ? isDE ? 'Wörter konnten nicht geladen werden. Prüfe deine Verbindung und versuche es erneut.' : 'Words could not be loaded. Check your connection and try again.'
             : isDE ? 'Keine Wörter verfügbar.' : 'No words are available.'}
@@ -240,15 +240,15 @@ export function PronunciationPage() {
 
   return (
     <div className={theme.page.container}>
-      <h1 className="text-2xl font-semibold tracking-tight text-slate-950 dark:text-white">{isDE ? 'Aussprache-Übung' : 'Pronunciation Practice'}</h1>
-      <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+      <h1 className="text-2xl font-semibold tracking-tight text-ink-950 dark:text-white">{isDE ? 'Aussprache-Übung' : 'Pronunciation Practice'}</h1>
+      <p className="mt-1 text-body text-ink-500 dark:text-ink-400">
         {isDE
           ? 'Sprich das Wort — die App vergleicht deine Antwort.'
           : 'Speak the word — the app compares your answer.'}
       </p>
 
       {!supported && (
-        <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800 dark:border-amber-700 dark:bg-amber-900/20 dark:text-amber-300">
+        <div className="mt-4 rounded-md border border-warning-200 bg-warning-50 p-4 text-body text-warning-800 dark:border-warning-700 dark:bg-warning-900/20 dark:text-warning-300">
           {isDE
             ? 'Spracherkennung nicht unterstützt — Tipp-Übung ist verfügbar.'
             : 'Speech recognition not supported — typing practice is available.'}
@@ -260,7 +260,7 @@ export function PronunciationPage() {
         <h2 className="text-lg font-semibold">
           {isDE ? 'Diphthonge & Lautverschiebung' : 'Diphthongs & Sound Shifts'}
         </h2>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+        <p className="mt-1 text-body text-ink-500 dark:text-ink-400">
           {isDE
             ? 'Die Zweite-Regel: EI = Eye, IE = Eee, EU = Oy. W klingt wie V, V wie F, Z immer wie TS.'
             : 'The SECOND letter wins: EI = "Eye", IE = "Eee", EU = "Oy". W sounds like V, V like F, Z is always "TS".'}
@@ -269,23 +269,23 @@ export function PronunciationPage() {
           {A1_PHONETICS.map((r) => (
             <div
               key={r.combo}
-              className="rounded-xl border border-blue-100 bg-blue-50/60 p-4 text-sm dark:border-blue-900/40 dark:bg-blue-950/30"
+              className="rounded-md border border-accent-100 bg-accent-50/60 p-4 text-body dark:border-accent-900/40 dark:bg-accent-950/30"
             >
-              <div className="font-bold text-blue-700 dark:text-blue-300">
+              <div className="font-bold text-accent-700 dark:text-accent-300">
                 {r.combo} → <span className="uppercase tracking-wide">{r.sound}</span>
               </div>
-              <div className="mt-1 text-slate-700 dark:text-slate-200">{r.examples.join(' · ')}</div>
+              <div className="mt-1 text-ink-700 dark:text-ink-200">{r.examples.join(' · ')}</div>
             </div>
           ))}
           {A1_SOUND_SHIFTS.map((r) => (
             <div
               key={r.combo}
-              className="rounded-xl border border-indigo-100 bg-indigo-50/60 p-4 text-sm dark:border-indigo-900/40 dark:bg-indigo-950/30"
+              className="rounded-md border border-accent-100 bg-accent-50/60 p-4 text-body dark:border-accent-900/40 dark:bg-accent-950/30"
             >
-              <div className="font-bold text-indigo-700 dark:text-indigo-300">
+              <div className="font-bold text-accent-700 dark:text-accent-300">
                 {r.combo} → <span className="uppercase tracking-wide">{r.sound}</span>
               </div>
-              <div className="mt-1 text-slate-700 dark:text-slate-200">{r.examples.join(' · ')}</div>
+              <div className="mt-1 text-ink-700 dark:text-ink-200">{r.examples.join(' · ')}</div>
             </div>
           ))}
         </div>
@@ -295,14 +295,14 @@ export function PronunciationPage() {
       </div>
 
       <div className={`${theme.panel.surface} mx-auto mt-6 max-w-xl`}>
-        <div className="mb-2 flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
-          <span>{isDE ? 'Punkte' : 'Score'}: <b className="text-slate-900 dark:text-white">{score}</b> / {total}</span>
+        <div className="mb-2 flex items-center justify-between text-body text-ink-500 dark:text-ink-400">
+          <span>{isDE ? 'Punkte' : 'Score'}: <b className="text-ink-900 dark:text-white">{score}</b> / {total}</span>
           <span>{status}</span>
         </div>
 
-        <div className="mb-4 rounded-2xl border border-dashed border-blue-300 bg-blue-50/60 p-4 text-center dark:border-blue-700 dark:bg-blue-950/40">
-          <div className="text-3xl font-bold text-slate-900 dark:text-white">{word.de}</div>
-          <div className="mt-1 text-sm text-blue-600 dark:text-blue-300">{isDE ? '' : word.en}</div>
+        <div className="mb-4 rounded-lg border border-dashed border-accent-300 bg-accent-50/60 p-4 text-center dark:border-accent-700 dark:bg-accent-950/40">
+          <div className="text-3xl font-bold text-ink-900 dark:text-white">{word.de}</div>
+          <div className="mt-1 text-body text-accent-600 dark:text-accent-300">{isDE ? '' : word.en}</div>
           <button type="button" onClick={() => speakWord(word.de)} className={`${theme.button.primary} mt-3`}>
             🔊 {isDE ? 'Wort hören' : 'Hear word'}
           </button>
@@ -355,12 +355,12 @@ export function PronunciationPage() {
         )}
 
         {result && (
-          <div className={`mt-4 rounded-xl p-3 text-center text-sm font-semibold ${
+          <div className={`mt-4 rounded-md p-3 text-center text-body font-semibold ${
             result === 'correct'
-              ? 'bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-300'
+              ? 'bg-success-50 text-success-700 dark:bg-success-900/30 dark:text-success-300'
               : result === 'partial'
-              ? 'bg-yellow-50 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300'
-              : 'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-300'
+              ? 'bg-warning-50 text-warning-700 dark:bg-warning-900/30 dark:text-warning-300'
+              : 'bg-danger-50 text-danger-700 dark:bg-danger-900/30 dark:text-danger-300'
           }`}>
             {result === 'correct' && (isDE ? '🎉 Sehr gut!' : '🎉 Excellent!')}
             {result === 'partial' && (isDE ? `👍 Fast! Richtig: ${word.de}` : `👍 Almost! Correct: ${word.de}`)}

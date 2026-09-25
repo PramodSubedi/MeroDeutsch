@@ -23,14 +23,14 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4 py-8 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
-          <div className="max-w-xl rounded-2xl bg-white p-8 shadow-xl dark:bg-slate-900">
+        <div className="min-h-screen flex items-center justify-center bg-ink-50 px-4 py-8 text-ink-900 dark:bg-ink-950 dark:text-ink-100">
+          <div className="max-w-xl rounded-lg bg-white p-8 shadow-xl dark:bg-ink-900">
             <h1 className="text-2xl font-semibold">Oops! Ein Fehler ist aufgetreten.</h1>
-            <p className="mt-4 text-sm text-slate-600 dark:text-slate-400">
+            <p className="mt-4 text-body text-ink-600 dark:text-ink-400">
               Die Anwendung kann gerade nicht geladen werden. Bitte lade die Seite neu oder versuche es später erneut.
             </p>
             {this.state.errorMessage && (
-              <div className="mt-4 rounded-2xl bg-slate-100 p-4 text-sm text-slate-700 dark:bg-slate-800 dark:text-slate-200">
+              <div className="mt-4 rounded-lg bg-ink-100 p-4 text-body text-ink-700 dark:bg-ink-800 dark:text-ink-200">
                 {this.state.errorMessage}
               </div>
             )}
@@ -42,7 +42,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
                     window.location.reload();
                   }
                 }}
-                className="rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+                className="rounded-full bg-accent-600 px-4 py-2 text-body font-semibold text-white hover:bg-accent-700"
               >
                 Seite neu laden
               </button>

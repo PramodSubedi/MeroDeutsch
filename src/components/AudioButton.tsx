@@ -47,7 +47,7 @@ export function AudioButton({ word, className = '', lang = 'de', showSpeedToggle
             toggleSpeed();
           }
         }}
-        className={`min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full bg-blue-600 text-base font-semibold text-white shadow transition hover:bg-blue-700 focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:outline-none focus-visible:ring-offset-2 ${className}`}
+        className={`min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full bg-accent-600 text-body font-semibold text-white shadow transition hover:bg-accent-700 focus-visible:ring-2 focus-visible:ring-accent-600 focus-visible:outline-none focus-visible:ring-offset-2 ${className}`}
         aria-label={`Play German audio pronunciation for ${word} at ${speed === 1.0 ? 'normal' : 'slow'} speed`}
       >
         <span aria-hidden="true">🔊</span>
@@ -62,7 +62,7 @@ export function AudioButton({ word, className = '', lang = 'de', showSpeedToggle
             e.stopPropagation();
             toggleSpeed();
           }}
-          className="flex min-h-[44px] min-w-[44px] items-center justify-center text-[10px] font-medium text-slate-600 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 transition-colors"
+          className="flex min-h-[44px] min-w-[44px] items-center justify-center text-[10px] font-medium text-ink-600 hover:text-accent-600 dark:text-ink-400 dark:hover:text-accent-400 transition-colors"
           aria-label={`Toggle playback speed. Current: ${speed === 1.0 ? 'Normal' : 'Slow'}`}
         >
           {speed === 1.0 ? '1.0x' : '0.75x'}

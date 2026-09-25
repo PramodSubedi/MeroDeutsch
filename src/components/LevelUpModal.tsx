@@ -68,7 +68,7 @@ export function LevelUpModal({ isOpen, level, rank, onClose }: LevelUpModalProps
 
   return (
     <div
-      className="fixed top-4 left-4 right-4 z-[60] mx-auto max-w-md rounded-2xl border border-blue-200 bg-gradient-to-r from-blue-50 to-blue-100 p-4 shadow-lg dark:border-blue-800 dark:from-blue-950/60 dark:to-blue-900/40 animate-in fade-in slide-in-from-top-4 duration-300"
+      className="fixed top-4 left-4 right-4 z-[60] mx-auto max-w-md rounded-lg border border-accent-200 bg-gradient-to-r from-accent-50 to-accent-100 p-4 shadow-lg dark:border-accent-800 dark:from-accent-950/60 dark:to-accent-900/40 animate-in fade-in slide-in-from-top-4 duration-300"
       role="status"
       aria-live="polite"
       aria-label={isDE ? `Level aufgestiegen! Stufe ${level}` : `Level up! Level ${level}`}
@@ -76,17 +76,17 @@ export function LevelUpModal({ isOpen, level, rank, onClose }: LevelUpModalProps
       <div className="flex items-center gap-3">
         <div className="text-2xl" aria-hidden="true">🎉</div>
         <div className="flex-1">
-          <h3 className="font-bold text-blue-900 dark:text-blue-100">
+          <h3 className="font-bold text-accent-900 dark:text-accent-100">
             {isDE ? 'Level Up! Stufe ' : 'Level Up! Level '} <span className="text-2xl">{level}</span>
           </h3>
-          <p className="text-sm text-blue-800 dark:text-blue-200 mt-1">
+          <p className="text-body text-accent-800 dark:text-accent-200 mt-1">
             {rank}
           </p>
         </div>
         <button
           type="button"
           onClick={onClose}
-          className="text-blue-600 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-100 font-semibold text-lg leading-none"
+          className="text-accent-600 hover:text-accent-800 dark:text-accent-300 dark:hover:text-accent-100 font-semibold text-lg leading-none"
           aria-label="Dismiss"
         >
           ×

@@ -177,7 +177,7 @@ export function ConjugationTicTacToe() {
   return (
     <div className={theme.panel.surface}>
       <div className="mb-4 flex items-center justify-between gap-3">
-        <h3 className="text-lg font-semibold text-slate-950 dark:text-white">
+        <h3 className="text-lg font-semibold text-ink-950 dark:text-white">
           {isDE ? 'Konjugations-Tic-Tac-Toe' : 'Conjugation Tic-Tac-Toe'}
         </h3>
         <button type="button" onClick={newRound} className={theme.button.secondarySmall}>
@@ -187,7 +187,7 @@ export function ConjugationTicTacToe() {
       </div>
 
       {status === 'playing' && (
-        <p className="mb-3 text-center text-xs text-slate-500 dark:text-slate-400">
+        <p className="mb-3 text-center text-meta text-ink-500 dark:text-ink-400">
           {isDE
             ? 'Tippe ein Feld und konjugiere, um es zu besetzen (🔵 du vs 🤖 Computer).'
             : 'Tap a cell and conjugate to claim it (🔵 you vs 🤖 computer).'}
@@ -201,12 +201,12 @@ export function ConjugationTicTacToe() {
             type="button"
             onClick={() => tapCell(i)}
             disabled={status !== 'playing' || cell !== null || pendingCell !== null || aiThinking}
-            className={`flex min-h-[64px] items-center justify-center rounded-xl border text-3xl font-extrabold transition active:scale-95 ${
+            className={`flex min-h-[64px] items-center justify-center rounded-md border text-3xl font-extrabold transition active:scale-95 ${
               cell === 'X'
-                ? 'border-blue-300 bg-blue-50 text-blue-600 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-300'
+                ? 'border-accent-300 bg-accent-50 text-accent-600 dark:border-accent-800 dark:bg-accent-950/40 dark:text-accent-300'
                 : cell === 'O'
-                  ? 'border-slate-300 bg-slate-100 text-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400'
-                  : 'border-slate-200 bg-white text-slate-300 hover:border-blue-400 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-600'
+                  ? 'border-ink-300 bg-ink-100 text-ink-500 dark:border-ink-700 dark:bg-ink-800 dark:text-ink-400'
+                  : 'border-ink-200 bg-white text-ink-300 hover:border-accent-400 dark:border-ink-700 dark:bg-ink-800 dark:text-ink-600'
             }`}
             aria-label={`Cell ${i + 1}`}
           >
@@ -216,7 +216,7 @@ export function ConjugationTicTacToe() {
       </div>
 
       {aiThinking && (
-        <p className="mt-3 text-center text-xs text-slate-400 dark:text-slate-500">
+        <p className="mt-3 text-center text-meta text-ink-500 dark:text-ink-500">
           🤖 {isDE ? 'Der Computer ist am Zug…' : 'The computer is thinking…'}
         </p>
       )}
@@ -224,11 +224,11 @@ export function ConjugationTicTacToe() {
       {/* Conjugation question for the tapped cell */}
       {question && pendingCell !== null && (
         <div className="mx-auto mt-4 max-w-md">
-          <div className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-900">
+          <div className="rounded-lg border border-ink-200 bg-white p-4 dark:border-ink-700 dark:bg-ink-900">
             <div className="mb-3 flex items-center justify-between gap-3">
-              <div className="text-xl font-bold text-slate-900 dark:text-white">
+              <div className="text-xl font-bold text-ink-900 dark:text-white">
                 {question.pronoun} +{' '}
-                <span className="text-blue-600 dark:text-blue-300">{question.verb}</span>
+                <span className="text-accent-600 dark:text-accent-300">{question.verb}</span>
               </div>
               {!locked && (
                 <button
@@ -248,17 +248,17 @@ export function ConjugationTicTacToe() {
                 const isAnswer = opt === question.correct;
                 const bg =
                   locked && isAnswer
-                    ? 'bg-emerald-100 text-emerald-900 dark:bg-emerald-950/30 dark:text-emerald-300'
+                    ? 'bg-success-100 text-success-900 dark:bg-success-950/30 dark:text-success-300'
                     : chosen
-                      ? 'bg-red-100 text-red-900 dark:bg-red-950/30 dark:text-red-300'
-                      : 'bg-white text-slate-800 shadow-sm hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-200';
+                      ? 'bg-danger-100 text-danger-900 dark:bg-danger-950/30 dark:text-danger-300'
+                      : 'border border-ink-200 bg-white text-ink-800 shadow-sm hover:bg-ink-50 dark:bg-ink-800 dark:border-ink-800 dark:text-ink-200';
                 return (
                   <button
                     key={opt}
                     type="button"
                     disabled={locked}
                     onClick={() => choose(opt)}
-                    className={`min-h-[44px] rounded-xl px-4 py-2.5 text-sm font-semibold transition active:scale-95 disabled:opacity-70 ${bg}`}
+                    className={`min-h-[44px] rounded-md px-4 py-2.5 text-body font-semibold transition active:scale-95 disabled:opacity-70 ${bg}`}
                   >
                     {opt}
                   </button>
@@ -266,7 +266,7 @@ export function ConjugationTicTacToe() {
               })}
             </div>
             {locked && (
-              <div className="mt-3 rounded-xl bg-slate-50 p-3 text-sm dark:bg-slate-800/60">
+              <div className="mt-3 rounded-md bg-ink-50 p-3 text-body dark:bg-ink-800/60">
                 {wasRight
                   ? isDE ? '🎉 Richtig — Feld besetzt!' : '🎉 Correct — cell claimed!'
                   : `${isDE ? '✅ Richtig:' : '✅ Correct:'} ${question.correct}`}
@@ -290,12 +290,12 @@ export function ConjugationTicTacToe() {
       {status !== 'playing' && (
         <div className="mt-4 flex flex-col items-center gap-3">
           <p
-            className={`text-center text-sm font-semibold ${
+            className={`text-center text-body font-semibold ${
               status === 'won'
-                ? 'text-emerald-700 dark:text-emerald-300'
+                ? 'text-success-700 dark:text-success-300'
                 : status === 'lost'
-                  ? 'text-slate-600 dark:text-slate-300'
-                  : 'text-amber-700 dark:text-amber-300'
+                  ? 'text-ink-600 dark:text-ink-300'
+                  : 'text-warning-700 dark:text-warning-300'
             }`}
           >
             {status === 'won'

@@ -16,7 +16,7 @@ export function LoadingBlock({ label = 'Loading…', className = '' }: LoadingBl
   return (
     <div className={`${theme.page.container} ${className}`}>
       <p
-        className="mt-4 text-sm text-slate-500 dark:text-slate-400"
+        className="mt-4 text-body text-ink-500 dark:text-ink-400"
         role="status"
         aria-live="polite"
       >
@@ -33,7 +33,7 @@ export function LoadingBlock({ label = 'Loading…', className = '' }: LoadingBl
  */
 export function ContentPending({ isDE, className = 'mt-4' }: { isDE: boolean; className?: string }) {
   return (
-    <p role="status" className={`${className} text-sm text-slate-500 dark:text-slate-400`}>
+    <p role="status" className={`${className} text-body text-ink-500 dark:text-ink-400`}>
       {isDE
         ? 'Noch keine Inhalte im Cache. Verbinde dich mit dem Internet, um Inhalte zu laden.'
         : 'No content is cached yet. Connect to the internet to load it.'}

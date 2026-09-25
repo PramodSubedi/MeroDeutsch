@@ -92,13 +92,13 @@ export function MatchPairs({ pairs, module, onComplete, speakOnMatch = true, col
   const tileCls = (tone: TileTone): string => {
     switch (tone) {
       case 'matched':
-        return 'border-emerald-300 bg-emerald-50 text-emerald-900 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-200';
+        return 'border-success-300 bg-success-50 text-success-900 dark:border-success-800 dark:bg-success-950/40 dark:text-success-200';
       case 'selected':
-        return 'border-blue-500 bg-blue-50 text-blue-900 shadow-sm dark:border-blue-400 dark:bg-blue-950/60 dark:text-blue-100';
+        return 'border-accent-500 bg-accent-50 text-accent-900 shadow-sm dark:border-accent-400 dark:bg-accent-950/60 dark:text-accent-100';
       case 'wrong':
-        return 'border-red-400 bg-red-100 text-red-900 dark:border-red-600 dark:bg-red-950/50 dark:text-red-200';
+        return 'border-danger-400 bg-danger-100 text-danger-900 dark:border-danger-600 dark:bg-danger-950/50 dark:text-danger-200';
       default:
-        return 'border-slate-200 bg-white text-slate-800 hover:border-blue-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:hover:border-blue-500';
+        return 'border-ink-200 bg-white text-ink-800 hover:border-accent-300 dark:border-ink-700 dark:bg-ink-800 dark:text-ink-100 dark:hover:border-accent-500';
     }
   };
 
@@ -177,17 +177,17 @@ export function MatchPairs({ pairs, module, onComplete, speakOnMatch = true, col
   return (
     <div className={theme.panel.surface}>
       <div className="mb-4 flex items-center justify-between gap-3">
-        <h3 className="text-lg font-semibold text-slate-950 dark:text-white">
+        <h3 className="text-lg font-semibold text-ink-950 dark:text-white">
           {isDE ? 'Paare zuordnen' : 'Match the pairs'}
         </h3>
-        <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">
+        <span className="text-body font-semibold text-ink-500 dark:text-ink-400">
           {matchedIds.size}/{pairs.length}
         </span>
       </div>
 
       {/* Optional column headers (gender → pronoun mode); greetings mode unchanged. */}
       {columnLabels && (
-        <div className="grid grid-cols-2 gap-2 text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 sm:gap-3">
+        <div className="grid grid-cols-2 gap-2 text-[11px] font-bold uppercase tracking-wider text-ink-500 dark:text-ink-500 sm:gap-3">
           <span>{columnLabels.left}</span>
           <span>{columnLabels.right}</span>
         </div>
@@ -202,7 +202,7 @@ export function MatchPairs({ pairs, module, onComplete, speakOnMatch = true, col
               type="button"
               onClick={() => handleLeftTap(pair)}
               disabled={matchedIds.has(pair.id)}
-              className={`min-h-[48px] w-full rounded-xl border px-3 py-2.5 text-left text-sm font-semibold transition active:scale-95 disabled:opacity-80 ${tileCls(
+              className={`min-h-[48px] w-full rounded-md border px-3 py-2.5 text-left text-body font-semibold transition active:scale-95 disabled:opacity-80 ${tileCls(
                 toneFor('left', pair.id)
               )}`}
             >
@@ -219,7 +219,7 @@ export function MatchPairs({ pairs, module, onComplete, speakOnMatch = true, col
               type="button"
               onClick={() => handleRightTap(pair)}
               disabled={matchedIds.has(pair.id)}
-              className={`min-h-[48px] w-full rounded-xl border px-3 py-2.5 text-left text-sm font-semibold transition active:scale-95 disabled:opacity-80 ${tileCls(
+              className={`min-h-[48px] w-full rounded-md border px-3 py-2.5 text-left text-body font-semibold transition active:scale-95 disabled:opacity-80 ${tileCls(
                 toneFor('right', pair.id)
               )}`}
             >
@@ -232,7 +232,7 @@ export function MatchPairs({ pairs, module, onComplete, speakOnMatch = true, col
       {/* Round complete footer */}
       {done && (
         <div className="mt-4 flex flex-col items-center gap-3">
-          <p className="text-center text-sm font-semibold text-emerald-700 dark:text-emerald-300">
+          <p className="text-center text-body font-semibold text-success-700 dark:text-success-300">
             🎉{' '}
             {isDE
               ? `Alle Paare gefunden! Fehler: ${missedRef.current.size}`

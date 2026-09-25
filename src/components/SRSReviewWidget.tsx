@@ -18,16 +18,16 @@ export function SRSReviewWidget() {
 
   if (dueQueue.length === 0) {
     return (
-      <div className="mb-4 flex items-center justify-between gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-200">
+      <div className="mb-4 flex items-center justify-between gap-3 rounded-lg border border-success-200 bg-success-50 px-4 py-3 text-body font-semibold text-success-800 dark:border-success-800 dark:bg-success-950/40 dark:text-success-200">
         <span>✅ {isDE ? 'Keine fälligen Wiederholungen!' : 'No due reviews — all caught up!'}</span>
       </div>
     );
   }
 
   return (
-    <div className="mb-4 rounded-2xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-950/30">
+    <div className="mb-4 rounded-lg border border-warning-200 bg-warning-50 p-4 dark:border-warning-800 dark:bg-warning-950/30">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-        <div className="text-sm font-bold text-amber-800 dark:text-amber-200">
+        <div className="text-body font-bold text-warning-800 dark:text-warning-200">
           {isDE ? '🔔 Fällige Wiederholungen' : '🔔 Due Now'} — {dueQueue.length}{' '}
           {isDE ? 'Eintrag' : 'item'}
           {dueQueue.length === 1 ? '' : 's'}
@@ -47,9 +47,9 @@ export function SRSReviewWidget() {
         {dueQueue.slice(0, 4).map((item) => (
           <span
             key={item.id}
-            className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 dark:border-amber-700 dark:bg-slate-800 dark:text-slate-200"
+            className="inline-flex items-center gap-1 rounded-full border border-warning-200 bg-white px-2.5 py-1 text-meta font-semibold text-ink-700 dark:border-warning-700 dark:bg-ink-800 dark:text-ink-200"
           >
-            <span className="font-bold text-amber-600">{item.moduleType}</span>
+            <span className="font-bold text-warning-600">{item.moduleType}</span>
             <span>{item.itemKey}</span>
             <MasteryIndicator boxLevel={item.boxLevel} />
           </span>

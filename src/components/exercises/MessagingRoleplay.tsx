@@ -55,7 +55,7 @@ export function MessagingRoleplay({ scenarios, module = 'roleplay' }: MessagingR
   const [stepIdx, setStepIdx] = useState(0);
   const [entries, setEntries] = useState<ChatEntry[]>([]);
   const [typing, setTyping] = useState(false);
-  const [answeredWrong, setAnsweredWrong] = useState(false);
+  const [conversationComplete, setConversationComplete] = useState(false);
   // Comprehension helper — reveal EN/NE under bubbles + options (hidden in Nur DE).
   const [showTrans, setShowTrans] = useState(false);
   // Scaffolding — the chip quick-replies (production input is the primary path).
@@ -127,6 +127,8 @@ export function MessagingRoleplay({ scenarios, module = 'roleplay' }: MessagingR
   // Seed/reset the transcript when the scenario or position changes.
   useEffect(() => {
     if (!scenario) return;
+    if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
+    typingTimerRef.current = null;
     const seed: ChatEntry[] = [];
     for (let i = 0; i <= stepIdx && i < scenario.steps.length; i++) {
       const st = scenario.steps[i];
@@ -150,9 +152,10 @@ export function MessagingRoleplay({ scenarios, module = 'roleplay' }: MessagingR
     }
     setEntries(seed);
     setTyping(false);
-    setAnsweredWrong(false);
+    setConversationComplete(false);
     setCorrectCount(0);
     setWrongCount(0);
+    setFreeInput('');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scenarioIdx, scenario]);
 
@@ -175,7 +178,6 @@ export function MessagingRoleplay({ scenarios, module = 'roleplay' }: MessagingR
   const handleWrong = (opt: RoleplayOption, userText: string) => {
     playWrongFx();
     triggerHaptic('error');
-    setAnsweredWrong(true);
     setWrongCount((c) => c + 1);
     reportResult({
       correct: false,
@@ -201,18 +203,18 @@ export function MessagingRoleplay({ scenarios, module = 'roleplay' }: MessagingR
   };
 
   /** Shared correct path: chime, report, then deliver the NPC's next line. */
-  const handleCorrect = (opt: RoleplayOption) => {
+  const handleCorrect = (opt: RoleplayOption, userText = opt.text) => {
     if (!scenario || !step || typing) return;
     playCorrectFx();
     triggerHaptic('light');
-    setAnsweredWrong(false);
+    setConversationComplete(false);
     setCorrectCount((c) => c + 1);
 
     const adds: ChatEntry[] = [
       {
         id: `${scenario.id}-me-${stepIdx}-ok-${Date.now()}`,
         from: 'me',
-        text: opt.text,
+        text: userText,
       },
     ];
     // Branching-lite: a distinct NPC reaction to THIS exact choice.
@@ -230,7 +232,7 @@ export function MessagingRoleplay({ scenarios, module = 'roleplay' }: MessagingR
       correct: true,
       module,
       itemKey: `${scenario.id}:step${stepIdx}`,
-      userAnswer: opt.text,
+      userAnswer: userText,
       correctAnswer: opt.text,
     });
 
@@ -239,6 +241,7 @@ export function MessagingRoleplay({ scenarios, module = 'roleplay' }: MessagingR
     setTyping(true);
     const isLastStep = target >= scenario.steps.length;
     typingTimerRef.current = setTimeout(() => {
+      typingTimerRef.current = null;
       if (!isLastStep) {
         // Deliver the NPC's next line BEFORE opening the new replies, so the
         // conversation never looks one-sided.
@@ -255,9 +258,14 @@ export function MessagingRoleplay({ scenarios, module = 'roleplay' }: MessagingR
           ...prev,
           { id: `${scenario.id}-npc-close`, from: 'npc', text: scenario.closing as string },
         ]);
-        typingTimerRef.current = setTimeout(() => setTyping(false), 900);
+        typingTimerRef.current = setTimeout(() => {
+          typingTimerRef.current = null;
+          setTyping(false);
+          setConversationComplete(true);
+        }, 900);
       } else {
         setTyping(false);
+        setConversationComplete(true);
       }
       // On the last step without a closing line the conversation simply ends
       // (summary appears).
@@ -282,21 +290,28 @@ export function MessagingRoleplay({ scenarios, module = 'roleplay' }: MessagingR
     const text = (raw ?? freeInput).trim();
     if (!text) return;
     triggerHaptic('light');
-    const ok = step.options.find((o) => o.ok);
-    if (ok && matches(text, ok.text)) {
+    const matchedOption = step.options.find((option) => option.ok && matches(text, option.text));
+    if (matchedOption) {
       setFreeInput('');
-      handleCorrect(ok);
+      handleCorrect(matchedOption, text);
       return;
     }
     // Not the target — route to the closest distractor's feedback so the hint is relevant.
     const nearest = [...step.options]
       .filter((o) => !o.ok)
       .sort((a, b) => similarity(text, b.text) - similarity(text, a.text))[0];
-    handleWrong(nearest ?? step.options[step.options.length - 1], text);
+    handleWrong(nearest ?? {
+      text: '',
+      ok: false,
+      fb: isDE ? 'Versuche eine andere Formulierung.' : 'Try rephrasing your answer.',
+    }, text);
     setFreeInput('');
   };
 
   const restartScenario = () => {
+    if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
+    typingTimerRef.current = null;
+    speech.stop();
     setStepIdx(0);
     setEntries(
       scenario
@@ -312,19 +327,13 @@ export function MessagingRoleplay({ scenarios, module = 'roleplay' }: MessagingR
             ]
         : []
     );
-    setAnsweredWrong(false);
+    setConversationComplete(false);
     setCorrectCount(0);
     setWrongCount(0);
+    setFreeInput('');
   };
 
   if (!scenario || !step) return null;
-
-  const conversationComplete =
-    stepIdx === scenario.steps.length - 1 &&
-    entries.some((e) => e.from === 'me') &&
-    !answeredWrong &&
-    !typing &&
-    entries.filter((e) => e.from === 'me').length >= scenario.steps.length;
 
   return (
     <div className={theme.panel.surface}>
@@ -338,10 +347,12 @@ export function MessagingRoleplay({ scenarios, module = 'roleplay' }: MessagingR
               setScenarioIdx(i);
               setStepIdx(0);
             }}
-            className={`inline-flex min-h-[44px] items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold transition active:scale-95 ${
+            disabled={typing || speech.listening}
+            aria-current={i === scenarioIdx ? 'step' : undefined}
+            className={`inline-flex min-h-[44px] items-center gap-1 rounded-full px-3 py-1.5 text-meta font-semibold transition active:scale-95 ${
               i === scenarioIdx
-                ? 'bg-blue-600 text-white shadow-sm'
-                : 'border border-slate-200 bg-white text-slate-600 hover:border-blue-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300'
+                ? 'bg-accent-600 text-white shadow-sm'
+                : 'border border-ink-200 bg-white text-ink-600 hover:border-accent-300 dark:border-ink-700 dark:bg-ink-800 dark:text-ink-300'
             }`}
           >
             <span aria-hidden="true">{s.emoji}</span> {s.title}
@@ -350,24 +361,24 @@ export function MessagingRoleplay({ scenarios, module = 'roleplay' }: MessagingR
       </div>
 
       {/* Phone frame */}
-      <div className="mx-auto w-full max-w-md overflow-hidden rounded-2xl border border-slate-200 bg-slate-100 shadow-sm dark:border-slate-700 dark:bg-slate-950">
+      <div className="mx-auto w-full max-w-md overflow-hidden rounded-lg border border-ink-200 bg-ink-100 shadow-sm dark:border-ink-700 dark:bg-ink-950">
         {/* Chat header */}
-        <div className="flex items-center gap-3 border-b border-slate-200 bg-white px-4 py-3 dark:border-slate-700 dark:bg-slate-900">
+        <div className="flex items-center gap-3 border-b border-ink-200 bg-white px-4 py-3 dark:border-ink-700 dark:bg-ink-900">
           <span
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-50 text-lg dark:bg-blue-950/60"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-accent-50 text-lg dark:bg-accent-950/60"
             aria-hidden="true"
           >
             {scenario.emoji}
           </span>
           <div className="min-w-0 flex-1">
-            <div className="truncate text-sm font-bold text-slate-900 dark:text-white">
+            <div className="truncate text-body font-bold text-ink-900 dark:text-white">
               {scenario.title}
             </div>
-            <div className="text-xs text-emerald-600 dark:text-emerald-400">
+            <div className="text-meta text-success-600 dark:text-success-400">
               {isDE ? 'online' : 'online'}
             </div>
           </div>
-          <span className="text-xs font-semibold text-slate-400">
+          <span className="text-meta font-semibold text-ink-500">
             {Math.min(stepIdx + 1, scenario.steps.length)}/{scenario.steps.length}
           </span>
           {!isDE && (
@@ -376,10 +387,10 @@ export function MessagingRoleplay({ scenarios, module = 'roleplay' }: MessagingR
               onClick={() => setShowTrans((v) => !v)}
               aria-pressed={showTrans}
               aria-label={isDE ? 'Übersetzung' : 'Toggle translations'}
-              className={`inline-flex min-h-[44px] items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold transition active:scale-95 ${
+              className={`inline-flex min-h-[44px] items-center gap-1 rounded-full px-2.5 py-1 text-meta font-semibold transition active:scale-95 ${
                 showTrans
-                  ? 'bg-blue-600 text-white shadow-sm'
-                  : 'border border-slate-200 bg-white text-slate-500 hover:border-blue-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300'
+                  ? 'bg-accent-600 text-white shadow-sm'
+                  : 'border border-ink-200 bg-white text-ink-500 hover:border-accent-300 dark:border-ink-700 dark:bg-ink-800 dark:text-ink-300'
               }`}
             >
               <Globe className="h-3.5 w-3.5" aria-hidden="true" />
@@ -390,34 +401,54 @@ export function MessagingRoleplay({ scenarios, module = 'roleplay' }: MessagingR
 
         {/* Grammar / level chip (inherited from the target card) */}
         {(step.grammarFocus || step.cefrLevel || scenario.roleFlip) && !conversationComplete && (
-          <div className="flex flex-wrap items-center gap-1.5 border-b border-slate-200 bg-slate-50 px-3 py-2 dark:border-slate-700 dark:bg-slate-900/60">
+          <div className="flex flex-wrap items-center gap-1.5 border-b border-ink-200 bg-ink-50 px-3 py-2 dark:border-ink-700 dark:bg-ink-900/60">
             {scenario.roleFlip && (
               <span
-                className="rounded-full bg-violet-100 px-2 py-0.5 text-[11px] font-semibold text-violet-700 dark:bg-violet-950/60 dark:text-violet-200"
+                className="rounded-full bg-accent-100 px-2 py-0.5 text-[11px] font-semibold text-accent-700 dark:bg-accent-950/60 dark:text-accent-200"
                 title={isDE ? 'Rollenwechsel: Du sprichst zuerst!' : 'Role flip: you speak first!'}
               >
                 🎭 {isDE ? 'Du beginnst' : 'You start'}
               </span>
             )}
             {step.grammarFocus && (
-              <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[11px] font-semibold text-violet-700 dark:bg-violet-950/60 dark:text-violet-200">
+              <span className="rounded-full bg-accent-100 px-2 py-0.5 text-[11px] font-semibold text-accent-700 dark:bg-accent-950/60 dark:text-accent-200">
                 ✦ {step.grammarFocus}
               </span>
             )}
             {step.cefrLevel && (
-              <span className="rounded-full bg-slate-200 px-2 py-0.5 text-[11px] font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+              <span className="rounded-full bg-ink-200 px-2 py-0.5 text-[11px] font-semibold text-ink-600 dark:bg-ink-800 dark:text-ink-300">
                 {step.cefrLevel}
               </span>
             )}
           </div>
         )}
 
+        {!conversationComplete && (
+          <div className="border-b border-ink-200 bg-white px-3 py-2.5 dark:border-ink-700 dark:bg-ink-900">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-ink-500 dark:text-ink-500">
+              {step.from === 'me'
+                ? (isDE ? 'Dein Gesprächseinstieg' : 'Your opening line')
+                : (isDE ? 'Deine Aufgabe' : 'Your task')}
+            </p>
+            <p className="mt-0.5 text-body font-medium leading-5 text-ink-700 dark:text-ink-200">
+              {step.prompt}
+            </p>
+          </div>
+        )}
+
         {/* Message list */}
-        <div ref={scrollRef} className="h-80 space-y-2 overflow-y-auto px-3 py-4 sm:h-96">
+        <div
+          ref={scrollRef}
+          role="log"
+          aria-live="polite"
+          aria-relevant="additions"
+          aria-label={isDE ? 'Gesprächsverlauf' : 'Conversation transcript'}
+          className="h-80 space-y-2 overflow-y-auto px-3 py-4 sm:h-96"
+        >
           {entries.map((entry) =>
             entry.from === 'system' ? (
               <div key={entry.id} className="flex justify-center">
-                <span className="rounded-full bg-amber-100 px-3 py-1 text-center text-xs font-medium text-amber-800 dark:bg-amber-950/50 dark:text-amber-200">
+                <span className="rounded-full bg-warning-100 px-3 py-1 text-center text-meta font-medium text-warning-800 dark:bg-warning-950/50 dark:text-warning-200">
                   💡 {entry.text}
                 </span>
               </div>
@@ -427,10 +458,10 @@ export function MessagingRoleplay({ scenarios, module = 'roleplay' }: MessagingR
                 className={`flex ${entry.from === 'me' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-[80%] rounded-2xl px-3.5 py-2 text-sm leading-relaxed shadow-sm ${
+                  className={`max-w-[80%] rounded-lg px-3.5 py-2 text-body leading-relaxed shadow-sm ${
                     entry.from === 'me'
-                      ? 'rounded-br-md bg-blue-600 text-white'
-                      : 'rounded-bl-md bg-white text-slate-800 dark:bg-slate-800 dark:text-slate-100'
+                      ? 'rounded-br-md bg-accent-600 text-white'
+                      : 'rounded-bl-md border border-ink-200 bg-white text-ink-800 dark:bg-ink-800 dark:border-ink-800 dark:text-ink-100'
                   }`}
                 >
                   {entry.from === 'npc' && (
@@ -440,8 +471,8 @@ export function MessagingRoleplay({ scenarios, module = 'roleplay' }: MessagingR
                       aria-label={isDE ? 'Diesen Satz anhören' : 'Hear this line'}
                       className={`mb-1.5 mr-1 inline-flex h-8 items-center gap-1 rounded-full px-2.5 text-[11px] font-semibold transition active:scale-95 ${
                         isDE
-                          ? 'bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400'
-                          : 'bg-blue-50 text-blue-600 dark:bg-blue-900/50 dark:text-blue-300'
+                          ? 'bg-ink-100 text-ink-500 dark:bg-ink-700 dark:text-ink-400'
+                          : 'bg-accent-50 text-accent-600 dark:bg-accent-900/50 dark:text-accent-300'
                       }`}
                     >
                       <Volume2 className="h-3 w-3" aria-hidden="true" />
@@ -450,13 +481,13 @@ export function MessagingRoleplay({ scenarios, module = 'roleplay' }: MessagingR
                   )}
                   {entry.text}
                   {!isDE && showTrans && entry.from === 'npc' && entry.trans && (
-                    <span className="mt-1 block border-t border-slate-200 pt-1 text-[11px] italic text-slate-500 dark:border-slate-700 dark:text-slate-400">
+                    <span className="mt-1 block border-t border-ink-200 pt-1 text-[11px] italic text-ink-500 dark:border-ink-700 dark:text-ink-400">
                       {entry.trans}
                     </span>
                   )}
                   <span
                     className={`mt-0.5 flex items-center justify-end gap-0.5 text-[10px] ${
-                      entry.from === 'me' ? 'text-blue-200' : 'text-slate-400'
+                      entry.from === 'me' ? 'text-accent-200' : 'text-ink-500'
                     }`}
                   >
                     {new Date().toLocaleTimeString(isDE ? 'de-DE' : 'en-US', {
@@ -473,11 +504,11 @@ export function MessagingRoleplay({ scenarios, module = 'roleplay' }: MessagingR
           {/* Typing indicator */}
           {typing && (
             <div className="flex justify-start">
-              <div className="flex items-center gap-1 rounded-2xl rounded-bl-md bg-white px-4 py-3 shadow-sm dark:bg-slate-800">
+              <div className="flex items-center gap-1 rounded-lg rounded-bl-md border border-ink-200 bg-white px-4 py-3 shadow-sm dark:bg-ink-800 dark:border-ink-800">
                 {[0, 150, 300].map((delay) => (
                   <span
                     key={delay}
-                    className="h-1.5 w-1.5 animate-bounce rounded-full bg-slate-400"
+                    className="h-1.5 w-1.5 animate-bounce rounded-full bg-ink-400"
                     style={{ animationDelay: `${delay}ms` }}
                   />
                 ))}
@@ -487,38 +518,38 @@ export function MessagingRoleplay({ scenarios, module = 'roleplay' }: MessagingR
         </div>
 
         {/* Quick-reply dock / completion state */}
-        <div className="border-t border-slate-200 bg-white px-3 py-3 dark:border-slate-700 dark:bg-slate-900">
+        <div className="border-t border-ink-200 bg-white px-3 py-3 dark:border-ink-700 dark:bg-ink-900">
           {conversationComplete ? (
             <div className="flex flex-col items-center gap-3 px-2 py-1">
-              <p className="flex items-center gap-1.5 text-sm font-semibold text-emerald-700 dark:text-emerald-300">
+              <p className="flex items-center gap-1.5 text-body font-semibold text-success-700 dark:text-success-300">
                 <Check className="h-4 w-4" aria-hidden="true" />
                 {isDE ? 'Gespräch beendet!' : 'Conversation complete!'}
               </p>
               {/* Session summary */}
               <div className="grid w-full grid-cols-3 gap-2 text-center">
-                <div className="rounded-2xl bg-emerald-50 px-2 py-2 dark:bg-emerald-950/40">
-                  <div className="text-lg font-bold text-emerald-700 dark:text-emerald-300">{correctCount}</div>
-                  <div className="text-[11px] font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                <div className="rounded-lg bg-success-50 px-2 py-2 dark:bg-success-950/40">
+                  <div className="text-lg font-bold text-success-700 dark:text-success-300">{correctCount}</div>
+                  <div className="text-[11px] font-medium uppercase tracking-wide text-ink-500 dark:text-ink-400">
                     {isDE ? 'Richtig' : 'Correct'}
                   </div>
                 </div>
-                <div className="rounded-2xl bg-rose-50 px-2 py-2 dark:bg-rose-950/40">
-                  <div className="text-lg font-bold text-rose-600 dark:text-rose-300">{wrongCount}</div>
-                  <div className="text-[11px] font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                <div className="rounded-lg bg-danger-50 px-2 py-2 dark:bg-danger-950/40">
+                  <div className="text-lg font-bold text-danger-600 dark:text-danger-300">{wrongCount}</div>
+                  <div className="text-[11px] font-medium uppercase tracking-wide text-ink-500 dark:text-ink-400">
                     {isDE ? 'Falsch' : 'Wrong'}
                   </div>
                 </div>
-                <div className="rounded-2xl bg-slate-100 px-2 py-2 dark:bg-slate-800">
-                  <div className="text-lg font-bold text-slate-800 dark:text-slate-100">
+                <div className="rounded-lg bg-ink-100 px-2 py-2 dark:bg-ink-800">
+                  <div className="text-lg font-bold text-ink-800 dark:text-ink-100">
                     {scenario.steps.length}
                   </div>
-                  <div className="text-[11px] font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                  <div className="text-[11px] font-medium uppercase tracking-wide text-ink-500 dark:text-ink-400">
                     {isDE ? 'Schritte' : 'Steps'}
                   </div>
                 </div>
               </div>
               {wrongCount > 0 && (
-                <p className="text-center text-xs text-slate-500 dark:text-slate-400">
+                <p className="text-center text-meta text-ink-500 dark:text-ink-400">
                   {isDE
                     ? 'Solche Sätze findest du jetzt in deiner Wiederholungsliste.'
                     : 'Words you missed are in your review queue to revisit later.'}
@@ -545,7 +576,7 @@ export function MessagingRoleplay({ scenarios, module = 'roleplay' }: MessagingR
                   disabled={typing}
                   placeholder={isDE ? 'Tippe deine Antwort…' : 'Type your German answer…'}
                   aria-label={isDE ? 'Deine Antwort' : 'Your answer'}
-                  className="h-11 min-w-0 flex-1 rounded-2xl border border-slate-300 bg-white px-3.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none disabled:opacity-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
+                  className="h-11 min-w-0 flex-1 rounded-lg border border-ink-300 bg-white px-3.5 text-body text-ink-900 placeholder:text-ink-500 focus:border-accent-500 focus:outline-none disabled:opacity-50 dark:border-ink-600 dark:bg-ink-800 dark:text-ink-100"
                 />
                 {speechSupported && (
                   <button
@@ -556,8 +587,8 @@ export function MessagingRoleplay({ scenarios, module = 'roleplay' }: MessagingR
                     aria-pressed={speech.listening}
                     className={`inline-flex h-11 w-11 items-center justify-center rounded-full transition active:scale-95 disabled:opacity-50 ${
                       speech.listening
-                        ? 'bg-red-500 text-white shadow'
-                        : 'border border-slate-300 bg-white text-slate-600 hover:border-blue-400 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200'
+                        ? 'bg-danger-500 text-white shadow'
+                        : 'border border-ink-300 bg-white text-ink-600 hover:border-accent-400 dark:border-ink-600 dark:bg-ink-800 dark:text-ink-200'
                     }`}
                   >
                     <Mic className="h-5 w-5" aria-hidden="true" />
@@ -568,27 +599,32 @@ export function MessagingRoleplay({ scenarios, module = 'roleplay' }: MessagingR
                   onClick={() => submitFree()}
                   disabled={typing || !freeInput.trim()}
                   aria-label={isDE ? 'Antwort senden' : 'Send answer'}
-                  className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-blue-600 text-white shadow transition hover:bg-blue-700 active:scale-95 disabled:opacity-40"
+                  className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-accent-600 text-white shadow transition hover:bg-accent-700 active:scale-95 disabled:opacity-40"
                 >
                   <Send className="h-5 w-5" aria-hidden="true" />
                 </button>
               </div>
               {speech.listening && (
-                <p className="mb-1 px-1 text-xs font-medium text-red-500">
+                <p className="mb-1 px-1 text-meta font-medium text-danger-500">
                   {isDE ? 'Höre zu…' : 'Listening…'}
+                </p>
+              )}
+              {!speech.listening && speech.status !== 'Ready to listen.' && speech.status !== 'Stopped.' && (
+                <p role="status" className="mb-1 px-1 text-meta font-medium text-warning-700 dark:text-warning-300">
+                  {speech.status}
                 </p>
               )}
 
               {/* Chips are an optional scaffold — production input is the primary path. */}
               <div className="mb-2 flex items-center justify-between">
-                <p className="px-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+                <p className="px-1 text-meta font-semibold uppercase tracking-[0.18em] text-ink-500">
                   {isDE ? 'Schnellantworten' : 'Quick replies'}
                 </p>
                 <button
                   type="button"
                   onClick={() => setShowChips((v) => !v)}
                   aria-pressed={showChips}
-                  className="min-h-[44px] rounded-full px-2.5 text-xs font-semibold text-blue-600 underline-offset-2 hover:underline dark:text-blue-300"
+                  className="min-h-[44px] rounded-full px-2.5 text-meta font-semibold text-accent-600 underline-offset-2 hover:underline dark:text-accent-300"
                 >
                   {showChips ? (isDE ? 'Ausblenden' : 'Hide options') : (isDE ? 'Zeigen' : 'Show options')}
                 </button>
@@ -601,11 +637,11 @@ export function MessagingRoleplay({ scenarios, module = 'roleplay' }: MessagingR
                         type="button"
                         disabled={typing}
                         onClick={() => choose(i)}
-                        className="min-h-[44px] flex-1 rounded-2xl border border-blue-200 bg-blue-50/70 px-4 py-2.5 text-left text-sm font-semibold text-blue-900 transition hover:bg-blue-100 active:scale-95 disabled:opacity-50 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-100 dark:hover:bg-blue-900/50"
+                        className="min-h-[44px] flex-1 rounded-lg border border-accent-200 bg-accent-50/70 px-4 py-2.5 text-left text-body font-semibold text-accent-900 transition hover:bg-accent-100 active:scale-95 disabled:opacity-50 dark:border-accent-800 dark:bg-accent-950/40 dark:text-accent-100 dark:hover:bg-accent-900/50"
                       >
                         {opt.text}
                         {!isDE && showTrans && (opt.en || opt.ne) && (
-                          <span className="mt-0.5 block text-[11px] font-normal text-slate-500 dark:text-slate-400">
+                          <span className="mt-0.5 block text-[11px] font-normal text-ink-500 dark:text-ink-400">
                             {opt.en ?? opt.ne}
                           </span>
                         )}
@@ -623,7 +659,7 @@ export function MessagingRoleplay({ scenarios, module = 'roleplay' }: MessagingR
                               ? 'Anhören'
                               : 'Hear this option'
                         }
-                        className="inline-flex min-h-[44px] w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500 transition hover:border-blue-300 hover:text-blue-600 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300"
+                        className="inline-flex min-h-[44px] w-11 items-center justify-center rounded-lg border border-ink-200 bg-white text-ink-500 transition hover:border-accent-300 hover:text-accent-600 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 dark:border-ink-600 dark:bg-ink-800 dark:text-ink-300"
                       >
                         <Volume2 className="h-4 w-4" aria-hidden="true" />
                       </button>
@@ -637,7 +673,7 @@ export function MessagingRoleplay({ scenarios, module = 'roleplay' }: MessagingR
       </div>
 
       {/* Progress caption */}
-      <p className="mt-3 text-center text-xs text-slate-500 dark:text-slate-400">
+      <p className="mt-3 text-center text-meta text-ink-500 dark:text-ink-400">
         {isDE
           ? `${totalSteps} Nachrichten in ${scenarios.length} Gesprächen`
           : `${totalSteps} messages across ${scenarios.length} conversations`}

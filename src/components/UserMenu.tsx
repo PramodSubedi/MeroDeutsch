@@ -59,7 +59,7 @@ export function UserMenu({ user }: UserMenuProps) {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex h-9 items-center gap-2 rounded-full px-2 text-sm text-slate-600 transition hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none dark:text-slate-300 dark:hover:bg-slate-800"
+        className="flex h-9 items-center gap-2 rounded-full px-2 text-body text-ink-600 transition hover:bg-ink-100 focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:outline-none dark:text-ink-300 dark:hover:bg-ink-800"
         aria-expanded={isOpen}
         aria-haspopup="true"
       >
@@ -67,10 +67,10 @@ export function UserMenu({ user }: UserMenuProps) {
           <img
             src={user.avatarUrl}
             alt=""
-            className="w-7 h-7 rounded-full bg-slate-200 dark:bg-slate-700"
+            className="w-7 h-7 rounded-full bg-ink-200 dark:bg-ink-700"
           />
         ) : (
-          <div className="flex items-center justify-center w-7 h-7 rounded-full bg-slate-200 text-slate-700 font-medium text-sm dark:bg-slate-700 dark:text-slate-200">
+          <div className="flex items-center justify-center w-7 h-7 rounded-full bg-ink-200 text-ink-700 font-medium text-body dark:bg-ink-700 dark:text-ink-200">
             {initials}
           </div>
         )}
@@ -86,14 +86,14 @@ export function UserMenu({ user }: UserMenuProps) {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-48 origin-top-right rounded-xl bg-white shadow-lg ring-1 ring-black/5 animate-in fade-in-0 zoom-in-95 dark:bg-slate-800 dark:ring-white/10">
+        <div className="absolute right-0 mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 animate-in fade-in-0 zoom-in-95 dark:bg-ink-800 dark:ring-white/10">
           <div className="px-4 py-3">
-            <p className="text-sm font-medium text-slate-900 dark:text-white">{displayName}</p>
-            <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{isDE ? 'Angemeldet' : 'Signed in'}</p>
+            <p className="text-body font-medium text-ink-900 dark:text-white">{displayName}</p>
+            <p className="text-meta text-ink-500 dark:text-ink-400 truncate">{isDE ? 'Angemeldet' : 'Signed in'}</p>
           </div>
           <Link
             to="/dashboard"
-            className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-700"
+            className="flex items-center gap-2 px-4 py-2 text-body text-ink-700 hover:bg-ink-50 dark:text-ink-200 dark:hover:bg-ink-700"
             onClick={() => setIsOpen(false)}
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -103,7 +103,7 @@ export function UserMenu({ user }: UserMenuProps) {
           </Link>
           <Link
             to="/analytics"
-            className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-700"
+            className="flex items-center gap-2 px-4 py-2 text-body text-ink-700 hover:bg-ink-50 dark:text-ink-200 dark:hover:bg-ink-700"
             onClick={() => setIsOpen(false)}
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -113,7 +113,7 @@ export function UserMenu({ user }: UserMenuProps) {
           </Link>
           <Link
             to="/import"
-            className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-700"
+            className="flex items-center gap-2 px-4 py-2 text-body text-ink-700 hover:bg-ink-50 dark:text-ink-200 dark:hover:bg-ink-700"
             onClick={() => setIsOpen(false)}
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -123,7 +123,7 @@ export function UserMenu({ user }: UserMenuProps) {
           </Link>
           <Link
             to="/settings"
-            className="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-700"
+            className="flex items-center gap-2 px-4 py-2 text-body text-ink-700 hover:bg-ink-50 dark:text-ink-200 dark:hover:bg-ink-700"
             onClick={() => setIsOpen(false)}
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -136,7 +136,7 @@ export function UserMenu({ user }: UserMenuProps) {
             type="button"
             onClick={handleSignOut}
             disabled={isSigningOut}
-            className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
+            className="flex w-full items-center gap-2 px-4 py-2 text-body text-danger-600 hover:bg-danger-50 dark:text-danger-400 dark:hover:bg-danger-900/20"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />

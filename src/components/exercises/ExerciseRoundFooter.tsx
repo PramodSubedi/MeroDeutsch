@@ -69,7 +69,7 @@ export function ExerciseRoundFooter({
         )}
       </div>
       {showSummary && finished && (
-        <p className="mt-3 text-center text-sm font-semibold text-slate-600 dark:text-slate-300">
+        <p className="mt-3 text-center text-body font-semibold text-ink-600 dark:text-ink-300">
           {isDE
             ? `Runde beendet — ${session.score}/${session.total} richtig.`
             : `Round complete — ${session.score}/${session.total} correct.`}

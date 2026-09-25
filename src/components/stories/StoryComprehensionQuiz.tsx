@@ -75,7 +75,7 @@ export function StoryComprehensionQuiz({ storyId, questions }: StoryComprehensio
   return (
     <div className={theme.panel.surface + ' mt-6'}>
       <h2 className={theme.section.title}>{label('Verständnisfragen', 'Comprehension Check')}</h2>
-      <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+      <p className="mt-1 text-body text-ink-500 dark:text-ink-400">
         {answeredAll
           ? label(totalRight + ' von ' + shuffled.length + ' richtig.', totalRight + ' of ' + shuffled.length + ' correct.')
           : label('Wie gut hast du die Geschichte verstanden?', 'How well did you understand the story?')}
@@ -85,18 +85,18 @@ export function StoryComprehensionQuiz({ storyId, questions }: StoryComprehensio
           const a = answers[q.id];
           const locked = a != null;
           return (
-            <div key={q.id} className="rounded-xl bg-slate-50 p-3 dark:bg-slate-800/40">
-              <p className="text-slate-800 dark:text-slate-200">{q.question}</p>
+            <div key={q.id} className="rounded-md bg-ink-50 p-3 dark:bg-ink-800/40">
+              <p className="text-ink-800 dark:text-ink-200">{q.question}</p>
               <div className="mt-2 grid gap-2 sm:grid-cols-2">
                 {q.options.map((opt, i) => {
                   const picked = locked && norm(opt) === norm(a.chosen);
                   const right = locked && norm(opt) === norm(a.correct);
-                  const base = 'text-left w-full rounded-lg border px-3 py-2 text-sm transition active:scale-95';
+                  const base = 'text-left w-full rounded-sm border px-3 py-2 text-body transition active:scale-95';
                   const variant = right
-                    ? 'border-green-500 bg-green-50 text-green-800 dark:bg-green-900/30 dark:text-green-200'
+                    ? 'border-success-500 bg-success-50 text-success-800 dark:bg-success-900/30 dark:text-success-200'
                     : picked
-                      ? 'border-red-500 bg-red-50 text-red-800 dark:bg-red-900/30 dark:text-red-200'
-                      : 'border-slate-300 bg-white text-slate-800 hover:bg-slate-100 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700';
+                      ? 'border-danger-500 bg-danger-50 text-danger-800 dark:bg-danger-900/30 dark:text-danger-200'
+                      : 'border-ink-300 bg-white text-ink-800 hover:bg-ink-100 dark:border-ink-600 dark:bg-ink-800 dark:text-ink-100 dark:hover:bg-ink-700';
                   return (
                     <button
                       key={i}
@@ -106,8 +106,8 @@ export function StoryComprehensionQuiz({ storyId, questions }: StoryComprehensio
                       className={base + ' ' + variant}
                     >
                       {opt}
-                      {right && <CheckCircle className="ml-2 inline-block h-4 w-4 text-green-600" />}
-                      {picked && !right && <XCircle className="ml-2 inline-block h-4 w-4 text-red-600" />}
+                      {right && <CheckCircle className="ml-2 inline-block h-4 w-4 text-success-600" />}
+                      {picked && !right && <XCircle className="ml-2 inline-block h-4 w-4 text-danger-600" />}
                     </button>
                   );
                 })}

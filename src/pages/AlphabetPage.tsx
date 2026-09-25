@@ -100,24 +100,24 @@ export function AlphabetPage() {
         <h1 className={theme.section.title}>{pageTitle}</h1>
         <p className={theme.section.description}>{pageDescription}</p>
         {/* Clarify: Speed control is separate from mode tabs */}
-        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+        <p className="mt-1 text-meta text-ink-500 dark:text-ink-400">
           {isDE ? 'Geschwindigkeit: Langsam | Normal | Schnell | Mode: Karten | Quiz | Rechtschreibung' : 'Speed: Slow | Normal | Fast | Mode: Learn Cards | Quiz | Spelling'}
         </p>
       </div>
       {sub === 'learn' && lotd && (
         <div className="my-2 grid gap-3 md:grid-cols-2">
-          <div className="flex items-stretch gap-3 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 p-3 text-white shadow">
+          <div className="flex items-stretch gap-3 rounded-md bg-gradient-to-br from-accent-500 to-accent-700 p-3 text-white shadow">
             <div className="flex flex-1 items-center gap-3 min-w-0">
               <div className="text-4xl font-bold leading-none">{lotd.letter.split(' ')[0]}</div>
               <div className="min-w-0">
                 <div className="text-[10px] uppercase tracking-wider opacity-80">
                   {isDE ? 'Buchstabe des Tages' : 'Letter of the Day'}
                 </div>
-                <div className="truncate text-base font-bold">{lotd.gerPhonetic}</div>
-                {!isDE && <div className="text-sm opacity-90">{lotd.nepPhonetic}</div>}
+                <div className="truncate text-body font-bold">{lotd.gerPhonetic}</div>
+                {!isDE && <div className="text-body opacity-90">{lotd.nepPhonetic}</div>}
                 <button
                   type="button"
-                  className="mt-1.5 inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1 text-xs font-semibold text-white shadow-sm transition hover:bg-white/30"
+                  className="mt-1.5 inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1 text-meta font-semibold text-white shadow-sm transition hover:bg-white/30"
                   onClick={() => speakLetter(lotd.speak)}
                 >
                   <span aria-hidden="true">🔊</span>
@@ -130,11 +130,11 @@ export function AlphabetPage() {
               <div className="text-[10px] uppercase tracking-wider opacity-80">
                 {isDE ? 'Wort des Tages' : 'Word of the Day'}
               </div>
-              <div className="truncate text-base font-semibold">{lotd.example}</div>
-              {!isDE && <div className="truncate text-xs opacity-80">{meaning}</div>}
+              <div className="truncate text-body font-semibold">{lotd.example}</div>
+              {!isDE && <div className="truncate text-meta opacity-80">{meaning}</div>}
               <button
                 type="button"
-                className="mt-1.5 inline-flex w-fit items-center gap-1.5 rounded-full bg-white/20 px-3 py-1 text-xs font-semibold text-white shadow-sm transition hover:bg-white/30"
+                className="mt-1.5 inline-flex w-fit items-center gap-1.5 rounded-full bg-white/20 px-3 py-1 text-meta font-semibold text-white shadow-sm transition hover:bg-white/30"
                 onClick={() => speakWord(lotd.speakWord)}
               >
                 <span aria-hidden="true">🔊</span>
@@ -143,21 +143,21 @@ export function AlphabetPage() {
             </div>
           </div>
           <div className={theme.panel.surface}>
-            <div className="mb-2 text-xs uppercase tracking-wider text-slate-500">
+            <div className="mb-2 text-meta uppercase tracking-wider text-ink-500">
               {isDE ? 'Dein Fortschritt' : 'Your Progress'}
             </div>
             <div className="grid grid-cols-3 gap-2 text-center">
               <div>
-                <div className="text-xl font-bold text-blue-600 dark:text-blue-400">{progress.practiced.length}</div>
-                <div className="text-xs text-slate-500">{isDE ? 'Buchstaben' : 'Letters'}</div>
+                <div className="text-xl font-bold text-accent-600 dark:text-accent-400">{progress.practiced.length}</div>
+                <div className="text-meta text-ink-500">{isDE ? 'Buchstaben' : 'Letters'}</div>
               </div>
               <div>
-                <div className="text-xl font-bold text-green-600">{quizPct}%</div>
-                <div className="text-xs text-slate-500">Quiz</div>
+                <div className="text-xl font-bold text-success-600">{quizPct}%</div>
+                <div className="text-meta text-ink-500">Quiz</div>
               </div>
               <div>
-                <div className="text-xl font-bold text-amber-600">{progress.spellCompleted || 0}</div>
-                <div className="text-xs text-slate-500">{isDE ? 'Wörter' : 'Words'}</div>
+                <div className="text-xl font-bold text-warning-600">{progress.spellCompleted || 0}</div>
+                <div className="text-meta text-ink-500">{isDE ? 'Wörter' : 'Words'}</div>
               </div>
             </div>
             <button
@@ -191,12 +191,12 @@ export function AlphabetPage() {
       />
 
       {alphabetLoading && (
-        <p role="status" aria-live="polite" className="mt-3 text-sm text-slate-500 dark:text-slate-400">
+        <p role="status" aria-live="polite" className="mt-3 text-body text-ink-500 dark:text-ink-400">
           {isDE ? 'Buchstaben werden geladen…' : 'Loading letters…'}
         </p>
       )}
       {alphabetFailed && (
-        <div role="alert" className="mt-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-200">
+        <div role="alert" className="mt-3 rounded-md border border-warning-200 bg-warning-50 p-4 text-body text-warning-800 dark:border-warning-800 dark:bg-warning-950/40 dark:text-warning-200">
           <p>{isDE ? 'Alphabetdaten konnten nicht geladen werden.' : 'Alphabet data could not be loaded.'}</p>
           <button type="button" onClick={() => setReloadAlphabet((attempt) => attempt + 1)} className={`${theme.button.secondary} mt-3`}>
             {isDE ? 'Erneut versuchen' : 'Retry'}
@@ -204,7 +204,7 @@ export function AlphabetPage() {
         </div>
       )}
       {!alphabetLoading && !alphabetFailed && alphabet.length === 0 && (
-        <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
+        <p className="mt-3 text-body text-ink-500 dark:text-ink-400">
           {isDE ? 'Keine Buchstaben verfügbar.' : 'No letters are available.'}
         </p>
       )}
@@ -219,7 +219,7 @@ export function AlphabetPage() {
               onChange={(e) => setSearch(e.target.value)}
               className={theme.input}
             />
-            <div className="flex rounded-lg bg-slate-200 p-1 dark:bg-slate-700">
+            <div className="flex rounded-sm bg-ink-200 p-1 dark:bg-ink-700">
               {(['all', 'vowel', 'consonant'] as Filter[]).map((f) => (
                 <button
                   key={f}
@@ -250,7 +250,7 @@ export function AlphabetPage() {
           )}
           {standard.length > 0 && (
             <section className="my-2">
-              <h2 className="mb-3 inline-block border-b-2 border-blue-500 pb-1 text-lg font-bold">
+              <h2 className="mb-3 inline-block border-b-2 border-accent-500 pb-1 text-lg font-bold">
                 {isDE ? 'Standard 26 Buchstaben' : 'Standard 26 Letters'}
               </h2>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
@@ -269,7 +269,7 @@ export function AlphabetPage() {
           )}
           {special.length > 0 && (
             <section className="my-2">
-              <h2 className="mb-3 inline-block border-b-2 border-amber-500 pb-1 text-lg font-bold">
+              <h2 className="mb-3 inline-block border-b-2 border-warning-500 pb-1 text-lg font-bold">
                 {isDE ? 'Sonderzeichen' : 'Special Characters'}
               </h2>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">

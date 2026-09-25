@@ -45,10 +45,11 @@ function skillMeta(category: SkillCategory, isDE: boolean): { label: string; hin
 }
 
 /** Accuracy -> tactical tone. */
-function accuracyTone(accuracy: number): string {
-  if (accuracy >= 80) return 'text-emerald-600 dark:text-emerald-400';
-  if (accuracy >= 50) return 'text-amber-600 dark:text-amber-400';
-  return 'text-red-600 dark:text-red-400';
+function accuracyTone(accuracy: number, total: number): string {
+  if (total === 0) return 'text-ink-500 dark:text-ink-400';
+  if (accuracy >= 80) return 'text-success-600 dark:text-success-400';
+  if (accuracy >= 50) return 'text-warning-600 dark:text-warning-400';
+  return 'text-danger-600 dark:text-danger-400';
 }
 
 export function SkillRadarChart() {
@@ -62,15 +63,15 @@ export function SkillRadarChart() {
   }));
 
   return (
-    <div className="rounded-2xl bg-white p-6 shadow-sm dark:bg-slate-900">
+    <div className="rounded-lg bg-white p-6 shadow-sm dark:bg-ink-900">
       {/* Header */}
       <div className="mb-4 flex items-center justify-between gap-3">
         <div>
-          <h3 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">
+          <h3 className="flex items-center gap-2 text-body font-semibold uppercase tracking-[0.3em] text-ink-500 dark:text-ink-400">
             <Target className="h-4 w-4" aria-hidden="true" />
             {isDE ? 'Fähigkeiten-Analyse' : 'Skill analysis'}
           </h3>
-          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+          <p className="mt-1 text-meta text-ink-500 dark:text-ink-400">
             {isDE
               ? 'Deine Genauigkeit über vier Kernfähigkeiten.'
               : 'Your accuracy across four core skills.'}
@@ -80,8 +81,8 @@ export function SkillRadarChart() {
 
       {!hasData ? (
         /* Empty state for brand-new learners */
-        <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-6 text-center dark:border-slate-600 dark:bg-slate-800/40">
-          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+        <div className="rounded-md border border-dashed border-ink-300 bg-ink-50 p-6 text-center dark:border-ink-600 dark:bg-ink-800/40">
+          <p className="text-body font-medium text-ink-500 dark:text-ink-400">
             {isDE
               ? 'Noch keine Daten — beantworte ein paar Übungen, um dein Fähigkeitsprofil aufzubauen.'
               : 'No data yet — answer a few exercises to build your skill profile.'}
@@ -89,9 +90,9 @@ export function SkillRadarChart() {
         </div>
       ) : (
         /* Responsive console: side-by-side on lg+, stacked on mobile */
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
-          {/* Radar — full width on mobile, dominant pane on lg */}
-          <div className="order-1 h-72 w-full sm:h-80 lg:h-72 lg:w-3/5">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-start">
+          {/* Radar — supporting context after the actionable breakdown. */}
+          <div className="order-2 h-64 w-full sm:h-72 lg:w-1/2">
             <ResponsiveContainer width="100%" height="100%">
               <RadarChart data={chartData} outerRadius="72%">
                 <PolarGrid stroke="#94a3b8" strokeOpacity={0.35} />
@@ -129,32 +130,35 @@ export function SkillRadarChart() {
             </ResponsiveContainer>
           </div>
 
-          {/* Per-skill breakdown — beneath on mobile, right column on lg */}
-          <ul className="order-2 w-full space-y-2 lg:w-2/5">
+          {/* Per-skill breakdown — the primary scan surface. */}
+          <ul className="order-1 w-full space-y-2 lg:w-1/2">
             {skills.map((s) => {
               const meta = skillMeta(s.category, isDE);
               return (
                 <li
                   key={s.category}
-                  className="rounded-xl bg-slate-50 px-3 py-2.5 dark:bg-slate-800/60"
+                  className="rounded-md bg-ink-50 px-3 py-2.5 dark:bg-ink-800/60"
                 >
                   <div className="flex items-center justify-between gap-2">
-                    <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">
+                    <span className="text-body font-semibold text-ink-700 dark:text-ink-200">
                       {meta.label}
                     </span>
-                    <span className={`text-sm font-bold ${accuracyTone(s.accuracy)}`}>
-                      {s.accuracy}%
+                    <span className={`text-body font-bold ${accuracyTone(s.accuracy, s.total)}`}>
+                      {s.total > 0 ? `${s.accuracy}%` : '—'}
                     </span>
                   </div>
                   {/* Mini progress bar */}
-                  <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
+                  <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-ink-200 dark:bg-ink-700">
                     <div
-                      className="h-full rounded-full transition-all duration-500"
-                      style={{ width: `${s.accuracy}%`, backgroundColor: BRAND_BLUE }}
+                      className={`h-full rounded-full transition-all duration-500 ${s.total === 0 ? 'bg-ink-300 dark:bg-ink-600' : ''}`}
+                      style={{ width: `${s.accuracy}%`, backgroundColor: s.total > 0 ? BRAND_BLUE : undefined }}
                     />
                   </div>
-                  <div className="mt-1 text-xs text-slate-400 dark:text-slate-500">
-                    {s.correct}/{s.total} {isDE ? 'richtig' : 'correct'} · Übe auf{' '}
+                  <div className="mt-1 text-meta text-ink-500 dark:text-ink-500">
+                    {s.total > 0
+                      ? `${s.correct}/${s.total} ${isDE ? 'richtig' : 'correct'} · `
+                      : `${isDE ? 'Noch nicht versucht' : 'No attempts yet'} · `}
+                    {isDE ? 'Übe auf' : 'Practice at'}{' '}
                     <span className="font-mono">{meta.hint}</span>
                   </div>
                 </li>

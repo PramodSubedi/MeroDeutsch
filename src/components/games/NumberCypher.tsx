@@ -151,7 +151,7 @@ export function NumberCypher() {
   return (
     <div className={theme.panel.surface}>
       <div className="mb-4 flex items-center justify-between gap-3">
-        <h3 className="text-lg font-semibold text-slate-950 dark:text-white">
+        <h3 className="text-lg font-semibold text-ink-950 dark:text-white">
           {isDE ? 'Zahlen-Code knacken' : 'Number Code Cracker'}
         </h3>
         <button type="button" onClick={newRound} className={theme.button.secondarySmall}>
@@ -165,10 +165,10 @@ export function NumberCypher() {
         {revealSlots.map((slot, i) => (
           <span
             key={`${roundId}-${i}`}
-            className={`flex h-11 w-9 items-center justify-center rounded-lg border text-xl font-extrabold ${
+            className={`flex h-11 w-9 items-center justify-center rounded-sm border text-xl font-extrabold ${
               collected[i]
-                ? 'border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300'
-                : 'border-dashed border-slate-300 bg-white text-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-600'
+                ? 'border-success-300 bg-success-50 text-success-700 dark:border-success-800 dark:bg-success-950/40 dark:text-success-300'
+                : 'border-dashed border-ink-300 bg-white text-ink-300 dark:border-ink-600 dark:bg-ink-800 dark:text-ink-600'
             }`}
           >
             {slot}
@@ -180,10 +180,10 @@ export function NumberCypher() {
       {!done && current && (
         <div className="mx-auto max-w-md">
           <div className={`${theme.panel.muted} text-center`}>
-            <div className="text-2xl font-extrabold tracking-wide text-slate-900 dark:text-white">
+            <div className="text-2xl font-extrabold tracking-wide text-ink-900 dark:text-white">
               {numberToGermanWords(current.a)} {current.op} {numberToGermanWords(current.b)} = ?
             </div>
-            <div className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+            <div className="mt-1 text-meta text-ink-500 dark:text-ink-400">
               {isDE
                 ? 'Löse auf Deutsch — der Anfangsbuchstabe offenbart einen Brief des Codes!'
                 : 'Solve in German — the first letter reveals a letter of the code!'}
@@ -210,10 +210,10 @@ export function NumberCypher() {
           </div>
           {phase !== 'idle' && (
             <div
-              className={`mt-3 rounded-xl p-3 text-sm font-semibold ${
+              className={`mt-3 rounded-md p-3 text-body font-semibold ${
                 phase === 'correct'
-                  ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300'
-                  : 'bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-300'
+                  ? 'bg-success-50 text-success-700 dark:bg-success-950/40 dark:text-success-300'
+                  : 'bg-danger-50 text-danger-700 dark:bg-danger-950/40 dark:text-danger-300'
               }`}
             >
               {phase === 'correct'
@@ -228,17 +228,17 @@ export function NumberCypher() {
       {done && (
         <div className="mx-auto max-w-md space-y-3 text-center">
           {cracked ? (
-            <div className="rounded-xl bg-emerald-50 p-4 text-sm font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
+            <div className="rounded-md bg-success-50 p-4 text-body font-semibold text-success-700 dark:bg-success-950/40 dark:text-success-300">
               {isDE ? '🎉 Code geknackt! Das Wort ist ' : '🎉 Code cracked! The word is '}
               <span className="text-lg font-extrabold">{target.word}</span>
               {!isDE && <> — {target.en} · {target.ne}</>}
-              <span className="mt-1 block text-xs font-medium">
+              <span className="mt-1 block text-meta font-medium">
                 {isDE ? '+30 Bonus-XP!' : '+30 bonus XP!'}
               </span>
             </div>
           ) : (
             <>
-              <p className="text-sm text-slate-600 dark:text-slate-300">
+              <p className="text-body text-ink-600 dark:text-ink-300">
                 {isDE ? 'Welches Wort versteckt sich?' : 'Which word is hiding?'}
               </p>
               <div className="flex gap-2">
@@ -255,7 +255,7 @@ export function NumberCypher() {
                 </button>
               </div>
               {passwordWrong && (
-                <p className="text-sm font-semibold text-red-600 dark:text-red-400">
+                <p className="text-body font-semibold text-danger-600 dark:text-danger-400">
                   {isDE ? 'Nicht das Geheimwort — versuch es nochmal!' : 'Not the secret word — try again!'}
                 </p>
               )}

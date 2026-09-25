@@ -124,20 +124,20 @@ export function ClockDrill() {
 
       {/* Trap explainer — DE row always; EN/NE bridge hidden in Nur DE (C1.5). */}
       <div className={theme.panel.accent}>
-        <div className="text-sm font-semibold text-blue-700 dark:text-blue-300">
+        <div className="text-body font-semibold text-accent-700 dark:text-accent-300">
           {isDE
             ? 'Achtung: „halb eins" = 12:30 — die Hälfte AUF die nächste Stunde!'
             : 'Watch out: "halb eins" = 12:30 — half way TO the next hour!'}
         </div>
-        <div className="mt-1 text-sm font-semibold text-slate-800 dark:text-slate-200">
-          Es ist halb eins <span className="text-slate-400">=</span> 12:30
+        <div className="mt-1 text-body font-semibold text-ink-800 dark:text-ink-200">
+          Es ist halb eins <span className="text-ink-500">=</span> 12:30
         </div>
         {!isDE && (
           <>
-            <div className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+            <div className="mt-1 text-body text-ink-600 dark:text-ink-300">
               🇳🇵 Nepali agrees with German: साढे बाह्र = 12:30 (English "half past twelve" is the odd one out!)
             </div>
-            <div className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+            <div className="mt-1 text-body text-ink-600 dark:text-ink-300">
               सवा तीन = Viertel nach drei (3:15) · पौने चार = Viertel vor vier (3:45)
             </div>
           </>
@@ -156,7 +156,7 @@ export function ClockDrill() {
       {/* Round complete footer */}
       {finished && (
         <div className="flex flex-col items-center gap-3">
-          <p className="text-center text-sm font-semibold text-slate-600 dark:text-slate-300">
+          <p className="text-center text-body font-semibold text-ink-600 dark:text-ink-300">
             {isDE
               ? `Runde beendet — ${session.score}/${session.total} richtig.`
               : `Round complete — ${session.score}/${session.total} correct.`}
@@ -180,10 +180,10 @@ function ClockPrompt({ question, mode }: { question: ClockQuestion; mode: ClockM
   if (mode === 'offiziell') {
     return (
       <div className="flex flex-col items-center gap-2">
-        <div className="rounded-2xl bg-slate-900 px-6 py-3 font-mono text-4xl font-bold tracking-widest text-emerald-300 dark:bg-slate-950">
+        <div className="rounded-lg bg-ink-900 px-6 py-3 font-mono text-4xl font-bold tracking-widest text-success-300 dark:bg-ink-950">
           {digitalTimeLabel(question.hour, question.minute)}
         </div>
-        <div className="text-xs text-slate-500 dark:text-slate-400">
+        <div className="text-meta text-ink-500 dark:text-ink-400">
           Offizielle Zeit (24 Stunden) · आधिकारिक समय
         </div>
       </div>
@@ -192,7 +192,7 @@ function ClockPrompt({ question, mode }: { question: ClockQuestion; mode: ClockM
   return (
     <div className="flex flex-col items-center gap-2">
       <AnalogClock hour24={question.hour} minute={question.minute} />
-      <div className="text-xs text-slate-500 dark:text-slate-400">
+      <div className="text-meta text-ink-500 dark:text-ink-400">
         Wie spät ist es? · कति बज्यो?
       </div>
     </div>
@@ -226,7 +226,7 @@ function AnalogClock({ hour24, minute }: { hour24: number; minute: number }) {
         cy="50"
         r="48"
         strokeWidth="2"
-        className="fill-white stroke-slate-300 dark:fill-slate-900 dark:stroke-slate-600"
+        className="fill-white stroke-ink-300 dark:fill-ink-900 dark:stroke-ink-600"
       />
       {ticks.map((t, i) => (
         <line
@@ -236,7 +236,7 @@ function AnalogClock({ hour24, minute }: { hour24: number; minute: number }) {
           x2={t.x2}
           y2={t.y2}
           strokeWidth={t.major ? 2.5 : 1}
-          className="stroke-slate-400 dark:stroke-slate-500"
+          className="stroke-ink-400 dark:stroke-ink-500"
         />
       ))}
       <line
@@ -246,7 +246,7 @@ function AnalogClock({ hour24, minute }: { hour24: number; minute: number }) {
         y2={50 - 22 * Math.cos((hourAngle * Math.PI) / 180)}
         strokeWidth="5"
         strokeLinecap="round"
-        className="stroke-blue-600 dark:stroke-blue-400"
+        className="stroke-accent-600 dark:stroke-accent-400"
       />
       <line
         x1="50"
@@ -255,9 +255,9 @@ function AnalogClock({ hour24, minute }: { hour24: number; minute: number }) {
         y2={50 - 34 * Math.cos((minuteAngle * Math.PI) / 180)}
         strokeWidth="3"
         strokeLinecap="round"
-        className="stroke-slate-700 dark:stroke-slate-300"
+        className="stroke-ink-700 dark:stroke-ink-300"
       />
-      <circle cx="50" cy="50" r="3" className="fill-slate-700 dark:fill-slate-300" />
+      <circle cx="50" cy="50" r="3" className="fill-ink-700 dark:fill-ink-300" />
     </svg>
   );
 }

@@ -1,4 +1,4 @@
-import { BookA, Flag, LogIn, Zap } from 'lucide-react';
+﻿import { BookA, Flag, LogIn, Zap } from 'lucide-react';
 import { useLang } from '../../hooks/useLang';
 
 /**
@@ -10,7 +10,7 @@ import { useLang } from '../../hooks/useLang';
  * section. The final step is highlighted in brand blue to show what
  * an account adds. Guest-safe: presentational only, no links, no auth.
  */
-export function HeroOptionC() {
+export function JourneyRibbon() {
   const { langMode } = useLang();
   const isDE = langMode === 'german';
 
@@ -44,30 +44,30 @@ export function HeroOptionC() {
   const circleCls = (highlight: boolean) =>
     `relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full shadow-sm ${
       highlight
-        ? 'bg-blue-600 text-white'
-        : 'border border-slate-200 bg-white text-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400'
+        ? 'bg-accent-600 text-white'
+        : 'border border-ink-200 bg-white text-ink-500 dark:border-ink-700 dark:bg-ink-800 dark:text-ink-400'
     }`;
 
   const cardCls = (highlight: boolean) =>
-    `rounded-xl border p-3 ${
+    `rounded-md border p-3 ${
       highlight
-        ? 'border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/40'
-        : 'border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800'
+        ? 'border-accent-200 bg-accent-50 dark:border-accent-800 dark:bg-accent-950/40'
+        : 'border-ink-200 bg-white dark:border-ink-700 dark:bg-ink-800'
     }`;
 
   const cardText = (step: (typeof steps)[number], index: number) => (
     <>
       <p
-        className={`text-sm font-bold ${
-          step.highlight ? 'text-blue-700 dark:text-blue-300' : 'text-slate-900 dark:text-white'
+        className={`text-body font-bold ${
+          step.highlight ? 'text-accent-700 dark:text-accent-300' : 'text-ink-900 dark:text-white'
         }`}
       >
-        <span className="mr-1.5 text-xs font-black text-slate-400">{String(index + 1).padStart(2, '0')}</span>
+        <span className="mr-1.5 text-meta font-black text-ink-500">{String(index + 1).padStart(2, '0')}</span>
         {step.title}
       </p>
       <p
-        className={`mt-0.5 text-xs ${
-          step.highlight ? 'text-blue-700/80 dark:text-blue-300/80' : 'text-slate-500 dark:text-slate-400'
+        className={`mt-0.5 text-meta ${
+          step.highlight ? 'text-accent-700/80 dark:text-accent-300/80' : 'text-ink-500 dark:text-ink-400'
         }`}
       >
         {step.line}
@@ -80,7 +80,7 @@ export function HeroOptionC() {
       {/* Steps — single column on mobile, 2-up on sm, 4-up ribbon with rail on md+ */}
       <div className="relative">
         <span
-          className="absolute left-5 right-5 top-[19px] h-px hidden bg-slate-200 dark:bg-slate-700 md:block"
+          className="absolute left-5 right-5 top-[19px] h-px hidden bg-ink-200 dark:bg-ink-700 md:block"
           aria-hidden="true"
         />
         <ol className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-4">

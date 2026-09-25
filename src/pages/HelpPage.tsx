@@ -77,11 +77,11 @@ export function HelpPage() {
   return (
     <div className={theme.page.container}>
       <div className="mb-6">
-        <p className="text-sm uppercase tracking-[0.25em] text-blue-600">{isDE ? 'Hilfe' : 'Help'}</p>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-950 dark:text-white">
+        <p className="text-body uppercase tracking-[0.25em] text-accent-600">{isDE ? 'Hilfe' : 'Help'}</p>
+        <h1 className="text-2xl font-bold tracking-tight text-ink-950 dark:text-white">
           {isDE ? 'Häufig gestellte Fragen' : 'Frequently Asked Questions'}
         </h1>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+        <p className="mt-1 text-body text-ink-500 dark:text-ink-400">
           {isDE ? 'Antworten auf die häufigsten Fragen.' : 'Answers to the most common questions.'}
         </p>
       </div>
@@ -89,39 +89,39 @@ export function HelpPage() {
       <div className="space-y-3">
         {faqs.map((faq) => (
           <div key={faq.q} className={theme.panel.surface}>
-            <h2 className="text-base font-semibold text-slate-950 dark:text-white">{faq.q}</h2>
-            <p className="mt-1.5 text-sm leading-relaxed text-slate-600 dark:text-slate-300">{faq.a}</p>
+            <h2 className="text-body font-semibold text-ink-950 dark:text-white">{faq.q}</h2>
+            <p className="mt-1.5 text-body leading-relaxed text-ink-600 dark:text-ink-300">{faq.a}</p>
           </div>
         ))}
       </div>
 
       {/* Content & audio attribution — CC BY-SA 4.0 obligation. */}
       <div className={`${theme.panel.surface} mt-6`}>
-        <h2 className="text-base font-semibold text-slate-950 dark:text-white">
+        <h2 className="text-body font-semibold text-ink-950 dark:text-white">
           {isDE ? 'Inhalte & Audio — Datenquellen' : 'Content & audio — data sources'}
         </h2>
-        <p className="mt-1.5 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+        <p className="mt-1.5 text-body leading-relaxed text-ink-600 dark:text-ink-300">
           {isDE ? (
             <>
               Der Wortschatz basiert auf der{' '}
-              <a className="text-blue-600 underline hover:text-blue-700" href="https://www.goethe.de/pro/relaunch/prf/de/A1_SD1_Wortliste_02.pdf" target="_blank" rel="noreferrer">Goethe-Institut A1-Wortliste</a>{' '}
+              <a className="text-accent-600 underline hover:text-accent-700" href="https://www.goethe.de/pro/relaunch/prf/de/A1_SD1_Wortliste_02.pdf" target="_blank" rel="noreferrer">Goethe-Institut A1-Wortliste</a>{' '}
               und dem Anki-Deck{' '}
-              <a className="text-blue-600 underline hover:text-blue-700" href="https://github.com/patsytau/anki_german_a1_vocab" target="_blank" rel="noreferrer">anki_german_a1_vocab</a>{' '}
+              <a className="text-accent-600 underline hover:text-accent-700" href="https://github.com/patsytau/anki_german_a1_vocab" target="_blank" rel="noreferrer">anki_german_a1_vocab</a>{' '}
               von patsytau. Die Audioaussprachen wurden mit{' '}
-              <a className="text-blue-600 underline hover:text-blue-700" href="https://github.com/thorstenMueller/Thorsten-Voice" target="_blank" rel="noreferrer">Thorsten-Voice</a>{' '}
+              <a className="text-accent-600 underline hover:text-accent-700" href="https://github.com/thorstenMueller/Thorsten-Voice" target="_blank" rel="noreferrer">Thorsten-Voice</a>{' '}
               erzeugt. Lizenziert unter{' '}
-              <a className="text-blue-600 underline hover:text-blue-700" href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noreferrer">CC BY-SA 4.0</a>.
+              <a className="text-accent-600 underline hover:text-accent-700" href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noreferrer">CC BY-SA 4.0</a>.
             </>
           ) : (
             <>
               Vocabulary is based on the{' '}
-              <a className="text-blue-600 underline hover:text-blue-700" href="https://www.goethe.de/pro/relaunch/prf/de/A1_SD1_Wortliste_02.pdf" target="_blank" rel="noreferrer">Goethe-Institut A1 wordlist</a>{' '}
+              <a className="text-accent-600 underline hover:text-accent-700" href="https://www.goethe.de/pro/relaunch/prf/de/A1_SD1_Wortliste_02.pdf" target="_blank" rel="noreferrer">Goethe-Institut A1 wordlist</a>{' '}
               and the{' '}
-              <a className="text-blue-600 underline hover:text-blue-700" href="https://github.com/patsytau/anki_german_a1_vocab" target="_blank" rel="noreferrer">anki_german_a1_vocab</a>{' '}
+              <a className="text-accent-600 underline hover:text-accent-700" href="https://github.com/patsytau/anki_german_a1_vocab" target="_blank" rel="noreferrer">anki_german_a1_vocab</a>{' '}
               deck by patsytau. Pronunciation audio was generated with{' '}
-              <a className="text-blue-600 underline hover:text-blue-700" href="https://github.com/thorstenMueller/Thorsten-Voice" target="_blank" rel="noreferrer">Thorsten-Voice</a>.
+              <a className="text-accent-600 underline hover:text-accent-700" href="https://github.com/thorstenMueller/Thorsten-Voice" target="_blank" rel="noreferrer">Thorsten-Voice</a>.
               Licensed under{' '}
-              <a className="text-blue-600 underline hover:text-blue-700" href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noreferrer">CC BY-SA 4.0</a>.
+              <a className="text-accent-600 underline hover:text-accent-700" href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noreferrer">CC BY-SA 4.0</a>.
             </>
           )}
         </p>

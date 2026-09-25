@@ -20,6 +20,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { Lock as LockIcon } from 'lucide-react';
 import { useLang } from '../hooks/useLang';
 import { useAuth } from '../hooks/useAuth';
 import { usePageTitle } from '../hooks/usePageTitle';
@@ -232,6 +233,71 @@ function buildQuestions(
   return shuffleArray(out); // interleave pools, shuffle deck order
 }
 
+/**
+ * Sign-in gate for guests who deep-link a checkpoint.
+ *
+ * Extracted from `A1CheckpointPage` deliberately: when this markup lived
+ * inline, it sat behind an early `return` that executed BEFORE the page's
+ * hooks. Because `useAuth` starts `isAuthenticated === false` and flips true
+ * after the async `supabase.auth.getSession()`, any hard load / refresh /
+ * bookmark of `/checkpoint/0` while signed in re-rendered with a different
+ * hook count and React threw ("Rendered more hooks than during the previous
+ * render") — a hard crash on the page that gates the whole A1 campaign.
+ *
+ * As its own component it owns zero hooks, so the parent can call all of
+ * its hooks unconditionally.
+ */
+function CheckpointSignInGate({ isDE }: { isDE: boolean }) {
+  return (
+    <div className={theme.page.container}>
+      <div className={theme.panel.surface}>
+        {/* Aliased to LockIcon: a bare `<Lock>` resolves to the DOM's window.Lock. */}
+        <LockIcon className="h-8 w-8 text-ink-500" aria-hidden="true" />
+        <h1 className="mt-3 text-xl font-bold text-ink-900 dark:text-ink-50">
+          {isDE ? 'Checkpoints' : 'Checkpoints'}
+        </h1>
+        <p className="mt-2 text-body text-ink-600 dark:text-ink-300">
+          {isDE
+            ? 'Checkpoints gehören zum geführten Lernpfad. Bitte melden Sie sich an, um fortzufahren.'
+            : 'Checkpoints are part of the guided learning path. Please sign in to continue.'}
+        </p>
+        <div className="mt-5 flex flex-col gap-2 sm:flex-row">
+          <Link to="/auth" className={theme.button.primary}>
+            {isDE ? 'Anmelden / Registrieren' : 'Sign in / Register'}
+          </Link>
+          <Link to="/home" className={theme.button.secondary}>
+            {isDE ? 'Zurück zur Startseite' : 'Back to Home'}
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * A SUPPORT band (Band B) carries no checkpoint. A hard deep link still
+ * loads (soft lock) — show a friendly "optional" screen, not an error.
+ */
+function CheckpointNoGate({ isDE, code }: { isDE: boolean; code: string }) {
+  return (
+    <div className={theme.page.container}>
+      <div className={theme.panel.surface}>
+        <h1 className="text-xl font-bold text-ink-900 dark:text-ink-50">
+          {isDE ? `Band ${code}` : `Band ${code}`}
+        </h1>
+        <p className="mt-2 text-body text-ink-600 dark:text-ink-300">
+          {isDE
+            ? 'Dieses Band hat keine Pflichtprüfung – es ist ein optionaler Unterstützungs-Band.'
+            : 'This band has no checkpoint — it is optional support content, no gate required.'}
+        </p>
+        <Link to="/learn" className={`${theme.button.primary} mt-5`}>
+          {isDE ? 'Zurück zum Lernpfad' : 'Back to learning path'}
+        </Link>
+      </div>
+    </div>
+  );
+}
+
 export function A1CheckpointPage() {
   const { unitIndex: rawIndex } = useParams<{ unitIndex: string }>();
   const unitIndex = useMemo(() => {
@@ -250,57 +316,18 @@ export function A1CheckpointPage() {
   // Unit-derived (never a hardcoded 0) so every checkpoint shows its own name.
   usePageTitle(unit ? `Checkpoint ${unitIndex + 1} · ${unit.title.en}` : 'Checkpoint');
 
-  // Checkpoints are a signed-in benefit (locked product rule): guests who
-  // deep-link to /checkpoint/:unitIndex get a friendly sign-in gate (before
-  // any checkpoint state/quiz hooks run), never the quiz or the path.
-  if (!isAuthenticated) {
-    return (
-      <div className={theme.page.container}>
-        <div className={theme.panel.surface}>
-          <span className="text-4xl" aria-hidden="true">🔒</span>
-          <h1 className="mt-2 text-xl font-bold text-slate-900 dark:text-white">
-            {isDE ? 'Checkpoints' : 'Checkpoints'}
-          </h1>
-          <p className="mt-2 text-slate-600 dark:text-slate-300">
-            {isDE
-              ? 'Checkpoints gehören zum geführten Lernpfad. Bitte melden Sie sich an, um fortzufahren.'
-              : 'Checkpoints are part of the guided learning path. Please sign in to continue.'}
-          </p>
-          <div className="mt-4 flex flex-col gap-2">
-            <Link to="/auth" className={`${theme.button.primary} inline-flex min-h-[44px] items-center justify-center`}>
-              {isDE ? 'Anmelden / Registrieren' : 'Sign in / Register'}
-            </Link>
-            <Link to="/home" className={`${theme.button.secondary} inline-flex min-h-[44px] items-center justify-center`}>
-              {isDE ? 'Zurück zur Startseite' : 'Back to Home'}
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // A SUPPORT band (Band B) carries no checkpoint — and optionally the hard
-  // deep link still loads. Show a friendly "optional" screen, not an error.
-  if (!unit || !unit.checkpoint) {
-    return (
-      <div className={theme.page.container}>
-        <div className={theme.panel.surface}>
-          <h1 className="text-xl font-bold text-slate-900 dark:text-white">
-            {isDE ? `Band ${unit?.code ?? '?'}` : `Band ${unit?.code ?? '?'}`}
-          </h1>
-          <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
-            {isDE
-              ? 'Dieses Band hat keine Pflichtprüfung – es ist ein optionaler Unterstützungs-Band.'
-              : 'This band has no checkpoint — it is optional support content, no gate required.'}
-          </p>
-          <Link to="/learn" className={`${theme.button.primary} mt-4 inline-flex min-h-[44px]`}>
-            {isDE ? 'Zurück zum Lernpfad' : 'Back to learning path'}
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
+  // ───────────────────────────────────────────────────────────────────────
+  // ALL HOOKS FIRST, UNCONDITIONALLY.
+  //
+  // This block used to sit BELOW two early `return`s (guest gate + no-gate
+  // band). `useAuth` starts `isAuthenticated === false` and flips to true
+  // after the async `supabase.auth.getSession()`, so a hard load / refresh /
+  // bookmark of `/checkpoint/0` while signed in re-rendered this component
+  // with a DIFFERENT hook count and React threw "Rendered more hooks than
+  // during the previous render" — a hard crash on the page that gates the
+  // whole A1 campaign. Hook order must never depend on auth/band state.
+  // The gate UIs live in `CheckpointSignInGate` / `CheckpointNoGate` above.
+  // ───────────────────────────────────────────────────────────────────────
   const unlocked = isUnitUnlocked(unitIndex);
   const alreadyPassed = isCheckpointComplete(unitIndex);
 
@@ -331,7 +358,11 @@ export function A1CheckpointPage() {
     }
   }, [phase, answered, questions.length, score, unitIndex, markCheckpointResult]);
 
-useEffect(() => {
+  useEffect(() => {
+    if (!isAuthenticated || !unit?.checkpoint) {
+      setPhase('ready');
+      return;
+    }
     if (!unlocked) {
       setPhase('ready');
       return;
@@ -388,7 +419,7 @@ useEffect(() => {
     return () => {
       cancelled = true;
     };
-  }, [unlocked, unitIndex, unit.checkpoint.specs, runId]);
+  }, [unlocked, unitIndex, isAuthenticated, unit?.checkpoint, runId]);
 
   const startRun = useCallback(() => {
     recordedRef.current = false;
@@ -416,6 +447,21 @@ useEffect(() => {
     [questions, results]
   );
 
+  // ───────────────────────────────────────────────────────────────────────
+  // RENDER-ONLY gates. Everything above this line is hooks, and it always all
+  // runs — so a guest -> authed transition (or any other state flip) can
+  // never change this component's hook count.
+  // ───────────────────────────────────────────────────────────────────────
+  if (!isAuthenticated) {
+    return <CheckpointSignInGate isDE={isDE} />;
+  }
+
+  // A SUPPORT band (Band B) carries no checkpoint — the hard deep link still
+  // loads (soft lock), so show a friendly "optional" screen, not an error.
+  if (!unit || !unit.checkpoint) {
+    return <CheckpointNoGate isDE={isDE} code={unit?.code ?? '?'} />;
+  }
+
   // ---- Locked (soft-lock) screen ----
   if (!unlocked) {
     // The band that must be passed to unlock this one = the previous CORE band
@@ -431,12 +477,12 @@ useEffect(() => {
     return (
       <div className={theme.page.container}>
         <div className={theme.panel.surface}>
-          <h1 className="text-xl font-bold text-slate-900 dark:text-white">
+          <h1 className="text-xl font-bold text-ink-900 dark:text-white">
             {isDE ? unit.title.de : unit.title.en}
           </h1>
           <div className="mt-4 text-center">
             <span className="text-4xl" aria-hidden="true">🔒</span>
-            <p className="mt-2 text-slate-600 dark:text-slate-300">
+            <p className="mt-2 text-ink-600 dark:text-ink-300">
               {isDE
                 ? `Dieses Band ist gesperrt. Bestehe Pforte ${prevCode}, um dieses Band freizuschalten.`
                 : `This band is locked. Pass Gate ${prevCode} to unlock it.`}
@@ -454,7 +500,7 @@ useEffect(() => {
   if (phase === 'loading' || (phase === 'ready' && questions.length === 0)) {
     return (
       <div className={theme.page.container}>
-        <div className="text-center text-slate-500 dark:text-slate-400">
+        <div className="text-center text-ink-500 dark:text-ink-400">
           {isDE ? 'Fragen werden geladen…' : 'Loading checkpoint questions…'}
         </div>
       </div>
@@ -466,19 +512,19 @@ useEffect(() => {
     return (
       <div className={theme.page.container}>
         <div className={theme.panel.surface}>
-          <h1 className="text-xl font-bold text-slate-900 dark:text-white">
+          <h1 className="text-xl font-bold text-ink-900 dark:text-white">
             {isDE ? unit.title.de : unit.title.en}
-            <span className="ml-2 text-base font-medium text-slate-500 dark:text-slate-400">
+            <span className="ml-2 text-body font-medium text-ink-500 dark:text-ink-400">
               ({isDE ? unit.theme.de : unit.theme.en})
             </span>
           </h1>
-          <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+          <p className="mt-2 text-body text-ink-600 dark:text-ink-300">
             {isDE
               ? `${total} Aufgaben · brauche ${Math.round(CHECKPOINT_PASS_THRESHOLD * 100)}% zum Bestehen`
               : `${total} questions · need ${Math.round(CHECKPOINT_PASS_THRESHOLD * 100)}% to pass`}
           </p>
           {alreadyPassed && (
-            <p className="mt-2 text-sm text-emerald-700 dark:text-emerald-300">
+            <p className="mt-2 text-body text-success-700 dark:text-success-300">
               {isDE ? 'Bereits bestanden ✓' : 'Already passed ✓'}
             </p>
           )}
@@ -510,11 +556,11 @@ useEffect(() => {
     return (
       <div className={theme.page.container}>
         <div className={theme.panel.surface}>
-          <h1 className="text-xl font-bold text-slate-900 dark:text-white">
+          <h1 className="text-xl font-bold text-ink-900 dark:text-white">
             {isDE ? unit.title.de : unit.title.en}
           </h1>
           <div
-            className={`mt-4 text-center ${passed ? 'text-emerald-700 dark:text-emerald-300' : 'text-red-700 dark:text-red-300'}`}
+            className={`mt-4 text-center ${passed ? 'text-success-700 dark:text-success-300' : 'text-danger-700 dark:text-danger-300'}`}
           >
             <div className="text-3xl font-bold">{percent}%</div>
             <p className="mt-1">
@@ -531,22 +577,22 @@ useEffect(() => {
           {missedItems.length > 0 && (
             <div className="mt-5 space-y-2">
               <div className="flex items-center justify-between">
-                <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                <h2 className="text-body font-semibold uppercase tracking-wider text-ink-500 dark:text-ink-400">
                   {isDE ? 'Fehleranalyse' : 'Mistakes to review'}
                 </h2>
-                <span className="rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-semibold text-red-700 dark:bg-red-900/40 dark:text-red-300">
+                <span className="rounded-full bg-danger-100 px-2.5 py-0.5 text-meta font-semibold text-danger-700 dark:bg-danger-900/40 dark:text-danger-300">
                   {missedItems.length}/{total}
                 </span>
               </div>
               {missedItems.map(({ q }) => (
                 <div
                   key={q.key}
-                  className="flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 p-3 text-xs dark:border-red-900/50 dark:bg-red-950/30"
+                  className="flex items-start gap-2 rounded-md border border-danger-200 bg-danger-50 p-3 text-meta dark:border-danger-900/50 dark:bg-danger-950/30"
                 >
-                  <span aria-hidden="true" className="mt-0.5 font-bold text-red-600 dark:text-red-300">✗</span>
+                  <span aria-hidden="true" className="mt-0.5 font-bold text-danger-600 dark:text-danger-300">✗</span>
                   <div className="min-w-0 flex-1">
-                    <div className="font-medium text-slate-700 dark:text-slate-300">{q.prompt}</div>
-                    <div className="mt-0.5 text-emerald-700 dark:text-emerald-300">
+                    <div className="font-medium text-ink-700 dark:text-ink-300">{q.prompt}</div>
+                    <div className="mt-0.5 text-success-700 dark:text-success-300">
                       ✓ {q.correctAnswer}
                     </div>
                   </div>
@@ -585,7 +631,7 @@ useEffect(() => {
               <button
                 type="button"
                 onClick={() => playAudioUrl(q.audioUrl as string)}
-                className="ml-3 inline-flex items-center gap-1 rounded-lg bg-blue-100 px-3 py-1.5 text-sm font-medium text-blue-700 hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-300"
+                className="ml-3 inline-flex items-center gap-1 rounded-sm bg-accent-100 px-3 py-1.5 text-body font-medium text-accent-700 hover:bg-accent-200 dark:bg-accent-900/30 dark:text-accent-300"
                 aria-label={isDE ? 'Audio abspielen' : 'Play audio'}
               >
                 🔊 {isDE ? 'Anhören' : 'Listen'}

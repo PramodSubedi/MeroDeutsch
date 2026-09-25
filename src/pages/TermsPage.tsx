@@ -58,11 +58,11 @@ export function TermsPage() {
   return (
     <div className={theme.page.container}>
       <div className="mb-6">
-        <p className="text-sm uppercase tracking-[0.25em] text-blue-600">{isDE ? 'Nutzungsbedingungen' : 'Terms'}</p>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-950 dark:text-white">
+        <p className="text-body uppercase tracking-[0.25em] text-accent-600">{isDE ? 'Nutzungsbedingungen' : 'Terms'}</p>
+        <h1 className="text-2xl font-bold tracking-tight text-ink-950 dark:text-white">
           {isDE ? 'Nutzungsbedingungen' : 'Terms of Service'}
         </h1>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+        <p className="mt-1 text-body text-ink-500 dark:text-ink-400">
           {isDE ? `Stand: ${LEGAL_LAST_UPDATED}` : `Last updated: ${LEGAL_LAST_UPDATED}`}
         </p>
       </div>
@@ -70,14 +70,14 @@ export function TermsPage() {
       <div className="space-y-4">
         {sections.map((s) => (
           <div key={s.title} className={theme.panel.surface}>
-            <h2 className="text-lg font-semibold text-slate-950 dark:text-white">{s.title}</h2>
-            <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-300">{s.body}</p>
+            <h2 className="text-lg font-semibold text-ink-950 dark:text-white">{s.title}</h2>
+            <p className="mt-2 text-body leading-relaxed text-ink-600 dark:text-ink-300">{s.body}</p>
           </div>
         ))}
       </div>
 
       <div className="mt-6">
-        <Link to="/home" className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-200">
+        <Link to="/home" className="text-body text-accent-600 hover:text-accent-800 dark:text-accent-300 dark:hover:text-accent-200">
           ← {isDE ? 'Zurück zur Startseite' : 'Back to Home'}
         </Link>
       </div>

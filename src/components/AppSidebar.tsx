@@ -1,25 +1,21 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useEffect, useRef } from 'react';
+import { ArrowUpRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import {
-  BookA,
-  BookOpen,
-  ChevronsLeft,
-  ChevronsRight,
-  Home,
-  LayoutDashboard,
-  Library,
-  Play,
-  Send,
-  Settings,
-} from 'lucide-react';
 import { theme } from '../config/theme';
 import { Logo } from './common/Logo';
 import { useAuth } from '../hooks/useAuth';
 import { useLang } from '../hooks/useLang';
 import { useReviewQueue } from '../hooks/useReviewQueue';
-import { A1PathProgress } from './path/A1PathProgress';
-import { ANCHORS } from '../lib/anchors';
+import {
+  SECONDARY_NAV,
+  getActiveSecondary,
+  getPrimaryNav,
+  isNavActive,
+  navLabel,
+  navTarget,
+} from '../config/navigation';
+import { LearnerWaypoint } from './path/LearnerWaypoint';
 
 /** Guest-first split: /home is the app home (authed OR guest), /welcome is
     the marketing landing (no app shell). Home nav + brand link must point at
@@ -38,49 +34,48 @@ interface AppSidebarProps {
   onToggleCollapsed?: () => void;
 }
 
-interface NavItem {
+/** One rendered row in the rail. Labels + targets are already resolved by
+    config/navigation.ts, so a row is display-only. */
+interface RailRow {
   to: string;
-  labelEn: string;
-  labelDe: string;
+  label: string;
   icon: LucideIcon;
-  authOnly?: boolean;
+  active: boolean;
   countBadge?: number;
-  /** Optional in-page anchor appended to `to` (e.g. '#learning-path'). */
-  anchor?: string;
 }
 
 // "Sidebar Light" (21st.dev) pattern: active route = elevated pill with a
 // brand accent bar (left edge); idle = quiet ghost with a softened hover
 // (half-strength fill, medium weight — semibold is reserved for the active row).
 const activeClass = (active: boolean) =>
-  'relative flex min-h-[44px] items-center gap-3 rounded-xl px-3 text-sm font-medium transition ' +
+  'relative flex min-h-11 items-center gap-3 rounded-sm px-3 text-body font-semibold transition ' +
   (active
-    ? 'bg-white font-semibold text-blue-700 shadow-sm ring-1 ring-slate-200 before:absolute before:left-0 before:top-1/2 before:h-5 before:w-1 before:-translate-y-1/2 before:rounded-full before:bg-blue-600 dark:bg-slate-800/70 dark:text-blue-300 dark:ring-slate-700/60 dark:before:bg-blue-400'
-    : 'text-slate-600 hover:bg-slate-100/70 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800/70 dark:hover:text-white');
+    ? 'bg-accent-100/80 text-accent-800 before:absolute before:left-0 before:top-1/2 before:h-5 before:w-1 before:-translate-y-1/2 before:rounded-r-full before:bg-accent-600 dark:bg-accent-950/60 dark:text-accent-200 dark:before:bg-accent-400'
+    : 'text-ink-600 hover:bg-white hover:text-ink-950 dark:text-ink-300 dark:hover:bg-ink-800 dark:hover:text-white');
 
-function NavRow({ item, active, isDE, collapsed, onNavigate }: { item: NavItem; active: boolean; isDE: boolean; collapsed?: boolean; onNavigate?: () => void }) {
-  const Icon = item.icon;
-  const count = item.countBadge ?? 0;
-  const linkClass = `${activeClass(active)} ${collapsed ? 'justify-center px-0' : ''}`;
+function NavRow({ row, collapsed, onNavigate }: { row: RailRow; collapsed?: boolean; onNavigate?: () => void }) {
+  const Icon = row.icon;
+  const count = row.countBadge ?? 0;
+  const linkClass = `${activeClass(row.active)} ${collapsed ? 'justify-center px-0' : ''}`;
   // Due-review badge: in-flow pill when expanded (label truncates, number
   // clamps to 99+); collapsed → anchored mini-pill at the row's top-right so
   // the icon stays perfectly centered (doesn't drift with the number).
   if (count <= 0) {
     return (
-      <Link to={item.anchor ? `${item.to}${item.anchor}` : item.to} className={linkClass} onClick={onNavigate} aria-current={active ? 'location' : undefined}>
+      <Link to={row.to} className={linkClass} onClick={onNavigate} aria-label={row.label} title={collapsed ? row.label : undefined} aria-current={row.active ? 'location' : undefined}>
         <Icon className="h-5 w-5 shrink-0" aria-hidden="true" />
-        {!collapsed && <span className="min-w-0 flex-1 truncate">{isDE ? item.labelDe : item.labelEn}</span>}
+        {!collapsed && <span className="min-w-0 flex-1 truncate">{row.label}</span>}
       </Link>
     );
   }
   return (
-    <Link to={item.anchor ? `${item.to}${item.anchor}` : item.to} className={linkClass} onClick={onNavigate} aria-current={active ? 'location' : undefined}>
+    <Link to={row.to} className={linkClass} onClick={onNavigate} aria-label={row.label} title={collapsed ? row.label : undefined} aria-current={row.active ? 'location' : undefined}>
       <Icon className="h-5 w-5 shrink-0" aria-hidden="true" />
       {!collapsed ? (
         <>
-          <span className="min-w-0 flex-1 truncate">{isDE ? item.labelDe : item.labelEn}</span>
+          <span className="min-w-0 flex-1 truncate">{row.label}</span>
           <span
-            className="shrink-0 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-bold text-amber-800 dark:bg-amber-900/40 dark:text-amber-200"
+            className="shrink-0 rounded-full bg-warning-100 px-2 py-0.5 text-meta font-bold text-warning-800 dark:bg-warning-900/40 dark:text-warning-200"
             aria-label={`${count} due`}
             title={`${count} due`}
           >
@@ -89,7 +84,7 @@ function NavRow({ item, active, isDE, collapsed, onNavigate }: { item: NavItem; 
         </>
       ) : (
         <span
-          className="absolute -top-1 -right-1 rounded-full bg-amber-100 px-1 py-px text-[10px] font-bold leading-tight text-amber-800 ring-1 ring-white dark:bg-amber-900/40 dark:text-amber-200 dark:ring-slate-900"
+          className="absolute -top-1 -right-1 rounded-full bg-warning-100 px-1 py-px text-[10px] font-bold leading-tight text-warning-800 ring-1 ring-white dark:bg-warning-900/40 dark:text-warning-200 dark:ring-ink-900"
           aria-label={`${count} due`}
           title={`${count} due`}
         >
@@ -101,26 +96,32 @@ function NavRow({ item, active, isDE, collapsed, onNavigate }: { item: NavItem; 
 }
 
 /**
- * Project-wide navigation sidebar.
- * - Desktop: permanent fixed rail spanning the FULL height (top-0 = starts at
- *   the very top, same y as the sticky header). A h-16 brand band at the top
- *   matches the header row height and carries a hairline bottom border; the
- *   expand/collapse toggle is pinned to the rail's BOTTOM edge (below the
- *   nav) — it lives WITH the rail it controls, not stranded in the header.
- *   The header is inset to the content column (Layout applies lg:ml-64 /
- *   lg:ml-20 margins) and shares the SAME surface (bg-white / dark:bg-slate-900),
- *   so header + rail read as one continuous shell. Rail z-30 < header z-50.
- * - Mobile: full-screen drawer driven by `mobileOpen`; z-[55] covers the
- *   header (z-50) and bottom nav (z-50) while open, but stays below the
- *   milestone toast (z-[60]).
- * Top-level IA only (Home / Learn / Practice / Dashboard + Support links):
- * the lesson list lives in the /learn hub and the tool list in /practice —
- * the sidebar is a wayfinder, not a catalog. The A1 band at the bottom is a
- * compact progress strip, not a lesson list.
- * Dashboard is guest-hidden; a live due-review badge is shown on it. The
- * badge reads `dueQueue` from useReviewQueue — the SAME single source used
- * by DashboardPage / DailySession / ContinueLearningPage (do not re-filter
- * the raw `queue` here; duplicated predicates drift).
+ * App-shell navigation rail / drawer.
+ *
+ * ONE place answers "where am I / what next?": a persistent LearnerWaypoint
+ * (current A1 band + the exact next node) sits directly under the brand, above
+ * four quiet destinations. That is the whole point of the redesign — the rail
+ * is a wayfinder, not a catalog.
+ *
+ * Destinations come from config/navigation.ts (the single nav table), so the
+ * rail, the bottom bar and the header context chip can never disagree about
+ * labels, targets or which destination is active. Lesson and tool lists live on
+ * the /learn spine and the /practice grid.
+ *
+ * Surfaces:
+ *  - Desktop (lg+): permanent fixed rail, FULL height, z-30 (below header
+ *    z-50 / toast z-60). The h-16 brand band matches the header row so rail +
+ *    header read as one shell; the expand/collapse toggle is pinned to the
+ *    rail's BOTTOM edge, with the rail it controls.
+ *  - Mobile (<lg): full-screen drawer, z-[55] — above header and bottom nav
+ *    (z-50), below the milestone toast (z-[60]). It carries SECONDARY
+ *    destinations only: the primary four live in the bottom bar, so the two
+ *    surfaces stop competing for the same job.
+ *
+ * Dashboard is guest-hidden; a live due-review badge rides the Progress row.
+ * That badge reads `dueQueue` from useReviewQueue — the SAME single source used
+ * by DashboardPage / DailySession / ContinueLearningPage (do not re-filter the
+ * raw `queue` here; duplicated predicates drift).
  */
 export function AppSidebar({
   mobileOpen = false,
@@ -170,99 +171,99 @@ export function AppSidebar({
 
   const dueCount = dueQueue.length;
 
-  // Path is a signed-in benefit (locked product rule): guests get a "Lessons"
-  // shortcut to the module-card grid on /home instead of the /learn spine.
-  const mainItems: NavItem[] = [
-    { to: HOME_TO, labelEn: 'Home', labelDe: 'Startseite', icon: Home },
-    isAuthenticated
-      ? { to: '/learn', labelEn: 'Learn', labelDe: 'Lernen', icon: Play }
-      : { to: HOME_TO, anchor: `#${ANCHORS.learningPath}`, labelEn: 'Lessons', labelDe: 'Lektionen', icon: BookA },
-    { to: '/dashboard', labelEn: 'Dashboard', labelDe: 'Übersicht', icon: LayoutDashboard, authOnly: true, countBadge: dueCount },
-    { to: '/practice', labelEn: 'Practice', labelDe: 'Übung', icon: Library },
-  ];
+  // Primary destinations (Today / Learn / Practice / Progress) — resolved from
+  // the nav table, so the guest "Lessons" variant and the auth-gated Progress
+  // row are handled by ONE place instead of branching per surface.
+  const primaryRows: RailRow[] = getPrimaryNav(isAuthenticated).map((item) => ({
+    to: navTarget(item, isAuthenticated),
+    label: navLabel(item, isAuthenticated, isDE),
+    icon: item.icon,
+    active: isNavActive(pathname, item, isAuthenticated),
+    countBadge: item.badge === 'due' ? dueCount : 0,
+  }));
 
-  if (!isAuthenticated) {
-    const idx = mainItems.findIndex((i) => i.to === '/dashboard');
-    if (idx >= 0) {
-      mainItems.splice(idx, 1, { to: '/auth', labelEn: 'Sign in', labelDe: 'Anmelden', icon: Play });
-    }
-  }
+  const activeSecondary = getActiveSecondary(pathname);
+  const secondaryRows: RailRow[] = SECONDARY_NAV.map((item) => ({
+    to: item.to,
+    label: isDE ? item.label.de : item.label.en,
+    icon: item.icon,
+    active: activeSecondary?.id === item.id,
+  }));
 
-  const supportItems: NavItem[] = [
-    { to: '/help', labelEn: 'Help', labelDe: 'Hilfe', icon: BookOpen },
-    { to: '/settings', labelEn: 'Settings', labelDe: 'Einstellungen', icon: Settings },
-    { to: '/feedback', labelEn: 'Send feedback', labelDe: 'Feedback senden', icon: Send },
-  ];
-
-  const isActive = (item: NavItem) => {
-    if (item.anchor) return false; // shortcut rows never hold the active state
-    const to = item.to;
-    if (to === HOME_TO) return pathname === HOME_TO || pathname === '/';
-    if (to === '/learn') {
-      return ['/learn', '/checkpoint', '/alphabet', '/numbers', '/calendar', '/articles', '/greetings', '/stories']
-        .some((route) => pathname === route || pathname.startsWith(`${route}/`));
-    }
-    if (to === '/practice') {
-      return ['/practice', '/glossary', '/vocab-trainer', '/dictation', '/grammar', '/pronunciation', '/roleplay', '/rapid-fire', '/rapid-blitz', '/sentence-builder', '/games', '/email-builder', '/article-sprint']
-        .some((route) => pathname === route || pathname.startsWith(`${route}/`));
-    }
-    return pathname === to || pathname.startsWith(to + '/');
-  };
-
-  const sections: { titleEn: string; titleDe: string; items: NavItem[] }[] = [
-    { titleEn: 'Main', titleDe: 'Hauptmenü', items: mainItems },
-    { titleEn: 'Support', titleDe: 'Unterstützung', items: supportItems },
-  ];
-
-  const renderRail = (collapsed: boolean, showCollapseToggle: boolean, onNavigate?: () => void) => (
+  const renderRail = (collapsed: boolean, showCollapseToggle: boolean, variant: 'rail' | 'drawer', onNavigate?: () => void) => (
     <div className="flex h-full flex-col">
       {/* Brand band — h-16 matched to the sticky header row height, with a
           hairline bottom border: the rail top + header read as ONE connected
           system band (Converged Shell). The expand/collapse toggle is pinned
           to the rail's bottom edge (see sidebarToggleBar below); the mobile
           drawer always renders expanded. */}
-      <div className="flex h-16 shrink-0 items-center border-b border-slate-200 px-2 dark:border-slate-800">
+      <div className="flex h-16 shrink-0 items-center border-b border-ink-200 px-3 dark:border-ink-800">
         {/* Single shell brand mark — same Logo as landing/auth (one brand rules) */}
         <Link
           to={HOME_TO}
           onClick={onClose}
           aria-label={isDE ? 'MeroDeutsch – Startseite' : 'MeroDeutsch – Home'}
-          className="flex min-w-0 items-center rounded-xl px-2 py-1.5 transition hover:bg-slate-100 dark:hover:bg-slate-800"
+          className="flex min-w-0 items-center rounded-sm px-2 py-2 transition hover:bg-white dark:hover:bg-ink-800"
         >
-          <Logo size="sm" showText={!collapsed} />
+          <Logo size="sm" variant="on-light" showText={!collapsed} />
         </Link>
       </div>
-      <nav aria-label={isDE ? 'Hauptnavigation' : 'Main navigation'} className="flex flex-1 flex-col overflow-y-auto p-3">
-        {sections.map((section) => {
-          const visible = section.items.filter((it) => !it.authOnly || isAuthenticated);
-          if (visible.length === 0) return null;
-          return (
-            <div key={section.titleEn} className="mb-4">
-              {!collapsed && (
-                <div className="mb-1 px-3 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
-                  {isDE ? section.titleDe : section.titleEn}
-                </div>
-              )}
-              <div className="space-y-1">
-                {visible.map((item) => (
-                  <NavRow key={`${item.to}${item.anchor ?? ''}`} item={item} active={isActive(item)} isDE={isDE} collapsed={collapsed} onNavigate={onNavigate} />
-                ))}
-              </div>
-            </div>
-          );
-        })}
-        {isAuthenticated && !collapsed && (
-          <div className="mt-auto border-t border-slate-200 pt-3 dark:border-slate-800">
-            <A1PathProgress compact />
-            <Link
-              to="/learn"
-              className="mt-2 flex min-h-[44px] items-center gap-3 rounded-xl px-3 text-sm font-semibold text-blue-600 hover:bg-blue-50 dark:text-blue-300 dark:hover:bg-blue-900/30"
-            >
-              {isDE ? 'Zum Lernpfad →' : 'Go to path →'}
-            </Link>
+
+      {/* Learner waypoint — the one thing that is always worth showing. The
+          A1 spine is a signed-in benefit, so guests get the sign-in card
+          below instead of a progress strip they cannot keep. */}
+      {isAuthenticated && (
+        <div className="px-3 pt-4">
+          <LearnerWaypoint collapsed={collapsed} />
+        </div>
+      )}
+
+      <nav
+        aria-label={
+          variant === 'rail'
+            ? isDE ? 'Hauptnavigation' : 'Main navigation'
+            : isDE ? 'Weitere Navigation' : 'More navigation'
+        }
+        className="flex flex-1 flex-col overflow-y-auto px-3 py-5"
+      >
+        {/* PRIMARY — desktop rail only. Below lg the bottom bar owns these, so
+            repeating them in the drawer would be the same job done twice. */}
+        {variant === 'rail' && (
+          <div className="space-y-1">
+            {primaryRows.map((row) => (
+              <NavRow key={row.to} row={row} collapsed={collapsed} onNavigate={onNavigate} />
+            ))}
           </div>
         )}
+
+        {/* SECONDARY — support + account. Pinned to the bottom of the rail so
+            the four learning destinations stay the first thing the eye hits. */}
+        <div className={`space-y-1 ${variant === 'rail' ? 'mt-auto pt-6' : 'mt-2'}`}>
+          {!collapsed && (
+            <div className="mb-2 px-3 text-[10px] font-extrabold uppercase tracking-[0.16em] text-ink-500 dark:text-ink-500">
+              {isDE ? 'Hilfe' : 'Support'}
+            </div>
+          )}
+          {secondaryRows.map((row) => (
+            <NavRow key={row.to} row={row} collapsed={collapsed} onNavigate={onNavigate} />
+          ))}
+        </div>
       </nav>
+      {!isAuthenticated && !collapsed && (
+        <div className="mx-3 mb-3 rounded-sm border border-ink-200 bg-white p-3 dark:border-ink-800 dark:bg-ink-900">
+          <p className="mb-2 text-meta font-medium text-ink-500 dark:text-ink-400">
+            {isDE ? 'Fortschritt speichern' : 'Save your progress'}
+          </p>
+          <Link
+            to="/auth"
+            onClick={onNavigate}
+            className="flex min-h-[44px] items-center justify-between rounded-md bg-accent-600 px-3 text-body font-bold text-white transition hover:bg-accent-700"
+          >
+            {isDE ? 'Anmelden' : 'Sign in'}
+            <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+          </Link>
+        </div>
+      )}
       {showCollapseToggle && onToggleCollapsed && (
         /* Pinned bottom bar — the expand/collapse control lives WITH the rail
             it toggles, so the header never shows a stranded orphan button.
@@ -276,7 +277,7 @@ export function AppSidebar({
               aria-expanded={false}
               aria-label={isDE ? 'Erweitern' : 'Expand sidebar'}
               title={isDE ? 'Erweitern' : 'Expand sidebar'}
-              className="mx-auto flex min-h-[44px] w-11 items-center justify-center rounded-xl text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none active:scale-95 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
+              className="mx-auto flex min-h-[44px] w-11 items-center justify-center rounded-sm text-ink-500 transition hover:bg-white hover:text-ink-950 focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:outline-none active:scale-95 dark:text-ink-400 dark:hover:bg-ink-800 dark:hover:text-white"
             >
               <ChevronsRight className="h-5 w-5" aria-hidden="true" />
             </button>
@@ -287,7 +288,7 @@ export function AppSidebar({
               aria-expanded={true}
               aria-label={isDE ? 'Einklappen' : 'Collapse sidebar'}
               title={isDE ? 'Einklappen' : 'Collapse sidebar'}
-              className="flex min-h-[44px] w-full items-center gap-3 rounded-xl px-3 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none active:scale-95 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
+              className="flex min-h-[44px] w-full items-center gap-3 rounded-sm px-3 text-body font-semibold text-ink-500 transition hover:bg-white hover:text-ink-950 focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:outline-none active:scale-95 dark:text-ink-400 dark:hover:bg-ink-800 dark:hover:text-white"
             >
               <ChevronsLeft className="h-5 w-5 shrink-0" aria-hidden="true" />
               <span className="min-w-0 flex-1 text-left">{isDE ? 'Einklappen' : 'Collapse'}</span>
@@ -304,9 +305,9 @@ export function AppSidebar({
           Full-height app shell — brand band + top-level nav are the single
           source of truth; the header insets to the content column on lg+. */}
       <aside
-        className={`fixed bottom-0 left-0 top-0 z-30 hidden border-r border-slate-200 bg-white lg:block dark:border-slate-800 dark:bg-slate-900 ${collapsed ? 'w-20' : 'w-64'}`}
+        className={`fixed bottom-0 left-0 top-0 z-30 hidden border-r border-ink-200 bg-ink-50 text-ink-900 lg:block dark:border-ink-800 dark:bg-ink-950 dark:text-ink-100 ${collapsed ? 'w-20' : 'w-64'}`}
       >
-        {renderRail(collapsed, true)}
+        {renderRail(collapsed, true, 'rail')}
       </aside>
 
       {/* Mobile: slide-in full-screen drawer (z-[55], above header/bottom-nav
@@ -336,9 +337,9 @@ export function AppSidebar({
           role={mobileOpen ? 'dialog' : undefined}
           aria-modal={mobileOpen ? true : undefined}
           aria-label={isDE ? 'Seitennavigation' : 'Site navigation'}
-          className={`relative h-full w-64 max-w-xs overflow-y-auto border-l border-slate-200 bg-white shadow-xl dark:border-slate-800 dark:bg-slate-950 ${mobileOpen ? 'block' : 'hidden'}`}
+          className={`relative h-full w-72 max-w-[85vw] overflow-y-auto border-l border-ink-200 bg-ink-50 text-ink-900 dark:border-ink-800 dark:bg-ink-950 dark:text-ink-100 ${mobileOpen ? 'block' : 'hidden'}`}
         >
-          {renderRail(false, false, onClose)}
+          {renderRail(false, false, 'drawer', onClose)}
         </aside>
       </div>
     </>

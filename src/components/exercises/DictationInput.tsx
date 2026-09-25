@@ -64,13 +64,13 @@ export function DictationInput<Q extends ExerciseQuestion>({
   return (
     <div className={theme.panel.surface}>
       {/* Progress header */}
-      <div className="mb-4 flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
+      <div className="mb-4 flex items-center justify-between text-body text-ink-500 dark:text-ink-400">
         <span>
           {isDE ? 'Wort' : 'Word'} {index + 1} / {total}
         </span>
         <span>
           {isDE ? 'Punkte' : 'Score'}:{' '}
-          <b className="text-slate-900 dark:text-white">{score}</b> / {total}
+          <b className="text-ink-900 dark:text-white">{score}</b> / {total}
         </span>
       </div>
 
@@ -133,10 +133,10 @@ export function DictationInput<Q extends ExerciseQuestion>({
           role="status"
           aria-live="polite"
           aria-atomic="true"
-          className={`mt-4 rounded-xl p-3 text-center text-sm font-semibold ${
+          className={`mt-4 rounded-md p-3 text-center text-body font-semibold ${
             isCorrect
-              ? 'bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-300'
-              : 'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-300'
+              ? 'bg-success-50 text-success-700 dark:bg-success-900/30 dark:text-success-300'
+              : 'bg-danger-50 text-danger-700 dark:bg-danger-900/30 dark:text-danger-300'
           }`}
         >
           {isCorrect

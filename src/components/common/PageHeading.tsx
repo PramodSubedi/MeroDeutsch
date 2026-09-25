@@ -23,17 +23,17 @@ export function PageHeading({ title, subtitle, backTo, backLabel }: PageHeadingP
       {backTo && (
         <Link
           to={backTo}
-          className="inline-flex items-center gap-1 text-sm font-semibold text-blue-600 hover:text-blue-800 active:scale-95 dark:text-blue-300 dark:hover:text-blue-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
+          className="inline-flex items-center gap-1 text-body font-semibold text-accent-600 hover:text-accent-800 active:scale-95 dark:text-accent-300 dark:hover:text-accent-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-accent-500"
         >
           <ChevronLeft className="h-4 w-4" />
           {back}
         </Link>
       )}
-      <h1 className="mt-1 text-2xl font-bold text-slate-950 dark:text-white">
+      <h1 className="mt-1 text-2xl font-bold text-ink-950 dark:text-white">
         {title}
       </h1>
       {subtitle && (
-        <p className="mt-1 text-sm leading-6 text-slate-600 dark:text-slate-300">{subtitle}</p>
+        <p className="mt-1 text-body leading-6 text-ink-600 dark:text-ink-300">{subtitle}</p>
       )}
     </header>
   );

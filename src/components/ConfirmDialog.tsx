@@ -78,10 +78,10 @@ export function ConfirmDialog({
         className={theme.modal.dialog}
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 id="confirm-title" className="text-lg font-bold text-slate-900 dark:text-slate-100">
+        <h2 id="confirm-title" className="text-lg font-bold text-ink-900 dark:text-ink-100">
           {title}
         </h2>
-        <p id="confirm-message" className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+        <p id="confirm-message" className="mt-2 text-body text-ink-600 dark:text-ink-300">
           {message}
         </p>
         <div className="mt-6 flex justify-end gap-3">

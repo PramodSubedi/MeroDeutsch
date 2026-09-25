@@ -51,19 +51,19 @@ export function ArticleSelector({
   return (
     <div className={theme.panel.surface}>
       {/* Progress header */}
-      <div className="mb-4 flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
+      <div className="mb-4 flex items-center justify-between text-body text-ink-500 dark:text-ink-400">
         <span>
           {isDE ? 'Frage' : 'Question'} {index + 1} / {total}
         </span>
         <span>
-          {isDE ? 'Punkte' : 'Score'}: <b className="text-slate-900 dark:text-white">{score}</b>
+          {isDE ? 'Punkte' : 'Score'}: <b className="text-ink-900 dark:text-white">{score}</b>
         </span>
       </div>
 
       {/* Bare noun + gender dot revealed ONLY after lock */}
       <div className="mb-6 flex items-center justify-between gap-3">
         <div className="flex min-w-0 items-center gap-2">
-          <span className="break-words text-2xl font-bold text-slate-900 dark:text-white">
+          <span className="break-words text-2xl font-bold text-ink-900 dark:text-white">
             {current.noun}
           </span>
           {locked && (
@@ -92,14 +92,14 @@ export function ArticleSelector({
           const isAnswer = opt === current.correctAnswer;
 
           let cls =
-            'min-h-[48px] rounded-xl px-4 py-3 text-base font-bold transition active:scale-95 disabled:opacity-70 ';
+            'min-h-[48px] rounded-md px-4 py-3 text-body font-bold transition active:scale-95 disabled:opacity-70 ';
           if (locked && isAnswer) {
             cls += `${theme.gender[genderKey(art)].bg} text-white shadow-sm`;
           } else if (chosen) {
-            cls += 'bg-red-100 text-red-900 dark:bg-red-950/30 dark:text-red-300';
+            cls += 'bg-danger-100 text-danger-900 dark:bg-danger-950/30 dark:text-danger-300';
           } else {
             cls +=
-              'bg-white text-slate-800 shadow-sm hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-200';
+              'border border-ink-200 bg-white text-ink-800 shadow-sm hover:bg-ink-50 dark:bg-ink-800 dark:border-ink-800 dark:text-ink-200';
           }
 
           return (
@@ -118,7 +118,7 @@ export function ArticleSelector({
 
       {/* Post-lock feedback + full phrase audio */}
       {locked && (
-        <div className="mt-4 rounded-xl bg-slate-50 p-3 text-sm dark:bg-slate-800/60">
+        <div className="mt-4 rounded-md bg-ink-50 p-3 text-body dark:bg-ink-800/60">
           {isCorrect
             ? isDE
               ? '🎉 Richtig!'

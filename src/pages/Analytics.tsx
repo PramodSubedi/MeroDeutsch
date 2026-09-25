@@ -44,13 +44,13 @@ function ChartDataTable({
   isDE: boolean;
 }) {
   return (
-    <details className="mt-3 text-sm">
-      <summary className="cursor-pointer rounded-md py-1 font-medium text-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:text-blue-300">
+    <details className="mt-3 text-body">
+      <summary className="cursor-pointer rounded-sm py-1 font-medium text-accent-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 dark:text-accent-300">
         {isDE ? 'Datentabelle anzeigen' : 'View data table'}
       </summary>
-      <div className="mt-2 max-h-48 overflow-auto rounded-lg border border-slate-200 dark:border-slate-700">
-        <table className="w-full text-left text-xs">
-          <thead className="sticky top-0 bg-slate-100 dark:bg-slate-800">
+      <div className="mt-2 max-h-48 overflow-auto rounded-sm border border-ink-200 dark:border-ink-700">
+        <table className="w-full text-left text-meta">
+          <thead className="sticky top-0 bg-ink-100 dark:bg-ink-800">
             <tr>
               <th scope="col" className="px-3 py-2">{isDE ? 'Kategorie' : 'Category'}</th>
               <th scope="col" className="px-3 py-2">{isDE ? 'Wert' : 'Value'}</th>
@@ -58,7 +58,7 @@ function ChartDataTable({
           </thead>
           <tbody>
             {rows.map((row) => (
-              <tr key={row.label} className="border-t border-slate-100 dark:border-slate-800">
+              <tr key={row.label} className="border-t border-ink-100 dark:border-ink-800">
                 <th scope="row" className="px-3 py-2 font-medium">{row.label}</th>
                 <td className="px-3 py-2">{row.value}</td>
               </tr>
@@ -128,7 +128,7 @@ export function AnalyticsPage() {
     <div className={theme.page.container}>
       <div className="mb-4 flex items-center gap-3">
         <BrandMark linked light className="text-lg" />
-        <span className="text-sm text-slate-500 dark:text-slate-400">Analytics</span>
+        <span className="text-body text-ink-500 dark:text-ink-400">Analytics</span>
       </div>
       <h1 className={theme.page.heading}>{title}</h1>
       <p className={theme.page.description}>{description}</p>
@@ -150,11 +150,11 @@ export function AnalyticsPage() {
         <div className="mt-6 grid gap-6 lg:grid-cols-1 xl:grid-cols-2">
           {/* Activity Over Time - Line Chart */}
           <div className={theme.panel.surface}>
-            <h2 className="mb-4 text-lg font-semibold text-slate-950 dark:text-white">
+            <h2 className="mb-4 text-lg font-semibold text-ink-950 dark:text-white">
               {isDE ? 'Aktivität in den letzten 30 Tagen' : 'Activity (Last 30 Days)'}
             </h2>
             {dailyActivity.every((d) => d.count === 0) ? (
-              <div className="text-center py-8 text-sm text-slate-500 dark:text-slate-400">
+              <div className="text-center py-8 text-body text-ink-500 dark:text-ink-400">
                 {isDE ? 'Keine Aktivität aufgezeichnet.' : 'No activity recorded yet.'}
               </div>
             ) : (
@@ -192,11 +192,11 @@ export function AnalyticsPage() {
 
           {/* Module Accuracy - Bar Chart */}
           <div className={theme.panel.surface}>
-            <h2 className="mb-4 text-lg font-semibold text-slate-950 dark:text-white">
+            <h2 className="mb-4 text-lg font-semibold text-ink-950 dark:text-white">
               {isDE ? 'Modulgenauigkeit' : 'Module Accuracy'}
             </h2>
             {moduleAccuracy.every((m) => m.value === 0) ? (
-              <div className="text-center py-8 text-sm text-slate-500 dark:text-slate-400">
+              <div className="text-center py-8 text-body text-ink-500 dark:text-ink-400">
                 {isDE ? 'Noch keine Quizze absolviert.' : 'No quizzes completed yet.'}
               </div>
             ) : (
@@ -219,11 +219,11 @@ export function AnalyticsPage() {
 
           {/* Errors by Module - Bar Chart */}
           <div className={theme.panel.surface}>
-            <h2 className="mb-4 text-lg font-semibold text-slate-950 dark:text-white">
+            <h2 className="mb-4 text-lg font-semibold text-ink-950 dark:text-white">
               {isDE ? 'Fehler pro Modul' : 'Errors by Module'}
             </h2>
             {errorsByModule.length === 0 ? (
-              <div className="text-center py-8 text-sm text-slate-500 dark:text-slate-400">
+              <div className="text-center py-8 text-body text-ink-500 dark:text-ink-400">
                 {isDE ? 'Keine Fehler in der Review-Warteschlange.' : 'No errors in the review queue.'}
               </div>
             ) : (
@@ -247,41 +247,41 @@ export function AnalyticsPage() {
           {/* Summary Stats */}
           <div className="space-y-4">
             <div className={theme.panel.accent}>
-              <h3 className="text-sm font-semibold text-slate-600 dark:text-slate-400">
+              <h3 className="text-body font-semibold text-ink-600 dark:text-ink-400">
                 {isDE ? 'Übersicht' : 'Overview'}
               </h3>
               <div className="mt-3 grid grid-cols-2 gap-4">
                 <div>
-                  <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{streakCount}</div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400">
+                  <div className="text-2xl font-bold text-accent-600 dark:text-accent-400">{streakCount}</div>
+                  <div className="text-meta text-ink-500 dark:text-ink-400">
                     {isDE ? 'Aktuelle Serie (Tage)' : 'Current Streak (days)'}
                   </div>
                 </div>
                 <div>
-                  <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{longestStreak}</div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400">
+                  <div className="text-2xl font-bold text-success-600 dark:text-success-400">{longestStreak}</div>
+                  <div className="text-meta text-ink-500 dark:text-ink-400">
                     {isDE ? 'Längste Serie (Tage)' : 'Longest Streak (days)'}
                   </div>
                 </div>
                 <div>
-                  <div className="text-2xl font-bold text-amber-600 dark:text-amber-400">{totalXp}</div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400">
+                  <div className="text-2xl font-bold text-warning-600 dark:text-warning-400">{totalXp}</div>
+                  <div className="text-meta text-ink-500 dark:text-ink-400">
                     {isDE ? 'Gesamt-XP' : 'Total XP'}
                   </div>
                 </div>
                 <div>
-                  <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{level}</div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400">{rank}</div>
+                  <div className="text-2xl font-bold text-accent-600 dark:text-accent-400">{level}</div>
+                  <div className="text-meta text-ink-500 dark:text-ink-400">{rank}</div>
                 </div>
                 <div>
-                  <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">{queue.length}</div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400">
+                  <div className="text-2xl font-bold text-accent-600 dark:text-accent-400">{queue.length}</div>
+                  <div className="text-meta text-ink-500 dark:text-ink-400">
                     {isDE ? 'Review-Einträge' : 'Review Items'}
                   </div>
                 </div>
                 <div>
-                  <div className="text-2xl font-bold text-teal-600 dark:text-teal-400">{totalActiveDays}</div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400">
+                  <div className="text-2xl font-bold text-success-600 dark:text-success-400">{totalActiveDays}</div>
+                  <div className="text-meta text-ink-500 dark:text-ink-400">
                     {isDE ? 'Aktive Tage (30d)' : 'Active Days (30d)'}
                   </div>
                 </div>
@@ -290,60 +290,60 @@ export function AnalyticsPage() {
 
             {/* Progress details */}
             <div className={theme.panel.surface}>
-              <h3 className="text-sm font-semibold text-slate-600 dark:text-slate-400 mb-2">
+              <h3 className="text-body font-semibold text-ink-600 dark:text-ink-400 mb-2">
                 {isDE ? 'Lernfortschritt' : 'Progress'}
               </h3>
               <div className="space-y-3">
                 <div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-slate-500 dark:text-slate-400">
+                  <div className="flex justify-between text-body">
+                    <span className="text-ink-500 dark:text-ink-400">
                       {isDE ? 'Quiz-Genauigkeit' : 'Quiz Accuracy'}
                     </span>
-                    <span className="font-medium text-slate-900 dark:text-white">
+                    <span className="font-medium text-ink-900 dark:text-white">
                       {progress.quizTotal
                         ? `${Math.round((progress.quizCorrect / progress.quizTotal) * 100)}%`
                         : isDE ? 'Keine Daten' : 'No data'}
                     </span>
                   </div>
                   {progress.quizTotal > 0 && (
-                    <div className="mt-1 h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
+                    <div className="mt-1 h-2 overflow-hidden rounded-full bg-ink-100 dark:bg-ink-800">
                       <div
-                        className="h-full rounded-full bg-blue-500"
+                        className="h-full rounded-full bg-accent-500"
                         style={{ width: `${Math.round((progress.quizCorrect / progress.quizTotal) * 100)}%` }}
                       />
                     </div>
                   )}
                 </div>
                 <div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-slate-500 dark:text-slate-400">
+                  <div className="flex justify-between text-body">
+                    <span className="text-ink-500 dark:text-ink-400">
                       {isDE ? 'Buchstaben geübt' : 'Letters Practiced'}
                     </span>
-                    <span className="font-medium text-slate-900 dark:text-white">
+                    <span className="font-medium text-ink-900 dark:text-white">
                       {progress.practiced.length}/26
                     </span>
                   </div>
                 </div>
                 <div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-slate-500 dark:text-slate-400">
+                  <div className="flex justify-between text-body">
+                    <span className="text-ink-500 dark:text-ink-400">
                       {isDE ? 'Rechtschreibung abgeschlossen' : 'Spelling Completed'}
                     </span>
-                    <span className="font-medium text-slate-900 dark:text-white">
+                    <span className="font-medium text-ink-900 dark:text-white">
                       {progress.spellCompleted}/10
                     </span>
                   </div>
                 </div>
                 <div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-slate-500 dark:text-slate-400">
+                  <div className="flex justify-between text-body">
+                    <span className="text-ink-500 dark:text-ink-400">
                       {isDE ? 'XP-Fortschritt' : 'XP Progress'}
                     </span>
-                    <span className="font-medium text-slate-900 dark:text-white">{xpProgress}%</span>
+                    <span className="font-medium text-ink-900 dark:text-white">{xpProgress}%</span>
                   </div>
                   {totalXp > 0 && (
-                    <div className="mt-1 h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
-                      <div className="h-full rounded-full bg-amber-500" style={{ width: `${xpProgress}%` }} />
+                    <div className="mt-1 h-2 overflow-hidden rounded-full bg-ink-100 dark:bg-ink-800">
+                      <div className="h-full rounded-full bg-warning-500" style={{ width: `${xpProgress}%` }} />
                     </div>
                   )}
                 </div>

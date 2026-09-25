@@ -152,18 +152,18 @@ export function ImportDeckPage() {
 
       <div className="mt-6">
         <div className={theme.panel.surface}>
-          <h2 className="mb-4 text-lg font-semibold text-slate-950 dark:text-white">
+          <h2 className="mb-4 text-lg font-semibold text-ink-950 dark:text-white">
             {isDE ? 'CSV-Format' : 'CSV Format'}
           </h2>
-          <p className="mb-2 text-sm text-slate-600 dark:text-slate-400">
+          <p className="mb-2 text-body text-ink-600 dark:text-ink-400">
             {isDE ? 'Benötigte Spalten:' : 'Required columns:'}
           </p>
-          <pre className="bg-slate-100 dark:bg-slate-800 p-3 rounded-lg text-sm">
+          <pre className="bg-ink-100 dark:bg-ink-800 p-3 rounded-sm text-body">
             {`de,en,ne,moduleTag
 Haus,house,घर,Numbers
 Hund,dog,कुत्ता,Animals`}
           </pre>
-          <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+          <p className="mt-2 text-body text-ink-500 dark:text-ink-400">
             {isDE 
               ? 'Spalten: deutsches Wort, englisches Wort, nepalesisches Wort, optionaler Modultag'
               : 'Columns: German word, English word, Nepali word, optional module tag'}
@@ -182,9 +182,9 @@ Hund,dog,कुत्ता,Animals`}
           
           <label
             htmlFor="csv-upload"
-            className={`inline-flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium transition ${
+            className={`inline-flex items-center justify-center gap-2 rounded-sm px-4 py-3 text-body font-medium transition ${
               file 
-                ? 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200'
+                ? 'bg-ink-100 text-ink-700 dark:bg-ink-800 dark:text-ink-200'
                 : `${theme.button.primary} cursor-pointer`
             }`}
           >
@@ -217,7 +217,7 @@ Hund,dog,कुत्ता,Animals`}
       </div>
 
       {error && (
-        <div className="mt-4 rounded-lg bg-red-50 p-4 text-sm text-red-700 dark:bg-red-900/30 dark:text-red-300">
+        <div className="mt-4 rounded-sm bg-danger-50 p-4 text-body text-danger-700 dark:bg-danger-900/30 dark:text-danger-300">
           {error}
         </div>
       )}
@@ -225,11 +225,11 @@ Hund,dog,कुत्ता,Animals`}
       {result && (
         <div className="mt-4">
           <div className={theme.panel.surface}>
-            <h2 className="mb-4 text-lg font-semibold text-slate-950 dark:text-white">
+            <h2 className="mb-4 text-lg font-semibold text-ink-950 dark:text-white">
               {isDE ? 'Import-Ergebnis' : 'Import Result'}
             </h2>
             
-            <div className="mb-4 rounded-lg bg-green-50 p-4 text-sm text-green-700 dark:bg-green-900/30 dark:text-green-300">
+            <div className="mb-4 rounded-sm bg-success-50 p-4 text-body text-success-700 dark:bg-success-900/30 dark:text-success-300">
               {isDE 
                 ? `${result.success} Wörter erfolgreich importiert`
                 : `${result.success} words successfully imported`}
@@ -237,10 +237,10 @@ Hund,dog,कुत्ता,Animals`}
 
             {result.errors.length > 0 && (
               <div>
-                <h3 className="mb-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
+                <h3 className="mb-2 text-body font-semibold text-ink-700 dark:text-ink-200">
                   {isDE ? 'Fehler:' : 'Errors:'}
                 </h3>
-                <ul className="list-inside space-y-1 text-sm text-red-600 dark:text-red-400">
+                <ul className="list-inside space-y-1 text-body text-danger-600 dark:text-danger-400">
                   {result.errors.map((err, i) => (
                     <li key={i}>• {err}</li>
                   ))}
@@ -249,11 +249,11 @@ Hund,dog,कुत्ता,Animals`}
             )}
           </div>
 
-          <div className="mt-4 rounded-lg bg-white p-4 shadow-sm dark:bg-slate-900">
-            <h3 className="mb-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
+          <div className="mt-4 rounded-sm border border-ink-200 bg-white p-4 shadow-sm dark:bg-ink-900 dark:border-ink-800">
+            <h3 className="mb-2 text-body font-semibold text-ink-700 dark:text-ink-200">
               {isDE ? 'Nächste Schritte' : 'Next Steps'}
             </h3>
-            <ul className="list-inside space-y-1 text-sm text-slate-600 dark:text-slate-400">
+            <ul className="list-inside space-y-1 text-body text-ink-600 dark:text-ink-400">
               <li>• {isDE ? 'Gehen Sie zu "Lernen" um die importierten Wörter zu üben.' : 'Go to "Learn" to practice the imported words.'}</li>
               <li>• {isDE ? 'Die Wörter beginnen in Box 1 des SRS-Systems.' : 'Words start in Box 1 of the SRS system.'}</li>
               <li>• {isDE ? 'Korrekte Antworten bewegen sie zur nächsten Box.' : 'Correct answers move them to the next box.'}</li>

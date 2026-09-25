@@ -76,19 +76,19 @@ export function Breadcrumb() {
       aria-label={isDE ? 'Breadcrumb-Navigation' : 'Breadcrumb navigation'}
       className="mb-4"
     >
-      <ol className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+      <ol className="flex items-center gap-2 text-body text-ink-600 dark:text-ink-400">
         {breadcrumbs.map((crumb, index) => {
           const isLast = index === breadcrumbs.length - 1;
           return (
             <li key={crumb.path} className="flex items-center gap-2">
               {index > 0 && (
-                <span className="text-slate-400 dark:text-slate-600" aria-hidden="true">
+                <span className="text-ink-500 dark:text-ink-600" aria-hidden="true">
                   /
                 </span>
               )}
               {isLast ? (
                 <span
-                  className="font-semibold text-slate-900 dark:text-slate-100"
+                  className="font-semibold text-ink-900 dark:text-ink-100"
                   aria-current="page"
                 >
                   {crumb.label}
@@ -96,7 +96,7 @@ export function Breadcrumb() {
               ) : (
                 <Link
                   to={crumb.path}
-                  className="inline-flex min-h-[44px] items-center hover:text-blue-600 dark:hover:text-blue-400 transition-colors focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:outline-none focus-visible:ring-offset-2 rounded px-1"
+                  className="inline-flex min-h-[44px] items-center hover:text-accent-600 dark:hover:text-accent-400 transition-colors focus-visible:ring-2 focus-visible:ring-accent-600 focus-visible:outline-none focus-visible:ring-offset-2 rounded-sm px-1"
                 >
                   {crumb.label}
                 </Link>

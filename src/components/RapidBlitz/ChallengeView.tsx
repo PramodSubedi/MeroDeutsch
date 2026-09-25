@@ -40,7 +40,7 @@ export function ChallengeView({
   if (isLoading) {
     return (
       <div className={`${theme.panel.surface} flex min-h-64 items-center justify-center`}>
-        <div className="text-center text-slate-500 dark:text-slate-400">Loading challenge...</div>
+        <div className="text-center text-ink-500 dark:text-ink-400">Loading challenge...</div>
       </div>
     );
   }
@@ -48,7 +48,7 @@ export function ChallengeView({
   if (!challenge) {
     return (
       <div className={`${theme.panel.surface} flex min-h-64 items-center justify-center`}>
-        <div className="text-center text-slate-500 dark:text-slate-400">No challenge available</div>
+        <div className="text-center text-ink-500 dark:text-ink-400">No challenge available</div>
       </div>
     );
   }
@@ -85,7 +85,7 @@ export function ChallengeView({
     default:
       return (
         <div className={`${theme.panel.surface} flex min-h-64 items-center justify-center`}>
-          <div className="text-center text-slate-500">Challenge type not yet implemented</div>
+          <div className="text-center text-ink-500">Challenge type not yet implemented</div>
         </div>
       );
   }
@@ -102,10 +102,10 @@ function optionClass(
   lastChoice: string | null,
   locked: boolean | undefined
 ): string {
-  const neutral = 'bg-slate-600 hover:bg-slate-700';
+  const neutral = 'bg-ink-600 hover:bg-ink-700';
   if (!locked || lastChoice === null) return neutral;
-  if (value === correctValue) return 'bg-emerald-600 hover:bg-emerald-700';
-  if (value === lastChoice) return 'bg-red-600 hover:bg-red-700';
+  if (value === correctValue) return 'bg-success-600 hover:bg-success-700';
+  if (value === lastChoice) return 'bg-danger-600 hover:bg-danger-700';
   return `${neutral} opacity-60`;
 }
 
@@ -141,16 +141,16 @@ function VocabularyTranslationView({
   return (
     <div className={theme.panel.surface}>
       <div className="mb-4 text-center">
-        <div className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+        <div className="text-meta font-semibold uppercase tracking-wider text-ink-500 dark:text-ink-400">
           Vocabulary Translation
         </div>
       </div>
 
-      <div className="rounded-2xl border-2 border-blue-200 bg-blue-50 p-6 text-center dark:border-blue-800 dark:bg-blue-950/40">
-        <div className="text-4xl font-extrabold text-slate-900 dark:text-white">
+      <div className="rounded-lg border-2 border-accent-200 bg-accent-50 p-6 text-center dark:border-accent-800 dark:bg-accent-950/40">
+        <div className="text-4xl font-extrabold text-ink-900 dark:text-white">
           {challenge.english}
         </div>
-        <div className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+        <div className="mt-2 text-body text-ink-600 dark:text-ink-400">
           Select the German word
         </div>
       </div>
@@ -162,7 +162,7 @@ function VocabularyTranslationView({
             type="button"
             onClick={() => handleClick(option)}
             disabled={locked}
-            className={`rounded-2xl px-4 py-3 text-base font-semibold text-white shadow transition-colors disabled:opacity-50 ${optionClass(
+            className={`rounded-lg px-4 py-3 text-body font-semibold text-white shadow transition-colors disabled:opacity-50 ${optionClass(
               option,
               challenge.german,
               lastChoice,
@@ -204,20 +204,20 @@ function AudioComprehensionView({
   return (
     <div className={theme.panel.surface}>
       <div className="mb-4 text-center">
-        <div className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+        <div className="text-meta font-semibold uppercase tracking-wider text-ink-500 dark:text-ink-400">
           Audio Comprehension
         </div>
       </div>
 
-      <div className="rounded-2xl border-2 border-purple-200 bg-purple-50 p-6 text-center dark:border-purple-800 dark:bg-purple-950/40">
-        <div className="mb-4 text-sm text-slate-600 dark:text-slate-400">
+      <div className="rounded-lg border-2 border-accent-200 bg-accent-50 p-6 text-center dark:border-accent-800 dark:bg-accent-950/40">
+        <div className="mb-4 text-body text-ink-600 dark:text-ink-400">
           Listen to the audio, then select the meaning
         </div>
         <button
           type="button"
           onClick={handlePlayAudio}
           disabled={locked}
-          className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-purple-600 text-3xl shadow transition hover:bg-purple-700 active:scale-95 disabled:opacity-50"
+          className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-accent-600 text-3xl shadow transition hover:bg-accent-700 active:scale-95 disabled:opacity-50"
           aria-label={`Play audio: ${challenge.word}`}
         >
           🔊
@@ -231,7 +231,7 @@ function AudioComprehensionView({
             type="button"
             onClick={() => handleClick(option)}
             disabled={locked}
-            className={`rounded-2xl px-4 py-3 text-base font-semibold text-white shadow transition-colors disabled:opacity-50 ${optionClass(
+            className={`rounded-lg px-4 py-3 text-body font-semibold text-white shadow transition-colors disabled:opacity-50 ${optionClass(
               option,
               challenge.meaning,
               lastChoice,
@@ -263,21 +263,21 @@ function ArticlePrecisionView({
   return (
     <div className={theme.panel.surface}>
       <div className="mb-4 text-center">
-        <div className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+        <div className="text-meta font-semibold uppercase tracking-wider text-ink-500 dark:text-ink-400">
           Article Precision
         </div>
       </div>
 
       {/* Well tint = das gender token family (emerald) — article mode aligns
           with the global gender color system. */}
-      <div className="rounded-2xl border-2 border-emerald-200 bg-emerald-50 p-6 text-center dark:border-emerald-800 dark:bg-emerald-950/40">
+      <div className="rounded-lg border-2 border-success-200 bg-success-50 p-6 text-center dark:border-success-800 dark:bg-success-950/40">
         <div className="flex items-center justify-center gap-3">
-          <div className="text-4xl font-extrabold text-slate-900 dark:text-white">
+          <div className="text-4xl font-extrabold text-ink-900 dark:text-white">
             {challenge.noun}
           </div>
           <CompactAudioButton word={challenge.noun} />
         </div>
-        <div className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+        <div className="mt-2 text-body text-ink-600 dark:text-ink-400">
           Select the correct article
         </div>
       </div>
@@ -289,7 +289,7 @@ function ArticlePrecisionView({
             type="button"
             onClick={() => handleClick(article)}
             disabled={locked}
-            className={`rounded-2xl px-3 py-3 text-lg font-extrabold text-white shadow transition-colors disabled:opacity-50 ${
+            className={`rounded-lg px-3 py-3 text-lg font-extrabold text-white shadow transition-colors disabled:opacity-50 ${
               locked && lastChoice !== null
                 ? optionClass(article, challenge.article, lastChoice, locked)
                 : // Global gender color tokens: der=blue, die=red, das=green.
@@ -325,16 +325,16 @@ function NumberConversionView({
   return (
     <div className={theme.panel.surface}>
       <div className="mb-4 text-center">
-        <div className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+        <div className="text-meta font-semibold uppercase tracking-wider text-ink-500 dark:text-ink-400">
           Number Conversion
         </div>
       </div>
 
-      <div className="rounded-2xl border-2 border-amber-200 bg-amber-50 p-6 text-center dark:border-amber-800 dark:bg-amber-950/40">
-        <div className="text-4xl font-extrabold text-slate-900 dark:text-white">
+      <div className="rounded-lg border-2 border-warning-200 bg-warning-50 p-6 text-center dark:border-warning-800 dark:bg-warning-950/40">
+        <div className="text-4xl font-extrabold text-ink-900 dark:text-white">
           {isDigitToText ? challenge.number : challenge.germanText}
         </div>
-        <div className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+        <div className="mt-2 text-body text-ink-600 dark:text-ink-400">
           {isDigitToText ? 'Select the German text' : 'Select the number'}
         </div>
       </div>
@@ -346,7 +346,7 @@ function NumberConversionView({
             type="button"
             onClick={() => handleClick(option)}
             disabled={locked}
-            className={`rounded-2xl px-4 py-3 text-base font-semibold text-white shadow transition-colors disabled:opacity-50 ${optionClass(
+            className={`rounded-lg px-4 py-3 text-body font-semibold text-white shadow transition-colors disabled:opacity-50 ${optionClass(
               option,
               correctValue,
               lastChoice,
@@ -377,16 +377,16 @@ function VerbConjugationView({
   return (
     <div className={theme.panel.surface}>
       <div className="mb-4 text-center">
-        <div className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+        <div className="text-meta font-semibold uppercase tracking-wider text-ink-500 dark:text-ink-400">
           Verb Conjugation
         </div>
       </div>
 
-      <div className="rounded-2xl border-2 border-indigo-200 bg-indigo-50 p-6 text-center dark:border-indigo-800 dark:bg-indigo-950/40">
-        <div className="text-3xl font-extrabold text-slate-900 dark:text-white">
+      <div className="rounded-lg border-2 border-accent-200 bg-accent-50 p-6 text-center dark:border-accent-800 dark:bg-accent-950/40">
+        <div className="text-3xl font-extrabold text-ink-900 dark:text-white">
           {challenge.pronoun} {challenge.verb ? `(${challenge.verb})` : ''}
         </div>
-        <div className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+        <div className="mt-2 text-body text-ink-600 dark:text-ink-400">
           Select the correct verb form
         </div>
       </div>
@@ -398,7 +398,7 @@ function VerbConjugationView({
             type="button"
             onClick={() => handleClick(option)}
             disabled={locked}
-            className={`rounded-2xl px-4 py-3 text-base font-semibold text-white shadow transition-colors disabled:opacity-50 ${optionClass(
+            className={`rounded-lg px-4 py-3 text-body font-semibold text-white shadow transition-colors disabled:opacity-50 ${optionClass(
               option,
               challenge.conjugated,
               lastChoice,
@@ -513,27 +513,27 @@ function PronunciationReadingView({
   return (
     <div className={theme.panel.surface}>
       <div className="mb-4 text-center">
-        <div className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+        <div className="text-meta font-semibold uppercase tracking-wider text-ink-500 dark:text-ink-400">
           Pronunciation & Reading
         </div>
       </div>
 
-      <div className="rounded-2xl border-2 border-rose-200 bg-rose-50 p-6 text-center dark:border-rose-800 dark:bg-rose-950/40">
-        <div className="text-4xl font-extrabold text-slate-900 dark:text-white">
+      <div className="rounded-lg border-2 border-danger-200 bg-danger-50 p-6 text-center dark:border-danger-800 dark:bg-danger-950/40">
+        <div className="text-4xl font-extrabold text-ink-900 dark:text-white">
           {challenge.text}
         </div>
-        <div className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+        <div className="mt-2 text-body text-ink-600 dark:text-ink-400">
           Read the word out loud
         </div>
 
         {/* Feedback banner after speech evaluation */}
         {speechResult === 'correct' && (
-          <div className="mt-3 inline-block rounded-full bg-emerald-500 px-4 py-1.5 text-sm font-bold text-white">
+          <div className="mt-3 inline-block rounded-full bg-success-500 px-4 py-1.5 text-body font-bold text-white">
             ✅ Richtig — gut gemacht!
           </div>
         )}
         {speechResult === 'wrong' && (
-          <div className="mt-3 inline-block rounded-full bg-red-500 px-4 py-1.5 text-sm font-bold text-white">
+          <div className="mt-3 inline-block rounded-full bg-danger-500 px-4 py-1.5 text-body font-bold text-white">
             ❌ Say it like: {challenge.text}
           </div>
         )}
@@ -544,7 +544,7 @@ function PronunciationReadingView({
             type="button"
             onClick={handlePlayAudio}
             disabled={locked}
-            className="flex h-14 w-14 items-center justify-center rounded-full bg-rose-600 text-2xl shadow transition hover:bg-rose-700 active:scale-95 disabled:opacity-50"
+            className="flex h-14 w-14 items-center justify-center rounded-full bg-danger-600 text-2xl shadow transition hover:bg-danger-700 active:scale-95 disabled:opacity-50"
             aria-label={`Play audio: ${challenge.text}`}
           >
             🔊
@@ -555,8 +555,8 @@ function PronunciationReadingView({
               type="button"
               onClick={handleSpeak}
               disabled={locked || listening || speechPhase === 'done'}
-              className={`rounded-full px-6 py-3 text-base font-bold text-white shadow transition active:scale-95 disabled:opacity-50 ${
-                listening ? 'bg-red-500 animate-pulse' : 'bg-rose-600 hover:bg-rose-700'
+              className={`rounded-full px-6 py-3 text-body font-bold text-white shadow transition active:scale-95 disabled:opacity-50 ${
+                listening ? 'bg-danger-500 animate-pulse' : 'bg-danger-600 hover:bg-danger-700'
               }`}
             >
               🎤 {listening ? 'Listening…' : speechPhase === 'done' ? 'Done' : 'Speak'}
@@ -573,10 +573,10 @@ function PronunciationReadingView({
                 setSpeechPhase('done');
               }}
               disabled={locked || speechPhase === 'done'}
-              className={`rounded-full px-6 py-3 text-base font-bold text-white shadow transition active:scale-95 disabled:opacity-50 ${
+              className={`rounded-full px-6 py-3 text-body font-bold text-white shadow transition active:scale-95 disabled:opacity-50 ${
                 speechPhase === 'done'
-                  ? 'bg-emerald-500'
-                  : 'bg-rose-600 hover:bg-rose-700'
+                  ? 'bg-success-500'
+                  : 'bg-danger-600 hover:bg-danger-700'
               }`}
             >
               🎤 I said it
@@ -585,7 +585,7 @@ function PronunciationReadingView({
         </div>
 
         {(speechMessage || status) && speechPhase !== 'done' && (
-          <div className="mt-3 text-xs font-medium text-slate-500 dark:text-slate-400">
+          <div className="mt-3 text-meta font-medium text-ink-500 dark:text-ink-400">
             {speechMessage || status}
           </div>
         )}

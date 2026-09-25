@@ -1,4 +1,4 @@
-import { Check, X } from 'lucide-react';
+﻿import { Check, X } from 'lucide-react';
 import { useLang } from '../../hooks/useLang';
 
 /**
@@ -8,7 +8,7 @@ import { useLang } from '../../hooks/useLang';
  * "With MeroDeutsch" checklist. No app chrome needed.
  * Guest-safe: presentational only, no links, no auth.
  */
-export function HeroOptionD() {
+export function BenefitsPanel() {
   const { langMode } = useLang();
   const isDE = langMode === 'german';
 
@@ -29,15 +29,15 @@ export function HeroOptionD() {
   return (
     <div className="grid w-full max-w-4xl gap-4 sm:grid-cols-2">
       {/* Without */}
-      <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800/60">
-        <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-400">
+      <div className="rounded-lg border border-ink-200 bg-ink-50 p-6 shadow-sm dark:border-ink-700 dark:bg-ink-800/60">
+        <p className="text-meta font-bold uppercase tracking-[0.16em] text-ink-500">
           {isDE ? 'Übliche Apps' : 'Typical apps'}
         </p>
         <ul className="mt-4 space-y-3">
           {without.map((item) => (
-            <li key={item} className="flex items-start gap-2.5 text-sm text-slate-500 dark:text-slate-400">
-              <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-slate-200 dark:bg-slate-700">
-                <X className="h-3 w-3 text-slate-500 dark:text-slate-400" />
+            <li key={item} className="flex items-start gap-2.5 text-body text-ink-500 dark:text-ink-400">
+              <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-ink-200 dark:bg-ink-700">
+                <X className="h-3 w-3 text-ink-500 dark:text-ink-400" />
               </span>
               {item}
             </li>
@@ -46,12 +46,12 @@ export function HeroOptionD() {
       </div>
 
       {/* With MeroDeutsch */}
-      <div className="rounded-2xl border border-blue-200 bg-blue-50 p-6 shadow-lg shadow-blue-600/10 dark:border-blue-800 dark:bg-blue-950/40">
-        <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-500 dark:text-blue-400">MeroDeutsch</p>
+      <div className="rounded-lg border border-accent-200 bg-accent-50 p-6 shadow-lg shadow-accent-600/10 dark:border-accent-800 dark:bg-accent-950/40">
+        <p className="text-meta font-bold uppercase tracking-[0.16em] text-accent-500 dark:text-accent-400">MeroDeutsch</p>
         <ul className="mt-4 space-y-3">
           {withUs.map((item) => (
-            <li key={item} className="flex items-start gap-2.5 text-sm font-medium text-slate-800 dark:text-slate-100">
-              <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-600">
+            <li key={item} className="flex items-start gap-2.5 text-body font-medium text-ink-800 dark:text-ink-100">
+              <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-accent-600">
                 <Check className="h-3 w-3 text-white" />
               </span>
               {item}

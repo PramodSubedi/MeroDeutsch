@@ -79,9 +79,9 @@ export function TabGroup<T extends string = string>({
                   <span
                     className={`ml-1 inline-flex items-center justify-center rounded-full ${
                       isActive
-                        ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300'
-                        : 'bg-slate-200 text-slate-600 dark:bg-slate-600 dark:text-slate-300'
-                    } ${isCompact ? 'h-4 min-w-[16px] px-1 text-[10px]' : 'h-5 min-w-[20px] px-1.5 text-xs'} font-semibold`}
+                        ? 'bg-accent-100 text-accent-700 dark:bg-accent-900/40 dark:text-accent-300'
+                        : 'bg-ink-200 text-ink-600 dark:bg-ink-600 dark:text-ink-300'
+                    } ${isCompact ? 'h-4 min-w-[16px] px-1 text-[10px]' : 'h-5 min-w-[20px] px-1.5 text-meta'} font-semibold`}
                   >
                     {tab.badge}
                   </span>
@@ -98,7 +98,7 @@ export function TabGroup<T extends string = string>({
       {rightControls && (
         <>
           <div
-            className={`h-8 w-px bg-slate-200 dark:bg-slate-700 ${isCompact ? 'hidden sm:block' : ''}`}
+            className={`h-8 w-px bg-ink-200 dark:bg-ink-700 ${isCompact ? 'hidden sm:block' : ''}`}
             aria-hidden="true"
           />
           {rightControls}
