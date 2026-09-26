@@ -26,22 +26,18 @@ import {
 } from 'recharts';
 import { Target } from 'lucide-react';
 import { useLang } from '../hooks/useLang';
-import { useSkillAccuracy, type SkillCategory } from '../hooks/useSkillAccuracy';
+import { useSkillAccuracy, skillLabel, SKILL_ROUTES, type SkillCategory } from '../hooks/useSkillAccuracy';
 
 const BRAND_BLUE = '#2563eb';
 
-/** Localized labels + drill-down hints per category. */
+/** Localized drill-down hint per category. The hint IS the route the chart has
+    always linked to — it now reads `SKILL_ROUTES` so a new "recommended for
+    you" surface cannot send a learner somewhere different. */
 function skillMeta(category: SkillCategory, isDE: boolean): { label: string; hint: string } {
-  switch (category) {
-    case 'grammar':
-      return { label: isDE ? 'Grammatik' : 'Grammar', hint: '/grammar' };
-    case 'vocabulary':
-      return { label: isDE ? 'Wortschatz' : 'Vocabulary', hint: '/glossary' };
-    case 'listening':
-      return { label: isDE ? 'Hören' : 'Listening', hint: '/dictation' };
-    case 'spelling':
-      return { label: isDE ? 'Rechtschreibung' : 'Spelling', hint: '/alphabet' };
-  }
+  return {
+    label: skillLabel(category, isDE),
+    hint: SKILL_ROUTES[category],
+  };
 }
 
 /** Accuracy -> tactical tone. */

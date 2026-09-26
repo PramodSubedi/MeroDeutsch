@@ -1,0 +1,899 @@
+{
+  "cefr": "A1.2",
+  "docRoute": "/vocab",
+  "objectives": {
+    "en": [
+      "Identify body parts, express physical ailments (weh tun), make doctor appointments, and understand health advice."
+    ]
+  },
+  "lexicon": [
+    {
+      "word": "Körper",
+      "en": "Body",
+      "ne": "शरीर",
+      "article": "der",
+      "plural": "Körper",
+      "ipa": "/ˈkœʁpɐ/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Der menschliche Körper ist komplex.",
+          "en": "The human body is complex.",
+          "ne": "मानव शरीर जटिल हुन्छ।"
+        }
+      ]
+    },
+    {
+      "word": "Kopf",
+      "en": "Head",
+      "ne": "टाउको",
+      "article": "der",
+      "plural": "Köpfe",
+      "ipa": "/kɔpf/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Mein Kopf tut weh.",
+          "en": "My head hurts.",
+          "ne": "मेरो टाउको दुखिरहेको छ।"
+        }
+      ]
+    },
+    {
+      "word": "Auge",
+      "en": "Eye",
+      "ne": "आँखा",
+      "article": "das",
+      "plural": "Augen",
+      "ipa": "/ˈaʊ̯ɡə/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Meine Augen sind blau.",
+          "en": "My eyes are blue.",
+          "ne": "मेरो आँखा नीलो छ।"
+        }
+      ]
+    },
+    {
+      "word": "Ohr",
+      "en": "Ear",
+      "ne": "कान",
+      "article": "das",
+      "plural": "Ohren",
+      "ipa": "/oːɐ̯/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Mein Ohr tut weh.",
+          "en": "My ear hurts.",
+          "ne": "मेरो कान दुखिरहेको छ।"
+        }
+      ]
+    },
+    {
+      "word": "Nase",
+      "en": "Nose",
+      "ne": "नाक",
+      "article": "die",
+      "plural": "Nasen",
+      "ipa": "/ˈnaːzə/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Die Nase ist rot.",
+          "en": "The nose is red.",
+          "ne": "नाक रातो छ।"
+        }
+      ]
+    },
+    {
+      "word": "Mund",
+      "en": "Mouth",
+      "ne": "मुख",
+      "article": "der",
+      "plural": "Münder",
+      "ipa": "/mʊnt/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Öffnen Sie den Mund!",
+          "en": "Open your mouth!",
+          "ne": "मुख खोल्नुहोस्!"
+        }
+      ]
+    },
+    {
+      "word": "Zahn",
+      "en": "Tooth",
+      "ne": "दाँत",
+      "article": "der",
+      "plural": "Zähne",
+      "ipa": "/tsaːn/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Ich habe Zahnschmerzen.",
+          "en": "I have a toothache.",
+          "ne": "मेरो दाँत दुखेको छ।"
+        }
+      ]
+    },
+    {
+      "word": "Hals",
+      "en": "Throat / Neck",
+      "ne": "घाँटी",
+      "article": "der",
+      "plural": "Hälse",
+      "ipa": "/hals/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Mein Hals ist rot.",
+          "en": "My throat is red.",
+          "ne": "मेरो घाँटी रातो छ।"
+        }
+      ]
+    },
+    {
+      "word": "Arm",
+      "en": "Arm",
+      "ne": "हात (पाखुरा)",
+      "article": "der",
+      "plural": "Arme",
+      "ipa": "/aʁm/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Mein rechter Arm tut weh.",
+          "en": "My right arm hurts.",
+          "ne": "मेरो दाहिने हात दुखिरहेको छ।"
+        }
+      ]
+    },
+    {
+      "word": "Hand",
+      "en": "Hand",
+      "ne": "हात (हत्केला)",
+      "article": "die",
+      "plural": "Hände",
+      "ipa": "/hant/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Waschen Sie die Hände!",
+          "en": "Wash your hands!",
+          "ne": "हात धुनुहोस्!"
+        }
+      ]
+    },
+    {
+      "word": "Finger",
+      "en": "Finger",
+      "ne": "औँला",
+      "article": "der",
+      "plural": "Finger",
+      "ipa": "/ˈfɪŋɐ/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Er hat fünf Finger.",
+          "en": "He has five fingers.",
+          "ne": "उहाँका पाँच वटा औँला छन्।"
+        }
+      ]
+    },
+    {
+      "word": "Bauch",
+      "en": "Stomach / Belly",
+      "ne": "पेट",
+      "article": "der",
+      "plural": "Bäuche",
+      "ipa": "/baʊ̯x/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Mein Bauch tut weh.",
+          "en": "My stomach hurts.",
+          "ne": "मेरो पेट दुखिरहेको छ।"
+        }
+      ]
+    },
+    {
+      "word": "Rücken",
+      "en": "Back",
+      "ne": "ढाड / पिठ्युँ",
+      "article": "der",
+      "plural": "Rücken",
+      "ipa": "/ˈʁʏkn̩/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Ich habe Rückenschmerzen.",
+          "en": "I have back pain.",
+          "ne": "मेरो ढाड दुखेको छ।"
+        }
+      ]
+    },
+    {
+      "word": "Bein",
+      "en": "Leg",
+      "ne": "खुट्टा",
+      "article": "das",
+      "plural": "Beine",
+      "ipa": "/baɪ̯n/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Mein Bein ist gebrochen.",
+          "en": "My leg is broken.",
+          "ne": "मेरो खुट्टा भाँच्चिएको छ।"
+        }
+      ]
+    },
+    {
+      "word": "Fuß",
+      "en": "Foot",
+      "ne": "पाइला / गोडा",
+      "article": "der",
+      "plural": "Füße",
+      "ipa": "/fuːs/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Mein Fuß tut weh.",
+          "en": "My foot hurts.",
+          "ne": "मेरो पाइला दुखिरहेको छ।"
+        }
+      ]
+    },
+    {
+      "word": "Schmerz",
+      "en": "Pain",
+      "ne": "दुखाइ",
+      "article": "der",
+      "plural": "Schmerzen",
+      "ipa": "/ʃmɛʁts/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Haben Sie Schmerzen?",
+          "en": "Do you have pain?",
+          "ne": "तपाईंलाई दुखाइ छ?"
+        }
+      ]
+    },
+    {
+      "word": "Kopfschmerzen",
+      "en": "Headache",
+      "ne": "टाउको दुखाइ",
+      "article": "die",
+      "plural": "-",
+      "ipa": "/ˈkɔpf_ʃmɛʁtsn̩/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Ich habe schwere Kopfschmerzen.",
+          "en": "I have a severe headache.",
+          "ne": "मलाई कडा टाउको दुखेको छ।"
+        }
+      ]
+    },
+    {
+      "word": "Bauchschmerzen",
+      "en": "Stomach ache",
+      "ne": "पेट दुखाइ",
+      "article": "die",
+      "plural": "-",
+      "ipa": "/ˈbaʊ̯x_ʃmɛʁtsn̩/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Das Kind hat Bauchschmerzen.",
+          "en": "The child has a stomach ache.",
+          "ne": "बच्चाको पेट दुखेको छ।"
+        }
+      ]
+    },
+    {
+      "word": "Fieber",
+      "en": "Fever",
+      "ne": "ज्वरो",
+      "article": "das",
+      "plural": "-",
+      "ipa": "/ˈfiːbɐ/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Ich habe 39 Grad Fieber.",
+          "en": "I have 39 degrees fever.",
+          "ne": "मलाई ३९ डिग्री ज्वरो छ।"
+        }
+      ]
+    },
+    {
+      "word": "Grippe",
+      "en": "Flu / Influenza",
+      "ne": "रुघाखोकी / फ्लु",
+      "article": "die",
+      "plural": "Grippen",
+      "ipa": "/ˈɡʁɪpə/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Er hat eine schwere Grippe.",
+          "en": "He has a severe flu.",
+          "ne": "उहाँलाई कडा रुघाखोकी लागेको छ।"
+        }
+      ]
+    },
+    {
+      "word": "Husten",
+      "en": "Cough",
+      "ne": "खोकी",
+      "article": "der",
+      "plural": "-",
+      "ipa": "/ˈhuːstn̩/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Ich habe starken Husten.",
+          "en": "I have a strong cough.",
+          "ne": "मलाई कडा खोकी लागेको छ।"
+        }
+      ]
+    },
+    {
+      "word": "Schnupfen",
+      "en": "Runny nose / Cold",
+      "ne": "सिँगान बग्ने रुघा",
+      "article": "der",
+      "plural": "-",
+      "ipa": "/ˈʃnʊpfn̩/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Im Winter habe ich oft Schnupfen.",
+          "en": "In winter I often have a cold.",
+          "ne": "जाडोमा मलाई प्रायः रुघा लाग्छ।"
+        }
+      ]
+    },
+    {
+      "word": "Medizin / Medikament",
+      "en": "Medicine / Medication",
+      "ne": "औषधि",
+      "plural": "Medikamente",
+      "ipa": "/medikaˈmɛnt/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Nehmen Sie diese Medizin dreimal täglich.",
+          "en": "Take this medicine three times daily.",
+          "ne": "यो औषधि दिनको तीन पटक लिनुहोस्।"
+        }
+      ]
+    },
+    {
+      "word": "Tablette",
+      "en": "Tablet / Pill",
+      "ne": "ट्याब्लेट / चक्की",
+      "article": "die",
+      "plural": "Tabletten",
+      "ipa": "/taˈblɛtə/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Ich nehme eine Tablette gegen Schmerzen.",
+          "en": "I take a tablet for pain.",
+          "ne": "म दुखाइको लागि एउटा चक्की लिन्छु।"
+        }
+      ]
+    },
+    {
+      "word": "Rezept",
+      "en": "Prescription",
+      "ne": "प्रेस्क्रिप्सन / सिफारिस पत्र",
+      "article": "das",
+      "plural": "Rezepte",
+      "ipa": "/ʁeˈtsɛpt/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Der Arzt schreibt ein Rezept.",
+          "en": "The doctor writes a prescription.",
+          "ne": "डाक्टरले सिफारिस पत्र लेख्नुहुन्छ।"
+        }
+      ]
+    },
+    {
+      "word": "Apotheke",
+      "en": "Pharmacy",
+      "ne": "औषधि पसल",
+      "article": "die",
+      "plural": "Apotheken",
+      "ipa": "/apoˈteːkə/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Ich kaufe Medizin in der Apotheke.",
+          "en": "I buy medicine in the pharmacy.",
+          "ne": "म औषधि पसलबाट औषधि किन्छु।"
+        }
+      ]
+    },
+    {
+      "word": "Krankenhaus",
+      "en": "Hospital",
+      "ne": "अस्पताल",
+      "article": "das",
+      "plural": "Krankenhäuser",
+      "ipa": "/ˈkʁaŋkn̩_haʊ̯s/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Er ist im Krankenhaus.",
+          "en": "He is in the hospital.",
+          "ne": "उहाँ अस्पतालमा हुनुहुन्छ।"
+        }
+      ]
+    },
+    {
+      "word": "Notarzt",
+      "en": "Emergency doctor",
+      "ne": "आपतकालीन डाक्टर",
+      "article": "der",
+      "plural": "Notärzte",
+      "ipa": "/ˈnoːt_ʔaʁts/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Rufen Sie den Notarzt!",
+          "en": "Call the emergency doctor!",
+          "ne": "आपतकालीन डाक्टरलाई बोलाउनुहोस्!"
+        }
+      ]
+    },
+    {
+      "word": "Krankenwagen",
+      "en": "Ambulance",
+      "ne": "एम्बुलेन्स",
+      "article": "der",
+      "plural": "Krankenwagen",
+      "ipa": "/ˈkʁaŋkn̩_vaːɡn̩/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Der Krankenwagen kommt sofort.",
+          "en": "The ambulance comes immediately.",
+          "ne": "एम्बुलेन्स तुरुन्तै आउँदैछ।"
+        }
+      ]
+    },
+    {
+      "word": "Termin",
+      "en": "Appointment",
+      "ne": "भेटघाट समय",
+      "article": "der",
+      "plural": "Termine",
+      "ipa": "/tɛʁˈmiːn/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Ich habe einen Termin beim Arzt.",
+          "en": "I have an appointment at the doctor's.",
+          "ne": "मेरो डाक्टरकहाँ भेटघाट समय छ।"
+        }
+      ]
+    },
+    {
+      "word": "weh tun",
+      "en": "to hurt / ache",
+      "ne": "दुख्नु",
+      "plural": "tut weh / tat weh / wehgetan",
+      "ipa": "/ˈveː_tuːn/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Mein Rücken tut weh.",
+          "en": "My back hurts.",
+          "ne": "मेरो ढाड दुखिरहेको छ।"
+        }
+      ]
+    },
+    {
+      "word": "krank",
+      "en": "Sick / Ill",
+      "ne": "बिरामी",
+      "plural": "-",
+      "ipa": "/kʁaŋk/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Ich bin krank und bleibe im Bett.",
+          "en": "I am sick and stay in bed.",
+          "ne": "म बिरामी छु र ओछ्यानमै बस्छु।"
+        }
+      ]
+    },
+    {
+      "word": "gesund",
+      "en": "Healthy",
+      "ne": "स्वस्थ",
+      "plural": "-",
+      "ipa": "/ɡəˈzʊnt/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Gute Besserung! Werde schnell gesund.",
+          "en": "Get well soon! Become healthy quickly.",
+          "ne": "शीघ्र स्वास्थ्य लाभको शुभकामना!"
+        }
+      ]
+    },
+    {
+      "word": "müde",
+      "en": "Tired",
+      "ne": "थकित",
+      "plural": "-",
+      "ipa": "/ˈmyːdə/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Ich bin sehr müde.",
+          "en": "I am very tired.",
+          "ne": "म धेरै थकित छु।"
+        }
+      ]
+    },
+    {
+      "word": "Gute Besserung",
+      "en": "Get well soon!",
+      "ne": "शीघ्र स्वास्थ्य लाभको शुभकामना!",
+      "plural": "-",
+      "ipa": "/ˈɡuːtə bɛsəʁʊŋ/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Gute Besserung, mein Freund!",
+          "en": "Get well soon, my friend!",
+          "ne": "शीघ्र स्वास्थ्य लाभको शुभकामना, मेरो साथी!"
+        }
+      ]
+    },
+    {
+      "word": "Untersuchung",
+      "en": "Medical examination",
+      "ne": "स्वास्थ्य जाँच",
+      "article": "die",
+      "plural": "Untersuchungen",
+      "ipa": "/ʊntɐˈzuːxʊŋ/",
+      "frequency": "passive",
+      "examples": [
+        {
+          "de": "Die Untersuchung dauert 15 Minuten.",
+          "en": "The examination takes 15 minutes.",
+          "ne": "स्वास्थ्य जाँच १५ मिनेटको हुन्छ।"
+        }
+      ]
+    },
+    {
+      "word": "Krankenversicherung",
+      "en": "Health insurance",
+      "ne": "स्वास्थ्य बिमा",
+      "article": "die",
+      "plural": "Krankenversicherungen",
+      "ipa": "/ˈkʁaŋkn̩_fɛɐ̯ˌzɪçəʁʊŋ/",
+      "frequency": "passive",
+      "examples": [
+        {
+          "de": "Haben Sie eine Krankenversicherung?",
+          "en": "Do you have health insurance?",
+          "ne": "तपाईंसँग स्वास्थ्य बिमा छ?"
+        }
+      ]
+    },
+    {
+      "word": "Absage",
+      "en": "Cancellation",
+      "ne": "रद्द",
+      "article": "die",
+      "plural": "Absagen",
+      "ipa": "/ˈap_zaːɡə/",
+      "frequency": "passive",
+      "examples": [
+        {
+          "de": "Ich schicke eine Absage.",
+          "en": "I send a cancellation.",
+          "ne": "म रद्द पत्र पठाउँछु।"
+        }
+      ]
+    },
+    {
+      "word": "Ausruhen",
+      "en": "Rest / Relaxation",
+      "ne": "आराम",
+      "article": "das",
+      "plural": "-",
+      "ipa": "/ˈaʊ̯s_ʁuːən/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Sie brauchen viel Ausruhen.",
+          "en": "You need lots of rest.",
+          "ne": "तपाईंलाई धेरै आराम चाहिन्छ।"
+        }
+      ]
+    },
+    {
+      "word": "Besserung",
+      "en": "Recovery / Improvement",
+      "ne": "सुधार",
+      "article": "die",
+      "plural": "-",
+      "ipa": "/ˈbɛsəʁʊŋ/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Ich wünsche Ihnen gute Besserung.",
+          "en": "I wish you a speedy recovery.",
+          "ne": "म तपाईंको शीघ्र स्वास्थ्य लाभको कामना गर्दछु।"
+        }
+      ]
+    }
+  ],
+  "grammar": [
+    {
+      "title": {
+        "en": "The Pain Construction: weh tun (to hurt / ache)",
+        "de": "The Pain Construction: weh tun (to hurt / ache)"
+      },
+      "notes": [
+        {
+          "en": "In German, pain is expressed using the verb weh tun with Dative pronouns (mir, dir, ihm, ihr, Ihnen): German Pain Expression Formula: [BODY PART] + \"tut\" (singular) / \"tun\" (plural) + \"weh\" Examples: • Mein Kopf TUT weh. (Singular: 'Kopf' -> tut) • Meine Augen TUN weh. (Plural: 'Augen' -> tun) • Mein Rücken TUT mir weh. (Literally: My back does pain to me)",
+          "ne": "",
+          "de": ""
+        }
+      ]
+    },
+    {
+      "title": {
+        "en": "Compound Nouns with -schmerzen",
+        "de": "Compound Nouns with -schmerzen"
+      },
+      "notes": [
+        {
+          "en": "Body parts combine with -schmerzen (plural) to form pain nouns: ---",
+          "ne": "",
+          "de": ""
+        }
+      ],
+      "bullets": [
+        "Kopf + Schmerzen \\(\\rightarrow\\) die Kopfschmerzen (headache)",
+        "Bauch + Schmerzen \\(\\rightarrow\\) die Bauchschmerzen (stomach ache)",
+        "Rücken + Schmerzen \\(\\rightarrow\\) die Rückenschmerzen (back pain)",
+        "Zahn + Schmerzen \\(\\rightarrow\\) die Zahnschmerzen (toothache)"
+      ]
+    }
+  ],
+  "dialogue": {
+    "id": "m14-dialogue",
+    "title": {
+      "en": "Dialogue",
+      "de": "Dialog"
+    },
+    "scenario": {
+      "en": "At the Doctor's Office",
+      "de": "At the Doctor's Office"
+    },
+    "turns": [
+      {
+        "speaker": "Arzt:",
+        "de": "Guten Tag, Herr Gurung! Was fehlt Ihnen?"
+      },
+      {
+        "speaker": "Patient:",
+        "de": "Guten Tag, Herr Doktor. Mein Kopf tut sehr weh und ich habe Fieber."
+      },
+      {
+        "speaker": "Arzt:",
+        "de": "Seit wann haben Sie das?"
+      },
+      {
+        "speaker": "Patient:",
+        "de": "Seit gestern Abend."
+      },
+      {
+        "speaker": "Arzt:",
+        "de": "Ich untersuche Sie. Nehmen Sie diese Tabletten drei Tage lang. Sie sollen viel Wasser trinken und im Bett bleiben."
+      },
+      {
+        "speaker": "Patient:",
+        "de": "Vielen Dank, Herr Doktor!"
+      }
+    ]
+  },
+  "miniGame": {
+    "type": "dialogue_branch",
+    "id": "m14-doctor-sim",
+    "payload": {
+      "type": "dialogue_branch",
+      "id": "m14-doctor-sim",
+      "title": "Beim Arzt Appointment Simulator",
+      "steps": [
+        {
+          "doctor": "Was fehlt Ihnen?",
+          "options": [
+            {
+              "text": "Mein Bauch tut weh und ich habe Fieber.",
+              "correct": true,
+              "feedback": "Appropriate clinical symptom description."
+            },
+            {
+              "text": "Ich möchte einen Kaffee trinken.",
+              "correct": false,
+              "feedback": "That is a restaurant order, not a medical complaint."
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "practiceBank": [
+    {
+      "kind": "MCQ",
+      "prompt": "What verb form fills: \"Meine Ohren ___ (weh tun)\"?",
+      "options": [
+        "tut",
+        "tun",
+        "tuen",
+        "tunst"
+      ],
+      "answer": "tun"
+    },
+    {
+      "kind": "MCQ",
+      "prompt": "How do you wish someone a speedy recovery in German?",
+      "options": [
+        "Guten Tag!",
+        "Gute Besserung!",
+        "Viel Glück!",
+        "Herzlichen Glückwunsch!"
+      ],
+      "answer": "Gute Besserung!"
+    },
+    {
+      "kind": "Fill-in",
+      "prompt": "Mein Kopf _______ (tut/tun) weh. \\(\\rightarrow\\) tut"
+    },
+    {
+      "kind": "Fill-in",
+      "prompt": "Meine Beine _______ (tut/tun) weh. \\(\\rightarrow\\) tun"
+    },
+    {
+      "kind": "Fill-in",
+      "prompt": "Ich habe 39 Grad _______ (fever). \\(\\rightarrow\\) Fieber"
+    },
+    {
+      "kind": "Compound Noun",
+      "prompt": "Kopf + Schmerzen \\(\\rightarrow\\) Kopfschmerzen"
+    },
+    {
+      "kind": "Compound Noun",
+      "prompt": "Bauch + Schmerzen \\(\\rightarrow\\) Bauchschmerzen"
+    },
+    {
+      "kind": "Translation DE->EN",
+      "prompt": "\"Gute Besserung!\" \\(\\rightarrow\\) Get well soon!"
+    },
+    {
+      "kind": "Translation EN->DE",
+      "prompt": "\"My back hurts.\" \\(\\rightarrow\\) Mein Rücken tut weh."
+    },
+    {
+      "kind": "Translation NE->DE",
+      "prompt": "\"शीघ्र स्वास्थ्य लाभको शुभकामना!\" \\(\\rightarrow\\) Gute Besserung!"
+    },
+    {
+      "kind": "Matching",
+      "prompt": "das Rezept \\(\\rightarrow\\) doctor's prescription"
+    },
+    {
+      "kind": "Matching",
+      "prompt": "die Apotheke \\(\\rightarrow\\) pharmacy"
+    },
+    {
+      "kind": "Matching",
+      "prompt": "die Tablette \\(\\rightarrow\\) tablet / pill"
+    },
+    {
+      "kind": "Plural Question",
+      "prompt": "What is the plural of das Auge? \\(\\rightarrow\\) die Augen"
+    },
+    {
+      "kind": "Plural Question",
+      "prompt": "What is the plural of die Hand? \\(\\rightarrow\\) die Hände"
+    },
+    {
+      "kind": "Dictation",
+      "prompt": "Listen & Type: \"Mein Hals tut weh und ich habe Fieber.\""
+    },
+    {
+      "kind": "Dictation",
+      "prompt": "Listen & Type: \"Ich brauche ein Rezept vom Arzt.\""
+    },
+    {
+      "kind": "Error Correction",
+      "prompt": "\"Meine Augen tut weh.\" \\(\\rightarrow\\) Meine Augen tun weh."
+    },
+    {
+      "kind": "Error Correction",
+      "prompt": "\"Ich bin kalt.\" (I feel cold) \\(\\rightarrow\\) Mir ist kalt."
+    },
+    {
+      "kind": "Culture MCQ",
+      "prompt": "In Germany, a doctor's official sick note for work is called:",
+      "options": [
+        "Rezept",
+        "Krankschreibung / AU-Bescheinigung",
+        "Quittung",
+        "Fahrkarte"
+      ],
+      "answer": "Krankschreibung / AU-Bescheinigung"
+    },
+    {
+      "kind": "Body Part Identification",
+      "prompt": "What is the German word for throat? \\(\\rightarrow\\) der Hals"
+    },
+    {
+      "kind": "Body Part Identification",
+      "prompt": "What is the German word for stomach? \\(\\rightarrow\\) der Bauch"
+    },
+    {
+      "kind": "Listening Gap",
+      "prompt": "\"Ich habe starke _______.\" (Audio: Kopfschmerzen) \\(\\rightarrow\\) Kopfschmerzen"
+    },
+    {
+      "kind": "Sentence Unscramble",
+      "prompt": "[weh / Mein / tut / Rücken] \\(\\rightarrow\\) Mein Rücken tut weh."
+    },
+    {
+      "kind": "Antonym Match",
+      "prompt": "krank (sick) \\(\\leftrightarrow\\) gesund (healthy)"
+    }
+  ],
+  "traps": [
+    {
+      "note": {
+        "en": "Trap 1: Confusing tut weh (singular) and tun weh (plural)",
+        "ne": "",
+        "de": ""
+      },
+      "wrong": "Falsch: \"Meine Augen tut weh.\" (Augen is plural!).",
+      "right": "Richtig: \"Meine Augen TUN weh.\""
+    },
+    {
+      "note": {
+        "en": "Trap 2: Saying \"I am cold\" as \"Ich bin kalt\" Saying \"Ich bin kalt\" means \"I am a cold/callous person\". To say you feel cold, use Dative: \"Mir ist kalt.\"",
+        "ne": "",
+        "de": ""
+      }
+    },
+    {
+      "note": {
+        "en": "Trap 3: Buying antibiotics without prescription In Germany, pharmacies (Apotheken) do NOT sell antibiotics over the counter (rezeptfrei). You MUST have a doctor's prescription (Rezept)!",
+        "ne": "",
+        "de": ""
+      }
+    }
+  ],
+  "culture": {
+    "title": {
+      "en": "Cultural context",
+      "de": "Kultureller Kontext"
+    },
+    "body": [
+      "*Sick Note (Krankschreibung / AU-Bescheinigung): If you are sick and cannot work in Germany, you must notify your employer immediately. By day 3 (or day 1 depending on contract), you must submit an official doctor's sick certificate (Arbeitsunfähigkeitsbescheinigung / AU*)."
+    ]
+  }
+}

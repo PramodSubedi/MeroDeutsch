@@ -23,6 +23,16 @@ export interface FilterOption {
   count: number;
 }
 
+/**
+ * A named cluster of filter options rendered as a native <optgroup>.
+ * Used to nest the fine-grained topic slugs under their coarse German Thema so
+ * the "Thema" dropdown reads as ~17 topics instead of 33 alphabetical slugs.
+ */
+export interface FilterGroup {
+  label: string;
+  options: FilterOption[];
+}
+
 interface GlossaryFilterPanelProps {
   /** Current filter values */
   sourceFilter: string;
@@ -41,6 +51,8 @@ interface GlossaryFilterPanelProps {
   levelOptions: FilterOption[];
   posOptions: FilterOption[];
   categoryOptions: FilterOption[];
+  /** Topic options clustered under their German Thema, rendered as <optgroup>. */
+  categoryGroups?: FilterGroup[];
   /** Localization */
   isDE: boolean;
 }
@@ -67,12 +79,14 @@ function FilterSelect({
   label,
   value,
   options,
+  groups,
   onChange,
   isDE,
 }: {
   label: string;
   value: string;
   options: FilterOption[];
+  groups?: FilterGroup[];
   onChange: (value: string) => void;
   isDE: boolean;
 }) {
@@ -89,11 +103,21 @@ function FilterSelect({
         <option value="all">
           {isDE ? 'Alle' : 'All'} ({allCount})
         </option>
-        {options.filter((opt) => opt.value !== 'all').map((opt) => (
-          <option key={opt.value} value={opt.value}>
-            {opt.label} ({opt.count})
-          </option>
-        ))}
+        {groups && groups.length > 0
+          ? groups.map((group) => (
+              <optgroup key={group.label} label={group.label}>
+                {group.options.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label} ({opt.count})
+                  </option>
+                ))}
+              </optgroup>
+            ))
+          : options.filter((opt) => opt.value !== 'all').map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label} ({opt.count})
+              </option>
+            ))}
             </select>
     </div>
   );
@@ -113,6 +137,7 @@ export function GlossaryFilterPanel({
   levelOptions,
   posOptions,
   categoryOptions,
+  categoryGroups,
   isDE,
 }: GlossaryFilterPanelProps) {
   const [isExpanded, setIsExpanded] = useState(() => {
@@ -176,7 +201,7 @@ export function GlossaryFilterPanel({
             <FilterSelect label={isDE ? 'Quelle' : 'Source'} value={sourceFilter} options={sourceOptions} onChange={onSourceChange} isDE={isDE} />
             <FilterSelect label={isDE ? 'Niveau' : 'Level'} value={levelFilter} options={levelOptions} onChange={onLevelChange} isDE={isDE} />
             <FilterSelect label={isDE ? 'Wortart' : 'Part of Speech'} value={posFilter} options={posOptions} onChange={onPosChange} isDE={isDE} />
-            <FilterSelect label={isDE ? 'Thema' : 'Topic'} value={categoryFilter} options={categoryOptions} onChange={onCategoryChange} isDE={isDE} />
+            <FilterSelect label={isDE ? 'Thema' : 'Topic'} value={categoryFilter} options={categoryOptions} groups={categoryGroups} onChange={onCategoryChange} isDE={isDE} />
           </div>
         </div>
       </div>

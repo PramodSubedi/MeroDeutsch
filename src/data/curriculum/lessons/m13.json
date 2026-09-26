@@ -1,0 +1,916 @@
+{
+  "cefr": "A1.2",
+  "docRoute": "/grammar",
+  "objectives": {
+    "en": [
+      "Express ability (können), necessity (müssen), wish (wollen/möchten), permission (dürfen), and obligation (sollen)."
+    ]
+  },
+  "lexicon": [
+    {
+      "word": "können",
+      "en": "can / to be able to",
+      "ne": "सक्नु",
+      "plural": "kann / konnte / gekonnt",
+      "ipa": "/ˈkœnən/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Ich kann Deutsch sprechen.",
+          "en": "I can speak German.",
+          "ne": "म जर्मन बोल्न सक्छु।"
+        }
+      ]
+    },
+    {
+      "word": "müssen",
+      "en": "must / to have to",
+      "ne": "पर्नु / पर्छ",
+      "plural": "muss / musste / gemusst",
+      "ipa": "/ˈmʏsn̩/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Ich muss heute arbeiten.",
+          "en": "I must work today.",
+          "ne": "म आज काम गर्नु पर्छ।"
+        }
+      ]
+    },
+    {
+      "word": "wollen",
+      "en": "to want to",
+      "ne": "चाहनु",
+      "plural": "will / wollte / gewollt",
+      "ipa": "/ˈvɔlən/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Er will nach Berlin fahren.",
+          "en": "He wants to travel to Berlin.",
+          "ne": "उहाँ बर्लिन जान चाहनुहुन्छ।"
+        }
+      ]
+    },
+    {
+      "word": "möchten",
+      "en": "would like to",
+      "ne": "चाहन्थें",
+      "plural": "möchte / mochtest / möchte",
+      "ipa": "/ˈmœçtn̩/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Ich möchte einen Kaffee trinken.",
+          "en": "I would like to drink a coffee.",
+          "ne": "म कफी पिउन चाहन्छु।"
+        }
+      ]
+    },
+    {
+      "word": "dürfen",
+      "en": "may / to be allowed to",
+      "ne": "अनुमति हुनु",
+      "plural": "darf / durfte / gedurft",
+      "ipa": "/ˈdʏʁfn̩/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Hier darf man nicht rauchen.",
+          "en": "One is not allowed to smoke here.",
+          "ne": "यहाँ धुम्रपान गर्न पाइँदैन।"
+        }
+      ]
+    },
+    {
+      "word": "sollen",
+      "en": "should / to be supposed to",
+      "ne": "गर्नु पर्ने हुनु",
+      "plural": "soll / sollte / gesollt",
+      "ipa": "/ˈzɔlən/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Der Arzt sagt, ich soll schlafen.",
+          "en": "The doctor says I should sleep.",
+          "ne": "डाक्टरले मलाई सुत्न भन्नुभएको छ।"
+        }
+      ]
+    },
+    {
+      "word": "mögen",
+      "en": "to like",
+      "ne": "मन पर्नु",
+      "plural": "mag / mochte / gemocht",
+      "ipa": "/ˈmøːɡn̩/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Ich mag Schokolade.",
+          "en": "I like chocolate.",
+          "ne": "मलाई चकलेट मन पर्छ।"
+        }
+      ]
+    },
+    {
+      "word": "Führerschein",
+      "en": "Driving license",
+      "ne": "सवारी चालक अनुमतिपत्र",
+      "article": "der",
+      "plural": "Führerscheine",
+      "ipa": "/ˈfyːʁɐ_ʃaɪ̯n/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Ich habe einen Führerschein.",
+          "en": "I have a driving license.",
+          "ne": "मसँग सवारी चालक अनुमतिपत्र छ।"
+        }
+      ]
+    },
+    {
+      "word": "Hausaufgabe",
+      "en": "Homework",
+      "ne": "गृहकार्य",
+      "article": "die",
+      "plural": "Hausaufgaben",
+      "ipa": "/ˈhaʊ̯s_ʔaʊ̯fˌɡaːbə/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Die Schüler müssen Hausaufgaben machen.",
+          "en": "Students must do homework.",
+          "ne": "विद्यार्थीहरूले गृहकार्य गर्नु पर्छ।"
+        }
+      ]
+    },
+    {
+      "word": "Hilfe",
+      "en": "Help / Assistance",
+      "ne": "सहयोग",
+      "article": "die",
+      "plural": "-",
+      "ipa": "/ˈhɪlfə/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Brauchen Sie Hilfe?",
+          "en": "Do you need help?",
+          "ne": "तपाईंलाई सहयोग चाहिन्छ?"
+        }
+      ]
+    },
+    {
+      "word": "schwimmen",
+      "en": "to swim",
+      "ne": "पौडी खेल्नु",
+      "plural": "schwimmt / schwamm / ist geschwommen",
+      "ipa": "/ˈʃvɪmən/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Kannst du schwimmen?",
+          "en": "Can you swim?",
+          "ne": "के तिमी पौडी खेल्न सक्छौ?"
+        }
+      ]
+    },
+    {
+      "word": "tanzen",
+      "en": "to dance",
+      "ne": "नाच्नु",
+      "plural": "tanzt / tanzte / getanzt",
+      "ipa": "/ˈtantsn̩/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Sie kann sehr gut tanzen.",
+          "en": "She can dance very well.",
+          "ne": "उनी धेरै राम्रो नाच्न सक्छिन्।"
+        }
+      ]
+    },
+    {
+      "word": "singen",
+      "en": "to sing",
+      "ne": "गाउनु",
+      "plural": "singt / sang / gesungen",
+      "ipa": "/ˈzɪŋən/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Er will ein Lied singen.",
+          "en": "He wants to sing a song.",
+          "ne": "उहाँ गीत गाउन चाहनुहुन्छ।"
+        }
+      ]
+    },
+    {
+      "word": "rauchen",
+      "en": "to smoke",
+      "ne": "धुम्रपान गर्नु",
+      "plural": "raucht / rauchte / geraucht",
+      "ipa": "/ˈʁaʊ̯xn̩/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Hier ist Rauchen verboten.",
+          "en": "Smoking is prohibited here.",
+          "ne": "यहाँ धुम्रपान मनाही छ।"
+        }
+      ]
+    },
+    {
+      "word": "parken",
+      "en": "to park",
+      "ne": "गाडी पार्किङ गर्नु",
+      "plural": "parkt / parkte / geparkt",
+      "ipa": "/ˈpaʁkn̩/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Hier darf man nicht parken.",
+          "en": "One is not allowed to park here.",
+          "ne": "यहाँ गाडी पार्किङ गर्न पाइँदैन।"
+        }
+      ]
+    },
+    {
+      "word": "verboten",
+      "en": "Prohibited / Forbidden",
+      "ne": "मनाही गरिएको",
+      "plural": "-",
+      "ipa": "/fɛɐ̯ˈboːtn̩/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Das Parken ist verboten.",
+          "en": "Parking is prohibited.",
+          "ne": "पार्किङ मनाही गरिएको छ।"
+        }
+      ]
+    },
+    {
+      "word": "erlaubt",
+      "en": "Allowed / Permitted",
+      "ne": "अनुमति भएको",
+      "plural": "-",
+      "ipa": "/fɛɐ̯ˈlaʊ̯pt/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Ist das Fotografieren erlaubt?",
+          "en": "Is taking photos allowed?",
+          "ne": "के फोटो खिच्न पाइन्छ?"
+        }
+      ]
+    },
+    {
+      "word": "Termin",
+      "en": "Appointment",
+      "ne": "भेटघाट समय",
+      "article": "der",
+      "plural": "Termine",
+      "ipa": "/tɛʁˈmiːn/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Ich muss einen Termin absagen.",
+          "en": "I must cancel an appointment.",
+          "ne": "मैले भेटघाट समय रद्द गर्नु पर्छ।"
+        }
+      ]
+    },
+    {
+      "word": "Zeit",
+      "en": "Time",
+      "ne": "समय",
+      "article": "die",
+      "plural": "-",
+      "ipa": "/tsaɪ̯t/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Ich habe heute keine Zeit.",
+          "en": "I have no time today.",
+          "ne": "आज मसँग समय छैन।"
+        }
+      ]
+    },
+    {
+      "word": "Lust",
+      "en": "Desire / Inclination",
+      "ne": "इच्छा",
+      "article": "die",
+      "plural": "-",
+      "ipa": "/lʊst/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Hast du Lust auf Kino?",
+          "en": "Do you feel like going to the cinema?",
+          "ne": "के तिमीलाई चलचित्र हेर्न जाने इच्छा छ?"
+        }
+      ]
+    },
+    {
+      "word": "Regenschirm",
+      "en": "Umbrella",
+      "ne": "छाता",
+      "article": "der",
+      "plural": "Regenschirme",
+      "ipa": "/ˈʁeːɡn̩_ʃɪʁm/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Ich muss einen Regenschirm mitnehmen.",
+          "en": "I must take an umbrella along.",
+          "ne": "मैले छाता सँगै लैजानु पर्छ।"
+        }
+      ]
+    },
+    {
+      "word": "Pass",
+      "en": "Passport",
+      "ne": "राहदानी",
+      "article": "der",
+      "plural": "Pässe",
+      "ipa": "/pas/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Ich muss meinen Pass zeigen.",
+          "en": "I must show my passport.",
+          "ne": "मैले मेरो राहदानी देखाउनु पर्छ।"
+        }
+      ]
+    },
+    {
+      "word": "Visum",
+      "en": "Visa",
+      "ne": "भिसा",
+      "article": "das",
+      "plural": "Visa",
+      "ipa": "/ˈviːzʊm/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Für Deutschland brauche ich ein Visum.",
+          "en": "I need a visa for Germany.",
+          "ne": "जर्मनको लागि मलाई भिसा चाहिन्छ।"
+        }
+      ]
+    },
+    {
+      "word": "Regel",
+      "en": "Rule",
+      "ne": "नियम",
+      "article": "die",
+      "plural": "Regeln",
+      "ipa": "/ˈʁeːɡl̩/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Man muss die Regeln beachten.",
+          "en": "One must follow the rules.",
+          "ne": "नियमको पालना गर्नु पर्छ।"
+        }
+      ]
+    },
+    {
+      "word": "leise",
+      "en": "Quiet",
+      "ne": "शान्त",
+      "plural": "-",
+      "ipa": "/ˈlaɪ̯zə/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Im Krankenhaus muss man leise sein.",
+          "en": "In the hospital one must be quiet.",
+          "ne": "अस्पतालमा शान्त हुनु पर्छ।"
+        }
+      ]
+    },
+    {
+      "word": "schnell",
+      "en": "Fast",
+      "ne": "छिटो",
+      "plural": "-",
+      "ipa": "/ʃnɛl/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Er kann sehr schnell laufen.",
+          "en": "He can run very fast.",
+          "ne": "उहाँ धेरै छिटो दौडन सक्नुहुन्छ।"
+        }
+      ]
+    },
+    {
+      "word": "perfekt",
+      "en": "Perfect",
+      "ne": "पूर्ण / पर्फेक्ट",
+      "plural": "-",
+      "ipa": "/pɛʁˈfɛkt/",
+      "frequency": "passive",
+      "examples": [
+        {
+          "de": "Niemand ist perfekt.",
+          "en": "Nobody is perfect.",
+          "ne": "कोही पनि पर्फेक्ट हुँदैन।"
+        }
+      ]
+    },
+    {
+      "word": "frei",
+      "en": "Free",
+      "ne": "स्वतन्त्र / खाली",
+      "plural": "-",
+      "ipa": "/fʁaɪ̯/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Morgen habe ich frei.",
+          "en": "Tomorrow I have the day off.",
+          "ne": "भोलि मेरो बिदा छ।"
+        }
+      ]
+    },
+    {
+      "word": "krank",
+      "en": "Sick / Ill",
+      "ne": "बिरामी",
+      "plural": "-",
+      "ipa": "/kʁaŋk/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Er ist krank und muss zu Hause bleiben.",
+          "en": "He is sick and must stay at home.",
+          "ne": "उहाँ बिरामी हुनुहुन्छ र घरमै बस्नु पर्छ।"
+        }
+      ]
+    },
+    {
+      "word": "gesund",
+      "en": "Healthy",
+      "ne": "स्वस्थ",
+      "plural": "-",
+      "ipa": "/ɡəˈzʊnt/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Ich will gesund bleiben.",
+          "en": "I want to stay healthy.",
+          "ne": "म स्वस्थ रहन चाहन्छु।"
+        }
+      ]
+    },
+    {
+      "word": "bleiben",
+      "en": "to remain / stay",
+      "ne": "बस्नु",
+      "plural": "bleibt / blieb / ist geblieben",
+      "ipa": "/ˈblaɪ̯bn̩/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Du musst im Bett bleiben.",
+          "en": "You must stay in bed.",
+          "ne": "तिमी ओछ्यानमै बस्नु पर्छ।"
+        }
+      ]
+    },
+    {
+      "word": "mitnehmen",
+      "en": "to take along",
+      "ne": "सँगै लैजानु",
+      "plural": "nimmt mit / nahm mit / mitgenommen",
+      "ipa": "/ˈmɪt_neːmən/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Ich will Geld mitnehmen.",
+          "en": "I want to take money along.",
+          "ne": "म पैसा सँगै लैजान चाहन्छु।"
+        }
+      ]
+    },
+    {
+      "word": "absagen",
+      "en": "to cancel",
+      "ne": "रद्द गर्नु",
+      "plural": "sagt ab / sagte ab / abgesagt",
+      "ipa": "/ˈap_zaːɡn̩/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Ich muss den Termin absagen.",
+          "en": "I must cancel the appointment.",
+          "ne": "मैले भेटघाट समय रद्द गर्नु पर्छ।"
+        }
+      ]
+    },
+    {
+      "word": "verschieben",
+      "en": "to postpone / reschedule",
+      "ne": "सार्नु",
+      "plural": "verschiebt / verschob / verschoben",
+      "ipa": "/fɛɐ̯ˈʃiːbn̩/",
+      "frequency": "passive",
+      "examples": [
+        {
+          "de": "Können wir den Termin verschieben?",
+          "en": "Can we postpone the appointment?",
+          "ne": "के हामी भेटघाट समय सार्न सक्छौँ?"
+        }
+      ]
+    },
+    {
+      "word": "zahlen",
+      "en": "to pay",
+      "ne": "भुक्तानी गर्नु",
+      "plural": "zahlt / zahlte / gezahlt",
+      "ipa": "/ˈtsaːlən/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Wir müssen die Miete zahlen.",
+          "en": "We must pay the rent.",
+          "ne": "हामीले कोठा भाडा तिर्नु पर्छ।"
+        }
+      ]
+    },
+    {
+      "word": "helfen",
+      "en": "to help",
+      "ne": "सहयोग गर्नु",
+      "plural": "hilft / half / geholfen",
+      "ipa": "/ˈhɛlfn̩/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Kannst du mir helfen?",
+          "en": "Can you help me?",
+          "ne": "के तिमी मलाई सहयोग गर्न सक्छौ?"
+        }
+      ]
+    },
+    {
+      "word": "bringen",
+      "en": "to bring",
+      "ne": "ल्याउनु",
+      "plural": "bringt / brachte / gebracht",
+      "ipa": "/ˈbʁɪŋən/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Können Sie mir Wasser bringen?",
+          "en": "Can you bring me water?",
+          "ne": "के तपाईं मलाई पानी ल्याइदिन सक्नुहुन्छ?"
+        }
+      ]
+    },
+    {
+      "word": "versuchen",
+      "en": "to try",
+      "ne": "प्रयास गर्नु",
+      "plural": "versucht / versuchte / versucht",
+      "ipa": "/fɛɐ̯ˈzuːxn̩/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Ich will es versuchen.",
+          "en": "I want to try it.",
+          "ne": "म यसको प्रयास गर्न चाहन्छु।"
+        }
+      ]
+    },
+    {
+      "word": "verstehen",
+      "en": "to understand",
+      "ne": "बुझ्नु",
+      "plural": "versteht / verstand / verstanden",
+      "ipa": "/fɛɐ̯ˈʃteːən/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Ich kann Sie gut verstehen.",
+          "en": "I can understand you well.",
+          "ne": "म तपाईंलाई राम्रोसँग बुझ्न सक्छु।"
+        }
+      ]
+    },
+    {
+      "word": "sprechen",
+      "en": "to speak",
+      "ne": "बोल्नु",
+      "plural": "spricht / sprach / gesprochen",
+      "ipa": "/ˈʃpʁɛçn̩/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Er kann fünf Sprachen sprechen.",
+          "en": "He can speak five languages.",
+          "ne": "उहाँ पाँच भाषा बोल्न सक्नुहुन्छ।"
+        }
+      ]
+    }
+  ],
+  "grammar": [
+    {
+      "title": {
+        "en": "Modal Verb Conjugation Matrix in Present Tense (Präsens)",
+        "de": "Modal Verb Conjugation Matrix in Present Tense (Präsens)"
+      },
+      "notes": [
+        {
+          "en": "Modal verbs modify the main verb. Notice that singular forms (ich, du, er/sie/es) undergo a vowel change and ich and er/sie/es share the EXACT SAME UNENDED FORM:",
+          "ne": "",
+          "de": ""
+        }
+      ],
+      "table": {
+        "columns": [
+          "Pronoun",
+          "können (can)",
+          "müssen (must)",
+          "wollen (want)",
+          "dürfen (may)",
+          "möchten (would)"
+        ],
+        "rows": [
+          [
+            "ich",
+            "ich kann",
+            "ich muss",
+            "ich will",
+            "ich darf",
+            "ich möchte"
+          ],
+          [
+            "du",
+            "du kannst",
+            "du musst",
+            "du willst",
+            "du darfst",
+            "du möchtest"
+          ],
+          [
+            "er / sie / es",
+            "er kann",
+            "er muss",
+            "er will",
+            "er darf",
+            "er möchte"
+          ],
+          [
+            "wir",
+            "wir können",
+            "wir müssen",
+            "wir wollen",
+            "wir dürfen",
+            "wir möchten"
+          ],
+          [
+            "ihr",
+            "ihr könnt",
+            "ihr müsst",
+            "ihr wollt",
+            "ihr dürft",
+            "ihr möchtet"
+          ],
+          [
+            "sie / Sie",
+            "sie können",
+            "sie müssen",
+            "sie wollen",
+            "sie dürfen",
+            "sie möchten"
+          ]
+        ]
+      }
+    },
+    {
+      "title": {
+        "en": "The Modal Sentence Bracket Architecture (Satzklammer)",
+        "de": "The Modal Sentence Bracket Architecture (Satzklammer)"
+      },
+      "notes": [
+        {
+          "en": "When a sentence contains a Modal Verb: 1. The Modal Verb is conjugated and placed in Position 2. 2. The Main Verb moves to the VERY END in INFINITIVE FORM (unconjugated)! Modal Sentence Bracket Structure: ┌──────────────┬──────────────────┬──────────────────────────┬──────────────────────┐ │ Position 1 │ Pos 2 (MODAL) │ Middle Sentence Field │ END (INFINITIVE VERB)│ ├──────────────┼──────────────────┼──────────────────────────┼──────────────────────┤ │ Ich │ KANN │ Deutsch │ sprechen. │ │ Er │ MUSS │ heute arbeiten │ gehen. │ │ Hier │ DARF │ man nicht │ rauchen. │ │ Wir │ WOLLEN │ nach Berlin │ fahren. │ └──────────────┴──────────────────┴──────────────────────────┴──────────────────────┘ ---",
+          "ne": "",
+          "de": ""
+        }
+      ]
+    }
+  ],
+  "dialogue": {
+    "id": "m13-dialogue",
+    "title": {
+      "en": "Dialogue",
+      "de": "Dialog"
+    },
+    "scenario": {
+      "en": "Planning a Weekend Trip",
+      "de": "Planning a Weekend Trip"
+    },
+    "turns": [
+      {
+        "speaker": "A:",
+        "de": "Hallo Paul! Kannst du am Samstag zum Fußballspiel kommen?"
+      },
+      {
+        "speaker": "B:",
+        "de": "Nein, leider nicht. Ich muss am Samstag für die Prüfung lernen."
+      },
+      {
+        "speaker": "A:",
+        "de": "Schade! Und am Sonntag? Willst du am Sonntag einen Ausflug machen?"
+      },
+      {
+        "speaker": "B:",
+        "de": "Ja, am Sonntag möchte ich gerne mitkommen! Wohin fahren wir?"
+      },
+      {
+        "speaker": "A:",
+        "de": "Wir können an den See fahren."
+      }
+    ]
+  },
+  "miniGame": {
+    "type": "grammar_drill",
+    "id": "m13-modal-bracket",
+    "payload": {
+      "type": "grammar_drill",
+      "id": "m13-modal-bracket",
+      "prompt": "Ich (können) Deutsch (sprechen).",
+      "correct_de": "Ich kann Deutsch sprechen.",
+      "options": [
+        "Ich kann Deutsch sprechen.",
+        "Ich könne Deutsch sprechen.",
+        "Ich kann sprechen Deutsch."
+      ]
+    }
+  },
+  "practiceBank": [
+    {
+      "kind": "MCQ",
+      "prompt": "Where does the second verb go when a modal verb is in Position 2?",
+      "options": [
+        "Position 1",
+        "Position 3",
+        "After modal",
+        "Very end in infinitive"
+      ],
+      "answer": "Very end in infinitive"
+    },
+    {
+      "kind": "MCQ",
+      "prompt": "What is the 3rd person singular (er) form of können?",
+      "options": [
+        "könnt",
+        "kann",
+        "konnt",
+        "können"
+      ],
+      "answer": "kann"
+    },
+    {
+      "kind": "Fill-in",
+      "prompt": "Er _______ (müssen) heute arbeiten. \\(\\rightarrow\\) muss"
+    },
+    {
+      "kind": "Fill-in",
+      "prompt": "Ich _______ (können) Deutsch sprechen. \\(\\rightarrow\\) kann"
+    },
+    {
+      "kind": "Fill-in",
+      "prompt": "Hier _______ (dürfen) man nicht rauchen. \\(\\rightarrow\\) darf"
+    },
+    {
+      "kind": "Sentence Unscramble",
+      "prompt": "[sprechen / Ich / kann / Deutsch] \\(\\rightarrow\\) Ich kann Deutsch sprechen."
+    },
+    {
+      "kind": "Sentence Unscramble",
+      "prompt": "[parken / hier / Nicht / darf / man] \\(\\rightarrow\\) Hier darf man nicht parken."
+    },
+    {
+      "kind": "Infinitive Placement",
+      "prompt": "\"Er muss morgen nach Berlin _______ (fahren).\" \\(\\rightarrow\\) fahren"
+    },
+    {
+      "kind": "Infinitive Placement",
+      "prompt": "\"Wir wollen ein neues Auto _______ (kaufen).\" \\(\\rightarrow\\) kaufen"
+    },
+    {
+      "kind": "Translation DE->EN",
+      "prompt": "\"Hier darf man nicht rauchen.\" \\(\\rightarrow\\) Smoking is not allowed here."
+    },
+    {
+      "kind": "Translation EN->DE",
+      "prompt": "\"I must stay at home today.\" \\(\\rightarrow\\) Ich muss heute zu Hause bleiben."
+    },
+    {
+      "kind": "Translation NE->DE",
+      "prompt": "\"म जर्मन बोल्न सक्छु।\" \\(\\rightarrow\\) Ich kann Deutsch sprechen."
+    },
+    {
+      "kind": "Matching",
+      "prompt": "verboten \\(\\rightarrow\\) forbidden / prohibited"
+    },
+    {
+      "kind": "Matching",
+      "prompt": "erlaubt \\(\\rightarrow\\) allowed / permitted"
+    },
+    {
+      "kind": "Modal Difference",
+      "prompt": "darf nicht \\(\\rightarrow\\) must not / prohibited"
+    },
+    {
+      "kind": "Dictation",
+      "prompt": "Listen & Type: \"Ich muss heute zum Arzt gehen.\""
+    },
+    {
+      "kind": "Dictation",
+      "prompt": "Listen & Type: \"Hier darf man nicht laut sprechen.\""
+    },
+    {
+      "kind": "Error Correction",
+      "prompt": "\"Er kann Deutsch spricht.\" \\(\\rightarrow\\) Er kann Deutsch sprechen."
+    },
+    {
+      "kind": "Error Correction",
+      "prompt": "\"Ich musst heute arbeiten.\" \\(\\rightarrow\\) Ich muss heute arbeiten."
+    },
+    {
+      "kind": "Culture MCQ",
+      "prompt": "In Germany, \"Rauchen verboten\" means:",
+      "options": [
+        "Smoking allowed",
+        "Smoking forbidden",
+        "Free cigarettes",
+        "Entrance"
+      ],
+      "answer": "Smoking forbidden"
+    },
+    {
+      "kind": "Conjugation",
+      "prompt": "Conjugate wollen for du: du willst"
+    },
+    {
+      "kind": "Conjugation",
+      "prompt": "Conjugate dürfen for ihr: ihr dürft"
+    },
+    {
+      "kind": "Listening Gap",
+      "prompt": "\"Ich kann gut _______.\" (Audio: schwimmen) \\(\\rightarrow\\) schwimmen"
+    },
+    {
+      "kind": "Sentence Unscramble",
+      "prompt": "[Hause / bleiben / Ich / muss / zu] \\(\\rightarrow\\) Ich muss zu Hause bleiben."
+    },
+    {
+      "kind": "Form Identity",
+      "prompt": "In modal verbs, which two personal pronouns share the exact same conjugated form? \\(\\rightarrow\\) ich and er/sie/es"
+    }
+  ],
+  "traps": [
+    {
+      "note": {
+        "en": "Trap 1: Conjugating the end verb in a modal sentence",
+        "ne": "",
+        "de": ""
+      },
+      "wrong": "Falsch: \"Ich kann Deutsch spreche.\"",
+      "right": "Richtig: \"Ich kann Deutsch SPRECHEN.\" (End verb MUST be infinitive!)."
+    },
+    {
+      "note": {
+        "en": "Trap 2: Adding -t ending to ich or er/sie/es on modals",
+        "ne": "",
+        "de": ""
+      },
+      "wrong": "Falsch: \"Er kannt Deutsch.\" / \"Ich musst lernen.\"",
+      "right": "Richtig: \"Er kann Deutsch.\" / \"Ich muss lernen.\""
+    },
+    {
+      "note": {
+        "en": "Trap 3: Confusing müssen (must) and nicht dürfen (must NOT) Ich muss nicht: \"I don't have to\" (optional). Ich darf nicht: \"I am NOT allowed to / forbidden\" (prohibited!).",
+        "ne": "",
+        "de": ""
+      }
+    }
+  ],
+  "culture": {
+    "title": {
+      "en": "Cultural context",
+      "de": "Kultureller Kontext"
+    },
+    "body": [
+      "*Rules and Regulations (Ordnung muss sein): German culture places high value on rules (Regeln). Signs like \"Rauchen verboten\" (Smoking forbidden) or \"Ruhezeit\"* (Quiet hours) are strictly enforced by authorities and citizens alike."
+    ]
+  }
+}

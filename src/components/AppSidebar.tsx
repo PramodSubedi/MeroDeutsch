@@ -5,6 +5,7 @@ import type { LucideIcon } from 'lucide-react';
 import { theme } from '../config/theme';
 import { Logo } from './common/Logo';
 import { useAuth } from '../hooks/useAuth';
+import { useHasA1Campaign } from '../hooks/usePremium';
 import { useLang } from '../hooks/useLang';
 import { useReviewQueue } from '../hooks/useReviewQueue';
 import {
@@ -132,6 +133,7 @@ export function AppSidebar({
   const { pathname } = useLocation();
   const { langMode } = useLang();
   const { isAuthenticated } = useAuth();
+  const { hasCampaign, isLoading: campaignLoading } = useHasA1Campaign();
   const { dueQueue } = useReviewQueue();
   const isDE = langMode === 'german';
   const mobileDrawerRef = useRef<HTMLElement>(null);
@@ -209,10 +211,24 @@ export function AppSidebar({
         </Link>
       </div>
 
-      {/* Learner waypoint — the one thing that is always worth showing. The
-          A1 spine is a signed-in benefit, so guests get the sign-in card
-          below instead of a progress strip they cannot keep. */}
-      {isAuthenticated && (
+      {/* Learner waypoint — Premium only, and it is the A1 CAMPAIGN waypoint:
+          the module ring, the stage code, "Next: <A1 node>" and a course
+          percentage, all linking into the 15-module spine.
+
+          Gating on `isAuthenticated` alone was a tier leak: a signed-in FREE
+          learner was shown "M04 · Next: Greetings · 40%" for a campaign their
+          /learn does not give them, so the shell advertised a roadmap the page
+          contradicted. `useHasA1Campaign` is the single place that rule lives.
+
+          A free signed-in learner has a real roadmap too — the numbered
+          `LearningPath` on /learn — but it has no per-module percentage to
+          ring, so there is nothing honest to put in this slot. They get the
+          sign-in/progress card below instead, exactly as a guest does.
+
+          `isLoading` renders nothing rather than guessing, matching
+          `PremiumGate`: a waypoint that appears for a free learner and vanishes
+          for a Premium one is worse than one that arrives 100ms late. */}
+      {isAuthenticated && !campaignLoading && hasCampaign && (
         <div className="px-3 pt-4">
           <LearnerWaypoint collapsed={collapsed} />
         </div>

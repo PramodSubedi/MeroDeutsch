@@ -15,6 +15,7 @@ import { XP_REWARDS } from '../hooks/useXp';
 import { theme } from '../config/theme';
 import { curriculumService } from '../services';
 import { pickNUnique } from '../utils/questionGenerator';
+import { useWeakKeysFor } from '../hooks/useSkillAccuracy';
 import {
   useExerciseSession,
   type ExerciseQuestion,
@@ -49,20 +50,24 @@ export function DictationPage() {
       .catch(() => setLoaded(true));
   }, []);
 
-  // Finite without-replacement deck per round (Lesson Engine contract).
+  // Finite without-replacement deck per round (Lesson Engine contract),
+  // biased toward words this learner has got wrong before (SRS rows written
+  // under moduleType 'dictation'). `runId` forces a fresh reshuffle on replay.
+  const weakKeys = useWeakKeysFor('dictation');
   const deck = useMemo<DictationQuestion[]>(
     () =>
       pickNUnique({
         items: dictationWords,
         count: Math.min(DECK_SIZE, dictationWords.length),
         getKey: (w) => w.word,
+        preferKeys: weakKeys,
       }).map((w) => ({
         key: w.word,
         correctAnswer: w.word,
         speakPrompt: w.word,
       })),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [dictationWords, runId]
+    [dictationWords, runId, weakKeys]
   );
 
   const session = useExerciseSession<DictationQuestion>({

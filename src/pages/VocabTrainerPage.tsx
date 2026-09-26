@@ -31,6 +31,8 @@ import { curriculumService } from '../services';
 import { TemplateResolver } from '../lib/templateResolver';
 import { topicalTagLabel } from '../utils/vocabTags';
 import { useVocabularyStatus } from '../hooks/useVocabularyStatus';
+import { useWeakKeysFor } from '../hooks/useSkillAccuracy';
+import { pickNUnique } from '../utils/questionGenerator';
 import type { VocabCard } from '../types';
 import type { VocabularyFilterOptions } from '../types/curriculum';
 
@@ -83,6 +85,17 @@ interface McqQuestion {
   variant: QuestionVariant;
 }
 
+/** The keys this page records in the SRS queue. Shared by the deck-ordering
+    `getKey` and by `choose()`'s `addWrongAnswer`, so the two can never drift. */
+function vocabSrsKey(card: VocabCard): string {
+  return `${card.id}|${card.partOfSpeech}`;
+}
+
+/** Validate a `?pos=` param against the known part-of-speech options. */
+function posFromParam(raw: string | null): PosFilter {
+  return POS_OPTIONS.some((o) => o.value === raw) ? (raw as PosFilter) : '';
+}
+
 export function VocabTrainerPage() {
   usePageTitle('Vocab Trainer');
   const { langMode } = useLang();
@@ -91,14 +104,22 @@ export function VocabTrainerPage() {
   const { addWrongAnswer } = useReviewQueue();
 
   // ── Filters ────────────────────────────────────────────────────────────
+  // ALL of these are read from the URL on mount, not just `level` as before.
+  // Two reasons: deep links (the /glossary "practice these words" handoff and
+  // the /learn spine chips both build these URLs), and a returning learner can
+  // bookmark or share the exact drill they are running.
   const [searchParams] = useSearchParams();
   const [level, setLevel] = useState<string>(searchParams.get('level') ?? '');
-  const [category, setCategory] = useState<string>('');
-  const [pos, setPos] = useState<PosFilter>('');
+  const [category, setCategory] = useState<string>(searchParams.get('category') ?? '');
+  const [pos, setPos] = useState<PosFilter>(posFromParam(searchParams.get('pos')));
   const [options, setOptions] = useState<VocabularyFilterOptions>({ levels: [], categories: [] });
 
   // Per-word learning status powers the Fresh / Due / Mixed pools below.
   const { statsByWord, recordAttempt } = useVocabularyStatus();
+  // Adaptive: SRS rows this page wrote for words the learner got wrong. Drives
+  // the deck ORDER in startSession (which words come first), not which are
+  // fetched — the DB owns the sample.
+  const weakKeys = useWeakKeysFor('vocab-trainer');
 
   // ── Session state ──────────────────────────────────────────────────────
   const [mode, setMode] = useState<TrainerMode>('flashcards');
@@ -215,17 +236,28 @@ export function VocabTrainerPage() {
         limit: 20,
       });
       const cards = applyPoolMode(rawCards);
-      setPool(cards);
+      // ADAPTIVE ORDER. Which 20 words get fetched is the DB's call (it does the
+      // sampling), so the bias here is purely about ORDER: words this learner has
+      // answered wrong before are shown first, then the rest. The SRS key format
+      // must match what choose() writes (below) or nothing will match — and a
+      // mismatch degrades to a plain shuffle, not an error.
+      const ordered = pickNUnique({
+        items: cards,
+        count: cards.length,
+        getKey: vocabSrsKey,
+        preferKeys: weakKeys,
+      });
+      setPool(ordered);
       setIndex(0);
-      if (mode === 'quiz' && cards.length > 0) {
-        setQuestion(buildQuestion(cards[0], cards));
+      if (mode === 'quiz' && ordered.length > 0) {
+        setQuestion(buildQuestion(ordered[0], ordered));
       } else {
         setQuestion(null);
       }
     } finally {
       setLoading(false);
     }
-  }, [pos, level, category, mode, buildQuestion, applyPoolMode]);
+  }, [pos, level, category, mode, buildQuestion, applyPoolMode, weakKeys]);
 
   /** Rebuild the session pool from the questions answered wrong this round. */
   const retryMisses = useCallback(() => {
@@ -275,7 +307,7 @@ export function VocabTrainerPage() {
       if (!correct) {
         addWrongAnswer({
           moduleType: 'vocab-trainer',
-          itemKey: `${question.card.id}|${question.card.partOfSpeech}`,
+          itemKey: vocabSrsKey(question.card),
           userAnswer: question.options[choiceIdx],
           correctAnswer: question.card.translation.en,
         });

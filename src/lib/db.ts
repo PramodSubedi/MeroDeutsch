@@ -29,6 +29,7 @@ import type {
 } from '../types';
 import { getItem, removeItem, setItem } from '../utils/safeStorage';
 import { scopedKey } from '../utils/userStorage';
+import type { PathMode } from '../data/a1Path';
 
 /**
  * Local Dexie row for the A1 learning-path campaign state (`useA1Path`).
@@ -40,6 +41,22 @@ export interface A1PathStateRow {
   unlockedUnitIndex: number;
   completedNodeIds: string[];
   checkpointBestByUnit: Record<number, number>;
+  /**
+   * Per-band gate attempt history (count, best, last score, missed item keys).
+   * Optional on the wire: rows written before this field simply omit it, and
+   * `useA1Path.normalizeState` coerces the absence to `{}`. Local-only for now
+   * — deliberately not mirrored to `a1_path_state` so no migration is needed.
+   */
+  attemptsByUnit?: Record<
+    number,
+    { attempts: number; best: number; lastScore: number; lastAt: string; missedItemKeys: string[] }
+  >;
+  /**
+   * `'guided'` (default) or `'self'`. Optional here so rows written before the
+   * field existed still typecheck and load; `normalizeState` coerces absence to
+   * `'guided'`, which is exactly the behaviour they already had.
+   */
+  pathMode?: PathMode;
   updatedAt: string;
 }
 

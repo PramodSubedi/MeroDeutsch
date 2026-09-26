@@ -104,7 +104,30 @@ const SPECIFIC: Record<string, HintText> = {
     ne: 'सर्वनाम लिङ्गअनुसार बदलिन्छ: der → er · die → sie · das → es।',
     de: 'Das Pronomen folgt dem Genus: der → er · die → sie · das → es.',
   },
+  // A1 checkpoint — Perfekt (Module 15). LIVE, not dead config: the checkpoint
+  // sets `hintReason` to the grammar drill's CATEGORY (not the generic
+  // 'grammar-drill' source), so this key is actually reached.
+  'a1-checkpoint:perfekt': {
+    en: 'Perfekt = auxiliary in Position 2 + Partizip II at the end. Use sein for movement (gehen, kommen, fahren), haben for everything else.',
+    ne: 'पर्फेक्ट = सहायक क्रिया दोस्रो स्थानमा + पार्टिजिप द्वितीय अन्त्यमा। गतिका क्रियामा sein (gehen, kommen, fahren), अरूमा haben प्रयोग गर्नुहोस्।',
+    de: 'Perfekt = Hilfsverb an Position 2 + Partizip II am Ende. Bei Bewegung nehmen Sie sein (gehen, kommen, fahren), sonst haben.',
+  },
 };
+
+/**
+ * True when a SPECIFIC hint exists for this module + reason.
+ *
+ * Lets a caller offer a finer-grained reason and fall back to a coarser one only
+ * when the fine one is genuinely missing — instead of silently replacing a good
+ * hint with the universal "check the article or word order" fallback. The A1
+ * checkpoint uses this: a grammar drill's CATEGORY (e.g. 'perfekt') is preferred
+ * over the generic 'grammar-drill' source, but only if a hint for that category
+ * was actually written.
+ */
+export function hasSpecificHint(moduleType: string, reason?: string): boolean {
+  if (!reason) return false;
+  return SPECIFIC[`${moduleType}:${reason}`] !== undefined;
+}
 
 /**
  * Resolve a hint for a module + reason.

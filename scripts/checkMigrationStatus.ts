@@ -74,22 +74,22 @@ const M: MigrationSpec[] = [
       { kind: 'column', table: 'user_activity_days', name: 'activity_date' },
     ],
   },
+  // 003 is a PHANTOM: it is recorded as applied, but neither table was ever
+  // created. Nothing in src/ or scripts/ reads them - daily quests live in
+  // localStorage and the rapid-blitz high score is persisted under the
+  // per-user key 'rapidBlitzMultiChallenge' (useRapidBlitzMultiChallenge).
+  // Its checks are intentionally empty so `npm run check-migrations` stops
+  // reporting a permanent false failure. Do NOT "fix" this by creating the
+  // tables - that would resurrect a dead schema surface with no writer.
   {
     file: '003_add_daily_quests_and_high_scores_tables.sql',
-    checks: [
-      { kind: 'table', name: 'daily_quests' },
-      { kind: 'table', name: 'high_scores' },
-      { kind: 'function', name: 'update_daily_quests_timestamp', args: '' },
-      { kind: 'trigger', table: 'daily_quests', name: 'trg_daily_quests_updated_at' },
-      { kind: 'index', name: 'idx_daily_quests_user_id' },
-      { kind: 'index', name: 'idx_high_scores_score' },
-    ],
+    checks: [],
   },
   {
     file: '004_vocabulary_expansion.sql',
     checks: [
       { kind: 'table', name: 'vocabulary' },
-      { kind: 'index', name: 'idx_vocab_level_category' },
+      { kind: 'index', name: 'idx_vocab_level_pos' },
     ],
   },
   {
@@ -97,7 +97,6 @@ const M: MigrationSpec[] = [
     checks: [
       { kind: 'table', name: 'user_xp' },
       { kind: 'column', table: 'review_queue', name: 'box_level' },
-      { kind: 'column', table: 'review_queue', name: 'ease' },
       { kind: 'column', table: 'review_queue', name: 'last_result' },
     ],
   },
@@ -108,6 +107,12 @@ const M: MigrationSpec[] = [
       { kind: 'function', name: 'update_a1_path_state_timestamp', args: '' },
       { kind: 'trigger', table: 'a1_path_state', name: 'trg_a1_path_state_updated_at' },
       { kind: 'column', table: 'a1_path_state', name: 'checkpoint_best_by_unit' },
+    ],
+  },
+  {
+    file: '20260926190000_add_a1_path_state_path_mode.sql',
+    checks: [
+      { kind: 'column', table: 'a1_path_state', name: 'path_mode' },
     ],
   },
   {
@@ -163,9 +168,9 @@ const M: MigrationSpec[] = [
     file: '018_category_tags.sql',
     checks: [
       { kind: 'function', name: 'get_vocab_filter_options', args: '' },
-      { kind: 'column', table: 'vocabulary', name: 'category' },
+      { kind: 'column', table: 'vocabulary', name: 'tags' },
     ],
-    note: 'retires `category`, moves topical values into tags[]',
+    note: 'retires `category` (since DROPPED), moves topical values into tags[]',
   },
   {
     file: '019_drop_stale_get_random_vocabulary.sql',

@@ -1,441 +1,210 @@
-﻿/**
- * src/data/a1Path.ts
+/**
+ * src/data/a1Path.ts — the A1 campaign's public API (a façade over editable data)
  *
- * A1 curriculum spine configuration for MeroDeutsch.
+ * WHAT THIS FILE IS NOW
+ * The campaign content used to live here as ~750 lines of inline TypeScript:
+ * unit metadata, node lists and pedagogy tables, all mixed together. Editing a
+ * lesson text meant editing code, and adding a lesson meant editing three places
+ * that could silently drift apart.
  *
- * This is a DATA-ONLY module (no React). It wraps the EXISTING lesson routes
- * (/greetings, /numbers, /articles, /calendar, /grammar, /roleplay,
- *  /pronunciation, /dictation, /sentence-builder, /alphabet, /stories,
- *  /rapid-fire) into a LINEAR campaign of BANDS A..F (index 0..5).
- * Band B ("Script & Sound") is a SUPPORT band: it carries no checkpoint, never
- *  gates, and never push-blocks (its nodes are bonus-kind). Gates A/C/D/E/F sit
- *  on the core bands; passing a gate unlocks the NEXT CORE band, skipping B.
+ * Content now lives in hand-editable JSON:
  *
- * Design (locked .clinerules + band-reorg decisions):
- *  - Linear spine only. Support/bonus chips never gate the next band.
- *  - Lesson-complete rule = (A) visit counts as complete for learn/practice
- *    nodes. ONLY a checkpoint pass (>=80%) unlocks the next band.
- *  - Gate A has NO alphabet items; Gate E is vocab + listening only (real
- *    loaders, no new roleplay engine).
- *  - Checkpoint item sources are real curriculumService loaders (no mocks).
+ *   src/data/curriculum/clusters.json    the 5 clusters
+ *   src/data/curriculum/units/mNN.json   one file per unit — add / remove /
+ *                                        reorder units and lessons by editing
+ *                                        (or adding / deleting) these files
+ *   src/data/curriculum/schema.ts        the content contract + validator
+ *   src/data/curriculum/index.ts         loads the JSON and DERIVES the spine
  *
- * The per-user progress state (`completedNodeIds`, `unlockedUnitIndex`,
- * `checkpointBestByUnit`) lives in `useA1Path`, keyed
- * `meroDeutschA1Path:<userId>` (guest -> `meroDeutschA1Path:guest`).
+ * This file keeps the module's long-standing public API intact — every export
+ * below is unchanged in name and shape — so the ~25 modules that import it did
+ * not have to change. It no longer contains content: only derivation, thresholds
+ * and the legacy progress-remap helpers, which are behaviour, not content.
+ *
+ * HOW TO EDIT THE COURSE
+ *   · change a lesson title / route / rule table  → edit units/mNN.json
+ *   · add a lesson                                → add a node object to nodes[]
+ *   · remove a lesson                             → delete the node object
+ *   · add / remove / reorder a unit               → add / delete units/mNN.json
+ *                                                   and set `order`
+ * Then run `npm run curriculum:barrel` (only when files were added or removed)
+ * and `npm run curriculum:validate`. Nothing in this file needs to change.
+ *
+ * IDs ARE PERMANENT
+ * `completedNodeIds` keys on node ids and the path state keys on unit ids, so
+ * renaming one is a migration — the same pattern as `LEGACY_TO_BAND_INDEX` and
+ * `BAND_TO_MODULE_INDEX` below. Labels, routes, sections, checkpoint specs and
+ * pedagogy are free to edit at any time.
  */
 
-/** Stable, human-readable identifiers for the four German articles. */
-export type Article = 'der' | 'die' | 'das';
-
-export type PathNodeKind = 'learn' | 'practice' | 'checkpoint' | 'bonus';
+import { CURRICULUM_FILE, CURRICULUM_ISSUES, RESOLVED_PATH } from './curriculum';
+import type {
+  A1Curriculum,
+  A1Unit,
+  Cluster,
+  ComparisonRow,
+  HonorificRow,
+  PathNode,
+  RuleRow,
+} from './curriculum/schema';
 
 /**
- * A band is CORE when it carries a checkpoint (gate) that must be passed to
- * unlock the next core band. A SUPPORT band (Band B: alphabet/spelling) is
- * optional — it never gates and never blocks the path.
+ * Re-exported for source compatibility: these types used to be declared in this
+ * file and consumers import them from `../data/a1Path`. They now live with the
+ * content contract in `./curriculum/schema.ts` — the single place that defines
+ * what a unit file may contain.
  */
-export type BandKind = 'core' | 'support';
-
-export type WordOrder = 'SVO' | 'SOV' | 'V2';
-
-/** EN/DE label pair (UI copy). Nepali is NOT part of general UI copy. */
-export interface LocalizedLabel {
-  en: string;
-  de: string;
-}
-
-/** EN/NE/DE pedagogical bridge content. */
-export interface Trilingual {
-  en: string;
-  ne: string;
-  de: string;
-}
-
-export interface PathNode {
-  /** Stable node id, e.g. `u1-greetings`, `u1-checkpoint`, `u4-stories` */
-  id: string;
-  unitIndex: number; // 0..4
-  kind: PathNodeKind;
-  label: LocalizedLabel;
-  /** Existing route this node navigates to. Checkpoints use `/checkpoint/:i`. */
-  to: string;
-  /** True for optional bonus chips that never gate the next unit. */
-  bonus?: boolean;
-}
-
-/** Question shapes a unit checkpoint can draw from real loaders. */
-export type CheckpointSource =
-  | 'greeting-translation'
-  | 'number-conversion'
-  | 'alphabet-letter'
-  | 'article-precision'
-  | 'grammar-drill'
-  | 'calendar-translation'
-  | 'vocab-translation'
-  | 'vocab-translation-ne'
-  | 'listening-gap';
-
-export interface CheckpointSpec {
-  type: CheckpointSource;
-  /** How many items to pull from this source (>=1). Sum of a unit's specs = item count. */
-  count: number;
-}
-
-export interface CheckpointConfig {
-  /** Stable moduleType surfaced to the review queue. */
-  moduleType: 'a1-checkpoint';
-  /** Ordered item specs; summed counts produce 10-15 checkpoint items. */
-  specs: CheckpointSpec[];
-}
+export type {
+  A1Curriculum,
+  A1Unit,
+  Article,
+  BandKind,
+  CheckpointConfig,
+  CheckpointSource,
+  CheckpointSpec,
+  Cluster,
+  ComparisonRow,
+  CurriculumFile,
+  CurriculumIssue,
+  CurriculumNodeFile,
+  CurriculumUnitFile,
+  HonorificRow,
+  LessonSection,
+  LocalizedLabel,
+  PathMode,
+  PathNode,
+  PathNodeKind,
+  RuleRow,
+  TrapItem,
+  Trilingual,
+  UnitPedagogy,
+  WordOrder,
+} from './curriculum/schema';
 
 /**
- * Pedagogical bridge blocks rendered on a unit's spine card.
- * All bridge text is trilingual (EN/NE/DE); the UI component hides EN/NE when
- * in Nur-DE mode (C1.5).
+ * ADDITIVE (new in this version): the content validator and its findings.
+ * `npm run curriculum:validate` and the P2 lesson renderer use these; their
+ * presence changes nothing for existing consumers.
  */
-export interface UnitPedagogy {
-  honorifics?: { title: LocalizedLabel; rows: HonorificRow[] };
-  grammarComparison?: { title: LocalizedLabel; rows: ComparisonRow[] };
-  genderLegend?: LocalizedLabel; // short blurb above the GenderBadge legend
-  umlautCallout?: LocalizedLabel; // special chars note (Alphabet)
-  suffixNote?: LocalizedLabel; // e.g. -ung/-heit/-keit -> die
-}
+export {
+  CHECKPOINT_SOURCES,
+  CURRICULUM_SCHEMA_VERSION,
+  checkpointRouteFor,
+  formatCurriculumIssues,
+  hasCurriculumErrors,
+  validateCurriculum,
+} from './curriculum/schema';
+export { CURRICULUM_ISSUES };
 
-/** Honoring Du/Sie ↔ तिमी/तपाईं. */
-export interface HonorificRow {
-  pronoun: Trilingual; // du / तिमी / du , Sie / तपाईं / Sie
-  usage: LocalizedLabel; // when to use (EN/DE)
-}
+/* ── the campaign, derived from the unit files ────────────────────────────── */
 
-export interface ComparisonRow {
-  language: Trilingual; // language name
-  order: Trilingual; // SVO / SOV / V2 description
-  example: Trilingual; // example sentence
-}
-
-export interface A1Unit {
-  id: string; // 'band-a'
-  index: number; // 0..5
-  code: 'A' | 'B' | 'C' | 'D' | 'E' | 'F'; // band letter shown on the spine
-  kind: BandKind; // 'core' (gates) | 'support' (optional, never gates)
-  title: LocalizedLabel;
-  theme: LocalizedLabel;
-  goal: LocalizedLabel;
-  /** Ordered node ids (learn -> practice -> checkpoint). */
-  nodeIds: string[];
-  pedagogy?: UnitPedagogy;
-  /** Optional: only CORE bands carry a checkpoint (gate); SUPPORT bands omit it. */
-  checkpoint?: CheckpointConfig;
-  /**
-   * v0.2.0 — optional unit-vocab theming for checkpoint `vocab-translation`
-   * items. Categories are tried in order, then vocabPos as a POS-only pass,
-   * and the loader ALWAYS tops up from the general A1 pool — sparse/unknown
-   * values can never starve a checkpoint deck. U1–U3 intentionally omit this
-   * (their dedicated pools already match the theme).
-   */
-  vocabCategories?: string[];
-  vocabPos?: 'noun' | 'verb' | 'adjective' | 'phrase';
-}
-
-/** Index signature so node lookup by id is O(1) and type-safe. */
-export interface A1Curriculum {
-  units: A1Unit[];
-  /** All nodes flattened, in spine order. */
-  nodes: PathNode[];
-  /** Map id -> node for quick lookup. */
-  nodeMap: Record<string, PathNode>;
-  /** Flat list of checkpoint nodes, in unit order. */
-  checkpoints: PathNode[];
-}
-
-function lbl(en: string, de: string): LocalizedLabel {
-  return { en, de };
-}
-
-function tri(en: string, ne: string, de: string): Trilingual {
-  return { en, ne, de };
-}
-
-/** Pedagogical bridges — Nepali/English comparative (C2.10). ≤3 rows. */
-export const HONORIFICS: HonorificRow[] = [
-  {
-    pronoun: tri('you (informal)', 'तिमी', 'du'),
-    usage: lbl('friends, family, children', 'Freunde, Familie, Kinder'),
-  },
-  {
-    pronoun: tri('you (formal / plural)', 'तपाईं', 'Sie'),
-    usage: lbl('strangers, elders, professionals', 'Fremde, Ältere, Profis'),
-  },
-  {
-    pronoun: tri('we', 'हामी', 'wir'),
-    usage: lbl('we — informal register', 'wir — informelle Anrede'),
-  },
-];
-
-/** EN (SVO) vs NE (SOV) vs DE (V2/verb-final) comparative bridge. */
-export const WORD_ORDER_PANEL: ComparisonRow[] = [
-  {
-    language: tri('English', 'नेपाली', 'Deutsch'),
-    order: tri('SVO (Subject–Verb–Object)', 'SOV (विषय–वस्तु–क्रिया)', 'SVO (Subjekt–Verb–Objekt)'),
-    example: tri('I drink tea.', 'म चिया पिउँछु।', 'Ich trinke Tee.'),
-  },
-  {
-    language: tri('Nepali', 'नेपाली', 'Deutsch'),
-    order: tri('SOV', 'SOV (विषय–वस्तु–क्रिया)', 'V2 (Verb 2nd in main; verb-final in sub)'),
-    example: tri('I drink tea.', 'म चिया पिउँछु।', 'Ich trinke Tee.'),
-  },
-  {
-    language: tri('German', 'नेपाली', 'Deutsch'),
-    order: tri('SVO', 'SOV', 'V2 (Hauptsatz) / verb-final (Nebensatz)'),
-    example: tri('I drink tea.', 'म चिया पिउँछु।', 'Ich trinke Tee. (V2 im Hauptsatz)'),
-  },
-];
-
-// A small helper: build a 3-row panel where each row teaches one language's
-// order + example relative to the others. Keeps the table to exactly 3 rows.
-export const WORD_ORDER_TABLE: ComparisonRow[] = [
-  {
-    language: tri('English', 'नेपाली', 'Deutsch'),
-    order: tri('SVO', 'SOV', 'V2 (main)'),
-    example: tri('I drink tea.', 'म चिया पिउँछु।', 'Ich trinke Tee.'),
-  },
-  {
-    language: tri('Nepali', 'नेपाली', 'Deutsch'),
-    order: tri('SVO', 'SOV', 'V2/verb-final'),
-    example: tri('I drink tea.', 'म चिया पिउँछु।', 'Ich trinke Tee.'),
-  },
-  {
-    language: tri('German', 'नेपाली', 'Deutsch'),
-    order: tri('SVO', 'SOV', 'V2 (Haupt-) / verb-final (Nebensatz)'),
-    example: tri('I drink tea.', 'म चिया पिउँछु।', 'Ich trinke Tee. (V2 im Hauptsatz)'),
-  },
-];
-
-/** Modal / verb-final bridge for Unit 5 (only if content exists). */
-export const MODAL_VERB_FINAL_PANEL: ComparisonRow[] = [
-  {
-    language: tri('English', 'नेपाली', 'Deutsch'),
-    order: tri('Subject–Modal–Verb (V2)', 'SOV (विषय–वस्तु–क्रिया)', 'V2 (Haupt-) / Modal am Ende (Nebensatz)'),
-    example: tri('I can swim.', 'म तराई गर्न सक्छु।', 'Ich kann schwimmen.'),
-  },
-  {
-    language: tri('Nepali', 'नेपाली', 'Deutsch'),
-    order: tri('Subject–Modal–Verb', 'SOV', 'V2 / verb-final'),
-    example: tri('I can swim.', 'म तराई गर्न सक्छु।', 'Ich kann schwimmen.'),
-  },
-  {
-    language: tri('German', 'नेपाली', 'Deutsch'),
-    order: tri('SVO', 'SOV', 'Modal am Ende im Nebensatz'),
-    example: tri('I can swim.', 'म तराई गर्न सक्छु।', 'Ich kann schwimmen. (V2 im Hauptsatz)'),
-  },
-];
+/** The 15 core modules, in `order`. Content of record: `curriculum/units/*.json`. */
+export const A1_UNITS: A1Unit[] = RESOLVED_PATH.units;
 
 /**
- * The 5-unit A1 campaign.
+ * Core learning nodes (learn/practice/checkpoint) in spine order. Bonus nodes
+ * are excluded here — so getPushNode never stops on optional content.
  *
- * unitIndex derived from this config only — never hardcoded to 0 by consumers.
- * Nodes reference EXISTING routes; checkpoints point at `/checkpoint/:index`.
+ * Several modules share a route (e.g. /roleplay serves M07, M10, M11, M12 and
+ * M14). Where a module needs a specific variant we use the query-string deep
+ * links the app already supports: /grammar?tab=modals,
+ * /sentence-builder?focus=separable, /vocab-trainer?category=…,
+ * /rapid-fire?mode=… . Node ids stay distinct even when two modules point at the
+ * same base path, so visit tracking can still tell them apart.
  */
-export const A1_UNITS: A1Unit[] = [
-  {
-    id: 'band-a',
-    index: 0,
-    code: 'A',
-    kind: 'core',
-    title: lbl('First Contact', 'Erster Kontakt'),
-    theme: lbl('Greet · Introduce · Numbers', 'Begrüßen · Vorstellen · Zahlen'),
-    goal: lbl('Greet people, introduce yourself, and handle signs, prices and numbers', 'Sich begrüßen und vorstellen; Preise, Schilder und Zahlen'),
-    // Gate A: contact language ONLY. No alphabet-letter items (decision).
-    nodeIds: ['a-greetings', 'a-numbers', 'a-gate'],
-    checkpoint: {
-      moduleType: 'a1-checkpoint',
-      specs: [
-        { type: 'greeting-translation', count: 7 },
-        { type: 'number-conversion', count: 5 },
-      ],
-    },
-    pedagogy: {
-      honorifics: { title: lbl('Du / Sie', 'Du / Sie'), rows: HONORIFICS },
-    },
-  },
-  {
-    id: 'band-b',
-    index: 1,
-    code: 'B',
-    kind: 'support',
-    title: lbl('Script & Sound', 'Schrift & Klang'),
-    theme: lbl('Optional', 'Optional'),
-    goal: lbl('Alphabet + spelling of known words — optional side track, never blocks', 'Alphabet + bekannte Wörter buchstabieren — optional, blockiert nichts'),
-    // Support band: no checkpoint, no gate. Its nodes are bonus-kind so
-    // getPushNode never stops here and no later band is gated by it.
-    nodeIds: [],
-    pedagogy: {
-      umlautCallout: lbl(
-        'Umlauts (ä, ö, ü) and ß are separate letters — e.g. Fuß (foot), Über (over). Optional to learn early.',
-        'Umlaute (ä, ö, ü) und ß sind eigenständige Buchstaben — z. B. Fuß, Über. Optional zu lernen.'
-      ),
-    },
-  },
-{
-    id: 'band-c',
-    index: 2,
-    code: 'C',
-    kind: 'core',
-    title: lbl('Name the World', 'Die Welt benennen'),
-    theme: lbl('Gender · Articles', 'Genus · Artikel'),
-    goal: lbl('Name everyday things with der/die/das', 'Alltagsdinge mit der/die/das benennen'),
-    nodeIds: ['c-articles', 'c-gate'],
-    checkpoint: {
-      moduleType: 'a1-checkpoint',
-      specs: [
-        { type: 'article-precision', count: 8 },
-        { type: 'vocab-translation', count: 4 }, // adds meaning (EN/NE) alongside article
-      ],
-    },
-    vocabCategories: ['core', 'food', 'home'],
-    pedagogy: {
-      genderLegend: lbl(
-        'der = masculine, die = feminine, das = neuter, Plural = amber. Gender colors live in theme.ts tokens.',
-        'der = maskulin, die = feminin, das = neutral, Plural = orange. Genus-Farben aus theme.ts.'
-      ),
-      suffixNote: lbl(
-        'Tip: -ung, -heit, -keit, -schaft, -e → usually die (feminine).',
-        'Tipp: -ung, -heit, -keit, -schaft, -e → meistens die (feminin).'
-      ),
-    },
-  },
-  {
-    id: 'band-d',
-    index: 3,
-    code: 'D',
-    kind: 'core',
-    title: lbl('Time & Routine', 'Zeit & Alltag'),
-    theme: lbl('Clock · Verbs · Word order', 'Uhrzeit · Verben · Wortstellung'),
-    goal: lbl('Talk about your day: times, routines, and sein/haben', 'Über den Alltag sprechen: Uhrzeit, Routine, sein/haben'),
-    nodeIds: ['d-calendar', 'd-grammar', 'd-gate'],
-    checkpoint: {
-      moduleType: 'a1-checkpoint',
-      specs: [
-        { type: 'grammar-drill', count: 8 },
-        { type: 'calendar-translation', count: 4 },
-      ],
-    },
-    pedagogy: {
-      grammarComparison: { title: lbl('Word Order', 'Wortstellung'), rows: WORD_ORDER_TABLE },
-    },
-  },
-  {
-    id: 'band-e',
-    index: 4,
-    code: 'E',
-    kind: 'core',
-    title: lbl('Situations', 'Situationen'),
-    theme: lbl('Food · Place · Directions', 'Essen · Ort · Orientieren'),
-    goal: lbl('Apply vocabulary: ordering, directions, real-world chats', 'Wortschatz anwenden: Bestellen, Wege, Alltagssituationen'),
-    // Gate E sources = EXISTING vocab + listening loaders only (decision: no new
-    // roleplay/dialogue engine). Thin pool → fewer items, never fake content.
-    nodeIds: ['e-roleplay', 'e-gate'],
-    checkpoint: {
-      moduleType: 'a1-checkpoint',
-      specs: [
-        { type: 'vocab-translation', count: 7 },
-        { type: 'vocab-translation-ne', count: 3 },
-        { type: 'listening-gap', count: 2 },
-      ],
-    },
-    vocabCategories: ['food', 'travel', 'places', 'directions', 'restaurant', 'core'],
-    pedagogy: {
-      grammarComparison: {
-        title: lbl('Real-world practice', 'Praxis im echten Leben'),
-        rows: WORD_ORDER_TABLE,
-      },
-    },
-  },
-{
-    id: 'band-f',
-    index: 5,
-    code: 'F',
-    kind: 'core',
-    title: lbl('Control & Accuracy', 'Präzision & Aussprache'),
-    theme: lbl('Modals · Pronunciation · Dictation', 'Modalverben · Aussprache · Diktat'),
-    goal: lbl('Say and write accurately; express ability and wants', 'Korrekt sprechen & schreiben; Wünsche und Fähigkeiten'),
-    nodeIds: ['f-pron', 'f-dict', 'f-gate'],
-    checkpoint: {
-      moduleType: 'a1-checkpoint',
-      specs: [
-        { type: 'vocab-translation', count: 4 },
-        { type: 'vocab-translation-ne', count: 2 },
-        { type: 'listening-gap', count: 2 },
-        { type: 'grammar-drill', count: 4 },
-      ],
-    },
-    vocabCategories: ['verbs', 'phrases', 'routine', 'core'],
-    vocabPos: 'verb',
-    pedagogy: {
-      grammarComparison: { title: lbl('Modals & Word', 'Modalverben & Wortstellung'), rows: MODAL_VERB_FINAL_PANEL },
-    },
-  },
-];
-
-/**
- * Core learning nodes (learn/practice/checkpoint) in spine order. Bonus/support
- * nodes are excluded here — so getPushNode never stops on optional content and
- * Band B (support) never blocks the campaign.
- */
-export const A1_LEARN_NODES: PathNode[] = [
-  // Band A — Gate A (contact language only; no alphabet items)
-  { id: 'a-greetings', unitIndex: 0, kind: 'learn', label: lbl('Greetings', 'Grüße'), to: '/greetings' },
-  { id: 'a-numbers', unitIndex: 0, kind: 'learn', label: lbl('Numbers', 'Zahlen'), to: '/numbers' },
-  { id: 'a-gate', unitIndex: 0, kind: 'checkpoint', label: lbl('Gate A', 'Pforte A'), to: '/checkpoint/0' },
-  // Band C — Gate C (name the world)
-  { id: 'c-articles', unitIndex: 2, kind: 'learn', label: lbl('Articles', 'Artikel'), to: '/articles' },
-  { id: 'c-gate', unitIndex: 2, kind: 'checkpoint', label: lbl('Gate C', 'Pforte C'), to: '/checkpoint/2' },
-  // Band D — Gate D (time & routine)
-  { id: 'd-calendar', unitIndex: 3, kind: 'learn', label: lbl('Calendar & Time', 'Kalender & Uhrzeit'), to: '/calendar' },
-  { id: 'd-grammar', unitIndex: 3, kind: 'learn', label: lbl('Grammar', 'Grammatik'), to: '/grammar' },
-  { id: 'd-gate', unitIndex: 3, kind: 'checkpoint', label: lbl('Gate D', 'Pforte D'), to: '/checkpoint/3' },
-  // Band E — Gate E (situations / vocab + listening only)
-  { id: 'e-roleplay', unitIndex: 4, kind: 'learn', label: lbl('Roleplay', 'Rollenspiel'), to: '/roleplay' },
-  { id: 'e-gate', unitIndex: 4, kind: 'checkpoint', label: lbl('Gate E', 'Pforte E'), to: '/checkpoint/4' },
-  // Band F — Gate F (control & accuracy)
-  { id: 'f-pron', unitIndex: 5, kind: 'learn', label: lbl('Pronunciation', 'Aussprache'), to: '/pronunciation' },
-  { id: 'f-dict', unitIndex: 5, kind: 'practice', label: lbl('Dictation', 'Diktat'), to: '/dictation' },
-  { id: 'f-gate', unitIndex: 5, kind: 'checkpoint', label: lbl('Gate F', 'Pforte F'), to: '/checkpoint/5' },
-];
+export const A1_LEARN_NODES: PathNode[] = RESOLVED_PATH.learnNodes;
 
 /** Bonus + support nodes — optional, never gate, never push-lock. */
-export const A1_BONUS_NODES: PathNode[] = [
-  { id: 'a-numbers-practice', unitIndex: 0, kind: 'bonus', label: lbl('Number Minigame', 'Zahlen-Minispiel'), to: '/rapid-blitz?mode=number-conversion', bonus: true },
-  // Band B (support row) — alphabet/spelling live here as a visible optional chip.
-  { id: 'b-alphabet', unitIndex: 1, kind: 'bonus', label: lbl('Alphabet & Spelling', 'Alphabet & Buchstabieren'), to: '/alphabet', bonus: true },
-  { id: 'c-sentence', unitIndex: 2, kind: 'bonus', label: lbl('Sentence Builder', 'Satzbau'), to: '/sentence-builder', bonus: true },
-  { id: 'd-time-practice', unitIndex: 3, kind: 'bonus', label: lbl('Time Practice', 'Uhrzeit-Üben'), to: '/rapid-blitz?mode=calendar-translation', bonus: true },
-  { id: 'd-numbers-full', unitIndex: 3, kind: 'bonus', label: lbl('All Numbers', 'Alle Zahlen'), to: '/rapid-blitz?mode=number-conversion', bonus: true },
-  { id: 'e-stories', unitIndex: 4, kind: 'bonus', label: lbl('Stories', 'Geschichten'), to: '/stories', bonus: true },
-  { id: 'e-vocab-drill', unitIndex: 4, kind: 'bonus', label: lbl('Vocab Drill', 'Wortschatz-Drill'), to: '/rapid-blitz?mode=vocabulary-translation', bonus: true },
-  { id: 'f-modals', unitIndex: 5, kind: 'bonus', label: lbl('Modal Drills', 'Modalverben'), to: '/grammar?tab=modals', bonus: true },
-  { id: 'f-blitz', unitIndex: 5, kind: 'bonus', label: lbl('Blitz Mixed', 'Mixed-Quiz'), to: '/rapid-fire', bonus: true },
-  // NotebookLM workbook mechanics — bonus chips only (never gate, never push-lock).
-  { id: 'a-cypher', unitIndex: 0, kind: 'bonus', label: lbl('Number Code Cracker', 'Zahlen-Code knacken'), to: '/games?game=cypher', bonus: true },
-  { id: 'a-oddone', unitIndex: 0, kind: 'bonus', label: lbl('Phonetic Trap Game', 'Phonetik-Rätsel'), to: '/games?game=oddoneout', bonus: true },
-  { id: 'd-separable', unitIndex: 3, kind: 'bonus', label: lbl('Separable Verbs', 'Trennbare Verben'), to: '/sentence-builder?focus=separable', bonus: true },
-  { id: 'd-dice', unitIndex: 3, kind: 'bonus', label: lbl('Verb Dice', 'Verben-Würfelspiel'), to: '/games?game=dice', bonus: true },
-  { id: 'f-tictactoe', unitIndex: 5, kind: 'bonus', label: lbl('Conjugation Tic-Tac-Toe', 'Konjugations-Spiel'), to: '/games?game=tictactoe', bonus: true },
-  { id: 'f-email', unitIndex: 5, kind: 'bonus', label: lbl('Email Builder', 'E-Mail-Trainer'), to: '/email-builder', bonus: true },
+export const A1_BONUS_NODES: PathNode[] = RESOLVED_PATH.bonusNodes;
+
+/**
+ * The 5 GCSE Topic Area groupings that give the 15 modules their stages.
+ * Content of record: `src/data/curriculum/clusters.json`.
+ */
+export const A1_CLUSTERS: Cluster[] = CURRICULUM_FILE.clusters;
+
+/* ── legacy pedagogy aliases ──────────────────────────────────────────────── */
+
+function unitById(id: string): A1Unit | undefined {
+  return A1_UNITS.find((unit) => unit.id === id);
+}
+
+/**
+ * These arrays were standalone constants in this file before the move. They are
+ * now OWNED by the unit that renders them, so `curriculum/units/mNN.json` is the
+ * one place to edit them; an alias simply follows its owner. If an owner stops
+ * defining that block the alias becomes empty, which
+ * `scripts/curriculum/verify.ts` reports as a finding rather than failing
+ * silently.
+ *
+ * No module outside this file consumes them and no UI reads them directly (the
+ * spine renders `unit.pedagogy`), so they exist to keep this module's export
+ * surface stable.
+ */
+export const HONORIFICS: HonorificRow[] = unitById('m01')?.pedagogy?.honorifics?.rows ?? [];
+/** Trilingual word-order bridge — owned by M08 (verbs & V2 word order). */
+export const WORD_ORDER_TABLE: ComparisonRow[] =
+  unitById('m08')?.pedagogy?.grammarComparison?.rows ?? [];
+/** Modal sentence-bracket bridge — owned by M13 (modal verbs). */
+export const MODAL_VERB_FINAL_PANEL: ComparisonRow[] =
+  unitById('m13')?.pedagogy?.grammarComparison?.rows ?? [];
+/** um / am / im — owned by M07 (calendar & time). */
+export const UM_AM_IM_RULES: RuleRow[] = unitById('m07')?.pedagogy?.ruleTable?.rows ?? [];
+/** der → den — owned by M10 (food & the accusative). */
+export const ACCUSATIVE_RULES: RuleRow[] = unitById('m10')?.pedagogy?.ruleTable?.rows ?? [];
+/** nach / zu / in — owned by M12 (city & transport). */
+export const DIRECTIONAL_RULES: RuleRow[] = unitById('m12')?.pedagogy?.ruleTable?.rows ?? [];
+/** haben/sein + Partizip II — owned by M15 (hobbies & Perfekt). */
+export const PERFEKT_RULES: RuleRow[] = unitById('m15')?.pedagogy?.ruleTable?.rows ?? [];
+
+/**
+ * Unused legacy constant, kept because it is part of this module's export
+ * surface. `WORD_ORDER_TABLE` above is the table the spine actually renders; this
+ * panel predates it and no unit references it. Remove the export deliberately if
+ * you ever want to drop it.
+ */
+export const WORD_ORDER_PANEL: ComparisonRow[] = [
+  {
+    language: { en: 'English', ne: 'नेपाली', de: 'Deutsch' },
+    order: {
+      en: 'SVO (Subject–Verb–Object)',
+      ne: 'SOV (विषय–वस्तु–क्रिया)',
+      de: 'SVO (Subjekt–Verb–Objekt)',
+    },
+    example: { en: 'I drink tea.', ne: 'म चिया पिउँछु।', de: 'Ich trinke Tee.' },
+  },
+  {
+    language: { en: 'Nepali', ne: 'नेपाली', de: 'Deutsch' },
+    order: {
+      en: 'SOV',
+      ne: 'SOV (विषय–वस्तु–क्रिया)',
+      de: 'V2 (Verb 2nd in main; verb-final in sub)',
+    },
+    example: { en: 'I drink tea.', ne: 'म चिया पिउँछु।', de: 'Ich trinke Tee.' },
+  },
+  {
+    language: { en: 'German', ne: 'नेपाली', de: 'Deutsch' },
+    order: { en: 'SVO', ne: 'SOV', de: 'V2 (Hauptsatz) / verb-final (Nebensatz)' },
+    example: { en: 'I drink tea.', ne: 'म चिया पिउँछु।', de: 'Ich trinke Tee. (V2 im Hauptsatz)' },
+  },
 ];
+
+/* ── the campaign object the UI and the progress hooks consume ─────────────── */
 
 function buildCurriculum(): A1Curriculum {
   const nodes: PathNode[] = [...A1_LEARN_NODES, ...A1_BONUS_NODES];
   const nodeMap: Record<string, PathNode> = {};
-  for (const n of nodes) {
-    nodeMap[n.id] = n;
+  for (const node of nodes) {
+    nodeMap[node.id] = node;
   }
-  const checkpoints = A1_LEARN_NODES.filter((n) => n.kind === 'checkpoint');
-  // Ensure each unit's nodeIds resolve to a node.
+  const checkpoints = A1_LEARN_NODES.filter((node) => node.kind === 'checkpoint');
+  // Each unit's `nodeIds` is DERIVED from its own `nodes[]` in
+  // `curriculum/index.ts`, so this can no longer fail the way it used to (the
+  // old file kept the two lists separate and only warned at runtime). The check
+  // stays as a cheap invariant guard for a future hand-written node list.
   for (const unit of A1_UNITS) {
     for (const id of unit.nodeIds) {
       if (!nodeMap[id]) {
-        // Missing node — omit silently rather than invent a route.
         // eslint-disable-next-line no-console
         console.warn(`[a1Path] unit ${unit.id} references unknown node ${id}`);
       }
@@ -454,14 +223,22 @@ export const A1_UNIT_COUNT = A1_UNITS.length;
  */
 export const FIRST_UNIT_INDEX = 0;
 
-/**
- * Checkpoint pass threshold (locked: >=80%, not 100%, no cooldown).
- */
+/** Checkpoint pass threshold (locked: >=80%, not 100%, no cooldown). */
 export const CHECKPOINT_PASS_THRESHOLD = 0.8;
 
 /**
+ * "Mastered" threshold (spec §3: a module is Mastered at >=85%).
+ *
+ * DELIBERATELY SEPARATE from CHECKPOINT_PASS_THRESHOLD. 80% unlocks the next
+ * module (locked decision); 85% only awards a cosmetic badge and never gates.
+ * Raising the GATE to 85% would contradict the locked >=80% rule, so it is kept
+ * strictly informational.
+ */
+export const MODULE_MASTERY_THRESHOLD = 0.85;
+
+/**
  * Default number of checkpoint items to draw (10-15). The actual count is the
- * sum of a unit's CheckpointSpec counts (each 3-8).
+ * sum of a unit's CheckpointSpec counts (each 3-8), authored in units/mNN.json.
  */
 export const DEFAULT_CHECKPOINT_ITEM_COUNT = 12;
 
@@ -473,19 +250,45 @@ export function getCheckpointNode(unitIndex: number): PathNode | undefined {
   const safe = Math.max(0, Math.min(unitIndex, A1_UNIT_COUNT - 1));
   return A1_CURRICULUM.units[safe]?.nodeIds
     .map((id) => A1_CURRICULUM.nodeMap[id])
-    .find((n) => n.kind === 'checkpoint');
+    .find((node) => node.kind === 'checkpoint');
 }
 
-/** Find the learn/practice node whose route matches a pathname (for visit-based completion). */
-export function getNodeByRoute(pathname: string): PathNode | undefined {
-  return A1_CURRICULUM.nodes.find((n) => n.kind !== 'checkpoint' && pathname === n.to);
+/** Strip a query string so `/grammar?tab=modals` and `/grammar` share a base. */
+function basePath(route: string): string {
+  const query = route.indexOf('?');
+  return query === -1 ? route : route.slice(0, query);
 }
 
 /**
- * The band index that is unlocked next after passing the checkpoint at
- * `currentUnitIndex`. Only CORE bands advance the path — SUPPORT bands (B) are
- * skipped, so passing Gate A (0) unlocks Band C (2) directly (skip-b).
- * Returns the last band when nothing lies ahead.
+ * Find the learn/practice node a visit landed on, for visit-based completion.
+ *
+ * Accepts the FULL location (pathname + search) so query-string deep-links —
+ * `/grammar?tab=modals`, `/vocab-trainer?category=family` — resolve to their own
+ * node instead of the bare-route one. `A1PathVisitTracker` passes
+ * `pathname + search` for exactly this reason.
+ *
+ * When several nodes share a base path (e.g. /roleplay backs M07, M10, M11, M12
+ * and M14), an exact full-route match always wins. Only if NO node claims the
+ * exact route do we fall back to the base path — and then only when the
+ * candidates are UNAMBIGUOUS, so a bare `/roleplay` can never silently mark
+ * five modules complete.
+ */
+export function getNodeByRoute(fullPath: string): PathNode | undefined {
+  const candidates = A1_CURRICULUM.nodes.filter((node) => node.kind !== 'checkpoint');
+
+  const exact = candidates.find((node) => node.to === fullPath);
+  if (exact) return exact;
+
+  const base = basePath(fullPath);
+  const byBase = candidates.filter((node) => basePath(node.to) === base);
+  return byBase.length === 1 ? byBase[0] : undefined;
+}
+
+/**
+ * The module index that is unlocked next after passing the checkpoint at
+ * `currentUnitIndex`. All 15 modules are CORE, so this is simply the next
+ * index; it stays a function so a future optional module can be skipped
+ * without touching callers.
  */
 export function getNextGatedBandIndex(currentUnitIndex: number): number {
   for (let i = currentUnitIndex + 1; i < A1_UNIT_COUNT; i++) {
@@ -494,6 +297,8 @@ export function getNextGatedBandIndex(currentUnitIndex: number): number {
   }
   return Math.max(0, A1_UNIT_COUNT - 1);
 }
+
+/* ── legacy progress remaps (kept because learner state on disk is old) ────── */
 
 /**
  * One-time remap for users holding OLD 5-unit progress (index 0..4) -> new band
@@ -527,4 +332,56 @@ export function isLegacyPathNodeId(id: string): boolean {
 /** True when an id belongs to the NEW `a-..f-` band scheme (or the migration marker). */
 export function isBandNodeId(id: string): boolean {
   return /^[a-f]-/.test(id) || id === BAND_MIGRATION_MARKER;
+}
+
+/**
+ * SECOND migration: 6-band (A–F) progress -> 15-module (M01–M15) progress.
+ *
+ * Each old band maps to the last module whose content it actually covered, so a
+ * learner's position never regresses and never over-rewards:
+ *
+ *   band A (0) greetings + numbers    -> M02 (1)  both covered by Gate A
+ *   band B (1) alphabet (SUPPORT)     -> M03 (2)  alphabet becomes a real module
+ *   band C (2) articles / gender      -> M05 (4)  articles are M05's backbone
+ *   band D (3) calendar + grammar     -> M08 (7)  Gate D drilled 8 grammar items
+ *   band E (4) food/place/directions  -> M11 (10) themed food/travel/places vocab
+ *   band F (5) modals + accuracy      -> M13 (12) Gate F included modals drills
+ *
+ * Deliberately NOT mapping band F to M15: Perfekt (M15) is brand-new grammar
+ * with no counterpart in the old curriculum, so it must be earned. M14 (health)
+ * and M15 (perfekt) are always re-earned — correct, since nobody has seen them.
+ */
+export const BAND_TO_MODULE_INDEX: readonly number[] = [1, 2, 4, 7, 10, 12];
+
+export function remapBandToModuleIndex(oldIndex: number): number {
+  const i = Math.max(0, Math.min(oldIndex, BAND_TO_MODULE_INDEX.length - 1));
+  return BAND_TO_MODULE_INDEX[i] ?? 0;
+}
+
+/**
+ * Marker injected into `completedNodeIds` exactly once so the 6→15 remap is
+ * idempotent — exactly the mechanism the 5→6 migration already uses.
+ */
+export const M15_MIGRATION_MARKER = 'a1-path-modules-v3';
+
+/** True when an id belongs to the 6-band `a-..f-` scheme (or its marker). */
+export function isSixBandNodeId(id: string): boolean {
+  return /^[a-f]-/.test(id) || id === BAND_MIGRATION_MARKER;
+}
+
+/** True when an id belongs to the current 15-module `mNN-` scheme (or its marker). */
+export function isModuleNodeId(id: string): boolean {
+  return /^m\d{2}-/.test(id) || id === M15_MIGRATION_MARKER;
+}
+
+/**
+ * The cluster a module belongs to (0..4). Returns 0 for an unknown index rather
+ * than throwing, so a stale saved index can never crash the spine.
+ */
+export function getClusterForModule(unitIndex: number): Cluster {
+  const safe = Math.max(0, Math.min(unitIndex, A1_UNIT_COUNT - 1));
+  return (
+    A1_CLUSTERS.find((cluster) => cluster.index === A1_UNITS[safe]?.cluster) ??
+    A1_CLUSTERS[0]!
+  );
 }

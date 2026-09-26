@@ -1,0 +1,84 @@
+{
+  "id": "m14",
+  "order": 14,
+  "code": "M14",
+  "kind": "core",
+  "cluster": 4,
+  "title": {
+    "en": "Health & the Doctor",
+    "de": "Gesundheit & Arzt"
+  },
+  "theme": {
+    "en": "Body parts · Symptoms · weh tun",
+    "de": "Körperteile · Beschwerden · weh tun"
+  },
+  "goal": {
+    "en": "Describe symptoms and handle a doctor visit",
+    "de": "Beschwerden beschreiben und einen Arztbesuch meistern"
+  },
+  "nodes": [
+    {
+      "id": "m14-health",
+      "kind": "learn",
+      "label": {
+        "en": "Body & Health",
+        "de": "Körper & Gesundheit"
+      },
+      "to": "/vocab-trainer?category=body-health"
+    },
+    {
+      "id": "m14-doctor",
+      "kind": "practice",
+      "label": {
+        "en": "Doctor Visit",
+        "de": "Arztbesuch"
+      },
+      "to": "/roleplay?scene=doctor"
+    },
+    {
+      "id": "m14-gate",
+      "kind": "checkpoint",
+      "label": {
+        "en": "Module 14 Checkpoint",
+        "de": "Modul 14 Prüfung"
+      },
+      "to": "/checkpoint/13"
+    }
+  ],
+  "bonus": [
+    {
+      "id": "m14-glossary",
+      "kind": "bonus",
+      "label": {
+        "en": "Glossary",
+        "de": "Glossar"
+      },
+      "to": "/glossary",
+      "bonus": true
+    }
+  ],
+  "checkpoint": {
+    "moduleType": "a1-checkpoint",
+    "specs": [
+      {
+        "type": "vocab-translation",
+        "count": 8
+      },
+      {
+        "type": "listening-gap",
+        "count": 4
+      }
+    ]
+  },
+  "pedagogy": {
+    "grammarNote": {
+      "en": "Two ways to say it hurts: the compound noun (Ich habe Kopfschmerzen) or weh tun (Der Kopf tut mir weh). How you feel: Es geht mir gut / schlecht.",
+      "de": "Zwei Wege: das Kompositum (Ich habe Kopfschmerzen) oder weh tun (Der Kopf tut mir weh). Wie es einem geht: Es geht mir gut / schlecht."
+    }
+  },
+  "vocabCategories": [
+    "body-health",
+    "doctor-shopping-phrases"
+  ],
+  "hasLesson": true
+}

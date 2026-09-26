@@ -57,10 +57,15 @@ import {
   A1_UNIT_COUNT,
   BAND_MIGRATION_MARKER,
   CHECKPOINT_PASS_THRESHOLD,
+  M15_MIGRATION_MARKER,
   getNextGatedBandIndex,
   isBandNodeId,
   isLegacyPathNodeId,
+  isModuleNodeId,
+  isSixBandNodeId,
+  remapBandToModuleIndex,
   remapLegacyUnitIndex,
+  type PathMode,
   type PathNode,
 } from '../data/a1Path';
 
@@ -74,13 +79,75 @@ export interface A1PathState {
   completedNodeIds: string[];
   unlockedUnitIndex: number;
   checkpointBestByUnit: Record<number, number>;
+  /**
+   * Per-band gate attempt history, keyed by unit index.
+   *
+   * This exists for ONE reason: the "Retry" button used to redraw a completely
+   * random deck, so a learner who missed 4 items on a failed gate would
+   * frequently never see those 4 items again — the retry taught them nothing
+   * diagnostic. `missedItemKeys` is the payload that fixes it: A1CheckpointPage
+   * seeds the next deck with exactly those items first.
+   *
+   * LOCAL-ONLY (Dexie) FOR NOW. Deliberately NOT in the `a1_path_state` cloud
+   * payload, so shipping this needs no DB migration. Consequence: a learner on
+   * a brand-new device falls back to a random deck, which is no worse than the
+   * behaviour before this field existed. Add an `attempts_by_unit` JSONB column
+   * + wire it in userDataService when a migration window is available.
+   */
+  attemptsByUnit: Record<number, CheckpointAttemptRecord>;
+  /**
+   * `'guided'` (default) or `'self'`. Gates progression vs. leaves every module
+   * open. Synced across devices via `a1_path_state.path_mode`.
+   */
+  pathMode: PathMode;
 }
+
+/** One band's gate history. */
+export interface CheckpointAttemptRecord {
+  /** How many times this gate has been submitted. */
+  attempts: number;
+  /** Best score ever recorded (0..1) — mirrors checkpointBestByUnit. */
+  best: number;
+  /** Score of the most recent submission (0..1). */
+  lastScore: number;
+  /** ISO timestamp of the most recent submission. */
+  lastAt: string;
+  /**
+   * Question keys missed on the MOST RECENT attempt. Capped (see
+   * MAX_TRACKED_MISSES) so a hopeless round cannot bloat the persisted row.
+   */
+  missedItemKeys: string[];
+}
+
+/** Cap on persisted missed keys — a round can have at most ~15 items. */
+export const MAX_TRACKED_MISSES = 20;
 
 const DEFAULT_STATE: A1PathState = {
   completedNodeIds: [],
   unlockedUnitIndex: 0,
   checkpointBestByUnit: {},
+  attemptsByUnit: {},
+  // Guided is the default because it is the behaviour every learner has today;
+  // self mode is something they must opt into.
+  pathMode: 'guided',
 };
+
+/** Coerce a raw/partial attempt record into a valid one. */
+function normalizeAttempt(raw: unknown): CheckpointAttemptRecord {
+  const r = (raw ?? {}) as Partial<CheckpointAttemptRecord>;
+  const attempts = Number.isFinite(r.attempts) ? Math.max(0, Number(r.attempts)) : 0;
+  const best = Number.isFinite(r.best) ? Math.max(0, Math.min(1, Number(r.best))) : 0;
+  const lastScore = Number.isFinite(r.lastScore) ? Math.max(0, Math.min(1, Number(r.lastScore))) : best;
+  return {
+    attempts,
+    best,
+    lastScore,
+    lastAt: typeof r.lastAt === 'string' ? r.lastAt : new Date(0).toISOString(),
+    missedItemKeys: Array.isArray(r.missedItemKeys)
+      ? r.missedItemKeys.filter((k): k is string => typeof k === 'string').slice(0, MAX_TRACKED_MISSES)
+      : [],
+  };
+}
 
 /** True when a state object carries any real progress worth hydrating/migrating. */
 function hasProgress(s: Partial<A1PathState>): boolean {
@@ -89,7 +156,8 @@ function hasProgress(s: Partial<A1PathState>): boolean {
     (typeof s.unlockedUnitIndex === 'number' && s.unlockedUnitIndex > 0) ||
     Boolean(
       s.checkpointBestByUnit && Object.keys(s.checkpointBestByUnit).length > 0
-    )
+    ) ||
+    Boolean(s.attemptsByUnit && Object.keys(s.attemptsByUnit).length > 0)
   );
 }
 
@@ -106,6 +174,17 @@ function normalizeState(raw: Partial<A1PathState>): A1PathState {
       ? raw.checkpointBestByUnit
       : {};
 
+  // attemptsByUnit is optional on the wire (absent from the cloud row and from
+  // pre-Wave-1 Dexie rows), so it always coerces to {} rather than throwing.
+  let attemptsRaw: Record<number, CheckpointAttemptRecord> = {};
+  if (raw.attemptsByUnit && typeof raw.attemptsByUnit === 'object') {
+    for (const [k, v] of Object.entries(raw.attemptsByUnit)) {
+      const idx = Number(k);
+      if (!Number.isFinite(idx) || idx < 0 || idx >= A1_UNIT_COUNT) continue;
+      attemptsRaw[idx] = normalizeAttempt(v);
+    }
+  }
+
   // One-time band migration: an OLD (5-unit) state is detected by the presence
   // of a legacy `uN-` node id with NO new band id yet. We REMAP `unlockedUnitIndex`
   // and `checkpointBestByUnit` keys to the new band indices (see LEGACY_TO_BAND_INDEX)
@@ -119,16 +198,48 @@ function normalizeState(raw: Partial<A1PathState>): A1PathState {
     for (const [k, v] of Object.entries(bestRaw)) {
       const oldIdx = Number(k);
       if (!Number.isFinite(oldIdx) || oldIdx < 0 || oldIdx > 4) continue;
-      remappedBest[remapLegacyUnitIndex(oldIdx)] = Number(v) ?? 0;
+      remappedBest[remapLegacyUnitIndex(oldIdx)] = Number(v);
     }
     bestRaw = remappedBest;
     completedNodeIds.push(BAND_MIGRATION_MARKER);
+  }
+
+  // SECOND one-time migration: 6-band (A–F) -> 15-module (M01–M15).
+  //
+  // Detection mirrors the first migration exactly: a band-shaped id with no
+  // module-shaped id yet. Both branches are independent and can run back to back
+  // on a single very old state (5-unit -> 6-band -> 15-module), because each only
+  // fires when the NEXT scheme is absent.
+  //
+  // Only the INDEX is remapped. `completedNodeIds` is never rewritten or pruned
+  // — the old `a-`/`b-` ids simply stop matching any node, which is harmless
+  // (path lookups ignore unknown ids) and guarantees the learner's completed
+  // history is never silently destroyed. The learner re-visits the new module
+  // nodes; visit-based completion re-marks them, and the gate they already passed
+  // is honoured through `unlockedUnitIndex` + `checkpointBestByUnit`.
+  const hasSixBand = completedNodeIds.some(isSixBandNodeId);
+  const hasModule = completedNodeIds.some(isModuleNodeId);
+  if (hasSixBand && !hasModule) {
+    unlockedRaw = remapBandToModuleIndex(unlockedRaw);
+    const remappedBest: Record<number, number> = {};
+    for (const [k, v] of Object.entries(bestRaw)) {
+      const oldIdx = Number(k);
+      if (!Number.isFinite(oldIdx) || oldIdx < 0 || oldIdx > 5) continue;
+      remappedBest[remapBandToModuleIndex(oldIdx)] = Number(v);
+    }
+    bestRaw = remappedBest;
+    completedNodeIds.push(M15_MIGRATION_MARKER);
   }
 
   return {
     completedNodeIds,
     unlockedUnitIndex: Math.max(0, Math.min(unlockedRaw, A1_UNIT_COUNT - 1)),
     checkpointBestByUnit: bestRaw,
+    attemptsByUnit: attemptsRaw,
+    // Absent on every row written before the field existed, and could be
+    // anything in a hand-edited row. Both load as 'guided' — the behaviour they
+    // already had — so this can never silently promote someone to self mode.
+    pathMode: raw.pathMode === 'self' ? 'self' : 'guided',
   };
 }
 
@@ -140,6 +251,8 @@ async function persistToDexie(userId: string, state: A1PathState): Promise<void>
     unlockedUnitIndex: state.unlockedUnitIndex,
     completedNodeIds: state.completedNodeIds,
     checkpointBestByUnit: state.checkpointBestByUnit,
+    attemptsByUnit: state.attemptsByUnit,
+    pathMode: state.pathMode,
     updatedAt: new Date().toISOString(),
   };
   try {
@@ -149,6 +262,24 @@ async function persistToDexie(userId: string, state: A1PathState): Promise<void>
   }
 }
 
+/**
+ * Display phase of a band.
+ *
+ *   locked   — beyond `unlockedUnitIndex`; its gate is not yet passed
+ *   current  — the band the learner is working in
+ *   done     — behind the learner; its gate IS passed
+ *   optional — SUPPORT band (B): always reachable, never gated, never "done"
+ *
+ * `optional` exists so a support band is not rendered as a permanently
+ * in-progress unit (see getUnitPhase).
+ *
+ * `available` is the SELF-GUIDED "open, not started" state. In guided mode a
+ * module is either reachable ('current'/'done') or gated ('locked'), so this
+ * state can never be produced there — it exists purely so self mode does not
+ * have to render untouched modules with a "Locked" pill, which would be a lie.
+ */
+export type A1UnitPhase = 'locked' | 'current' | 'done' | 'optional' | 'available';
+
 export interface A1PathContextValue extends A1PathState {
   userId: string;
   /** learn/practice node id marked complete on visit. */
@@ -156,19 +287,31 @@ export interface A1PathContextValue extends A1PathState {
   /**
    * Record a checkpoint attempt result for a unit. Advances unlock forward only
    * when score >= threshold; always persists the best score seen so Retry has
-   * history.
+   * history. `missedItemKeys` are the question keys the learner got wrong —
+   * the next attempt seeds its deck with exactly those.
    */
-  markCheckpointResult: (unitIndex: number, score: number) => void;
+  markCheckpointResult: (unitIndex: number, score: number, missedItemKeys?: string[]) => void;
   /** Is this unit's checkpoint passed? */
   isCheckpointComplete: (unitIndex: number) => boolean;
-  /** Is this unit unlocked for the user? (unitIndex <= unlockedUnitIndex) */
+  /**
+   * Is this unit unlocked? In self mode ALWAYS true (that is the whole point);
+   * otherwise `unitIndex <= unlockedUnitIndex`.
+   */
   isUnitUnlocked: (unitIndex: number) => boolean;
   isNodeUnlocked: (node: PathNode) => boolean;
   isNodeComplete: (node: PathNode) => boolean;
   /** First incomplete node within unlocked units (the "Push" target), or null. */
   getPushNode: () => PathNode | null;
   /** Unit display phase for the spine. */
-  getUnitPhase: (unitIndex: number) => 'locked' | 'current' | 'done';
+  getUnitPhase: (unitIndex: number) => A1UnitPhase;
+  /**
+   * Switch between 'guided' and 'self'.
+   *
+   * FORWARD-ONLY: switching INTO guided raises `unlockedUnitIndex` to the
+   * highest module the learner has actually reached (completed nodes or passed
+   * checkpoints) rather than re-locking finished work, and it never lowers it.
+   */
+  setPathMode: (mode: PathMode) => void;
   /** Clear all A1 path data (debug / reset). Does not touch XP/queue/progress. */
   resetPath: () => void;
 }
@@ -341,7 +484,7 @@ export function A1PathProvider({ children }: A1PathProviderProps) {
   );
 
   const markCheckpointResult = useCallback(
-    (unitIndex: number, score: number) => {
+    (unitIndex: number, score: number, missedItemKeys: string[] = []) => {
       const safeUnit = Math.max(0, Math.min(unitIndex, A1_UNIT_COUNT - 1));
       setState((prev) => {
         const prevBest = prev.checkpointBestByUnit[safeUnit] ?? 0;
@@ -366,10 +509,28 @@ export function A1PathProvider({ children }: A1PathProviderProps) {
           A1_UNIT_COUNT - 1
         );
 
+        const prevAttempt = prev.attemptsByUnit[safeUnit];
+
         const next: A1PathState = {
+          ...prev,
           completedNodeIds,
           unlockedUnitIndex,
           checkpointBestByUnit: { ...prev.checkpointBestByUnit, [safeUnit]: best },
+          attemptsByUnit: {
+            ...prev.attemptsByUnit,
+            [safeUnit]: normalizeAttempt({
+              attempts: (prevAttempt?.attempts ?? 0) + 1,
+              best,
+              lastScore: score,
+              lastAt: new Date().toISOString(),
+              // Keep the miss list from the previous FAILED attempt while the
+              // learner retries, and overwrite it with the new one on every
+              // submission. A passed gate clears it — there is nothing left to
+              // re-drill, and a stale list would leak into Analytics' "weakest
+              // items" panel long after the band was done.
+              missedItemKeys: passed ? [] : missedItemKeys,
+            }),
+          },
         };
         void persistToDexie(userId, next);
         broadcast();
@@ -406,13 +567,19 @@ export function A1PathProvider({ children }: A1PathProviderProps) {
 
   const isUnitUnlocked = useCallback(
     (unitIndex: number) => {
+      // SELF-GUIDED: everything is open. This single line is what un-gates the
+      // whole spine, and it also makes A1CheckpointPage's existing
+      // `if (!unlocked) return <Locked/>` branch unreachable in self mode —
+      // which is the correct behaviour there, not an oversight.
+      if (state.pathMode === 'self') return true;
+
       const safe = Math.max(0, Math.min(unitIndex, A1_UNIT_COUNT - 1));
       const band = A1_CURRICULUM.units[safe];
       // SUPPORT bands (B) are always accessible — they never gate.
       if (band && band.kind === 'support') return true;
       return safe <= state.unlockedUnitIndex;
     },
-    [state.unlockedUnitIndex]
+    [state.unlockedUnitIndex, state.pathMode]
   );
 
   const isNodeComplete = useCallback(
@@ -432,6 +599,43 @@ export function A1PathProvider({ children }: A1PathProviderProps) {
   );
 
   const getPushNode = useCallback((): PathNode | null => {
+    // SELF-GUIDED: "continue where you left off".
+    //
+    // Guided mode wants the first incomplete node in ascending order, which is
+    // well defined because exactly one frontier exists. In self mode the learner
+    // may be anywhere, so walking the list from the top would always return
+    // M01 — telling someone to redo greetings when they are halfway through
+    // Module 11. Instead we resume inside the HIGHEST module they have touched.
+    if (state.pathMode === 'self') {
+      let highestTouched = -1;
+      for (const node of A1_LEARN_NODES) {
+        const done =
+          node.kind === 'checkpoint'
+            ? isCheckpointComplete(node.unitIndex)
+            : state.completedNodeIds.includes(node.id);
+        if (done && node.unitIndex > highestTouched) highestTouched = node.unitIndex;
+      }
+      const from = highestTouched >= 0 ? highestTouched : 0;
+      for (const node of A1_LEARN_NODES) {
+        if (node.unitIndex < from) continue;
+        if (node.kind === 'checkpoint') {
+          if (!isCheckpointComplete(node.unitIndex)) return node;
+        } else if (node.kind === 'learn' || node.kind === 'practice') {
+          if (!state.completedNodeIds.includes(node.id)) return node;
+        }
+      }
+      // Everything the learner has touched is finished; fall back to the
+      // earliest module with anything outstanding so the CTA still has a target.
+      for (const node of A1_LEARN_NODES) {
+        if (node.kind === 'checkpoint') {
+          if (!isCheckpointComplete(node.unitIndex)) return node;
+        } else if (node.kind === 'learn' || node.kind === 'practice') {
+          if (!state.completedNodeIds.includes(node.id)) return node;
+        }
+      }
+      return null;
+    }
+
     for (const node of A1_LEARN_NODES) {
       if (node.unitIndex > state.unlockedUnitIndex) continue; // locked unit
       if (node.kind === 'checkpoint') {
@@ -441,20 +645,92 @@ export function A1PathProvider({ children }: A1PathProviderProps) {
       }
     }
     return null;
-  }, [state.unlockedUnitIndex, state.completedNodeIds, isCheckpointComplete]);
+  }, [state.unlockedUnitIndex, state.completedNodeIds, state.pathMode, isCheckpointComplete]);
 
   const getUnitPhase = useCallback(
-    (unitIndex: number): 'locked' | 'current' | 'done' => {
+    (unitIndex: number): A1UnitPhase => {
       const safe = Math.max(0, Math.min(unitIndex, A1_UNIT_COUNT - 1));
       const band = A1_CURRICULUM.units[safe];
-      // SUPPORT band (B): always available & optional — current, never 'done'
-      // (no gate to pass) and never 'locked'.
-      if (band && band.kind === 'support') return 'current';
+      // SUPPORT bands are optional side tracks and stay 'optional' in BOTH
+      // modes — they are not part of the linear sequence either way.
+      if (band && band.kind === 'support') return 'optional';
+
+      if (state.pathMode === 'self') {
+        // Nothing is gated, so the frontier concept ('current' = the one module
+        // the gate points at) does not exist. Report real progress instead:
+        // finished, in progress, or simply open. Rendering 'locked' here would
+        // be a straight lie.
+        if (safe < state.unlockedUnitIndex) return 'done';
+        if (isCheckpointComplete(safe)) return 'done';
+        const touched = A1_LEARN_NODES.some(
+          (n) => n.unitIndex === safe && state.completedNodeIds.includes(n.id),
+        );
+        return touched ? 'current' : 'available';
+      }
+
       if (safe < state.unlockedUnitIndex) return 'done';
       if (safe === state.unlockedUnitIndex) return 'current';
       return 'locked';
     },
-    [state.unlockedUnitIndex]
+    [state.unlockedUnitIndex, state.completedNodeIds, state.pathMode, isCheckpointComplete],
+  );
+
+  /**
+   * Highest module index the learner has demonstrably reached, derived from real
+   * progress: any completed node, or a passed checkpoint.
+   *
+   * This is what makes self -> guided safe. Without it, a learner who completed
+   * M01–M06 in self mode still has `unlockedUnitIndex === 0` (they never passed a
+   * gate), so switching back to guided would re-lock M02–M07 — modules they had
+   * already done. That is a trust-destroying surprise, so the floor is raised to
+   * wherever they actually are instead.
+   */
+  const highestReachedIndex = useCallback(
+    (s: A1PathState): number => {
+      let highest = -1;
+      for (const node of A1_LEARN_NODES) {
+        if (s.completedNodeIds.includes(node.id) && node.unitIndex > highest) {
+          highest = node.unitIndex;
+        }
+      }
+      for (const [k, v] of Object.entries(s.checkpointBestByUnit)) {
+        if (typeof v === 'number' && v >= CHECKPOINT_PASS_THRESHOLD) {
+          const idx = Number(k);
+          if (Number.isFinite(idx) && idx > highest) highest = idx;
+        }
+      }
+      return highest;
+    },
+    [],
+  );
+
+  const setPathMode = useCallback(
+    (mode: PathMode) => {
+      setState((prev) => {
+        if (prev.pathMode === mode) return prev;
+        // FORWARD-ONLY. Entering guided may raise the floor to match real
+        // progress; nothing here can ever lower `unlockedUnitIndex`, which
+        // preserves the existing never-revoke invariant.
+        const floor =
+          mode === 'guided'
+            ? Math.max(prev.unlockedUnitIndex, highestReachedIndex(prev))
+            : prev.unlockedUnitIndex;
+        const next: A1PathState = {
+          ...prev,
+          pathMode: mode,
+          unlockedUnitIndex: Math.max(0, Math.min(floor, A1_UNIT_COUNT - 1)),
+        };
+        void persistToDexie(userId, next);
+        if (isAuthenticated && user) {
+          void userDataService.saveA1PathState(userId, next).catch(() => {
+            /* best-effort cloud mirror; Dexie already has it */
+          });
+        }
+        broadcast();
+        return next;
+      });
+    },
+    [userId, isAuthenticated, user, highestReachedIndex, broadcast],
   );
 
   const value = useMemo<A1PathContextValue>(
@@ -469,6 +745,7 @@ export function A1PathProvider({ children }: A1PathProviderProps) {
       isNodeComplete,
       getPushNode,
       getUnitPhase,
+      setPathMode,
       resetPath,
     }),
     [
@@ -482,6 +759,7 @@ export function A1PathProvider({ children }: A1PathProviderProps) {
       isNodeComplete,
       getPushNode,
       getUnitPhase,
+      setPathMode,
       resetPath,
     ]
   );

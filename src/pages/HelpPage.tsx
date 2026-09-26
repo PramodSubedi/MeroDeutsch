@@ -15,6 +15,18 @@ export function HelpPage() {
   const faqs: Faq[] = isDE
     ? [
         {
+          q: 'Was ist ein Tor (Gate)?',
+          a: 'Jedes Band endet mit einem Tor: ein kurzer Test mit 12 Fragen aus genau den Lektionen dieses Bands. Du brauchst 80 % zum Bestehen, also mindestens 10 richtige Antworten. Wenn es nicht klappt, bleibt das nächste Band gesperrt — du kannst aber sofort wieder versuchen. Es gibt keine Wartezeit und du verlierst nichts.',
+        },
+        {
+          q: 'Wie schalte ich das nächste Band frei?',
+          a: 'Nur ein bestandenes Tor schaltet das nächste Band frei. Die Lektionen selbst zählen als besucht, sobald du sie öffnest — das Tor ist die einzige echte Hürde. Band B (Alphabet & Buchstabieren) ist eine reine Nebenstrecke: es hat kein Tor und blockiert dich nie.',
+        },
+        {
+          q: 'Was passiert, wenn ich ein Tor nicht bestehe?',
+          a: 'Dein Bestwert bleibt gespeichert (du siehst ihn auf der Band-Karte), aber das nächste Band bleibt gesperrt. Jede falsche Antwort geht außerdem in deine Wiederholungswarteschlange auf der Fortschrittsseite — dort kannst du sie gezielt nochmal üben, bevor du es erneut versuchst.',
+        },
+        {
           q: 'Was sind Lernserien?',
           a: 'Serien zählen, wie viele Tage hintereinander du gelernt hast. Lerne an zwei aufeinanderfolgenden Tagen, um deine Serie aufzubauen.',
         },
@@ -44,6 +56,18 @@ export function HelpPage() {
         },
       ]
     : [
+        {
+          q: 'What is a gate?',
+          a: 'Each band ends with a gate: a short test of 12 questions drawn from that band’s own lessons. You need 80% to pass — at least 10 correct answers. If you miss it, the next band stays locked, but you can retry immediately. There is no waiting period and nothing is lost.',
+        },
+        {
+          q: 'How do I unlock the next band?',
+          a: 'Only a passed gate unlocks the next band. Visiting a lesson counts as done as soon as you open it, so the gate is the only real hurdle. Band B (Alphabet & spelling) is a pure side track: it has no gate and never blocks you.',
+        },
+        {
+          q: 'What happens if I fail a gate?',
+          a: 'Your best score is kept (you can see it on the band card), but the next band stays locked. Every wrong answer also goes into your review queue on the Progress page, so you can drill exactly those items before trying again.',
+        },
         {
           q: 'What are streaks?',
           a: 'Streaks count how many days in a row you have learned. Practice on two consecutive days to build your streak.',

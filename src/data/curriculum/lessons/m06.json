@@ -1,0 +1,289 @@
+{
+  "cefr": "A1.1",
+  "docRoute": "/grammar",
+  "objectives": {
+    "en": [
+      "Talk about occupations, workplace locations, educational background, and master female job suffixes (-in / -innen).",
+      "How do you say \"I work as a teacher\" or \"I am a student\" in German, and why do job titles drop \"a/an\" (ein/eine)?",
+      "Estimated time 45 Minutes · Prerequisites: Units 01–05"
+    ]
+  },
+  "lexicon": [
+    {
+      "word": "Beruf",
+      "en": "Profession / Job",
+      "ne": "पेशा / काम",
+      "article": "der",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Was sind Sie von Beruf?",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "Arbeit",
+      "en": "Work / Job",
+      "ne": "काम",
+      "article": "die",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Ich habe viel Arbeit.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "Lehrer",
+      "en": "Teacher (male)",
+      "ne": "शिक्षक",
+      "article": "der",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Er ist Lehrer.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "Lehrerin",
+      "en": "Teacher (female)",
+      "ne": "शिक्षिका",
+      "article": "die",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Sie ist Lehrerin.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "Arzt",
+      "en": "Doctor (male)",
+      "ne": "डाक्टर",
+      "article": "der",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Der Arzt hilft.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "Ärztin",
+      "en": "Doctor (female)",
+      "ne": "महिला डाक्टर",
+      "article": "die",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Die Ärztin ist nett.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "Student",
+      "en": "Student (male)",
+      "ne": "विद्यार्थी",
+      "article": "der",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Ich bin Student.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "Studentin",
+      "en": "Student (female)",
+      "ne": "छात्रा",
+      "article": "die",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Sie ist Studentin.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "Firma",
+      "en": "Company / Firm",
+      "ne": "कम्पनी",
+      "article": "die",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Ich arbeite bei einer Firma.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "arbeiten",
+      "en": "to work",
+      "ne": "काम गर्नु",
+      "partOfSpeech": "Verb",
+      "examples": [
+        {
+          "de": "Ich arbeite als Ingenieur.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "studieren",
+      "en": "to study (university)",
+      "ne": "अध्ययन गर्नु",
+      "partOfSpeech": "Verb",
+      "examples": [
+        {
+          "de": "Ich studiere Informatik.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "lernen",
+      "en": "to learn / study",
+      "ne": "सिक्नु",
+      "partOfSpeech": "Verb",
+      "examples": [
+        {
+          "de": "Ich lerne Deutsch.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    }
+  ],
+  "grammar": [
+    {
+      "title": {
+        "en": "Forming Female Professions (-in Suffix)",
+        "de": "Forming Female Professions (-in Suffix)"
+      },
+      "notes": [
+        {
+          "en": "In German, female job titles add the suffix -in (and often add an umlaut to root vowels):",
+          "ne": "",
+          "de": ""
+        }
+      ],
+      "bullets": [
+        "der Lehrer -> die Lehrerin",
+        "der Arzt -> die Ärztin",
+        "der Student -> die Studentin",
+        "Plural female suffix: -innen (die Lehrerinnen)"
+      ]
+    },
+    {
+      "title": {
+        "en": "Stating Your Profession: \"als\" & \"bei\"",
+        "de": "Stating Your Profession: \"als\" & \"bei\""
+      },
+      "bullets": [
+        "Use als for job titles: Ich arbeite als Ingenieur. / Ich bin als Arzt tätig.",
+        "Use bei (+ Dative) for companies: Ich arbeite bei Siemens.",
+        "Note: Do NOT use articles before job titles when using sein or werden: Ich bin Arzt. (NOT: Ich bin ein Arzt.)"
+      ]
+    }
+  ],
+  "dialogue": {
+    "id": "m06-dialogue",
+    "title": {
+      "en": "Dialogue",
+      "de": "Dialog"
+    },
+    "scenario": {
+      "en": "Job Interview Conversation",
+      "de": "Job Interview Conversation"
+    },
+    "turns": [
+      {
+        "speaker": "Interviewer:",
+        "de": "Guten Tag, Frau Sharma! Was sind Sie von Beruf?"
+      },
+      {
+        "speaker": "Bewerberin:",
+        "de": "Guten Tag! Ich bin Informatikerin von Beruf."
+      },
+      {
+        "speaker": "Interviewer:",
+        "de": "Wo arbeiten Sie aktuell?"
+      },
+      {
+        "speaker": "Bewerberin:",
+        "de": "Ich arbeite bei einer IT-Firma in München."
+      },
+      {
+        "speaker": "Interviewer:",
+        "de": "Sprechen Sie auch Deutsch im Büro?"
+      },
+      {
+        "speaker": "Bewerberin:",
+        "de": "Ja, ich lerne Deutsch und spreche es jeden Tag."
+      }
+    ]
+  },
+  "miniGame": {
+    "type": "mcq_translation",
+    "id": "m6-job-title-builder",
+    "payload": {
+      "type": "mcq_translation",
+      "id": "m6-job-title-builder",
+      "prompt_en": "She works as a female doctor.",
+      "correct_de": "Sie arbeitet als Ärztin.",
+      "options": [
+        "Sie arbeitet als Ärztin.",
+        "Sie arbeitet als ein Arzt.",
+        "Sie arbeitet bei Ärztin."
+      ]
+    }
+  },
+  "practiceBank": [
+    {
+      "kind": "Drill",
+      "prompt": "Convert male to female title: der Kellner",
+      "answer": "die Kellnerin"
+    },
+    {
+      "kind": "Fill-in",
+      "prompt": "Fill in preposition: Ich arbeite ________ Siemens.",
+      "answer": "bei"
+    },
+    {
+      "kind": "Translation",
+      "prompt": "Translate: \"I am a student (female).\"",
+      "answer": "Ich bin Studentin."
+    }
+  ],
+  "culture": {
+    "title": {
+      "en": "Cultural context",
+      "de": "Kultureller Kontext"
+    },
+    "body": [
+      "⚠️ *Common Trap (Fettnäpfchen): Saying \"Ich bin ein Arzt\" sounds awkward. Drop the ein! Say \"Ich bin Arzt\"*.",
+      "🧠 Memory Hook: To make a female profession, add -in! Lehrer -> Lehrerin, Arzt -> Ärztin."
+    ]
+  }
+}

@@ -92,15 +92,18 @@ function rowToArticle(row: VocabRow): ArticleItem {
 
 /** Maps a `vocabulary` row onto the enriched VocabCard schema for the Dexie cache. */
 function rowToVocabCard(
-  row: VocabRow & { part_of_speech: string; level?: string; category?: string; tags?: string[] | null }
+  row: VocabRow & { part_of_speech: string; level?: string; tags?: string[] | null }
 ): VocabCard {
   const art = (row.article || null) as VocabCard['article'];
-  // Category first so Glossary category detection (first non-POS/level tag)
-  // still resolves to the topical slug; DB structural tags (unit-2, verbs)
-  // stay available for feature filtering without polluting the category.
+  // tags[] is the single source of truth for topical grouping: migration 018
+  // retired the legacy category column and switched every filter RPC to
+  // test p_category = ANY(tags), and migration 20260928000003 drops the
+  // column outright - so it must never be SELECTed again. Structural tokens
+  // (unit-2, nouns, A1, gender-der) stay in tags and are classified out
+  // downstream by isTopicalTag(), which is what feeds the Glossary badge.
   const mergedTags = Array.from(
     new Set(
-      [row.category ?? '', row.part_of_speech, ...(row.tags ?? [])].filter(
+      [row.part_of_speech, ...(row.tags ?? [])].filter(
         (t) => t && t.length > 0
       )
     )
@@ -259,7 +262,7 @@ export class SupabaseCurriculumService implements CurriculumService {
   }
 
   /** Write-through cache: persist vocabulary rows to Dexie for offline reuse. */
-  private async cacheVocab(rows: (VocabRow & { part_of_speech: string; level?: string; category?: string })[]): Promise<void> {
+  private async cacheVocab(rows: (VocabRow & { part_of_speech: string; level?: string })[]): Promise<void> {
     const db = openDb();
     if (!db) return;
     await seedVocab(rows.map(rowToVocabCard));
@@ -313,7 +316,7 @@ export class SupabaseCurriculumService implements CurriculumService {
             // Fallback: full table SELECT (online — so we can still cache).
             const { data: fbData, error: fbError } = await supabase
               .from('vocabulary')
-              .select('word, article, translation_en, translation_np, example_de, part_of_speech, level, category, plural_form')
+              .select('word, article, translation_en, translation_np, example_de, part_of_speech, level, plural_form')
               .eq('part_of_speech', 'noun')
               .not('article', 'is', null);
 
@@ -321,12 +324,12 @@ export class SupabaseCurriculumService implements CurriculumService {
               throw new Error('table fallback also empty');
             }
 
-            const rows = fbData as (VocabRow & { part_of_speech: string; level?: string; category?: string })[];
+            const rows = fbData as (VocabRow & { part_of_speech: string; level?: string })[];
             void this.cacheVocab(rows);
             return rows.map(rowToArticle);
           }
 
-          const rows = (data as unknown) as (VocabRow & { part_of_speech: string; level?: string; category?: string })[];
+          const rows = (data as unknown) as (VocabRow & { part_of_speech: string; level?: string })[];
           void this.cacheVocab(rows);
           return rows.map(rowToArticle);
         } catch (err) {
@@ -427,7 +430,7 @@ export class SupabaseCurriculumService implements CurriculumService {
             let q = supabase
               .from('vocabulary')
               .select(
-                'word, article, translation_en, translation_np, translation_ne_roman, example_de, example_en, example_np, part_of_speech, level, category, plural_form, tags'
+                'word, article, translation_en, translation_np, translation_ne_roman, example_de, example_en, example_np, part_of_speech, level, plural_form, tags'
               );
             if (filters.pos) q = q.eq('part_of_speech', filters.pos);
             if (filters.level) q = q.eq('level', filters.level);
@@ -477,7 +480,7 @@ export class SupabaseCurriculumService implements CurriculumService {
       let q = supabase
         .from('vocabulary')
         .select(
-          'word, article, translation_en, translation_np, translation_ne_roman, example_de, example_en, example_np, part_of_speech, level, category, plural_form, tags'
+          'word, article, translation_en, translation_np, translation_ne_roman, example_de, example_en, example_np, part_of_speech, level, plural_form, tags'
         )
         .order('word', { ascending: true })
         .limit(Math.min(target, 1000));
@@ -497,10 +500,10 @@ export class SupabaseCurriculumService implements CurriculumService {
   private toCards(rows: VocabRow[]): VocabCard[] {
     const clean = rows.filter((r) => !isLikelyJunkWord(r.word));
     void this.cacheVocab(
-      clean as (VocabRow & { part_of_speech: string; level?: string; category?: string })[]
+      clean as (VocabRow & { part_of_speech: string; level?: string })[]
     );
     return clean.map((r) =>
-      rowToVocabCard(r as VocabRow & { part_of_speech: string; level?: string; category?: string })
+      rowToVocabCard(r as VocabRow & { part_of_speech: string; level?: string })
     );
   }
 
@@ -568,14 +571,14 @@ export class SupabaseCurriculumService implements CurriculumService {
           let q = supabase
             .from('vocabulary')
             .select(
-              'word, article, translation_en, translation_np, translation_ne_roman, example_de, part_of_speech, level, category, plural_form, tags'
+              'word, article, translation_en, translation_np, translation_ne_roman, example_de, part_of_speech, level, plural_form, tags'
             )
             .overlaps('tags', cats)
             .limit(limit);
           if (pos) q = q.eq('part_of_speech', pos);
           const { data, error } = await q;
           if (!error && data && data.length > 0) {
-            const rows = data as (VocabRow & { part_of_speech: string; level?: string; category?: string })[];
+            const rows = data as (VocabRow & { part_of_speech: string; level?: string })[];
             void this.cacheVocab(rows);
             addCards(rows.map(rowToVocabCard));
           }

@@ -7,17 +7,29 @@ import { useSpeechSpeed } from '../hooks/useSpeech';
 import { useAuth } from '../hooks/useAuth';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { useInstallPrompt } from '../hooks/useInstallPrompt';
+import { useA1Path } from '../hooks/useA1Path';
 import { scopedKey } from '../utils/userStorage';
 import { removeItem } from '../utils/safeStorage';
 import { supabase } from '../lib/supabase';
+import { db } from '../lib/db';
 
+/**
+ * Per-user localStorage base keys cleared by "Reset progress".
+ *
+ * 'meroDeutschA1Path' used to be listed here. It no longer belongs: useA1Path
+ * migrated that key into Dexie `a1PathState` + Supabase `a1_path_state` and
+ * deletes the legacy entry after a successful copy, so clearing it was a no-op
+ * — and it hid the real defect, which is that the A1 course survived a
+ * "reset everything" entirely. The course now lives in the Dexie loop below.
+ */
 const RESET_SCOPED_KEYS = [
   'germanAlphabetProgress',
   'germanDailyStreak',
   'meroDeutschAchievements',
   'meroDeutschWrongAnswers',
   'mero_deutsch_xp',
-  'meroDeutschA1Path',
+  'meroDeutschDailyQuests',
+  'meroDeutschLastDailyChallenge',
 ];
 
 const RESET_TABLES: { table: string; column: string }[] = [
@@ -26,7 +38,35 @@ const RESET_TABLES: { table: string; column: string }[] = [
   { table: 'user_achievements', column: 'user_id' },
   { table: 'review_queue', column: 'user_id' },
   { table: 'user_xp', column: 'user_id' },
+  // The A1 spine. Without this row the course (completed nodes, unlocked
+  // band, checkpoint best scores) survived the reset and immediately
+  // re-hydrated from the cloud on the next load.
+  { table: 'a1_path_state', column: 'user_id' },
 ];
+
+/**
+ * Clear the OFFLINE-FIRST half of the user's data. Cloud rows are deleted
+ * separately below; Dexie is the primary store for the A1 path and the
+ * per-word mastery stats, so skipping it left both intact.
+ *
+ * Guests still own Dexie rows, keyed 'guest' (the same id useA1Path and
+ * scopedKey use), so this runs for signed-out visitors too.
+ */
+async function clearDexieUserData(dexieUserId: string): Promise<number> {
+  if (!db) return 0;
+  let failures = 0;
+  try {
+    await db.a1PathState.delete(dexieUserId);
+  } catch {
+    failures += 1;
+  }
+  try {
+    await db.vocabStats.where('userId').equals(dexieUserId).delete();
+  } catch {
+    failures += 1;
+  }
+  return failures;
+}
 
 export function SettingsPage() {
   usePageTitle('Settings');
@@ -35,10 +75,38 @@ export function SettingsPage() {
   const { speed, setSpeed } = useSpeechSpeed();
   const { user, logout } = useAuth();
   const { canInstall, promptInstall } = useInstallPrompt();
+  const { resetPath } = useA1Path();
   const navigate = useNavigate();
   const [confirmReset, setConfirmReset] = useState(false);
   const [resetting, setResetting] = useState(false);
   const [resetMessage, setResetMessage] = useState<string | null>(null);
+  const [confirmResetCourse, setConfirmResetCourse] = useState(false);
+  const [resettingCourse, setResettingCourse] = useState(false);
+  const [resetCourseMessage, setResetCourseMessage] = useState<string | null>(null);
+
+  /**
+   * Restart the A1 course only — XP, streak, badges and the review queue stay.
+   *
+   * Delegates to `useA1Path.resetPath()` rather than re-implementing the writes:
+   * that already writes through Dexie (primary) and debounces the Supabase
+   * mirror, so this button cannot leave the course half-cleared the way the old
+   * full-reset did.
+   */
+  const handleResetCourse = () => {
+    if (!confirmResetCourse) {
+      setConfirmResetCourse(true);
+      return;
+    }
+    setResettingCourse(true);
+    resetPath();
+    setResettingCourse(false);
+    setConfirmResetCourse(false);
+    setResetCourseMessage(
+      isDE
+        ? 'Kurs zurückgesetzt — du beginnst wieder bei Band A. XP und Serie sind erhalten.'
+        : 'Course reset — you are back at Band A. Your XP and streak are untouched.'
+    );
+  };
 
   const isDE = langMode === 'german';
   const userId = user?.userId ?? null;
@@ -52,6 +120,13 @@ export function SettingsPage() {
     setResetting(true);
     setResetMessage(null);
 
+    // 0. Clear the A1 course through its own owner FIRST. This resets the
+    //    in-memory path state as well as persisting; without it the running app
+    //    still believes the learner is on Band D, and any node completion would
+    //    write that stale course straight back to Dexie — which is exactly how
+    //    the course survived a "reset everything" before.
+    resetPath();
+
     // 1. Clear per-user scoped localStorage keys.
     for (const base of RESET_SCOPED_KEYS) {
       removeItem(scopedKey(base, userId));
@@ -59,10 +134,16 @@ export function SettingsPage() {
     // Also clear unscoped XP key in case it was written before scoping.
     removeItem('mero_deutsch_xp');
 
-    // 2. Best-effort cloud clear for the current user. Track failures so we
+    // 2. Clear the offline-first Dexie store (A1 path + per-word mastery).
+    //    Dexie is the PRIMARY store for both, so a reset that only touched
+    //    localStorage + Supabase left the whole course standing. Guests own
+    //    'guest'-keyed rows, so this is not auth-gated.
+    let cloudFailures = 0;
+    cloudFailures += await clearDexieUserData(userId ?? 'guest');
+
+    // 3. Best-effort cloud clear for the current user. Track failures so we
     //    never claim success when cloud rows survived (they would re-sync and
     //    silently undo the reset on next login).
-    let cloudFailures = 0;
     if (userId) {
       for (const t of RESET_TABLES) {
         try {
@@ -209,6 +290,44 @@ export function SettingsPage() {
             </div>
           </div>
         )}
+
+        {/* Reset the A1 COURSE only.
+            Distinct from the full reset below because "restart the course but
+            keep my XP and streak" is a real request — the full reset throws
+            away the streak and badges that motivate someone to retry. Uses the
+            path hook's own resetPath(), which writes through Dexie AND the
+            cloud, so it cannot half-happen. */}
+        <div className={theme.panel.surface}>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 className="text-lg font-semibold text-ink-950 dark:text-white">
+                {isDE ? 'A1-Kurs neu starten' : 'Restart the A1 course'}
+              </h2>
+              <p className="mt-1 text-body text-ink-500 dark:text-ink-400">
+                {isDE
+                  ? 'Setzt Module, Prüfungen und Modul-Bestwerte zurück — XP, Serie und Abzeichen bleiben erhalten.'
+                  : 'Resets your modules, checkpoints and module scores. XP, streak and badges are kept.'}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={handleResetCourse}
+              disabled={resettingCourse}
+              className={`${theme.button.secondary} disabled:opacity-50`}
+            >
+              {resettingCourse
+                ? (isDE ? 'Setze zurück…' : 'Resetting…')
+                : confirmResetCourse
+                ? (isDE ? 'Wirklich neu starten?' : 'Really restart?')
+                : (isDE ? 'Kurs neu starten' : 'Restart course')}
+            </button>
+          </div>
+          {resetCourseMessage && (
+            <div className="mt-3 rounded-md border border-success-200 bg-success-50 px-4 py-2 text-body font-medium text-success-700 dark:border-success-900 dark:bg-success-900/30 dark:text-success-300">
+              {resetCourseMessage}
+            </div>
+          )}
+        </div>
 
         {/* Reset progress */}
         <div className={`${theme.panel.surface} border-danger-200 dark:border-danger-900/40`}>

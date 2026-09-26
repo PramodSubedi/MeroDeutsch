@@ -5,20 +5,23 @@
  * Rotates through 6 challenge types: vocabulary, audio, articles, numbers, verbs, pronunciation.
  * Supports mode filtering: users pick a mode to focus on, or play Mixed.
  *
- * When accessed via /rapid-blitz (from Practice Tools Grid): shows mode selector first.
- * When accessed via /rapid-fire (from homepage): skips mode selector, goes straight to game.
+ * Entry intent is read from the query string, not the pathname, because
+ * /rapid-blitz is only a redirect to /rapid-fire (App.tsx `RapidBlitzRedirect`)
+ * — a pathname check could never distinguish the two callers:
+ *   /rapid-fire                 → mode selector (the practice-grid "Choose Mode")
+ *   /rapid-fire?mode=mixed      → straight into a Mixed round
+ *   /rapid-fire?mode=<x>        → straight into that challenge mode
  *
  * Game flow: idle -> preRound (timer paused, instructions shown) -> countdown -> playing
  *            -> (sectionInfo -> countdown -> playing) x6 -> finished
  */
 
 import React, { useEffect, useMemo } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useSearchParams, Link } from 'react-router-dom';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { useRapidBlitzMultiChallenge, getChallengeQuestion } from '../hooks/useRapidBlitzMultiChallenge';
 import { ChallengeView } from '../components/RapidBlitz/ChallengeView';
 import { theme } from '../config/theme';
-import { Link } from 'react-router-dom';
 import { BookOpen, Ear, Tag, Hash, Edit3, Mic } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { GetReadyCountdown } from '../components/common/GetReadyCountdown';
@@ -114,19 +117,32 @@ export function RapidBlitzPage() {
   usePageTitle('Rapid Blitz');
   const { langMode } = useLang();
   const isDE = langMode === 'german';
-  const location = useLocation();
+  const [searchParams] = useSearchParams();
 
-  // Show mode selector only when accessed from /rapid-blitz (practice tools grid)
-  // Skip mode selector when accessed from /rapid-fire (homepage) — go straight to game
-  const showModeSelector = location.pathname === '/rapid-blitz';
+  // HOW THE ENTRY POINT IS EXPRESSED
+  // -------------------------------
+  // It used to be the pathname: `showModeSelector = pathname === '/rapid-blitz'`.
+  // But /rapid-blitz is only a REDIRECT to /rapid-fire (see App.tsx), so that
+  // branch was dead code — the mode selector could never render, and the
+  // practice-grid CTA that promises "Choose Mode" silently opened Mixed.
+  //
+  // The query string is the only place the entry intent survives a redirect:
+  //   ?mode=<challenge> → deep link from a spine bonus chip, play that mode
+  //   ?mode=mixed       → explicit "just play" (Home Challenge CTA, Blitz chip)
+  //   (no query)        → show the mode selector
+  const urlMode = searchParams.get('mode');
+  const showModeSelector = urlMode === null;
+
+  /** True for a mode the game actually knows how to run. */
+  const isValidMode = (m: string): boolean =>
+    m === 'mixed' || (CHALLENGE_MODES as readonly string[]).includes(m);
 
   const [selectedMode, setSelectedMode] = React.useState<string | null>(() => {
-    // On /rapid-fire (homepage), always use Mixed mode — ignore stored mode
-    if (location.pathname === '/rapid-fire') return null;
+    // A deep link wins outright — it is an explicit instruction from the caller.
+    if (urlMode) return urlMode === 'mixed' ? null : isValidMode(urlMode) ? urlMode : null;
+    // No query: resume the last chosen mode, if it is still a real one.
     const stored = localStorage.getItem('rapidBlitzMode');
-    if (stored) return stored;
-    const urlMode = new URLSearchParams(window.location.search).get('mode');
-    return urlMode ? urlMode : null;
+    return stored && isValidMode(stored) ? stored : null;
   });
 
   // Persist mode to localStorage whenever it changes
@@ -137,13 +153,6 @@ export function RapidBlitzPage() {
       localStorage.removeItem('rapidBlitzMode');
     }
   }, [selectedMode]);
-
-  // If navigating to /rapid-fire (homepage) while a mode is stored, reset to Mixed
-  React.useEffect(() => {
-    if (location.pathname === '/rapid-fire') {
-      setSelectedMode(null);
-    }
-  }, [location.pathname]);
 
   const modeForHook = selectedMode || undefined;
   const modeLabel = selectedMode ? MODE_INFO[selectedMode.split('-')[0]] : MIXED_INFO;
@@ -191,8 +200,14 @@ export function RapidBlitzPage() {
 
   // ── Idle / mode selection state ─────────────────────────────────
   if (status === 'idle') {
-    // If no mode selector needed (homepage route /rapid-fire), show simple idle
+    // A deep link (?mode=… or ?mode=mixed) skips the selector and goes straight
+    // to a start card. That branch used to be unreachable, and its "Mode" line
+    // was hardcoded to "Mixed (all 6 types)" — so it was harmless dead copy.
+    // Now that the branch actually runs, the label has to read the SELECTED
+    // mode, otherwise a learner who deep-linked to "Article Precision" is told
+    // they are about to play Mixed.
     if (!showModeSelector) {
+      const isMixed = selectedMode === null;
       return (
         <div className={theme.page.container}>
           <div className="mx-auto w-full max-w-xl px-2 sm:px-0">
@@ -201,7 +216,16 @@ export function RapidBlitzPage() {
               <p className="mt-2 text-body text-ink-500 dark:text-ink-400">{isDE ? '60 Sekunden gemischte Aufgaben' : '60 seconds of mixed challenges'}</p>
 
               <div className="mt-4 rounded-lg bg-ink-50 p-4 text-body text-ink-700 dark:bg-ink-800/60">
-                <div className="text-meta uppercase tracking-wider text-ink-500 dark:text-ink-400">{isDE ? 'Modus: Gemischt (alle sechs Typen)' : 'Mode: Mixed (all 6 types)'}</div>
+                <div className="text-meta uppercase tracking-wider text-ink-500 dark:text-ink-400">
+                  {isDE ? 'Modus' : 'Mode'}: {isMixed
+                    ? (isDE ? 'Gemischt (alle sechs Typen)' : 'Mixed (all 6 types)')
+                    : (isDE ? modeLabel.titleDe : modeLabel.title)}
+                </div>
+                {!isMixed && (
+                  <p className="mt-1 text-body text-ink-600 dark:text-ink-300">
+                    {isDE ? modeLabel.descriptionDe : modeLabel.description}
+                  </p>
+                )}
               </div>
 
               <div className="mt-4 grid grid-cols-2 gap-3">

@@ -15,6 +15,11 @@ import { theme } from '../config/theme';
 import { BrandMark } from '../components/BrandMark';
 import { ActivityHeatmap } from '../components/ActivityHeatmap';
 import { EmptyState } from '../components/EmptyState';
+import { useA1Path } from '../hooks/useA1Path';
+import { useHasA1Campaign } from '../hooks/usePremium';
+import { A1_UNITS } from '../data/a1Path';
+import { useVocabularyStatus } from '../hooks/useVocabularyStatus';
+import { useSkillAccuracy, useWeakItems, skillLabel } from '../hooks/useSkillAccuracy';
 
 /** Build a last-30-day activity series from the activity log entries. */
 function buildDailySeries(activities: { date: string; count: number }[], days: number = 30) {
@@ -80,6 +85,8 @@ export function AnalyticsPage() {
   const { queue } = useReviewQueue();
   const { totalXp, level, rank, xpProgress } = useXp();
   const { activities } = useActivityLog();
+  const { attemptsByUnit, isCheckpointComplete } = useA1Path();
+  const { hasCampaign } = useHasA1Campaign();
 
   // --- Real chart data ---
 
@@ -97,6 +104,58 @@ export function AnalyticsPage() {
     ],
     [alphabetAccuracy, spellingAccuracy, isDE],
   );
+
+  /* ── Course-scoped analytics (Wave 4) ────────────────────────────────
+   * Everything above is Alphabet-era: two percentages derived from a single
+   * module's counters. It describes a page's worth of one optional side track
+   * while the page itself is called "Learning Analytics" and the learner's
+   * actual course is six bands and five gates.
+   *
+   * These four panels are what the page was always being asked for:
+   *   1. how far through the COURSE am I, and how did each gate go?
+   *   2. how many words do I actually know?
+   *   3. which SKILL is weak (vs. which module)?
+   *   4. which specific ITEMS keep costing me points?
+   * All four read state the app already stores — nothing new is tracked.
+   */
+
+  // 1. Per-band gate history from the A1 path state.
+  const bandRows = useMemo(() => {
+    return A1_UNITS.filter((band) => band.kind === 'core').map((band) => {
+      const attempt = attemptsByUnit[band.index];
+      return {
+        code: band.code,
+        name: isDE ? band.title.de : band.title.en,
+        attempts: attempt?.attempts ?? 0,
+        bestPct: attempt ? Math.round(attempt.best * 100) : null,
+        passed: isCheckpointComplete(band.index),
+      };
+    });
+  }, [attemptsByUnit, isCheckpointComplete, isDE]);
+
+  // 2. Vocabulary coverage — known/mastered vs new, from the per-word status
+  //    store every drill already writes into Dexie `vocabStats`.
+  const { knownCount, newCount, statsByWord } = useVocabularyStatus();
+  const learnedCount = Object.keys(statsByWord).length;
+  const vocabularyRows = useMemo(
+    () => [
+      { label: isDE ? 'Gewusst / gemeistert' : 'Known / mastered', value: knownCount },
+      { label: isDE ? 'Im Lernen' : 'Learning', value: Math.max(0, learnedCount - newCount - knownCount) },
+      { label: isDE ? 'Neu' : 'New', value: newCount },
+    ],
+    [knownCount, newCount, learnedCount, isDE]
+  );
+
+  // 3. Per-skill accuracy — the radar's numbers, as a table, so the page is
+  //    readable without a chart and without colour.
+  const { skills } = useSkillAccuracy();
+  const skillRows = useMemo(
+    () => skills.map((s) => ({ label: skillLabel(s.category, isDE), value: s.total > 0 ? `${s.accuracy}%` : '—' })),
+    [skills, isDE]
+  );
+
+  // 4. The specific items that keep costing points, worst first.
+  const weakItems = useWeakItems(8);
 
   // Wrong answers by module type (from review queue)
   const errorsByModule = useMemo(() => {
@@ -147,8 +206,144 @@ export function AnalyticsPage() {
           />
         </div>
       ) : (
-        <div className="mt-6 grid gap-6 lg:grid-cols-1 xl:grid-cols-2">
-          {/* Activity Over Time - Line Chart */}
+        <div className="mt-6 space-y-6">
+          {/* ── COURSE PROGRESS — A1 CAMPAIGN, so Premium only.
+              Every number comes from `useA1Path`, the same state the spine
+              renders, so for a Premium learner this panel and /learn can never
+              disagree. For a free learner it would be five permanently
+              unattempted gates — a course they are not enrolled in — so the
+              whole panel is omitted rather than shown as zeroes. Their
+              course position lives on /learn. */}
+          {hasCampaign && (
+            <section className={theme.panel.surface}>
+              <h2 className="mb-1 text-lg font-semibold text-ink-950 dark:text-white">
+                {isDE ? 'Dein A1-Kurs' : 'Your A1 course'}
+              </h2>
+              <p className="mb-4 text-meta text-ink-500 dark:text-ink-400">
+                {isDE
+                  ? 'Jedes Band wird mit einem Tor freigeschaltet (mindestens 80 %).'
+                  : 'Each band unlocks with a gate (80% or better).'}
+              </p>
+              {bandRows.every((b) => b.attempts === 0) ? (
+                <p className="text-body text-ink-500 dark:text-ink-400">
+                  {isDE ? 'Noch kein Tor versucht.' : 'No gate attempted yet.'}
+                </p>
+              ) : (
+                <ul className="divide-y divide-ink-100 dark:divide-ink-800">
+                  {bandRows.map((b) => (
+                    <li key={b.code} className="flex flex-wrap items-center gap-x-3 gap-y-1 py-2.5">
+                      <span
+                        className={`inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-meta font-bold ${
+                          b.passed
+                            ? 'bg-success-100 text-success-700 dark:bg-success-900/40'
+                            : b.attempts > 0
+                              ? 'bg-warning-100 text-warning-700 dark:bg-warning-900/40'
+                              : 'bg-ink-100 text-ink-500 dark:bg-ink-800'
+                        }`}
+                      >
+                        {b.code}
+                      </span>
+                      <span className="font-medium text-ink-800 dark:text-ink-200">{b.name}</span>
+                      <span className="ml-auto text-meta text-ink-500 dark:text-ink-400">
+                        {b.attempts === 0
+                          ? isDE ? 'Nicht versucht' : 'Not attempted'
+                          : `${b.bestPct}% · ${b.attempts} ${isDE ? 'Versuche' : b.attempts === 1 ? 'try' : 'tries'}`}
+                      </span>
+                      {b.passed && (
+                        <span className="text-meta font-semibold text-success-700 dark:text-success-300">
+                          {isDE ? 'bestanden' : 'passed'}
+                        </span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
+          )}
+          <div className="grid gap-6 lg:grid-cols-1 xl:grid-cols-2">
+            {/* ── VOCABULARY COVERAGE ──────────────────────────────────
+                "How many words do I actually know?" was unanswerable before:
+                `useVocabularyStatus` has tracked new → learning → known →
+                mastered per word all along, but nothing surfaced it. */}
+            <section className={theme.panel.surface}>
+              <h2 className="mb-4 text-lg font-semibold text-ink-950 dark:text-white">
+                {isDE ? 'Wortschatz-Abdeckung' : 'Vocabulary coverage'}
+              </h2>
+              {learnedCount === 0 ? (
+                <p className="text-body text-ink-500 dark:text-ink-400">
+                  {isDE ? 'Noch keine Wörter geübt.' : 'No words practised yet.'}
+                </p>
+              ) : (
+                <>
+                  <ul className="space-y-2">
+                    {vocabularyRows.map((r) => (
+                      <li key={r.label} className="flex items-center justify-between text-body">
+                        <span className="text-ink-700 dark:text-ink-300">{r.label}</span>
+                        <span className="font-semibold text-ink-900 dark:text-white">{r.value}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="mt-3 text-meta text-ink-500 dark:text-ink-400">
+                    {isDE
+                      ? `${learnedCount} Wörter bisher bearbeitet.`
+                      : `${learnedCount} words encountered so far.`}
+                  </p>
+                </>
+              )}
+            </section>
+
+            {/* ── SKILL ACCURACY ───────────────────────────────────────
+                The radar's numbers as plain rows, readable without colour
+                or a chart. Same `useSkillAccuracy` the Dashboard uses. */}
+            <section className={theme.panel.surface}>
+              <h2 className="mb-4 text-lg font-semibold text-ink-950 dark:text-white">
+                {isDE ? 'Genauigkeit nach Fähigkeit' : 'Accuracy by skill'}
+              </h2>
+              <ChartDataTable rows={skillRows} isDE={isDE} />
+            </section>
+          </div>
+
+          {/* ── WEAKEST ITEMS ───────────────────────────────────────────
+              The items costing the most points, straight from the SRS rows.
+              This is the actionable end of the page: every drill now
+              front-loads exactly these keys. */}
+          <section className={theme.panel.surface}>
+            <h2 className="mb-1 text-lg font-semibold text-ink-950 dark:text-white">
+              {isDE ? 'Deine schwächsten Items' : 'Your weakest items'}
+            </h2>
+            <p className="mb-4 text-meta text-ink-500 dark:text-ink-400">
+              {isDE
+                ? 'Diese Items werden in deinen Übungen zuerst wiederholt.'
+                : 'These are front-loaded in your drills.'}
+            </p>
+            {weakItems.length === 0 ? (
+              <p className="text-body text-ink-500 dark:text-ink-400">
+                {isDE ? 'Noch keine Fehler erfasst — alles läuft.' : 'No mistakes recorded — nothing to fix yet.'}
+              </p>
+            ) : (
+              <ul className="divide-y divide-ink-100 dark:divide-ink-800">
+                {weakItems.map((w) => (
+                  <li key={`${w.moduleType}:${w.itemKey}`} className="flex flex-wrap items-center gap-x-3 gap-y-1 py-2">
+                    <span className="min-w-0 flex-1 truncate font-medium text-ink-800 dark:text-ink-200">
+                      {w.correctAnswer || w.itemKey}
+                    </span>
+                    <span className="rounded-full bg-ink-100 px-2 py-0.5 text-micro font-semibold text-ink-600 dark:bg-ink-800 dark:text-ink-300">
+                      {w.moduleType}
+                    </span>
+                    <span className="text-meta font-semibold text-danger-700 dark:text-danger-300">
+                      {w.errorCount}×
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+
+          {/* Legacy Alphabet-era charts, kept but demoted below the
+              course-scoped panels: they still measure the optional
+              letter-practice track, they just shouldn't be the story on a
+              page called "Learning Analytics". */}
+          <div className="grid gap-6 lg:grid-cols-1 xl:grid-cols-2">
           <div className={theme.panel.surface}>
             <h2 className="mb-4 text-lg font-semibold text-ink-950 dark:text-white">
               {isDE ? 'Aktivität in den letzten 30 Tagen' : 'Activity (Last 30 Days)'}
@@ -354,6 +549,7 @@ export function AnalyticsPage() {
           {/* Activity Heatmap (reuse the component) */}
           <div className="mt-4">
             <ActivityHeatmap activities={activities} />
+          </div>
           </div>
         </div>
       )}

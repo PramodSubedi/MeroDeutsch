@@ -31,6 +31,19 @@ interface MultipleChoiceProps<Q extends ExerciseQuestion> {
   hideFooter?: boolean;
   /** U4 micro-hint reason keyed into the shared hint map (e.g. 'article-precision'). */
   hintReason?: string;
+  /**
+   * SpeechSynthesis rate for the pre-lock prompt speaker.
+   *
+   * Optional and additive: when omitted the prop falls back to the historical
+   * 0.9, so every existing caller is byte-for-byte unchanged. The A1 checkpoint
+   * passes a per-module rate (spec §3: 0.8x for Modules 1–5, 1.0x for 6–15) so
+   * beginners decode sounds more slowly and later modules train native speed.
+   *
+   * Note: this only affects the PROMPT speaker. Post-lock `speakAfter` audio is
+   * the answer reveal and keeps the existing rate, so speeding up a module can
+   * never change how the answer is delivered.
+   */
+  speechRate?: number;
 }
 
 export function MultipleChoice<Q extends ExerciseQuestion>({
@@ -40,6 +53,7 @@ export function MultipleChoice<Q extends ExerciseQuestion>({
   columns = 2,
   hideFooter = false,
   hintReason,
+  speechRate = 0.9,
 }: MultipleChoiceProps<Q>) {
   const { langMode } = useLang();
   const isDE = langMode === 'german';
@@ -70,7 +84,7 @@ export function MultipleChoice<Q extends ExerciseQuestion>({
         {showSpeaker && current.speakPrompt && !locked && (
           <button
             type="button"
-            onClick={() => speakText(current.speakPrompt!, 0.9)}
+            onClick={() => speakText(current.speakPrompt!, speechRate)}
             className={theme.button.icon}
             aria-label={isDE ? 'Aussprache des Prompts' : 'Hear the prompt'}
             title={isDE ? 'Prompt (nicht die Antwort)' : 'Prompt only — not the answer'}

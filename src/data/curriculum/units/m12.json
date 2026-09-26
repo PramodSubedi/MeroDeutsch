@@ -1,0 +1,135 @@
+{
+  "id": "m12",
+  "order": 12,
+  "code": "M12",
+  "kind": "core",
+  "cluster": 3,
+  "title": {
+    "en": "City & Transport",
+    "de": "Stadt & Verkehr"
+  },
+  "theme": {
+    "en": "Places · Directions · nach/zu/in",
+    "de": "Orte · Richtungen · nach/zu/in"
+  },
+  "goal": {
+    "en": "Ask for and give directions, and use transport",
+    "de": "Nach dem Weg fragen, Richtungen geben, Verkehr nutzen"
+  },
+  "nodes": [
+    {
+      "id": "m12-roleplay",
+      "kind": "learn",
+      "label": {
+        "en": "Asking Directions",
+        "de": "Nach dem Weg fragen"
+      },
+      "to": "/roleplay?scene=directions"
+    },
+    {
+      "id": "m12-travel",
+      "kind": "practice",
+      "label": {
+        "en": "City & Travel",
+        "de": "Stadt & Reisen"
+      },
+      "to": "/vocab-trainer?category=city-travel"
+    },
+    {
+      "id": "m12-gate",
+      "kind": "checkpoint",
+      "label": {
+        "en": "Module 12 Checkpoint",
+        "de": "Modul 12 Prüfung"
+      },
+      "to": "/checkpoint/11"
+    }
+  ],
+  "bonus": [
+    {
+      "id": "m12-pron",
+      "kind": "bonus",
+      "label": {
+        "en": "Pronunciation",
+        "de": "Aussprache"
+      },
+      "to": "/pronunciation",
+      "bonus": true
+    }
+  ],
+  "checkpoint": {
+    "moduleType": "a1-checkpoint",
+    "specs": [
+      {
+        "type": "vocab-translation",
+        "count": 8
+      },
+      {
+        "type": "listening-gap",
+        "count": 4
+      }
+    ]
+  },
+  "pedagogy": {
+    "ruleTable": {
+      "title": {
+        "en": "Directional prepositions",
+        "de": "Richtungspräpositionen"
+      },
+      "rows": [
+        {
+          "label": {
+            "en": "nach",
+            "de": "nach"
+          },
+          "usage": {
+            "en": "cities, countries, directions",
+            "de": "Städte, Länder, Richtungen"
+          },
+          "example": {
+            "en": "nach links, nach Berlin",
+            "de": "nach links, nach Berlin"
+          }
+        },
+        {
+          "label": {
+            "en": "zu / zum / zur",
+            "de": "zu / zum / zur"
+          },
+          "usage": {
+            "en": "specific places, people",
+            "de": "bestimmte Orte, Personen"
+          },
+          "example": {
+            "en": "zum Bahnhof, zur Schule",
+            "de": "zum Bahnhof, zur Schule"
+          }
+        },
+        {
+          "label": {
+            "en": "in / ins",
+            "de": "in / ins"
+          },
+          "usage": {
+            "en": "inside a building",
+            "de": "in ein Gebäude hinein"
+          },
+          "example": {
+            "en": "ins Kaufhaus",
+            "de": "ins Kaufhaus"
+          }
+        }
+      ]
+    },
+    "grammarNote": {
+      "en": "In formal instructions the verb leads and Sie follows immediately: Gehen Sie geradeaus! Fahren Sie nach links!",
+      "de": "In formellen Anweisungen steht das Verb vorn, Sie folgt sofort: Gehen Sie geradeaus! Fahren Sie nach links!"
+    }
+  },
+  "vocabCategories": [
+    "city-travel",
+    "travel",
+    "travel-questions"
+  ],
+  "hasLesson": true
+}

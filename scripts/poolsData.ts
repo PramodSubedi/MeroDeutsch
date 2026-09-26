@@ -240,6 +240,24 @@ export const GRAMMAR_DRILLS: Record<string, GrammarDrillSeed[]> = {
     { prompt: 'zer- (zerbrechen) — trennbar oder untrennbar?', options: ['Separable', 'Inseparable'], correct: 'Inseparable' },
     { prompt: 'mit- (mitkommen) — trennbar oder untrennbar?', options: ['Separable', 'Inseparable'], correct: 'Separable' },
   ],
+  // Das Perfekt (Module 15) — the spoken past tense. Two-part frame: the
+  // auxiliary (haben/sein) sits in position 2, the Partizip II goes last.
+  // These drill the AUXILIARY choice and the participle form, which are the two
+  // things a beginner actually gets wrong (sein vs. haben; ge-…-en vs. ge-…-t).
+  perfekt: [
+    { prompt: 'Die Sonne hat gestern ___ (scheinen).', options: ['geschienen', 'gescheint', 'geschehnen'], correct: 'geschienen' },
+    { prompt: 'Ich ___ nach Hause gegangen. (sein or haben?)', options: ['bin', 'habe'], correct: 'bin' },
+    { prompt: 'Wir ___ Fußball gespielt. (sein or haben?)', options: ['haben', 'sind'], correct: 'haben' },
+    { prompt: 'Er hat ein Buch ___ (lesen).', options: ['gelesen', 'liest', 'gelesent'], correct: 'gelesen' },
+    { prompt: 'Sie ist zum Bahnhof ___ (gehen).', options: ['gegangen', 'gegeht', 'gegangt'], correct: 'gegangen' },
+    { prompt: 'Ich ___ heute gearbeitet. (sein or haben?)', options: ['habe', 'bin'], correct: 'habe' },
+    { prompt: 'haben + ___ (machen)', options: ['gemacht', 'gemachet', 'gemahct'], correct: 'gemacht' },
+    { prompt: 'Du bist spät ___ (kommen).', options: ['gekommen', 'gekomt', 'gekommt'], correct: 'gekommen' },
+    { prompt: 'Hat es heute ___ (regnen)?', options: ['geregnet', 'regent', 'geregent'], correct: 'geregnet' },
+    { prompt: 'Ich habe dich gestern ___ (sehen).', options: ['gesehen', 'sah', 'gesehent'], correct: 'gesehen' },
+    { prompt: 'Sie ___ mit dem Zug gefahren. (sein or haben?)', options: ['ist', 'hat'], correct: 'ist' },
+    { prompt: 'haben + ___ (spielen)', options: ['gespielt', 'gespieltet', 'gespilen'], correct: 'gespielt' },
+  ],
 };
 
 /* ── Roleplay scenarios (former src/data/roleplay.ts) ───────── */

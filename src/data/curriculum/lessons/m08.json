@@ -1,0 +1,277 @@
+{
+  "cefr": "A1.2",
+  "docRoute": "/grammar",
+  "objectives": {
+    "en": [
+      "Conjugate regular verbs, understand stem-changing verbs, and master the strict Verb-Second (V2) sentence topology rule.",
+      "Why does putting \"Today\" at the beginning of a German sentence flip the subject and verb (\"Heute trinke ich Tee\")?",
+      "Estimated time 50 Minutes · Prerequisites: Units 01–07"
+    ]
+  },
+  "lexicon": [
+    {
+      "word": "Verb",
+      "en": "Verb",
+      "ne": "क्रियापद",
+      "article": "das",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Das Verb steht auf Position 2.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "Satz",
+      "en": "Sentence",
+      "ne": "वाक्य",
+      "article": "der",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Der Satz ist richtig.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "Wortstellung",
+      "en": "Word order",
+      "ne": "शब्द क्रम",
+      "article": "die",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Die Wortstellung ist wichtig.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "lesen",
+      "en": "to read",
+      "ne": "पढ्नु",
+      "partOfSpeech": "Verb",
+      "examples": [
+        {
+          "de": "Ich lese ein Buch.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "sehen",
+      "en": "to see / watch",
+      "ne": "हेर्नु",
+      "partOfSpeech": "Verb",
+      "examples": [
+        {
+          "de": "Er sieht fern.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "fahren",
+      "en": "to drive / travel",
+      "ne": "जानु",
+      "partOfSpeech": "Verb",
+      "examples": [
+        {
+          "de": "Wir fahren nach Berlin.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "essen",
+      "en": "to eat",
+      "ne": "खानु",
+      "partOfSpeech": "Verb",
+      "examples": [
+        {
+          "de": "Er isst einen Apfel.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "schlafen",
+      "en": "to sleep",
+      "ne": "सुत्नु",
+      "partOfSpeech": "Verb",
+      "examples": [
+        {
+          "de": "Das Kind schläft gut.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "geben",
+      "en": "to give",
+      "ne": "दिनु",
+      "partOfSpeech": "Verb",
+      "examples": [
+        {
+          "de": "Es gibt Fragen.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    }
+  ],
+  "grammar": [
+    {
+      "title": {
+        "en": "Stem-Changing Verbs (du & er/sie/es)",
+        "de": "Stem-Changing Verbs (du & er/sie/es)"
+      },
+      "notes": [
+        {
+          "en": "Vowels change ONLY in 2nd (du) and 3rd (er/sie/es) person singular:",
+          "ne": "",
+          "de": ""
+        }
+      ],
+      "bullets": [
+        "e -> i / ie:",
+        "lesen: ich lese, du liest, er liest, wir lesen",
+        "essen: ich esse, du isst, er isst, wir essen",
+        "a -> ä:",
+        "fahren: ich fahre, du fährst, er fährt, wir fahren",
+        "schlafen: ich schlafe, du schläfst, er schläft, wir schlafen"
+      ]
+    },
+    {
+      "title": {
+        "en": "The Golden V2 Word Order Rule",
+        "de": "The Golden V2 Word Order Rule"
+      },
+      "notes": [
+        {
+          "en": "In main clauses (Hauptsatz), the conjugated verb MUST be in Position 2:",
+          "ne": "",
+          "de": ""
+        }
+      ],
+      "table": {
+        "columns": [
+          "Position 1 (Element)",
+          "Position 2 (Conjugated Verb)",
+          "Position 3 (Subject)",
+          "Rest of Sentence"
+        ],
+        "rows": [
+          [
+            "Ich",
+            "trinke",
+            "-",
+            "heute Tee."
+          ],
+          [
+            "Heute",
+            "trinke",
+            "ich",
+            "Tee."
+          ],
+          [
+            "In Berlin",
+            "wohnt",
+            "meine Schwester",
+            "seit zwei Jahren."
+          ]
+        ]
+      }
+    }
+  ],
+  "dialogue": {
+    "id": "m08-dialogue",
+    "title": {
+      "en": "Dialogue",
+      "de": "Dialog"
+    },
+    "scenario": {
+      "en": "Discussing Daily Habits",
+      "de": "Discussing Daily Habits"
+    },
+    "turns": [
+      {
+        "speaker": "A:",
+        "de": "Was isst du morgens zum Frühstück?"
+      },
+      {
+        "speaker": "B:",
+        "de": "Morgens esse ich ein Brot und trinke Kaffee. Und du?"
+      },
+      {
+        "speaker": "A:",
+        "de": "Ich trinke nur Tee. Was machst du am Abend?"
+      },
+      {
+        "speaker": "B:",
+        "de": "Am Abend lese ich ein Buch oder sehe fern."
+      },
+      {
+        "speaker": "A:",
+        "de": "Liest du gerne Romane?"
+      }
+    ]
+  },
+  "miniGame": {
+    "type": "v2_order_challenge",
+    "id": "m8-v2-puzzle",
+    "payload": {
+      "type": "v2_order_challenge",
+      "id": "m8-v2-puzzle",
+      "scrambled_chips": [
+        "heute",
+        "ich",
+        "trinke",
+        "Tee"
+      ],
+      "correct_sequence": [
+        "Heute",
+        "trinke",
+        "ich",
+        "Tee"
+      ],
+      "explanation": "When 'Heute' takes Position 1, the verb 'trinke' stays in Position 2 and pushes 'ich' to Position 3."
+    }
+  },
+  "practiceBank": [
+    {
+      "kind": "Drill",
+      "prompt": "Conjugate fahren: Du ________ (fahren) nach Hause.",
+      "answer": "fährst"
+    },
+    {
+      "kind": "Drill",
+      "prompt": "Reorder V2 sentence: [im Supermarkt] [kaufe] [ich] [ein]",
+      "answer": "Im Supermarkt kaufe ich ein."
+    },
+    {
+      "kind": "Drill",
+      "prompt": "Conjugate lesen: Er ________ (lesen) die Zeitung.",
+      "answer": "liest"
+    }
+  ],
+  "culture": {
+    "title": {
+      "en": "Cultural context",
+      "de": "Kultureller Kontext"
+    },
+    "body": [
+      "⚠️ *Common Trap (Fettnäpfchen): Saying \"Heute ich trinke Tee\" is WRONG! Inverting Subject and Verb after a time word is mandatory: \"Heute trinke ich Tee\"*."
+    ]
+  }
+}

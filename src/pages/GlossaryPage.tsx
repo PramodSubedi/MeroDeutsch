@@ -1,4 +1,5 @@
 import { useMemo, useState, useRef, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { curriculumService } from '../services';
 import type { MicroStory } from '../types/curriculum';
@@ -7,10 +8,10 @@ import { speakWord } from '../hooks/useSpeech';
 import { useLang } from '../hooks/useLang';
 import { triggerHaptic } from '../utils/haptic';
 import { theme } from '../config/theme';
-import { getTopicalTags, topicalTagLabel } from '../utils/vocabTags';
+import { getTopicalTags, topicalTagLabel, themaForTag, themenForTags, THEMEN } from '../utils/vocabTags';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { SEO } from '../components/common/SEO';
-import { GlossaryFilterPanel, type FilterOption } from '../components/glossary/GlossaryFilterPanel';
+import { GlossaryFilterPanel, type FilterOption, type FilterGroup } from '../components/glossary/GlossaryFilterPanel';
 import { rankedSearch, normalizeTerm } from '../utils/searchScore';
 import { useVocabularyStatus } from '../hooks/useVocabularyStatus';
 
@@ -396,7 +397,39 @@ export function GlossaryPage() {
       categoryOpts.push({ value: 'uncategorized', label: isDE ? 'Ohne Thema' : 'No topic', count: uncategorizedCount });
     }
 
-    return { levelOpts, posOpts, categoryOpts };
+    // Cluster the topic options under their coarse German Thema.
+    //
+    // The stored tags stay the filter VALUES (so filtering below is untouched),
+    // but the dropdown now reads as ~17 named topics with the fine-grained
+    // slugs nested underneath, instead of one flat alphabetical list of 33
+    // English slugs. Groups are emitted in the canonical syllabus order from
+    // THEMEN so the list is stable between renders.
+    const byThema = new Map<string, FilterOption[]>();
+    const ungrouped: FilterOption[] = [];
+    for (const opt of categoryOpts) {
+      // Synthetic buckets (other / uncategorized) are not real topics.
+      const thema = opt.value === 'other' || opt.value === 'uncategorized'
+        ? undefined
+        : themaForTag(opt.value);
+      if (!thema) {
+        ungrouped.push(opt);
+        continue;
+      }
+      const bucket = byThema.get(thema.id);
+      if (bucket) bucket.push(opt);
+      else byThema.set(thema.id, [opt]);
+    }
+    const categoryGroups: FilterGroup[] = [
+      ...THEMEN.filter((t) => byThema.has(t.id)).map((t) => ({
+        label: `${t.emoji} ${isDE ? t.de : t.en}`,
+        options: byThema.get(t.id) ?? [],
+      })),
+      ...(ungrouped.length
+        ? [{ label: isDE ? 'Weitere' : 'Other', options: ungrouped }]
+        : []),
+    ];
+
+    return { levelOpts, posOpts, categoryOpts, categoryGroups };
   }, [glossary, isDE]);
 
   const filtered = useMemo(() => {
@@ -493,6 +526,35 @@ export function GlossaryPage() {
     setCategoryFilter('all');
     setSourceFilter('all');
   };
+
+  /**
+   * Close the loop from the Glossary into a real drill.
+   *
+   * The Glossary is the only surface that knows the WHOLE word pool — it is the
+   * most powerful filter UI in the app — but until now it was a dead end: a
+   * learner could narrow to "A1 · nouns · food" and then had nothing to DO with
+   * the result except read it. This hands the active filter set straight to the
+   * Vocab Trainer, which already deep-links on exactly these params.
+   *
+   * Only the filters that actually transfer are forwarded. `source` is dropped
+   * (the trainer has no equivalent axis) and the search query is dropped too —
+   * the trainer samples the pool, it does not accept a literal word list, so
+   * pretending otherwise would hand over a narrower set than the label claims.
+   */
+  const practiceHref = useMemo(() => {
+    const params = new URLSearchParams();
+    if (levelFilter !== 'all') params.set('level', levelFilter);
+    if (posFilter !== 'all') params.set('pos', posFilter);
+    if (categoryFilter !== 'all') params.set('category', categoryFilter);
+    // 'mixed' = everything not yet mastered — the natural default coming from a
+    // browse-and-drill handoff, and it reuses a pool mode that already exists.
+    params.set('pool', 'mixed');
+    params.set('type', 'de-to-en');
+    return `/vocab-trainer?${params.toString()}`;
+  }, [levelFilter, posFilter, categoryFilter]);
+
+  /** How many entries the current filter set actually yields. */
+  const practiceCount = filtered.length;
 
   if (!dataLoaded) {
     return (
@@ -594,20 +656,35 @@ export function GlossaryPage() {
               { value: 'all', label: isDE ? 'Alle Themen' : 'All topics', count: glossary.filter((e) => e.categories?.length).length },
               ...filterOptions.categoryOpts,
             ]}
+            categoryGroups={filterOptions.categoryGroups}
             isDE={isDE}
           />
         </div>
       </div>
 
-      <div className="mt-3">
+      <div className="mt-3 flex flex-wrap items-center gap-2">
         <input
           type="search"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           placeholder={placeholder}
-          className={theme.input}
+          className={`${theme.input} flex-1`}
           aria-label={placeholder}
         />
+        {/* Turn the current filter set into an actual practice session.
+            Hidden when nothing is filtered/searched — with no filters this would
+            just be "train everything", which the Practice hub already offers. */}
+        {practiceCount > 0 && (query.trim() !== '' || levelFilter !== 'all' || posFilter !== 'all' || categoryFilter !== 'all') && (
+          <Link
+            to={practiceHref}
+            className={`${theme.button.primary} inline-flex min-h-[44px] shrink-0 items-center gap-1.5`}
+          >
+            <span aria-hidden="true">🎯</span>
+            {isDE
+              ? `${practiceCount} Wörter üben`
+              : `Practice these ${practiceCount} ${practiceCount === 1 ? 'word' : 'words'}`}
+          </Link>
+        )}
       </div>
 
       {filtered.length === 0 ? (
@@ -705,6 +782,19 @@ export function GlossaryPage() {
                               {entry.pos}
                             </span>
                           )}
+                          {/* Coarse Thema first (the learner-facing bucket),
+                              then the fine-grained tags it was derived from,
+                              so a word shows which topic it belongs to without
+                              the reader having to decode an English slug. */}
+                          {themenForTags(entry.categories).map((t) => (
+                            <span
+                              key={`thema-${t.id}`}
+                              className="rounded-full bg-accent-100 px-2 py-0.5 text-[10px] font-semibold text-accent-700 dark:bg-accent-900/40 dark:text-accent-300"
+                            >
+                              <span aria-hidden="true">{t.emoji} </span>
+                              {isDE ? t.de : t.en}
+                            </span>
+                          ))}
                           {entry.categories?.map((category) => (
                             <span key={category} className="rounded-full bg-warning-50 px-2 py-0.5 text-[10px] font-semibold text-warning-700 dark:bg-warning-950/40 dark:text-warning-300">
                               {topicalTagLabel(category, isDE)}

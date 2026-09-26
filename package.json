@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "typecheck": "tsc -b",
+    "check:answers": "tsx src/utils/answerNormalize.check.ts",
     "lint": "oxlint",
     "enrich": "tsx scripts/enrich-cards.ts",
     "extract-vocab": "tsx scripts/extract-vocab.ts",
@@ -23,7 +24,12 @@
     "run-sql": "tsx scripts/runSql.ts",
     "audit-db": "tsx scripts/auditDatabaseState.ts",
     "verify-seeds": "tsx scripts/verifySeeds.ts",
-    "check-migrations": "tsx scripts/checkMigrationStatus.ts"
+    "verify-curriculum": "tsx scripts/verifyCurriculum.ts",
+    "check-migrations": "tsx scripts/checkMigrationStatus.ts",
+    "curriculum:validate": "tsx scripts/curriculum/validate.ts",
+    "curriculum:verify": "tsx scripts/curriculum/verify.ts",
+    "curriculum:barrel": "tsx scripts/curriculum/export.ts --barrel-only",
+    "curriculum:baseline": "tsx scripts/curriculum/rebuild-baseline.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.112.3",

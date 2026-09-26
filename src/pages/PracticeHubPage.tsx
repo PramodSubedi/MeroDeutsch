@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Target, TrendingUp } from 'lucide-react';
 import { useLang } from '../hooks/useLang';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { PageHeading } from '../components/common/PageHeading';
 import { PracticeToolsGrid } from '../components/PracticeToolsGrid';
 import { PRACTICE_SKILLS, PRACTICE_QUICK_WIN_MINUTES, getPracticeTools } from '../config/modules';
 import type { PracticeSkill } from '../config/modules';
+import { useWeakestSkill, skillLabel, SKILL_ROUTES } from '../hooks/useSkillAccuracy';
 import { theme } from '../config/theme';
 
 type SkillFilter = PracticeSkill | 'all';
@@ -40,6 +41,17 @@ export function PracticeHubPage() {
   const [skill, setSkill] = useState<SkillFilter>('all');
   const [quickOnly, setQuickOnly] = useState(false);
 
+  // "Recommended for you" — the one answer to "which of these 11 cards should
+  // I open?", which the filter row above cannot give (it describes the catalogue
+  // to the learner, not the learner to the catalogue).
+  //
+  // Backed by `useWeakestSkill`, which ranks the four skills by measured SRS
+  // accuracy and needs 8+ answered items in a skill before it will call it
+  // weakest — so this never fires off a single wrong answer. It reads the same
+  // rows every drill already writes, and routes via the same SKILL_ROUTES table
+  // the Dashboard's skill radar uses, so the two can't disagree.
+  const weakest = useWeakestSkill();
+
   const maxMinutes = quickOnly ? PRACTICE_QUICK_WIN_MINUTES : undefined;
   const filteredCount = getPracticeTools().filter(
     (t) => (skill === 'all' || t.skill === skill) && (maxMinutes === undefined || t.minutes <= maxMinutes)
@@ -56,6 +68,38 @@ export function PracticeHubPage() {
             : 'Pick a skill — or browse everything.'
         }
       />
+
+      {/* Recommended, above the filter row. The filter row answers "show me the
+          catalogue"; this answers "show me ME". Deliberately above, because a
+          learner who already has enough data to be scored does not want to read
+          eleven blurbs to work out where to start. */}
+      {weakest && (
+        <Link
+          to={SKILL_ROUTES[weakest.category]}
+          className="group mb-5 flex flex-wrap items-center justify-between gap-4 rounded-lg border border-accent-300 bg-accent-50/60 p-4 transition hover:bg-accent-50 active:scale-[0.99] dark:border-accent-800/60 dark:bg-accent-950/30 dark:hover:bg-accent-950/50"
+        >
+          <div className="flex min-w-0 items-start gap-3">
+            <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-accent-600 text-white">
+              <Target className="h-5 w-5" aria-hidden="true" />
+            </span>
+            <div className="min-w-0">
+              <p className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-accent-700 dark:text-accent-300">
+                {isDE ? 'Empfohlen für dich' : 'Recommended for you'}
+              </p>
+              <p className="mt-1 text-body text-ink-800 dark:text-ink-100">
+                {isDE
+                  ? `${skillLabel(weakest.category, true)} ist deine schwächste Fähigkeit (${weakest.accuracy}% über ${weakest.total} Antworten).`
+                  : `${skillLabel(weakest.category, false)} is your weakest skill (${weakest.accuracy}% over ${weakest.total} answers).`}
+              </p>
+            </div>
+          </div>
+          <span className="inline-flex min-h-[44px] shrink-0 items-center gap-1.5 rounded-md bg-accent-600 px-4 py-2 text-body font-bold text-white transition group-hover:bg-accent-700">
+            <TrendingUp className="h-4 w-4" aria-hidden="true" />
+            {isDE ? 'Trainieren' : 'Train it'}
+            <ArrowRight className="h-4 w-4" aria-hidden="true" />
+          </span>
+        </Link>
+      )}
 
       {/* Filter row: segmented single-select skill + an OR-on-time toggle.
           36px targets inside a 44px-tall hit area, wrapping on narrow screens. */}

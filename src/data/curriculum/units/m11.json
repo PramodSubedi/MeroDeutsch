@@ -1,0 +1,85 @@
+{
+  "id": "m11",
+  "order": 11,
+  "code": "M11",
+  "kind": "core",
+  "cluster": 2,
+  "title": {
+    "en": "Shopping & Clothes",
+    "de": "Einkaufen & Kleidung"
+  },
+  "theme": {
+    "en": "Apparel · Colours · dieser/diese/dieses",
+    "de": "Kleidung · Farben · dieser/diese/dieses"
+  },
+  "goal": {
+    "en": "Buy clothes, name colours and describe items",
+    "de": "Kleidung kaufen, Farben nennen und Artikel beschreiben"
+  },
+  "nodes": [
+    {
+      "id": "m11-clothing",
+      "kind": "learn",
+      "label": {
+        "en": "Clothes & Colours",
+        "de": "Kleidung & Farben"
+      },
+      "to": "/vocab-trainer?category=clothing"
+    },
+    {
+      "id": "m11-shopping",
+      "kind": "practice",
+      "label": {
+        "en": "Shopping Roleplay",
+        "de": "Einkaufs-Rollenspiel"
+      },
+      "to": "/roleplay?scene=cloth"
+    },
+    {
+      "id": "m11-gate",
+      "kind": "checkpoint",
+      "label": {
+        "en": "Module 11 Checkpoint",
+        "de": "Modul 11 Prüfung"
+      },
+      "to": "/checkpoint/10"
+    }
+  ],
+  "bonus": [
+    {
+      "id": "m11-vocab-blitz",
+      "kind": "bonus",
+      "label": {
+        "en": "Vocab Drill",
+        "de": "Wortschatz-Drill"
+      },
+      "to": "/rapid-fire?mode=vocabulary-translation",
+      "bonus": true
+    }
+  ],
+  "checkpoint": {
+    "moduleType": "a1-checkpoint",
+    "specs": [
+      {
+        "type": "vocab-translation",
+        "count": 8
+      },
+      {
+        "type": "listening-gap",
+        "count": 4
+      }
+    ]
+  },
+  "pedagogy": {
+    "grammarNote": {
+      "en": "Adjectives after sein take no ending: Die Hose ist rot. Demonstratives match the noun: dieser Mantel, diese Hose, dieses Hemd.",
+      "de": "Adjektive nach sein bekommen keine Endung: Die Hose ist rot. Demonstrativartikel richten sich nach dem Nomen: dieser Mantel, diese Hose, dieses Hemd."
+    }
+  },
+  "vocabCategories": [
+    "clothing",
+    "colors",
+    "describing-adjectives"
+  ],
+  "hasLesson": true
+}

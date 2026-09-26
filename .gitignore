@@ -65,9 +65,20 @@ probe-create-user.js
 docs/*.md
 !docs/README.md
 
-# Seeding-pipeline staging data (kept local, not app code)
+# Seeding-pipeline staging data (kept local, not app code).
+# NOTE: `scripts/data/*` (contents), not `scripts/data/` (the directory itself) —
+# git never descends into an excluded directory, so a deeper negation could never
+# re-include anything.
 src/data/vocab/
-scripts/data/
+scripts/data/*
+# …except the curriculum regression fixture, which MUST be committed: a fresh
+# clone needs `baseline.json` for `npm run curriculum:verify` to have anything to
+# compare the data-driven spine against. See scripts/data/a1-curriculum/README.md.
+!scripts/data/a1-curriculum/
+# The two frozen copies of the pre-P0 source stay local (100 KB of dead code is
+# not worth versioning; the README explains how to recreate them).
+scripts/data/a1-curriculum/_legacy.ts
+scripts/data/a1-curriculum/_pre-p0-a1Path.ts.bak
 
 # One-off AI-generated migration/DB artifacts (local only)
 MIGRATION-GUIDE.md
@@ -78,3 +89,8 @@ scripts/populate-local-db.cjs
 
 # Cleanup archive (moved-out docs/plans/logs/strays/intermediates - local only)
 _archive/
+
+# Dev-server stderr redirect (vite writes transform errors here; never commit)
+dev.err
+dev.log
+*.log

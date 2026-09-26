@@ -1,0 +1,318 @@
+{
+  "cefr": "A1.2",
+  "docRoute": "/calendar",
+  "objectives": {
+    "en": [
+      "Express days, months, seasons, clock times, and master the colloquial time inversion rule (08:30 = Halb neun).",
+      "When a German friend invites you at \"Halb neun\", do they mean 8:30 or 9:30? How do you avoid showing up an hour late?",
+      "Estimated time 50 Minutes · Prerequisites: Units 01–06"
+    ]
+  },
+  "lexicon": [
+    {
+      "word": "Uhrzeit",
+      "en": "Clock time",
+      "ne": "समय",
+      "article": "die",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Wie spät ist es?",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "Montag",
+      "en": "Monday",
+      "ne": "सोमबार",
+      "article": "der",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Am Montag arbeite ich.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "Dienstag",
+      "en": "Tuesday",
+      "ne": "मंगलबार",
+      "article": "der",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Am Dienstag habe ich frei.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "Mittwoch",
+      "en": "Wednesday",
+      "ne": "बुधबार",
+      "article": "der",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Mittwoch ist die Mitte.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "Donnerstag",
+      "en": "Thursday",
+      "ne": "बिहीबार",
+      "article": "der",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Am Donnerstag lerne ich.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "Freitag",
+      "en": "Friday",
+      "ne": "शुक्रबार",
+      "article": "der",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Freitagabend gehe ich aus.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "Samstag",
+      "en": "Saturday",
+      "ne": "शनिबार",
+      "article": "der",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Am Samstag schlafe ich lange.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "Sonntag",
+      "en": "Sunday",
+      "ne": "आइतबार",
+      "article": "der",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Sonntag ist Ruhetag.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "Monat",
+      "en": "Month",
+      "ne": "महिना",
+      "article": "der",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Der Monat Mai ist schön.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "Jahr",
+      "en": "Year",
+      "ne": "वर्ष",
+      "article": "das",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Ein Jahr hat 365 Tage.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "Frühling",
+      "en": "Spring",
+      "ne": "वसन्त",
+      "article": "der",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Im Frühling blühen Blumen.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "Sommer",
+      "en": "Summer",
+      "ne": "ग्रीष्म",
+      "article": "der",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Im Sommer ist es warm.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "Herbst",
+      "en": "Autumn / Fall",
+      "ne": "शरद",
+      "article": "der",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Im Herbst regnet es.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "Winter",
+      "en": "Winter",
+      "ne": "हिउँद",
+      "article": "der",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Im Winter schneit es.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    }
+  ],
+  "grammar": [
+    {
+      "title": {
+        "en": "1 The Colloquial Clock Inversion Rule (Halb neun)",
+        "de": "1 The Colloquial Clock Inversion Rule (Halb neun)"
+      },
+      "notes": [
+        {
+          "en": "GERMAN COLLOQUIAL TIME RULE 08:30 ===> \"Halb neun\" (Halfway TO nine o'clock) 09:30 ===> \"Halb zehn\" (Halfway TO ten o'clock) 08:15 ===> \"Viertel nach acht\" (Quarter past eight) 08:45 ===> \"Viertel vor neun\" (Quarter to nine)",
+          "ne": "",
+          "de": ""
+        }
+      ]
+    },
+    {
+      "title": {
+        "en": "2 Time Prepositions Cheat Sheet: am, im, um",
+        "de": "2 Time Prepositions Cheat Sheet: am, im, um"
+      },
+      "notes": [
+        {
+          "en": "---",
+          "ne": "",
+          "de": ""
+        }
+      ],
+      "bullets": [
+        "am + Days / Dates / Time of day: am Montag, am Morgen (Exception: in der Nacht)",
+        "im + Months / Seasons: im Juli, im Sommer",
+        "um + Clock times: um 8 Uhr, um 14:30 Uhr"
+      ]
+    }
+  ],
+  "dialogue": {
+    "id": "m07-dialogue",
+    "title": {
+      "en": "Dialogue",
+      "de": "Dialog"
+    },
+    "scenario": {
+      "en": "Making an Appointment",
+      "de": "Making an Appointment"
+    },
+    "turns": [
+      {
+        "speaker": "A:",
+        "de": "Hallo Sarah! Wann treffen wir uns?"
+      },
+      {
+        "speaker": "B:",
+        "de": "Hast du am Freitag Zeit?"
+      },
+      {
+        "speaker": "A:",
+        "de": "Nein, am Freitag arbeite ich. Geht es am Samstag?"
+      },
+      {
+        "speaker": "B:",
+        "de": "Ja, Samstag passt gut. Um wie viel Uhr?"
+      },
+      {
+        "speaker": "A:",
+        "de": "Um halb vier (15:30 Uhr) im Café Central?"
+      }
+    ]
+  },
+  "miniGame": {
+    "type": "clock_minigame",
+    "id": "m7-uhrzeit-master",
+    "payload": {
+      "type": "clock_minigame",
+      "id": "m7-uhrzeit-master",
+      "prompt_de": "Halb zehn",
+      "correct_digital": "09:30",
+      "options": [
+        "09:30",
+        "10:30",
+        "08:30",
+        "09:15"
+      ]
+    }
+  },
+  "practiceBank": [
+    {
+      "kind": "Fill-in",
+      "prompt": "Fill in preposition: ________ Montag habe ich Deutschkurs.",
+      "answer": "Am"
+    },
+    {
+      "kind": "Fill-in",
+      "prompt": "Fill in preposition: ________ Sommer fahre ich nach Nepal.",
+      "answer": "Im"
+    },
+    {
+      "kind": "Drill",
+      "prompt": "Convert digital 07:30 to German phrase: Halb acht"
+    }
+  ],
+  "culture": {
+    "title": {
+      "en": "Cultural context",
+      "de": "Kultureller Kontext"
+    },
+    "body": [
+      "⚠️ *Common Trap (Fettnäpfchen): \"Halb acht\" is 7:30*, NOT 8:30!",
+      "🧠 Memory Hook: Am for Alle Tage (am Montag). Im for Im Monat (im Juli). Um for Uhrzeit (um 8 Uhr).",
+      "🇩🇪 *Cultural Insight (Kulturtipp): Punctuality (Pünktlichkeit*) is paramount. Arrive 5 minutes before the agreed time!"
+    ]
+  }
+}

@@ -1,0 +1,140 @@
+{
+  "id": "m10",
+  "order": 10,
+  "code": "M10",
+  "kind": "core",
+  "cluster": 2,
+  "title": {
+    "en": "Food & the Accusative",
+    "de": "Essen & Akkusativ"
+  },
+  "theme": {
+    "en": "Ordering · Direct objects · der → den",
+    "de": "Bestellen · Objekte · der → den"
+  },
+  "goal": {
+    "en": "Order food and use the accusative correctly",
+    "de": "Essen bestellen und den Akkusativ korrekt benutzen"
+  },
+  "nodes": [
+    {
+      "id": "m10-roleplay",
+      "kind": "learn",
+      "label": {
+        "en": "Ordering Food",
+        "de": "Essen bestellen"
+      },
+      "to": "/roleplay?scene=cafe"
+    },
+    {
+      "id": "m10-accusative",
+      "kind": "practice",
+      "label": {
+        "en": "Akkusativ Builder",
+        "de": "Akkusativ-Bau"
+      },
+      "to": "/sentence-builder?focus=akkusativ"
+    },
+    {
+      "id": "m10-gate",
+      "kind": "checkpoint",
+      "label": {
+        "en": "Module 10 Checkpoint",
+        "de": "Modul 10 Prüfung"
+      },
+      "to": "/checkpoint/9"
+    }
+  ],
+  "checkpoint": {
+    "moduleType": "a1-checkpoint",
+    "specs": [
+      {
+        "type": "grammar-drill",
+        "count": 6
+      },
+      {
+        "type": "vocab-translation",
+        "count": 6
+      }
+    ]
+  },
+  "pedagogy": {
+    "ruleTable": {
+      "title": {
+        "en": "Akkusativ",
+        "de": "Akkusativ"
+      },
+      "rows": [
+        {
+          "label": {
+            "en": "der → den",
+            "de": "der → den"
+          },
+          "usage": {
+            "en": "masculine direct object",
+            "de": "männliches Objekt"
+          },
+          "example": {
+            "en": "Ich sehe den Mann.",
+            "de": "Ich sehe den Mann."
+          }
+        },
+        {
+          "label": {
+            "en": "ein → einen",
+            "de": "ein → einen"
+          },
+          "usage": {
+            "en": "masculine, no article",
+            "de": "männlich, ohne Artikel"
+          },
+          "example": {
+            "en": "Ich esse einen Apfel.",
+            "de": "Ich esse einen Apfel."
+          }
+        },
+        {
+          "label": {
+            "en": "kein → keinen",
+            "de": "kein → keinen"
+          },
+          "usage": {
+            "en": "negated masculine",
+            "de": "verneintes Maskulinum"
+          },
+          "example": {
+            "en": "Ich habe keinen Stuhl.",
+            "de": "Ich habe keinen Stuhl."
+          }
+        },
+        {
+          "label": {
+            "en": "die / das → same",
+            "de": "die / das → gleich"
+          },
+          "usage": {
+            "en": "feminine, neuter, plural",
+            "de": "Feminin, Neutrum, Plural"
+          },
+          "example": {
+            "en": "Ich trinke das Wasser.",
+            "de": "Ich trinke das Wasser."
+          }
+        }
+      ]
+    },
+    "grammarNote": {
+      "en": "Only MASCULINE articles change in the accusative: der → den, ein → einen, kein → keinen. Feminine, neuter and plural stay the same.",
+      "de": "Nur MASKULINE Artikel ändern sich im Akkusativ: der → den, ein → einen, kein → keinen. Feminin, Neutrum und Plural bleiben gleich."
+    }
+  },
+  "vocabCategories": [
+    "food",
+    "food-drink",
+    "taste-texture-adjectives"
+  ],
+  "grammarCategories": [
+    "cases"
+  ],
+  "hasLesson": true
+}

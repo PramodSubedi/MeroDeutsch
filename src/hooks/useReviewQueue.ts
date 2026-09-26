@@ -35,9 +35,7 @@ interface RemoteReviewRow {
   user_answer: string | null;
   correct_answer: string | null;
   error_count: number | null;
-  ease: number | null;
   interval_days: number | null;
-  repetitions: number | null;
   due_at: string | null;
   updated_at: string | null;
   last_result: string | null;
@@ -60,9 +58,7 @@ function rowToItem(row: LocalReviewRow): WrongAnswerItem {
     correctAnswer: row.correctAnswer ?? '',
     errorCount: row.lapses ?? 0,
     timestamp: row.updatedAt ?? '',
-    ease: row.ease,
     intervalDays: row.intervalDays ?? 1,
-    repetitions: row.repetitions ?? 0,
     dueAt: row.dueAt,
     lastResult: (row.lastResult as WrongAnswerItem['lastResult']) ?? undefined,
     boxLevel: row.box,
@@ -79,9 +75,7 @@ function remoteToItem(row: RemoteReviewRow): WrongAnswerItem {
     correctAnswer: row.correct_answer ?? '',
     errorCount: row.error_count ?? 0,
     timestamp: row.updated_at ?? '',
-    ease: row.ease ?? undefined,
     intervalDays: row.interval_days ?? 1,
-    repetitions: row.repetitions ?? 0,
     dueAt: row.due_at ?? undefined,
     lastResult: (row.last_result as WrongAnswerItem['lastResult']) ?? undefined,
     boxLevel: row.box_level ?? undefined,
@@ -96,9 +90,7 @@ function itemToRow(item: WrongAnswerItem): Omit<RemoteReviewRow, 'id'> {
     user_answer: item.userAnswer,
     correct_answer: item.correctAnswer,
     error_count: item.errorCount,
-    ease: item.ease ?? 2.5,
     interval_days: item.intervalDays ?? 1,
-    repetitions: item.repetitions ?? 0,
     due_at: item.dueAt ?? new Date().toISOString(),
     last_result: item.lastResult ?? null,
     box_level: item.boxLevel ?? null,
@@ -136,7 +128,7 @@ export function useReviewQueue() {
     if (isAuthenticated && user && userId) {
       supabase
         .from('review_queue')
-        .select('id, module_type, item_key, user_answer, correct_answer, error_count, ease, interval_days, repetitions, due_at, updated_at, last_result, box_level')
+        .select('id, module_type, item_key, user_answer, correct_answer, error_count, interval_days, due_at, updated_at, last_result, box_level')
         .eq('user_id', user.userId)
         .then(({ data, error }) => {
           if (!error && data && db) {
@@ -159,8 +151,6 @@ export function useReviewQueue() {
                 intervalDays: item.intervalDays ?? 1,
                 lapses: item.errorCount,
                 lastReviewedAt: item.timestamp ?? new Date().toISOString(),
-                ease: item.ease ?? 2.5,
-                repetitions: item.repetitions ?? 0,
                 lastResult: item.lastResult,
                 userAnswer: item.userAnswer,
                 correctAnswer: item.correctAnswer,

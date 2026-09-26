@@ -1,0 +1,126 @@
+{
+  "id": "m01",
+  "order": 1,
+  "code": "M01",
+  "kind": "core",
+  "cluster": 0,
+  "title": {
+    "en": "Greetings & Introductions",
+    "de": "Begrüßung & Vorstellung"
+  },
+  "theme": {
+    "en": "Social courtesy · du vs. Sie",
+    "de": "Höflichkeit · du vs. Sie"
+  },
+  "goal": {
+    "en": "Greet people, introduce yourself, and reply politely",
+    "de": "Menschen begrüßen, sich vorstellen, höflich antworten"
+  },
+  "nodes": [
+    {
+      "id": "m01-greetings",
+      "kind": "learn",
+      "label": {
+        "en": "Greetings",
+        "de": "Grüße"
+      },
+      "to": "/greetings"
+    },
+    {
+      "id": "m01-dictation",
+      "kind": "practice",
+      "label": {
+        "en": "Dictation",
+        "de": "Diktat"
+      },
+      "to": "/dictation"
+    },
+    {
+      "id": "m01-gate",
+      "kind": "checkpoint",
+      "label": {
+        "en": "Module 1 Checkpoint",
+        "de": "Modul 1 Prüfung"
+      },
+      "to": "/checkpoint/0"
+    }
+  ],
+  "bonus": [
+    {
+      "id": "m01-oddone",
+      "kind": "bonus",
+      "label": {
+        "en": "Phonetic Trap Game",
+        "de": "Phonetik-Rätsel"
+      },
+      "to": "/games?game=oddoneout",
+      "bonus": true
+    }
+  ],
+  "checkpoint": {
+    "moduleType": "a1-checkpoint",
+    "specs": [
+      {
+        "type": "greeting-translation",
+        "count": 6
+      },
+      {
+        "type": "vocab-translation-ne",
+        "count": 6
+      }
+    ]
+  },
+  "pedagogy": {
+    "honorifics": {
+      "title": {
+        "en": "Du / Sie",
+        "de": "Du / Sie"
+      },
+      "rows": [
+        {
+          "pronoun": {
+            "en": "you (informal)",
+            "ne": "तिमी",
+            "de": "du"
+          },
+          "usage": {
+            "en": "friends, family, children",
+            "de": "Freunde, Familie, Kinder"
+          }
+        },
+        {
+          "pronoun": {
+            "en": "you (formal / plural)",
+            "ne": "तपाईं",
+            "de": "Sie"
+          },
+          "usage": {
+            "en": "strangers, elders, professionals",
+            "de": "Fremde, Ältere, Profis"
+          }
+        },
+        {
+          "pronoun": {
+            "en": "we",
+            "ne": "हामी",
+            "de": "wir"
+          },
+          "usage": {
+            "en": "we — informal register",
+            "de": "wir — informelle Anrede"
+          }
+        }
+      ]
+    },
+    "grammarNote": {
+      "en": "Choose the register first: du with friends and family, Sie with strangers, elders and anyone professional.",
+      "de": "Wähle zuerst die Anrede: du bei Freunden und Familie, Sie bei Fremden, Älteren und in der Arbeit."
+    }
+  },
+  "vocabCategories": [
+    "greetings",
+    "smalltalk-phrases",
+    "personal"
+  ],
+  "hasLesson": true
+}

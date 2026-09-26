@@ -1,0 +1,406 @@
+{
+  "cefr": "A1.1",
+  "docRoute": "/greetings",
+  "objectives": {
+    "en": [
+      "Master greetings, introduce yourself, state your origin, and navigate formal (Sie) vs. informal (du) social registers.",
+      "What is the very first word you say when landing in Munich or meeting a German colleague, and how do you avoid accidentally sounding disrespectful?",
+      "Estimated time 45 Minutes · Prerequisites: None (Zero Knowledge)"
+    ]
+  },
+  "lexicon": [
+    {
+      "word": "Guten Morgen",
+      "en": "Good morning",
+      "ne": "शुभ प्रभात",
+      "partOfSpeech": "Phrase",
+      "examples": [
+        {
+          "de": "Guten Morgen, Frau Müller!",
+          "en": "",
+          "ne": ""
+        }
+      ],
+      "frequency": "active"
+    },
+    {
+      "word": "Guten Tag",
+      "en": "Good day / Hello",
+      "ne": "शुभ दिन",
+      "partOfSpeech": "Phrase",
+      "examples": [
+        {
+          "de": "Guten Tag, wie geht es Ihnen?",
+          "en": "",
+          "ne": ""
+        }
+      ],
+      "frequency": "active"
+    },
+    {
+      "word": "Guten Abend",
+      "en": "Good evening",
+      "ne": "शुभ सन्ध्या",
+      "partOfSpeech": "Phrase",
+      "examples": [
+        {
+          "de": "Guten Abend, Herr Weber!",
+          "en": "",
+          "ne": ""
+        }
+      ],
+      "frequency": "active"
+    },
+    {
+      "word": "Gute Nacht",
+      "en": "Good night",
+      "ne": "शुभ राती",
+      "partOfSpeech": "Phrase",
+      "examples": [
+        {
+          "de": "Gute Nacht, schlaf gut!",
+          "en": "",
+          "ne": ""
+        }
+      ],
+      "frequency": "active"
+    },
+    {
+      "word": "Hallo",
+      "en": "Hello",
+      "ne": "नमस्ते",
+      "partOfSpeech": "Interjection",
+      "examples": [
+        {
+          "de": "Hallo, ich bin Lisa.",
+          "en": "",
+          "ne": ""
+        }
+      ],
+      "frequency": "active"
+    },
+    {
+      "word": "Tschüss",
+      "en": "Bye (informal)",
+      "ne": "नमस्ते / विदा",
+      "partOfSpeech": "Interjection",
+      "examples": [
+        {
+          "de": "Tschüss, bis morgen!",
+          "en": "",
+          "ne": ""
+        }
+      ],
+      "frequency": "active"
+    },
+    {
+      "word": "Auf Wiedersehen",
+      "en": "Goodbye (formal)",
+      "ne": "पुनः भेटौँला",
+      "partOfSpeech": "Phrase",
+      "examples": [
+        {
+          "de": "Auf Wiedersehen, Herr Dokter!",
+          "en": "",
+          "ne": ""
+        }
+      ],
+      "frequency": "active"
+    },
+    {
+      "word": "Entschuldigung",
+      "en": "Excuse me / Sorry",
+      "ne": "माफ गर्नुहोस्",
+      "article": "die",
+      "partOfSpeech": "Noun/Phrase",
+      "examples": [
+        {
+          "de": "Entschuldigung, wo ist der Bahnhof?",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "Bitte",
+      "en": "Please / You're welcome",
+      "ne": "कृपया",
+      "partOfSpeech": "Interjection",
+      "examples": [
+        {
+          "de": "Ein Wasser, bitte.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "Danke schön",
+      "en": "Thank you very much",
+      "ne": "धेरै धेरै धन्यवाद",
+      "partOfSpeech": "Phrase",
+      "examples": [
+        {
+          "de": "Danke schön für die Hilfe!",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "heißen",
+      "en": "to be called",
+      "ne": "नाम हुनु",
+      "partOfSpeech": "Verb",
+      "examples": [
+        {
+          "de": "Ich heiße Maria.",
+          "en": "",
+          "ne": ""
+        }
+      ],
+      "frequency": "active"
+    },
+    {
+      "word": "kommen",
+      "en": "to come (from)",
+      "ne": "आउनु",
+      "partOfSpeech": "Verb",
+      "examples": [
+        {
+          "de": "Ich komme aus Nepal.",
+          "en": "",
+          "ne": ""
+        }
+      ],
+      "frequency": "active"
+    },
+    {
+      "word": "wohnen",
+      "en": "to live / reside",
+      "ne": "बस्नु",
+      "partOfSpeech": "Verb",
+      "examples": [
+        {
+          "de": "Ich wohne in Katmandu.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "sprechen",
+      "en": "to speak",
+      "ne": "बोल्नु",
+      "partOfSpeech": "Verb",
+      "examples": [
+        {
+          "de": "Ich spreche Deutsch.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "Name",
+      "en": "Name",
+      "ne": "नाम",
+      "article": "der",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Mein Name ist Paul.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "Land",
+      "en": "Country",
+      "ne": "देश",
+      "article": "das",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Nepal ist mein Heimatland.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "du",
+      "en": "you (informal)",
+      "ne": "तिमी",
+      "partOfSpeech": "Pronoun",
+      "examples": [
+        {
+          "de": "Wie heißt du?",
+          "en": "",
+          "ne": ""
+        }
+      ],
+      "frequency": "active"
+    },
+    {
+      "word": "Sie",
+      "en": "you (formal)",
+      "ne": "तपाईं",
+      "partOfSpeech": "Pronoun",
+      "examples": [
+        {
+          "de": "Wie heißen Sie?",
+          "en": "",
+          "ne": ""
+        }
+      ],
+      "frequency": "active"
+    }
+  ],
+  "grammar": [
+    {
+      "title": {
+        "en": "Social Register: du vs. Sie",
+        "de": "Social Register: du vs. Sie"
+      },
+      "bullets": [
+        "Informal (du): Used with friends, family, children, fellow students. (Nepali: तिमी)",
+        "Formal (Sie): Used with strangers, elders, professionals, officials. Always capitalized. (Nepali: तपाईं)"
+      ]
+    },
+    {
+      "title": {
+        "en": "Core Verb Conjugations (Present Tense)",
+        "de": "Core Verb Conjugations (Present Tense)"
+      },
+      "bullets": [
+        "kommen (stem: komm-): ich komme, du kommst, er/sie/es kommt, wir kommen, ihr kommt, Sie/sie kommen",
+        "heißen (stem: heiß-): ich heiße, du heißt, er/sie/es heißt, wir heißen, ihr heißt, Sie/sie heißen"
+      ]
+    },
+    {
+      "title": {
+        "en": "Question Formation: W-Questions vs. Yes/No Questions",
+        "de": "Question Formation: W-Questions vs. Yes/No Questions"
+      },
+      "bullets": [
+        "W-Question (Verb in Position 2): Woher kommen Sie? / Wie heißen Sie?",
+        "Yes/No Question (Verb in Position 1): Sprechen Sie Deutsch? / Wohnst du in Berlin?"
+      ]
+    }
+  ],
+  "dialogue": {
+    "id": "m01-dialogue",
+    "title": {
+      "en": "Dialogue",
+      "de": "Dialog"
+    },
+    "scenario": {
+      "en": "Passport Control at Frankfurt Airport",
+      "de": "Passport Control at Frankfurt Airport"
+    },
+    "turns": [
+      {
+        "speaker": "Officer (Formal):",
+        "de": "Guten Tag! Willkommen in Deutschland. Wie heißen Sie?"
+      },
+      {
+        "speaker": "Learner:",
+        "de": "Guten Tag! Ich heiße Pasang Gurung."
+      },
+      {
+        "speaker": "Officer:",
+        "de": "Woher kommen Sie, Herr Gurung?"
+      },
+      {
+        "speaker": "Learner:",
+        "de": "Ich komme aus Nepal."
+      },
+      {
+        "speaker": "Officer:",
+        "de": "Sprechen Sie Deutsch oder Englisch?"
+      },
+      {
+        "speaker": "Learner:",
+        "de": "Ich spreche Englisch und ein bisschen Deutsch."
+      },
+      {
+        "speaker": "Officer:",
+        "de": "Danke schön. Gute Reise!"
+      }
+    ]
+  },
+  "miniGame": {
+    "type": "dialogue_branch",
+    "id": "m1-dlg-passport-control",
+    "payload": {
+      "type": "dialogue_branch",
+      "id": "m1-dlg-passport-control",
+      "title": "Passkontrolle am Flughafen",
+      "steps": [
+        {
+          "speaker": "Officer",
+          "text_de": "Guten Tag! Wie heißen Sie?",
+          "text_en": "Good day! What is your name?",
+          "text_ne": "शुभ दिन! तपाईंको नाम के हो?",
+          "user_options": [
+            {
+              "text": "Guten Tag! Mein Name ist Pasang.",
+              "correct": true,
+              "feedback": "Perfekt! Formal greeting matching 'Sie'."
+            },
+            {
+              "text": "Hallo! Du bist wer?",
+              "correct": false,
+              "feedback": "Too informal for passport control."
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "practiceBank": [
+    {
+      "kind": "Recall",
+      "prompt": "How do you formally ask a stranger their name?",
+      "answer": "Wie heißen Sie?"
+    },
+    {
+      "kind": "Recall",
+      "prompt": "Response to \"Woher kommst du?\"",
+      "answer": "Ich komme aus Nepal."
+    },
+    {
+      "kind": "Recall",
+      "prompt": "Evening greeting",
+      "answer": "Guten Abend"
+    },
+    {
+      "kind": "Fill-in",
+      "prompt": "Ich _______ (kommen) aus Nepal.",
+      "answer": "komme"
+    },
+    {
+      "kind": "Fill-in",
+      "prompt": "Wie _______ (heißen) du?",
+      "answer": "heißt"
+    },
+    {
+      "kind": "Sentence Unscramble",
+      "prompt": "Unscramble: [aus] [komme] [Nepal] [Ich]",
+      "answer": "Ich komme aus Nepal."
+    }
+  ],
+  "culture": {
+    "title": {
+      "en": "Cultural context",
+      "de": "Kultureller Kontext"
+    },
+    "body": [
+      "⚠️ *Common Trap (Fettnäpfchen): Never translate \"What is your name?\" literally as \"Was ist dein Name?\". Germans say \"Wie heißen Sie?\" or \"Wie heißt du?\"*.",
+      "🧠 Memory Hook: Capitalization Matters! Sie (Capital S) = Formal You / तपाईं. sie (lowercase s) = she / उनी or they / तिनीहरू.",
+      "🇩🇪 *Cultural Insight (Kulturtipp): Use Sie + Last Name (Herr Müller, Frau Weber) until the other person explicitly offers the Du-Wort* (\"Wir können 'du' sagen\")."
+    ]
+  }
+}

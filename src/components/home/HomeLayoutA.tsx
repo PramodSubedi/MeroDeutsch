@@ -36,6 +36,7 @@ export function HomeLayoutA() {
   const { lettersCount: progressCount, lettersPct: progressPct, quizPct } = useProgressMetrics();
   
   const reviewCount = queue?.length ?? 0;
+  const dueCount = dueQueue.length;
   // This layout is only mounted for authenticated users (AppHomeSwitch routes
   // guests to GuestHomePage), so no guest fallbacks are needed here.
   const displayName = user?.username || 'Learner';
@@ -97,14 +98,69 @@ export function HomeLayoutA() {
         </div>
       </section>
 
-      {/* Daily session: due reviews first (max 8) -> summary -> next path node */}
-      <DailySession />
+      {/* THE DAILY LOOP — Warm-up · Push · Challenge.
+          The locked product loop is three steps, and this page was showing only
+          the first two. `DailySession` already collapses Warm-up (due reviews,
+          capped at 8) and Push (next unlocked path node) behind one primary CTA;
+          Challenge (Rapid Blitz) had no Home entry point at all — it existed
+          only as a Band F bonus chip on /learn, so a learner following the
+          daily loop could never complete it. */}
+      <section className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+        {/* Steps 1 + 2: due reviews first, then the next path node. */}
+        <DailySession />
+        {/* Step 3: the 60-second challenge. */}
+        <div className="flex flex-col justify-between rounded-lg border border-ink-200 bg-white p-4 shadow-sm dark:border-ink-800 dark:bg-ink-900">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h2 className="text-lg font-semibold text-ink-950 dark:text-white">
+                {isDE ? 'Challenge' : 'Challenge'}
+              </h2>
+              <p className="mt-1 text-body text-ink-500 dark:text-ink-400">
+                {isDE
+                  ? '60 Sekunden, sechs Aufgabentypen, Combo-Bonus — die schnellste Runde des Tages.'
+                  : '60 seconds, six question types, combo bonus — the fastest round of the day.'}
+              </p>
+            </div>
+            <span className="shrink-0 text-2xl" aria-hidden="true">⚡</span>
+          </div>
+          <Link
+            to="/rapid-fire?mode=mixed"
+            className="mt-4 inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-lg bg-warning-500 px-4 py-3 text-body font-bold text-white shadow-sm transition hover:bg-warning-600 active:scale-95"
+          >
+            {isDE ? 'Blitz starten' : 'Start Blitz'}
+            <span aria-hidden="true">→</span>
+          </Link>
+        </div>
+      </section>
 
-      {/* Word of the Day + daily challenge — reactivates the existing
-          DailyChallenge system on the logged-in Home (it was orphaned from
-          the old HomePage restructure). Reads curriculumService, shuffles at
-          create, feeds addWrongAnswer/XP — no new system introduced. */}
-      {isAuthenticated && <DailyChallenge />}
+      {/* Everything below is secondary: a word of the day, a daily challenge and
+          a set of quests are three SEPARATE reward surfaces, and stacking all
+          of them above the content meant a learner scrolled past three
+          gamification widgets before reaching anything they came to do. Folded
+          into one disclosure so the loop above is the first thing on screen. */}
+      {(isAuthenticated || dueCount > 0) && (
+        <details className="group rounded-lg border border-ink-200 bg-white p-4 shadow-sm dark:border-ink-900 dark:border-ink-800">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-3">
+            <span className="text-body font-semibold text-ink-700 dark:text-ink-200">
+              {isDE ? 'Mehr für heute' : 'More for today'}
+            </span>
+            <span className="text-meta font-medium text-accent-600 dark:text-accent-400 group-open:hidden">
+              {isDE ? 'Anzeigen' : 'Show'}
+            </span>
+            <span className="hidden text-meta font-medium text-accent-600 dark:text-accent-400 group-open:inline">
+              {isDE ? 'Ausblenden' : 'Hide'}
+            </span>
+          </summary>
+          <div className="mt-4 space-y-4">
+            {/* Word of the Day + daily challenge — reactivates the existing
+                DailyChallenge system on the logged-in Home (it was orphaned from
+                the old HomePage restructure). Reads curriculumService, shuffles at
+                create, feeds addWrongAnswer/XP — no new system introduced. */}
+            {isAuthenticated && <DailyChallenge />}
+            {isAuthenticated && <DailyQuestsWidget />}
+          </div>
+        </details>
+      )}
 
       {/* Shared StatTile component — same source of truth as DashboardPage */}
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -142,8 +198,11 @@ export function HomeLayoutA() {
         />
       </section>
 
-      {/* Daily quests (shared with Dashboard) — logged-in only. */}
-      {isAuthenticated && <DailyQuestsWidget />}
+      {/* Daily quests now live in the "More for today" disclosure above, next
+          to the word of the day and the daily challenge — they are the same
+          class of thing and splitting them across the page made Home feel like
+          five stacked dashboards. */}
+
 
       <section className="rounded-lg border border-ink-200 bg-white p-4 shadow-sm dark:bg-ink-900 dark:border-ink-800">
         <div className="mb-3 flex items-center justify-between gap-3">

@@ -3,6 +3,8 @@ import { useLang } from '../../hooks/useLang';
 import { ArticleSelector } from './ArticleSelector';
 import type { ArticleQuestion } from './ArticleSelector';
 import { useExerciseSession } from '../../hooks/useExerciseSession';
+import { useWeakKeysFor } from '../../hooks/useSkillAccuracy';
+import { pickNUnique } from '../../utils/questionGenerator';
 import { curriculumService } from '../../services';
 import { theme } from '../../config/theme';
 
@@ -21,6 +23,10 @@ export function ArticleSprint() {
   const { langMode } = useLang();
   const isDE = langMode === 'german';
   const [deck, setDeck] = useState<ArticleQuestion[] | null>(null);
+  // Adaptive: nouns this learner got wrong before are drawn first. Backed by
+  // the SRS rows the engine already writes for moduleType 'article-sprint'.
+  // Falls back to a plain draw when there is no history.
+  const weakKeys = useWeakKeysFor('article-sprint');
 
   useEffect(() => {
     let cancelled = false;
@@ -28,19 +34,23 @@ export function ArticleSprint() {
       .getArticles()
       .then((items) => {
         if (cancelled) return;
+        const questions = items.map((a) => ({
+          key: a.noun,
+          correctAnswer: a.art,
+          noun: a.noun,
+          speakPrompt: a.noun,
+          speakAfter: `${a.art} ${a.noun}`,
+        }));
+        // Fixed 8-question round, but ordered so the previously-missed nouns
+        // lead. `slice(0, 8)` still bounds the round regardless of pool size.
         setDeck(
-          items.slice(0, 8).map((a) => ({
-            key: a.noun,
-            correctAnswer: a.art,
-            noun: a.noun,
-            speakPrompt: a.noun,
-            speakAfter: `${a.art} ${a.noun}`,
-          })),
+          pickNUnique({ items: questions, count: Math.min(8, questions.length), getKey: (q) => q.key, preferKeys: weakKeys })
         );
       })
       .catch(() => { if (!cancelled) setDeck([]); });
     return () => { cancelled = true; };
-  }, []);
+    // Re-run when the weak list changes so a retry re-tests the current misses.
+  }, [weakKeys]);
 
   const session = useExerciseSession<ArticleQuestion>({
     questions: deck ?? [],

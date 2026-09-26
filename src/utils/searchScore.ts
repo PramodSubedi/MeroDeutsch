@@ -30,29 +30,17 @@ export function tokenizeQuery(input: string): string[] {
     .filter(Boolean);
 }
 
-/** Levenshtein distance — used for near-miss tolerance on short tokens. */
-export function levenshtein(a: string, b: string): number {
-  if (a === b) return 0;
-  const m = a.length;
-  const n = b.length;
-  if (m === 0) return n;
-  if (n === 0) return m;
-  const prev = new Uint32Array(n + 1);
-  const curr = new Uint32Array(n + 1);
-  for (let j = 0; j <= n; j++) prev[j] = j;
-  for (let i = 1; i <= m; i++) {
-    curr[0] = i;
-    for (let j = 1; j <= n; j++) {
-      curr[j] = Math.min(
-        prev[j] + 1,
-        curr[j - 1] + 1,
-        prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)
-      );
-    }
-    prev.set(curr);
-  }
-  return prev[n];
-}
+/** Levenshtein now lives in `answerNormalize.ts` and is re-exported here, so
+    there is ONE implementation. This file previously carried its own
+    typed-array copy for the "did you mean" near-miss tolerance, and
+    PronunciationPage carried a THIRD (plain-array) copy for grading speech.
+    Three implementations of the same DP is three places for the tolerance to
+    drift; the canonical one is the answer-grading helper.
+
+    Imported as well as re-exported, because the ranking code below CALLS it —
+    a bare `export { x } from` does not put `x` in local scope. */
+import { levenshtein } from './answerNormalize';
+export { levenshtein };
 
 /** Describe one field to search across. */
 export interface SearchField<T> {

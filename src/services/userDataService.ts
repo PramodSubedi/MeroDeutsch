@@ -1,10 +1,19 @@
 import { supabase } from '../lib/supabase';
 import type { Progress, UserAchievements, WrongAnswerItem } from '../types';
+import type { PathMode } from '../data/a1Path';
+
 
 /** Cloud mirror of the A1 campaign state (`useA1Path`). */
 export interface A1PathState {
   unlockedUnitIndex: number;
   completedNodeIds: string[];
+  /**
+   * `'guided'` | `'self'`. Coerced to `'guided'` on read when the column is
+   * absent, so a row written before the migration still loads with the exact
+   * behaviour it already had.
+   */
+  pathMode?: PathMode;
+
   checkpointBestByUnit: Record<number, number>;
 }
 
@@ -136,9 +145,7 @@ export const userDataService = {
       correctAnswer: d.correct_answer,
       errorCount: d.error_count,
       timestamp: d.created_at,
-      ease: d.ease,
       intervalDays: d.interval_days,
-      repetitions: d.repetitions,
       dueAt: d.due_at,
       lastResult: d.last_result,
       boxLevel: d.box_level,
@@ -161,9 +168,7 @@ export const userDataService = {
         correct_answer: item.correctAnswer,
         error_count: item.errorCount,
         created_at: item.timestamp,
-        ease: item.ease,
         interval_days: item.intervalDays,
-        repetitions: item.repetitions,
         due_at: item.dueAt,
         last_result: item.lastResult,
         box_level: item.boxLevel,
@@ -249,7 +254,7 @@ export const userDataService = {
   async getA1PathState(userId: string): Promise<A1PathState | null> {
     const { data, error } = await supabase
       .from('a1_path_state')
-      .select('unlocked_unit_index, completed_node_ids, checkpoint_best_by_unit')
+      .select('unlocked_unit_index, completed_node_ids, checkpoint_best_by_unit, path_mode')
       .eq('user_id', userId)
       .maybeSingle();
 
@@ -268,6 +273,10 @@ export const userDataService = {
         data.checkpoint_best_by_unit && typeof data.checkpoint_best_by_unit === 'object'
           ? (data.checkpoint_best_by_unit as Record<number, number>)
           : {},
+      // Coerce anything unrecognised to 'guided'. A row written before the
+      // migration has no path_mode at all, and a hand-edited row could hold
+      // anything — both must load as the behaviour they had, never as 'self'.
+      pathMode: data.path_mode === 'self' ? 'self' : 'guided',
     };
   },
 
@@ -281,6 +290,7 @@ export const userDataService = {
       unlocked_unit_index: state.unlockedUnitIndex,
       completed_node_ids: state.completedNodeIds,
       checkpoint_best_by_unit: state.checkpointBestByUnit,
+      path_mode: state.pathMode ?? 'guided',
       updated_at: new Date().toISOString(),
     });
 

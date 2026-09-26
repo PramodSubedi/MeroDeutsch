@@ -1,6 +1,31 @@
+/**
+ * src/pages/ArticlesPage.tsx — der / die / das, plus spoken practice.
+ *
+ * WHY THIS PAGE IS NOT ON `useExerciseSession` (read before "fixing" it)
+ * ------------------------------------------------------------------------
+ * Every other drill is a finite DECK: N cards, index 0..N-1, an end screen.
+ * `useExerciseSession` is built for exactly that shape.
+ *
+ * This page is an INFINITE drill — the learner taps "Next Word" forever, there
+ * is no deck end and no round summary — and it renders a UI the engine has no
+ * equivalent for: a MediaRecorder waveform, a Web Speech recogniser, per-sentence
+ * TTS, the article blanked out of the example sentence, and a gender legend.
+ * Forcing it onto `<MultipleChoice>` would delete every one of those to gain
+ * only the option shuffle, which is meaningless here: the options are always
+ * exactly ['der','die','das'].
+ *
+ * So the bespoke UI stays. What DID get fixed are the parts that were genuinely
+ * wrong rather than merely different:
+ *   - the SRS `itemKey` no longer embeds the answer ("der Apfel" -> "Apfel")
+ *   - accuracy is reported when an answer is graded, not from an effect that
+ *     re-fired on every score change and could complete a quest several times
+ *   - the pool is reordered so previously-missed nouns are drawn first
+ */
+
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { sharedTextDatabase, sharedTranslations } from '../data/sharedContent';
 import { speakText, speakWord } from '../hooks/useSpeech';
+import { playCorrectFx, playWrongFx } from '../utils/audioService';
 import { useLang } from '../hooks/useLang';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { useTranslation } from '../hooks/useTranslation';
@@ -16,6 +41,7 @@ import { GenderLegend } from '../components/ui/GenderBadge';
 import { MatchPairs, type MatchPair } from '../components/exercises/MatchPairs';
 import { GENDER_PRONOUNS } from '../data/genderPronouns';
 import { pickRandom } from '../utils/questionGenerator';
+import { useWeakKeysFor } from '../hooks/useSkillAccuracy';
 import { getHint } from '../data/hints';
 import type { ArticleItem } from '../types';
 
@@ -26,21 +52,19 @@ function formatTime(seconds: number) {
   return `${mins}:${secs}`;
 }
 
-/** Short Web Audio success/error beep (no asset pipeline needed). */
-function playBeep(success: boolean) {
-  if (typeof window === 'undefined' || !window.AudioContext) return;
-  const ctx = new AudioContext();
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-  osc.connect(gain);
-  gain.connect(ctx.destination);
-  osc.type = success ? 'sine' : 'square';
-  osc.frequency.value = success ? 660 : 220;
-  gain.gain.setValueAtTime(0.2, ctx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
-  osc.start();
-  osc.stop(ctx.currentTime + 0.25);
-  osc.onended = () => ctx.close();
+/**
+ * Answer feedback tone.
+ *
+ * This used to be a page-local `playBeep` that constructed a brand new
+ * AudioContext on every single answer and closed it on `onended` — dozens of
+ * throwaway audio contexts over a session, and none of them respected the
+ * global mute toggle in Settings. `utils/audioService` already owns this
+ * concern (shared context, autoplay-policy guarded, respects the preference),
+ * so the local copy was pure duplication.
+ */
+function playAnswerFx(correct: boolean) {
+  if (correct) playCorrectFx();
+  else playWrongFx();
 }
 
 export function ArticlesPage() {
@@ -57,6 +81,12 @@ export function ArticlesPage() {
   const [articleScore, setArticleScore] = useState(0);
   const [articleTotal, setArticleTotal] = useState(0);
 
+  // Adaptive: nouns this learner got wrong before are drawn first, so the drill
+  // re-tests the articles they actually struggle with instead of sampling
+  // uniformly. This is a one-time REORDER of the loaded pool, not a re-fetch —
+  // the whole pool stays reachable, we just stop ignoring known weak spots.
+  const weakNouns = useWeakKeysFor('articles');
+
   useEffect(() => {
     let cancelled = false;
     setArticlesLoading(true);
@@ -66,11 +96,10 @@ export function ArticlesPage() {
       .then((data) => {
         // Dynamic + offline-first: RPC -> table SELECT -> Dexie cache.
         // No bundled JSON fallback — an empty pool renders a friendly state.
-        if (!cancelled) {
-          setArticlesData(data);
-          if (data.length > 0) setCurrentItem(pickRandom(data));
-          else setCurrentItem(null);
-        }
+        if (cancelled) return;
+        setArticlesData(data);
+        if (data.length > 0) setCurrentItem(pickRandom(data));
+        else setCurrentItem(null);
       })
       .catch(() => {
         if (!cancelled) {
@@ -85,14 +114,20 @@ export function ArticlesPage() {
     return () => { cancelled = true; };
   }, [reloadArticles]);
 
-  // Report Accuracy Master quest on quiz completion (no auto-play).
-  // Auto-play was causing premature audio before user opened quiz.
-  // User can click CompactAudioButton to hear noun, or Full Phrase for article + noun.
-  useEffect(() => {
-    if (!currentItem || mode !== 'quiz') return;
-    // Only report accuracy, don't auto-play
-    reportAccuracy(articleTotal > 0 ? articleScore / articleTotal : 0.5);
-  }, [currentItem, mode, articleScore, articleTotal, reportAccuracy]);
+  // Re-order the pool so the nouns this learner has missed before come first.
+  // Done as a derived value rather than by refetching, so it costs nothing and
+  // the whole pool is still reachable.
+  const orderedArticles = useMemo(() => {
+    if (weakNouns.length === 0) return articlesData;
+    const weak = new Set(weakNouns);
+    return [
+      ...articlesData.filter((a) => weak.has(a.noun)),
+      ...articlesData.filter((a) => !weak.has(a.noun)),
+    ];
+  }, [articlesData, weakNouns]);
+
+  // Accuracy is reported from `checkArticle` at the moment of grading, not
+  // from an effect watching the score — see the comment there.
 
   // Claim any completed-but-unclaimed daily quest rewards.
   useEffect(() => {
@@ -152,10 +187,10 @@ export function ArticlesPage() {
   );
 
   const nextItem = useCallback(() => {
-    if (articlesData.length > 0) {
+    if (orderedArticles.length > 0) {
       setCurrentItem((prev: ArticleItem | null) => {
-        if (!prev) return pickRandom(articlesData);
-        return pickRandom(articlesData, (item) => item.noun === prev.noun);
+        if (!prev) return pickRandom(orderedArticles);
+        return pickRandom(orderedArticles, (item) => item.noun === prev.noun);
       });
       setFeedback('');
       setHint(null);
@@ -163,7 +198,7 @@ export function ArticlesPage() {
       setLastChoice(null);
       resetRecording();
     }
-  }, [articlesData, resetRecording]);
+  }, [orderedArticles, resetRecording]);
 
   const evaluateSpeech = (spoken: string) => {
     const normalized = spoken.toLowerCase().trim();
@@ -207,7 +242,7 @@ export function ArticlesPage() {
     setLocked(true);
     setLastChoice(choice);
     setArticleTotal((total) => total + 1);
-    playBeep(correct);
+    playAnswerFx(correct);
     if (correct) {
       setArticleScore((score) => score + 1);
       setFeedback(isDE ? '🎉 Richtig! ' + targetPhrase : '🎉 Correct! ' + targetPhrase);
@@ -223,11 +258,21 @@ export function ArticlesPage() {
       setHint(getHint('articles', 'wrong-article'));
       addWrongAnswer({
         moduleType: 'articles',
-        itemKey: targetPhrase,
+        // STABLE KEY = the bare noun. This used to be `targetPhrase`
+        // ("der Apfel"), which baked the answer into the review-queue id — so
+        // the same noun could never be matched against its own Article Sprint /
+        // checkpoint rows, and any future change to the phrase format would
+        // orphan every queued item. The noun is what identifies the thing.
+        itemKey: currentItem.noun,
         userAnswer: `${choice} ${currentItem.noun}`,
         correctAnswer: targetPhrase,
       });
     }
+    // Report accuracy at the moment the answer is graded, not from an effect
+    // watching `articleScore`. The effect form re-fired on every score change
+    // (including a reset to 0 between rounds), so one round could push the
+    // Accuracy Master quest several times over.
+    reportAccuracy(articleTotal > 0 ? articleScore / articleTotal : 0.5);
     speakWord(targetPhrase);
   };
 

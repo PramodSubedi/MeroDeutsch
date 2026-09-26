@@ -2,19 +2,24 @@
  * src/lib/anchors.ts
  *
  * Single registry for the in-page DOM anchor ids used by cross-page deep links
- * (`/dashboard#review-queue-section`, `/home#learning-path`, …) and by
- * scroll-to helpers.
+ * (`/dashboard#review-queue-section`, …) and by scroll-to helpers.
  *
  * The same string literals were duplicated across four files, so renaming a
  * section silently broke links with no compile-time signal.
+ *
+ * `learningPath` is the FREE tier's learning-components path
+ * (`components/learning/LearningPath.tsx`, restored from the pre-spine version).
+ * `a1Spine` is the Premium A1 curriculum (`components/path/UnitSpine.tsx`). Both
+ * exist: they are different tiers of the same product, not two answers to the
+ * same question.
  */
 
 export const ANCHORS = {
-  /** A1 module grid on Home (`LearningPath`). */
-  learningPath: 'learning-path',
   /** Dashboard SRS review queue section. */
   reviewQueue: 'review-queue-section',
-  /** Linear A1 campaign spine on /learn (`UnitSpine`). */
+  /** Free-tier learning-components path (`LearningPath`), guests + signed-in free. */
+  learningPath: 'learning-path',
+  /** Linear A1 campaign spine on /learn (`UnitSpine`) -- Premium. */
   a1Spine: 'a1-spine',
   /** Home daily-session card (`DailySession`). */
   dailySession: 'daily-session',

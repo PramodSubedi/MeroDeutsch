@@ -1,0 +1,75 @@
+{
+  "id": "m04",
+  "order": 4,
+  "code": "M04",
+  "kind": "core",
+  "cluster": 0,
+  "title": {
+    "en": "Family & Relationships",
+    "de": "Familie & Beziehungen"
+  },
+  "theme": {
+    "en": "Possessives · Description",
+    "de": "Possessiv · Beschreibung"
+  },
+  "goal": {
+    "en": "Describe family members and their qualities",
+    "de": "Familienmitglieder und ihre Eigenschaften beschreiben"
+  },
+  "nodes": [
+    {
+      "id": "m04-family",
+      "kind": "learn",
+      "label": {
+        "en": "Family Vocabulary",
+        "de": "Familien-Wortschatz"
+      },
+      "to": "/vocab-trainer?category=family"
+    },
+    {
+      "id": "m04-stories",
+      "kind": "practice",
+      "label": {
+        "en": "Family Stories",
+        "de": "Familiengeschichten"
+      },
+      "to": "/stories"
+    },
+    {
+      "id": "m04-gate",
+      "kind": "checkpoint",
+      "label": {
+        "en": "Module 4 Checkpoint",
+        "de": "Modul 4 Prüfung"
+      },
+      "to": "/checkpoint/3"
+    }
+  ],
+  "checkpoint": {
+    "moduleType": "a1-checkpoint",
+    "specs": [
+      {
+        "type": "vocab-translation",
+        "count": 8
+      },
+      {
+        "type": "grammar-drill",
+        "count": 4
+      }
+    ]
+  },
+  "pedagogy": {
+    "grammarNote": {
+      "en": "Possessives agree with the noun: mein Vater (m), meine Mutter (f), mein Kind (n), meine Eltern (plural). Feminine and plural take -e.",
+      "de": "Possessivpronomen richten sich nach dem Nomen: mein Vater, meine Mutter, mein Kind, meine Eltern. Feminin und Plural bekommen -e."
+    }
+  },
+  "vocabCategories": [
+    "family",
+    "people"
+  ],
+  "grammarCategories": [
+    "cases"
+  ],
+  "hasLesson": true
+}

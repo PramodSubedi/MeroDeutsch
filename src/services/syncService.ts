@@ -146,9 +146,7 @@ async function pushReviewQueue(userId: string, lastPushed: string): Promise<stri
     correctAnswer: r.correctAnswer ?? '',
     errorCount: r.lapses ?? 0,
     timestamp: r.updatedAt ?? r.lastReviewedAt ?? new Date().toISOString(),
-    ease: r.ease,
     intervalDays: r.intervalDays,
-    repetitions: r.repetitions,
     dueAt: r.dueAt,
     lastResult: r.lastResult,
     boxLevel: r.box,
@@ -174,6 +172,9 @@ async function pushA1PathState(userId: string, lastPushed: string): Promise<stri
     unlockedUnitIndex: row.unlockedUnitIndex,
     completedNodeIds: row.completedNodeIds ?? [],
     checkpointBestByUnit: row.checkpointBestByUnit ?? {},
+    // Carry the mode across devices. Default to 'guided' for rows written
+    // before the field existed, matching what those rows already meant.
+    pathMode: row.pathMode ?? 'guided',
   };
   await userDataService.saveA1PathState(userId, state);
   return row.updatedAt ?? new Date().toISOString();

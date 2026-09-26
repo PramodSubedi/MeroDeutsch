@@ -29,7 +29,10 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useLang } from '../../hooks/useLang';
 import { useA1Path } from '../../hooks/useA1Path';
+import { useHasA1Campaign } from '../../hooks/usePremium';
+import { useLastModule } from '../../hooks/useLastModule';
 import { useReviewQueue } from '../../hooks/useReviewQueue';
+import { labelForPath } from '../../config/routeLabels';
 import { ReviewSessionManager } from '../ReviewSessionManager';
 import { setDailySessionActive } from '../../lib/dailySessionSignal';
 import { ANCHORS } from '../../lib/anchors';
@@ -42,6 +45,8 @@ export function DailySession() {
   const isDE = langMode === 'german';
   const navigate = useNavigate();
   const { getPushNode } = useA1Path();
+  const { hasCampaign } = useHasA1Campaign();
+  const { getLastModule } = useLastModule();
   const { dueQueue, markCorrect } = useReviewQueue();
 
   // Local session state: CTA -> review batch -> summary.
@@ -49,7 +54,32 @@ export function DailySession() {
   const [sessionComplete, setSessionComplete] = useState(false);
 
   const dueCount = dueQueue.length;
-  const pushNode = getPushNode();
+  const a1PushNode = getPushNode();
+
+  /**
+   * The "Push" target, resolved for THIS tier.
+   *
+   * Premium gets the A1 campaign's next node ("Next: Greetings", a `/lesson/:n`
+   * route). A free signed-in learner has no campaign, so the A1 push node would
+   * be a dead end pointing into a curriculum they cannot see - their /learn is
+   * the `LearningPath` roadmap. Their push target is instead the module they
+   * last opened (`useLastModule`, which falls back to `/alphabet`), labelled
+   * from the shared `ROUTE_LABELS` so the six roadmap modules read correctly in
+   * both languages. `labelForPath` returns '' for an unknown path, in which case
+   * we drop the label rather than render a blank.
+   *
+   * A null `continueTarget` therefore means "campaign genuinely finished" -
+   * the only case where the all-clear branch should fire.
+   */
+  const continueTarget = hasCampaign
+    ? a1PushNode
+      ? { to: a1PushNode.to, label: isDE ? a1PushNode.label.de : a1PushNode.label.en }
+      : null
+    : (() => {
+        const to = getLastModule();
+        const label = labelForPath(to, isDE);
+        return { to, label: label || null };
+      })();
 
   // U6: tell the global Layout a review batch is active (non-blocking toast
   // for level-ups mid-session). Cleared when the batch ends or unmounts.
@@ -67,8 +97,8 @@ export function DailySession() {
     if (dueCount > 0) {
       setSessionStarted(true);
       setSessionComplete(false);
-    } else if (pushNode) {
-      navigate(pushNode.to);
+    } else if (continueTarget) {
+      navigate(continueTarget.to);
     } else {
       navigate('/learn');
     }
@@ -134,15 +164,17 @@ export function DailySession() {
           </div>
 
           <div className="flex flex-col gap-2 sm:flex-row">
-            {pushNode && (
+            {continueTarget && (
               <Link
-                to={pushNode.to}
+                to={continueTarget.to}
                 className="inline-flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-lg bg-accent-600 px-4 py-3 text-body font-bold text-white shadow-sm transition hover:bg-accent-700 active:scale-95"
               >
                 🚀 {isDE ? 'Weiterlernen' : 'Continue learning'}
-                <span className="truncate text-meta font-medium opacity-90">
-                  {isDE ? pushNode.label.de : pushNode.label.en}
-                </span>
+                {continueTarget.label && (
+                  <span className="truncate text-meta font-medium opacity-90">
+                    {continueTarget.label}
+                  </span>
+                )}
               </Link>
             )}
             <button
@@ -178,16 +210,19 @@ export function DailySession() {
             {dueCount}
           </span>
         </button>
-      ) : pushNode ? (
-        /* 0 due — CTA goes straight to the next path node only. */
+      ) : continueTarget ? (
+        /* 0 due — CTA goes straight to the next thing for THIS tier: the A1
+           campaign node on Premium, the last-opened roadmap module on free. */
         <Link
-          to={pushNode.to}
+          to={continueTarget.to}
           className="inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-lg bg-accent-600 px-4 py-3 text-body font-bold text-white shadow-sm transition hover:bg-accent-700 active:scale-95"
         >
           🚀 {isDE ? 'Weiterlernen' : 'Continue learning'}
-          <span className="truncate text-meta font-medium opacity-90">
-            {isDE ? pushNode.label.de : pushNode.label.en}
-          </span>
+          {continueTarget.label && (
+            <span className="truncate text-meta font-medium opacity-90">
+              {continueTarget.label}
+            </span>
+          )}
         </Link>
       ) : (
         <Link

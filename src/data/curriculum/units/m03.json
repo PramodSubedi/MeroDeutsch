@@ -1,0 +1,84 @@
+{
+  "id": "m03",
+  "order": 3,
+  "code": "M03",
+  "kind": "core",
+  "cluster": 0,
+  "title": {
+    "en": "Alphabet & Personal Details",
+    "de": "Alphabet & Personendaten"
+  },
+  "theme": {
+    "en": "Spelling · Name · Address",
+    "de": "Buchstabieren · Name · Adresse"
+  },
+  "goal": {
+    "en": "Spell your name and give personal details",
+    "de": "Namen buchstabieren und persönliche Angaben machen"
+  },
+  "nodes": [
+    {
+      "id": "m03-alphabet",
+      "kind": "learn",
+      "label": {
+        "en": "Alphabet & Spelling",
+        "de": "Alphabet & Buchstabieren"
+      },
+      "to": "/alphabet"
+    },
+    {
+      "id": "m03-pronunciation",
+      "kind": "practice",
+      "label": {
+        "en": "Pronunciation",
+        "de": "Aussprache"
+      },
+      "to": "/pronunciation"
+    },
+    {
+      "id": "m03-gate",
+      "kind": "checkpoint",
+      "label": {
+        "en": "Module 3 Checkpoint",
+        "de": "Modul 3 Prüfung"
+      },
+      "to": "/checkpoint/2"
+    }
+  ],
+  "bonus": [
+    {
+      "id": "m03-spelling",
+      "kind": "bonus",
+      "label": {
+        "en": "Spelling Practice",
+        "de": "Buchstabier-Übung"
+      },
+      "to": "/dictation",
+      "bonus": true
+    }
+  ],
+  "checkpoint": {
+    "moduleType": "a1-checkpoint",
+    "specs": [
+      {
+        "type": "alphabet-letter",
+        "count": 6
+      },
+      {
+        "type": "listening-gap",
+        "count": 6
+      }
+    ]
+  },
+  "pedagogy": {
+    "umlautCallout": {
+      "en": "Umlauts (ä, ö, ü) and ß are separate letters: die Straße, schön, über. V sounds like \"f\", W like \"v\".",
+      "de": "Umlaute (ä, ö, ü) und ß sind eigenständige Buchstaben: die Straße, schön, über. V klingt wie \"f\", W wie \"v\"."
+    }
+  },
+  "vocabCategories": [
+    "alphabet",
+    "personal"
+  ],
+  "hasLesson": true
+}

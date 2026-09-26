@@ -29,7 +29,6 @@ import { BookOpen, Home, LayoutDashboard, LifeBuoy, Send, Settings, Target } fro
 import type { LucideIcon } from 'lucide-react';
 import { MODULES } from './modules';
 import type { Module } from './modules';
-import { anchorHref, ANCHORS } from '../lib/anchors';
 import type { LocalizedLabel } from '../data/a1Path';
 
 /** Exact-or-child-prefix match. `'/'` is Home's alias so the root redirect
@@ -99,13 +98,15 @@ export const PRIMARY_NAV: readonly NavDestination[] = [
     // row to steal the active state.
     matchPaths: [...new Set(['/learn', '/checkpoint', ...modulePaths('learning')])],
     guest: {
-      to: anchorHref('/home', ANCHORS.learningPath),
-      label: { en: 'Lessons', de: 'Lektionen' },
-      short: { en: 'Lessons', de: 'Lektionen' },
-      // Guests have no "Learn" nav target of their own, but they can still
-      // deep-link to /learn and every lesson route — so the row stays lit while
-      // they are inside the learning area (and the header chip says "Lessons").
-      // '/home' is deliberately absent: Today owns Home.
+      // Guests now get the REAL spine, the same as signed-in learners. This
+      // used to send them to `/home#learning-path` — a flat card grid with its
+      // own hardcoded lesson list — while `/learn` stayed reachable by URL, so
+      // the app shipped two learning paths and contradicted the locked decision
+      // that the path is the spine. `useA1Path` already supports a 'guest'
+      // identity, so the spine works signed-out and keeps progress on-device.
+      to: '/learn',
+      label: { en: 'Learn', de: 'Lernen' },
+      short: { en: 'Learn', de: 'Lernen' },
       matchPaths: [...new Set(['/learn', '/checkpoint', ...modulePaths('learning')])],
     },
   },

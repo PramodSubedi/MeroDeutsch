@@ -19,17 +19,17 @@ import { createClient } from '@supabase/supabase-js';
 const CLIENT_USED_COLUMNS: Record<string, string[]> = {
   review_queue: [
     'id', 'user_id', 'module_type', 'item_key', 'user_answer', 'correct_answer',
-    'error_count', 'ease', 'interval_days', 'repetitions', 'due_at', 'created_at',
+    'error_count', 'interval_days', 'due_at', 'created_at',
     'updated_at', 'last_result', 'box_level', 'error_tag',
   ],
   user_activity_days: ['user_id', 'activity_date', 'event_count', 'created_at', 'updated_at'],
-  a1_path_state: ['user_id', 'unlocked_unit_index', 'completed_node_ids', 'checkpoint_best_by_unit', 'updated_at'],
+  a1_path_state: ['user_id', 'unlocked_unit_index', 'completed_node_ids', 'checkpoint_best_by_unit', 'path_mode', 'updated_at'],
   user_xp: ['user_id', 'total_xp', 'level', 'updated_at'],
   user_streaks: ['user_id', 'current_streak', 'longest_streak', 'last_activity_date', 'updated_at'],
   user_progress: ['user_id', 'practiced_ids', 'quiz_correct', 'quiz_total', 'spell_completed', 'updated_at'],
   vocabulary: [
     'word', 'article', 'translation_en', 'translation_np', 'translation_ne_roman',
-    'example_de', 'example_en', 'example_np', 'part_of_speech', 'level', 'category',
+    'example_de', 'example_en', 'example_np', 'part_of_speech', 'level',
     'plural_form', 'tags',
   ],
   sentences: ['id', 'phrase_de', 'expected_array', 'distractors_array', 'grammar_focus', 'tags'],
@@ -38,8 +38,12 @@ const CLIENT_USED_COLUMNS: Record<string, string[]> = {
 
 /** Migration-declared tables (informational row counts). */
 const TABLES = [
-  'profiles', 'user_progress', 'user_streaks', 'user_achievements', 'daily_quests',
-  'high_scores', 'vocabulary', 'review_queue', 'user_xp', 'user_activity_days',
+  // daily_quests and high_scores are intentionally absent: migration 003
+  // is a phantom (recorded as applied, never actually created) and nothing in
+  // src/ or scripts/ reads either table. Daily quests are localStorage; the
+  // blitz high score is the per-user key 'rapidBlitzMultiChallenge'.
+  'profiles', 'user_progress', 'user_streaks', 'user_achievements',
+  'vocabulary', 'review_queue', 'user_xp', 'user_activity_days',
   'a1_path_state', 'sentences', 'content_items',
 ];
 
@@ -161,7 +165,6 @@ interface VocabRow {
   word: string;
   part_of_speech: string | null;
   level: string | null;
-  category: string | null;
   tags: string[] | null;
   translation_ne_roman: string | null;
   article: string | null;
@@ -172,7 +175,7 @@ async function auditVocabularyData(): Promise<void> {
   console.log('\n=== 5. VOCABULARY DATA HEALTH (migration 018 taxonomy) ===');
   const { data, error } = await client
     .from('vocabulary')
-    .select('word, part_of_speech, level, category, tags, translation_ne_roman, article, example_de');
+    .select('word, part_of_speech, level, tags, translation_ne_roman, article, example_de');
   if (error || !data) {
     fail(`fetch vocabulary — ${error?.message ?? 'no data'}`);
     return;
@@ -184,7 +187,6 @@ async function auditVocabularyData(): Promise<void> {
   const invalidLevel = rows.filter(
     (r) => r.level && !['A1', 'A2', 'B1', 'B2'].includes(r.level.toUpperCase()),
   ).length;
-  const nonNullCategory = rows.filter((r) => r.category?.trim()).length;
   const emptyTags = rows.filter((r) => !r.tags || r.tags.length === 0).length;
   const junkWords = rows.filter((r) => /[0-9/,_]/.test(r.word) || r.word.length < 2).length;
   const nounNoArticle = rows.filter(
@@ -194,8 +196,9 @@ async function auditVocabularyData(): Promise<void> {
   pass(`${total} rows loaded`);
   if (missingLevel) fail(`${missingLevel} rows missing a CEFR level`); else pass('every row has a CEFR level');
   if (invalidLevel) fail(`${invalidLevel} rows have an invalid CEFR level`); else pass('all CEFR levels are A1/A2/B1/B2');
-  if (nonNullCategory) fail(`${nonNullCategory} rows still set the retired \`category\` column (018 incomplete)`);
-  else pass('legacy `category` column fully retired (018)');
+  // Migration 018 retired the column and migration 20260928000003 dropped it
+  // outright, so the absence of any usable topical data would now show up as
+  // empty tags[] rather than a populated category. Checked on the row below.
   if (emptyTags) fail(`${emptyTags} rows have an empty tags[] array`); else pass('every row has >=1 tag');
   // NOTE: raw-table junk fragments / article-less nouns are NOT drift. Migrations
   // 014/015/017 deliberately keep them in the base table and filter them inside

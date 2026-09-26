@@ -5,6 +5,12 @@ import { usePageTitle } from '../hooks/usePageTitle';
 import { useAnswerReporter } from '../hooks/useExerciseSession';
 import { useSpeechRecognition, isSpeechRecognitionSupported } from '../hooks/useSpeechRecognition';
 import { drawWithoutReplacement } from '../utils/questionGenerator';
+import {
+  isCloseMatch,
+  levenshtein,
+  normalizeForSpeech,
+  speechDiffIndices,
+} from '../utils/answerNormalize';
 import { LoadingBlock } from '../components/common/LoadingBlock';
 import { theme } from '../config/theme';
 import { curriculumService } from '../services';
@@ -12,47 +18,12 @@ import type { VocabCard } from '../types';
 import { Link } from 'react-router-dom';
 import { A1_PHONETICS, A1_SOUND_SHIFTS } from '../data/a1ResourcePack';
 
-function normalizeForCompare(input: string): string {
-  return input
-    .trim()
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '') // strip diacritics (ä→a, ö→o, ü→u)
-    .replace(/ß/g, 'ss');
-}
-
-/** Classic Levenshtein edit distance (iterative, two-row DP). */
-function levenshtein(a: string, b: string): number {
-  if (a === b) return 0;
-  if (a.length === 0) return b.length;
-  if (b.length === 0) return a.length;
-  let prev = Array.from({ length: b.length + 1 }, (_, i) => i);
-  for (let i = 1; i <= a.length; i++) {
-    const curr = [i];
-    for (let j = 1; j <= b.length; j++) {
-      curr[j] = Math.min(
-        prev[j] + 1, // deletion
-        curr[j - 1] + 1, // insertion
-        prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1) // substitution
-      );
-    }
-    prev = curr;
-  }
-  return prev[b.length];
-}
-
-/**
- * Fuzzy match tolerance tuned for Web Speech API transcription variance:
- * ASR often transcribes correct-but-accented speech with 1–2 character
- * differences ("haus" → "hauss"/"hous"). Exact equality alone produces
- * false negatives that penalize CORRECT pronunciation.
- * Tolerance: ≤1 edit for short words, ≤~20% of length for longer ones.
- */
-function isCloseMatch(spoken: string, target: string): boolean {
-  if (spoken === target) return true;
-  if (spoken.length === 0 || target.length === 0) return false;
-  const maxDist = Math.max(1, Math.floor(Math.max(spoken.length, target.length) * 0.2));
-  return levenshtein(spoken, target) <= maxDist;
+/** The one practice word shape this page renders (a flat A1 lemma). */
+interface PracticeWord {
+  id: string;
+  de: string;
+  en: string;
+  ne: string;
 }
 
 export function PronunciationPage() {
@@ -61,7 +32,7 @@ export function PronunciationPage() {
   const isDE = langMode === 'german';
   // Lesson Engine integration: XP + SRS reporting via the shared reporter.
   const reportResult = useAnswerReporter();
-  const [word, setWord] = useState<any>(null);
+  const [word, setWord] = useState<PracticeWord | null>(null);
   const [loadingWords, setLoadingWords] = useState(true);
   const [wordLoadFailed, setWordLoadFailed] = useState(false);
   const [reloadWords, setReloadWords] = useState(0);
@@ -69,9 +40,12 @@ export function PronunciationPage() {
   const [total, setTotal] = useState(0);
   const [result, setResult] = useState<null | 'correct' | 'partial' | 'wrong'>(null);
   const [typed, setTyped] = useState('');
+  /** What the recogniser actually heard on the last attempt — drives the
+      per-character hint. Kept so the learner can see the gap, not just a verdict. */
+  const [heard, setHeard] = useState<string>('');
   // Track shown word keys so the same prompt isn't repeated until the pool cycles.
   const usedWordKeysRef = useRef<Set<string>>(new Set());
-  const vocabRef = useRef<any[]>([]);
+  const vocabRef = useRef<PracticeWord[]>([]);
 
   useEffect(() => {
     let cancelled = false;
@@ -129,11 +103,18 @@ export function PronunciationPage() {
   const supported = useMemo(isSpeechRecognitionSupported, []);
   const supportsNative = typeof window !== 'undefined' && 'speechSynthesis' in window;
 
+  /** Which letters of the target the last attempt most likely got wrong. */
+  const diffIndices = useMemo(
+    () => (heard && word && result !== 'correct' ? speechDiffIndices(heard, word.de) : []),
+    [heard, word, result]
+  );
+
   const handleResult = useCallback(
     (transcript: string) => {
       if (!word) return;
-      const target = normalizeForCompare(word.de);
-      const spoken = normalizeForCompare(transcript);
+      setHeard(transcript);
+      const target = normalizeForSpeech(word.de);
+      const spoken = normalizeForSpeech(transcript);
       setTotal((t) => t + 1);
 
       // Correct: exact OR near-exact (fuzzy) match — tolerant of ASR
@@ -215,6 +196,9 @@ export function PronunciationPage() {
     setWord(n);
     setResult(null);
     setTyped('');
+    // Clear the transcript too, or the previous word's "I heard" hint would
+    // linger under the new word and highlight letters that were never attempted.
+    setHeard('');
   };
 
   if (!word) {
@@ -365,6 +349,47 @@ export function PronunciationPage() {
             {result === 'correct' && (isDE ? '🎉 Sehr gut!' : '🎉 Excellent!')}
             {result === 'partial' && (isDE ? `👍 Fast! Richtig: ${word.de}` : `👍 Almost! Correct: ${word.de}`)}
             {result === 'wrong' && (isDE ? `❌ Richtig: ${word.de}` : `❌ Correct: ${word.de}`)}
+          </div>
+        )}
+
+        {/* WHAT THE APP HEARD, and which letters to focus on.
+            A verdict alone ("wrong") tells a learner nothing actionable; showing
+            the mispronounced letter turns the same data into a fix. Falls back to
+            the plain transcript when the two words are too different to align
+            (see speechDiffIndices). Only rendered when something was misheard —
+            spelling out a correct word would just be noise. */}
+        {result && result !== 'correct' && heard && (
+          <div className="mt-3 rounded-md border border-ink-200 bg-white p-3 text-center dark:border-ink-800 dark:bg-ink-900">
+            <div className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-ink-500 dark:text-ink-400">
+              {isDE ? 'Ich habe gehört' : 'I heard'}
+            </div>
+            <div className="mt-1 text-lg text-ink-700 dark:text-ink-200">
+              {diffIndices.length > 0 ? (
+                <>
+                  {word.de.split('').map((ch, i) =>
+                    diffIndices.includes(i) ? (
+                      <span
+                        key={`${ch}-${i}`}
+                        className="rounded-sm bg-danger-100 px-0.5 font-bold text-danger-700 underline decoration-danger-500 decoration-2 underline-offset-2 dark:bg-danger-900/40 dark:text-danger-300"
+                      >
+                        {ch}
+                      </span>
+                    ) : (
+                      <span key={`${ch}-${i}`}>{ch}</span>
+                    )
+                  )}
+                </>
+              ) : (
+                <span className="italic text-ink-500 dark:text-ink-400">“{heard}”</span>
+              )}
+            </div>
+            {diffIndices.length > 0 && (
+              <p className="mt-2 text-meta text-ink-500 dark:text-ink-400">
+                {isDE
+                  ? 'Achte auf die hervorgehobenen Buchstaben.'
+                  : 'Focus on the highlighted letters.'}
+              </p>
+            )}
           </div>
         )}
       </div>

@@ -38,6 +38,13 @@ const TermsPage = lazy(() => import('./pages/TermsPage').then(m => ({ default: m
 const HelpPage = lazy(() => import('./pages/HelpPage').then(m => ({ default: m.HelpPage })));
 const FeedbackPage = lazy(() => import('./pages/FeedbackPage').then(m => ({ default: m.FeedbackPage })));
 const A1CheckpointPage = lazy(() => import('./pages/A1CheckpointPage').then(m => ({ default: m.A1CheckpointPage })));
+const LessonModulePage = lazy(() =>
+  import('./components/lesson/LessonModulePage').then(m => ({ default: m.LessonModulePage }))
+);
+// The document-style "notes" deep-dive — the PREMIUM tier. It is a separate,
+// more specific route and MUST be declared before `lesson/:unitIndex`, or
+// react-router matches the shorter pattern and the notes page never renders.
+const LessonPage = lazy(() => import('./pages/LessonPage').then(m => ({ default: m.LessonPage })));
 const SentenceBuilderPage = lazy(() => import('./pages/SentenceBuilderPage').then(m => ({ default: m.SentenceBuilderPage })));
 const GamesPage = lazy(() => import('./pages/GamesPage').then(m => ({ default: m.GamesPage })));
 const EmailBuilderPage = lazy(() => import('./pages/EmailBuilderPage').then(m => ({ default: m.EmailBuilderPage })));
@@ -103,6 +110,13 @@ export default function App() {
               <Route path="learn" element={<ContinueLearningPage />} />
               {/* A1 unit checkpoint — additive route; soft-locked by unit unlock */}
               <Route path="checkpoint/:unitIndex" element={<A1CheckpointPage />} />
+              {/* A unit's full lesson — the imported document content (lexicon,
+                  grammar, traps, culture, dialogue, practice bank). Soft-locked
+                  like every other module route: deep links always load. */}
+              {/* PREMIUM first: the article-style notes for a lesson. */}
+  <Route path="lesson/:unitIndex/notes" element={<LessonPage />} />
+  {/* FREE: the interactive lesson — the same material as tabs, cards and drills. */}
+  <Route path="lesson/:unitIndex" element={<LessonModulePage />} />
               {/* Unit 2 optional practice — bonus node on the /learn spine */}
               <Route path="sentence-builder" element={<SentenceBuilderPage />} />
               {/* NotebookLM mechanics: games hub + Goethe A1 Schreiben trainer.

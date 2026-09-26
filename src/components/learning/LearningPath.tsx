@@ -7,17 +7,29 @@ import type { LucideIcon } from 'lucide-react';
 import { ANCHORS } from '../../lib/anchors';
 
 /**
- * Reusable A1 Learning Path component.
+ * Learning components path — the FREE tier's learning surface.
  *
- * Extracted from HomePage.tsx so that both the guest Home page and the
- * dedicated /learn hub can render the same learning-path grid without
- * duplicating markup or data.
+ * Restored from the pre-A1-spine version of this file (git HEAD) and reused for
+ * everyone who is not on Premium. The A1 campaign spine
+ * (`components/path/UnitSpine`) is the Premium curriculum; this is the open,
+ * self-directed path built from the existing learning components. Both link to
+ * the same service-backed routes, so gating is presentation only — nothing is
+ * 404'd and deep links keep working.
  *
- * Each module card links to an existing route that is already service-backed.
- * Now uses Lucide React icons for consistent, professional appearance.
- * The most recently visited module is highlighted with a ring + "Last" label.
+ * TWO VARIANTS, ONE COMPONENT
+ *  - `grid`  (guests): a flat grid, "learn what you like". No step numbers and
+ *    no "last visited" highlight — a guest has no account to carry progress
+ *    between devices, so implying a position in a sequence would be a lie.
+ *  - `path`  (signed-in, free): the same components presented as a DESIGNED
+ *    path — numbered in teaching order, with the most recently visited module
+ *    ringed and badged, so it reads as a course rather than a menu.
+ *
+ * The six components are the A1 foundations: alphabet, numbers, calendar,
+ * articles, greetings, stories.
  */
-export function LearningPath() {
+export type LearningPathVariant = 'grid' | 'path';
+
+export function LearningPath({ variant = 'path' }: { variant?: LearningPathVariant }) {
   const { langMode } = useLang();
   const isDE = langMode === 'german';
   const { getLastModule } = useLastModule();
@@ -35,8 +47,11 @@ export function LearningPath() {
   return (
     <section className="mb-6 scroll-mt-20" id={ANCHORS.learningPath}>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {sections.map((section) => {
-          const isLast = lastModulePath === section.path;
+        {sections.map((section, index) => {
+          // Guests get no position marker: without an account there is no
+          // progress to imply, so a step number would only suggest a sequence
+          // they are not actually being walked through.
+          const isLast = variant === 'path' && lastModulePath === section.path;
           return (
             <Link
               key={section.key}
@@ -53,8 +68,18 @@ export function LearningPath() {
                   {isDE ? 'Zuletzt' : 'Last'}
                 </span>
               )}
-              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-accent-50 text-accent-600 transition-colors group-hover:bg-accent-100 dark:bg-accent-950/50 dark:text-accent-400 dark:group-hover:bg-accent-900/50" aria-hidden="true">
-                <section.icon className="h-6 w-6" strokeWidth={2} />
+              <div className="mb-4 flex items-center gap-3">
+                <span
+                  className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-accent-50 text-accent-600 transition-colors group-hover:bg-accent-100 dark:bg-accent-950/50 dark:text-accent-400 dark:group-hover:bg-accent-900/50"
+                  aria-hidden="true"
+                >
+                  <section.icon className="h-6 w-6" strokeWidth={2} />
+                </span>
+                {variant === 'path' && (
+                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-ink-200 text-meta font-bold text-ink-500 dark:border-ink-700 dark:text-ink-400">
+                    {index + 1}
+                  </span>
+                )}
               </div>
               <h3 className="text-lg font-semibold tracking-tight text-ink-950 dark:text-white">{section.label}</h3>
               <p className="mt-2 flex-1 text-body leading-6 text-ink-600 dark:text-ink-400">

@@ -1,0 +1,308 @@
+{
+  "cefr": "A1.2",
+  "docRoute": "/vocab",
+  "objectives": {
+    "en": [
+      "Describe clothing, state colors, express size preferences, and use demonstratives (dieser/diese/dieses)."
+    ]
+  },
+  "lexicon": [
+    {
+      "word": "Kleidung",
+      "en": "Clothing",
+      "ne": "लुगा",
+      "article": "die",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Die Kleidung ist schön.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "Hemd",
+      "en": "Shirt",
+      "ne": "कमिज",
+      "article": "das",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Das Hemd ist weiß.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "Hose",
+      "en": "Trousers",
+      "ne": "प्यान्ट",
+      "article": "die",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Die Hose ist blau.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "Jacke",
+      "en": "Jacket",
+      "ne": "ज्याकेट",
+      "article": "die",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Die Jacke ist warm.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "Schuh",
+      "en": "Shoe",
+      "ne": "जुत्ता",
+      "article": "der",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Die Schuhe sind neu.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "Farbe",
+      "en": "Color",
+      "ne": "रंग",
+      "article": "die",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Welche Farbe gefällt dir?",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "rot",
+      "en": "red",
+      "ne": "रातो",
+      "partOfSpeech": "Adjective",
+      "examples": [
+        {
+          "de": "Das Hemd ist rot.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "blau",
+      "en": "blue",
+      "ne": "नीलो",
+      "partOfSpeech": "Adjective",
+      "examples": [
+        {
+          "de": "Die Hose ist blau.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "grün",
+      "en": "green",
+      "ne": "हरियो",
+      "partOfSpeech": "Adjective",
+      "examples": [
+        {
+          "de": "Der Schrank ist grün.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "schwarz",
+      "en": "black",
+      "ne": "कालो",
+      "partOfSpeech": "Adjective",
+      "examples": [
+        {
+          "de": "Die Schuhe sind schwarz.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "weiß",
+      "en": "white",
+      "ne": "सेतो",
+      "partOfSpeech": "Adjective",
+      "examples": [
+        {
+          "de": "Das Hemd ist weiß.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "dieser",
+      "en": "this (masculine)",
+      "ne": "यो",
+      "article": "der",
+      "partOfSpeech": "Demonstrative",
+      "examples": [
+        {
+          "de": "Dieser Pullover ist schön.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "diese",
+      "en": "this (feminine)",
+      "ne": "यो",
+      "article": "die",
+      "partOfSpeech": "Demonstrative",
+      "examples": [
+        {
+          "de": "Diese Hose passt gut.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "dieses",
+      "en": "this (neuter)",
+      "ne": "यो",
+      "article": "das",
+      "partOfSpeech": "Demonstrative",
+      "examples": [
+        {
+          "de": "Dieses Hemd ist teuer.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    }
+  ],
+  "grammar": [
+    {
+      "title": {
+        "en": "Demonstrative Articles (dieser / diese / dieses)",
+        "de": "Demonstrative Articles (dieser / diese / dieses)"
+      },
+      "notes": [
+        {
+          "en": "Demonstratives take the same endings as definite articles (der/die/das):",
+          "ne": "",
+          "de": ""
+        }
+      ],
+      "bullets": [
+        "Masculine (der): dieser Pullover (Nominative) -> diesen Pullover (Accusative)",
+        "Feminine (die): diese Hose (Nominative & Accusative)",
+        "Neuter (das): dieses Hemd (Nominative & Accusative)"
+      ]
+    },
+    {
+      "title": {
+        "en": "Asking About Size & Preference",
+        "de": "Asking About Size & Preference"
+      },
+      "bullets": [
+        "Welche Größe haben Sie? -> Ich habe Größe M / 38.",
+        "Wie gefällt dir diese Jacke? -> Sie gefällt mir sehr gut!"
+      ]
+    }
+  ],
+  "dialogue": {
+    "id": "m11-dialogue",
+    "title": {
+      "en": "Dialogue",
+      "de": "Dialog"
+    },
+    "scenario": {
+      "en": "Shopping for Clothes in a Department Store",
+      "de": "Shopping for Clothes in a Department Store"
+    },
+    "turns": [
+      {
+        "speaker": "Verkäuferin:",
+        "de": "Guten Tag! Kann ich Ihnen helfen?"
+      },
+      {
+        "speaker": "Kunde:",
+        "de": "Ja, bitte. Ich suche eine Jacke."
+      },
+      {
+        "speaker": "Verkäuferin:",
+        "de": "Wie gefällt Ihnen diese rote Jacke hier?"
+      },
+      {
+        "speaker": "Kunde:",
+        "de": "Die ist schön. Was kostet sie?"
+      },
+      {
+        "speaker": "Verkäuferin:",
+        "de": "Sie kostet 79 Euro. Welche Größe tragen Sie?"
+      },
+      {
+        "speaker": "Kunde:",
+        "de": "Ich trage Größe L. Kann ich sie anprobieren?"
+      }
+    ]
+  },
+  "miniGame": {
+    "type": "shopping_simulator",
+    "id": "m11-boutique-shop",
+    "payload": {
+      "type": "shopping_simulator",
+      "id": "m11-boutique-shop",
+      "items": [
+        {
+          "item_de": "dieser Pullover",
+          "correct_art": "dieser",
+          "color": "blau",
+          "price": 45
+        },
+        {
+          "item_de": "diese Hose",
+          "correct_art": "diese",
+          "color": "schwarz",
+          "price": 50
+        }
+      ]
+    }
+  },
+  "practiceBank": [
+    {
+      "kind": "Drill",
+      "prompt": "Fill demonstrative: ________ (this - der) Pullover ist warm.",
+      "answer": "Dieser"
+    },
+    {
+      "kind": "Drill",
+      "prompt": "Fill demonstrative: Ich kaufe ________ (this - die) Hose.",
+      "answer": "diese"
+    },
+    {
+      "kind": "Translation",
+      "prompt": "Translate: \"The shirt is white and the pants are blue.\"",
+      "answer": "Das Hemd ist weiß und die Hose ist blau."
+    }
+  ]
+}

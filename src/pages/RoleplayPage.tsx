@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { ArrowRight, MessageCircle } from 'lucide-react';
 import { useLang } from '../hooks/useLang';
 import { usePageTitle } from '../hooks/usePageTitle';
@@ -26,11 +27,29 @@ type ConvSource = { defs: ConversationScenarioSeed[]; vocab: ConversationVocab[]
  * PICKER-FIRST: pick ONE scenario, then the chat loads. Staff `-staff` twins
  * are NOT separate cards (no double cards); a 🎭 badge marks swap-able topics
  * and the swap happens inside the chat via its variant chips.
+ *
+ * `?scene=<sid>` DEEP-LINK
+ * ------------------------
+ * The A1 spine has five modules whose lesson node is this page (ordering food,
+ * shopping, directions, the doctor, making plans). They all resolve to
+ * `/roleplay`, so without a selector `A1PathVisitTracker` cannot tell which
+ * module a visit belonged to — it would credit M07 for work done in M14, and
+ * `getPushNode` could return a node that can never be completed, stranding the
+ * learner on a Push button that does nothing.
+ *
+ * `?scene=` fixes that by opening the matching scenario directly. The param is
+ * MATCHED SUBSTRING-WISE against the scenario id/title, so a module can target a
+ * topic (`food`, `shop`, `directions`, `doctor`, `treffen`) without hard-coding a
+ * brittle exact id that a content rename would silently break. An unmatched
+ * value simply falls back to the normal picker — a stale link degrades to the
+ * page, it never 404s or errors.
  */
 export function RoleplayPage() {
   usePageTitle('Roleplay');
   const { langMode } = useLang();
   const isDE = langMode === 'german';
+  const [searchParams] = useSearchParams();
+  const requestedScene = searchParams.get('scene');
   const [dbScenarios, setDbScenarios] = useState<RoleplayScenario[]>([]);
   const [source, setSource] = useState<ConvSource | null>(null);
   const [conversations, setConversations] = useState<RoleplayScenario[]>([]);
@@ -138,6 +157,33 @@ useEffect(() => {
       (sc.level ?? '').toUpperCase().includes(levelFilter),
     );
   }, [allScenarios, levelFilter]);
+
+  // `?scene=` auto-select. Deliberately searches the UNFILTERED list, so a deep
+  // link still lands even if the scenario's level chip is not the active filter.
+  //
+  // The ref guard makes this run once per requested value: without it, selecting
+  // a scenario, going back to the chat and picking another would re-run the
+  // effect and yank the learner back to the linked one. It also re-arms when the
+  // requested value changes, so switching between two module links in-session
+  // works.
+  const autoSelectedRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!requestedScene || loading) return;
+    if (autoSelectedRef.current === requestedScene) return;
+    if (activeScenario) return;
+    const needle = requestedScene.toLowerCase();
+    const match =
+      allScenarios.find((s) => s.id?.toLowerCase().includes(needle)) ??
+      allScenarios.find((s) => s.title?.toLowerCase().includes(needle));
+    if (match) {
+      autoSelectedRef.current = requestedScene;
+      setActiveScenario(match);
+    } else {
+      // No match: remember it anyway so we do not re-scan on every render, and
+      // leave the learner on the normal picker.
+      autoSelectedRef.current = requestedScene;
+    }
+  }, [requestedScene, allScenarios, loading, activeScenario]);
 
   // Base ids that HAVE a staff twin (for the 🎭 badge).
   const swapBaseIds = useMemo(

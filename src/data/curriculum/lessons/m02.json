@@ -1,0 +1,405 @@
+{
+  "cefr": "A1.1",
+  "docRoute": "/numbers",
+  "objectives": {
+    "en": [
+      "Master numbers 0–100+, understand German unit-inversion (e.g., 21 = einsundzwanzig), conduct Euro transactions, and give phone numbers.",
+      "You are at a bakery in Berlin. The cashier says \"Das macht vierundzwanzig Euro.\" Are you paying 24 € or 42 €? How do you avoid paying the wrong amount?",
+      "Estimated time 45 Minutes · Prerequisites: Unit 01"
+    ]
+  },
+  "lexicon": [
+    {
+      "word": "eins",
+      "en": "one",
+      "ne": "एक",
+      "partOfSpeech": "Number",
+      "examples": [
+        {
+          "de": "Ich habe eins.",
+          "en": "",
+          "ne": ""
+        }
+      ],
+      "frequency": "active"
+    },
+    {
+      "word": "zwei",
+      "en": "two",
+      "ne": "दुई",
+      "partOfSpeech": "Number",
+      "examples": [
+        {
+          "de": "Zwei Kaffee, bitte.",
+          "en": "",
+          "ne": ""
+        }
+      ],
+      "frequency": "active"
+    },
+    {
+      "word": "drei",
+      "en": "three",
+      "ne": "तीन",
+      "partOfSpeech": "Number",
+      "examples": [
+        {
+          "de": "Drei Euro.",
+          "en": "",
+          "ne": ""
+        }
+      ],
+      "frequency": "active"
+    },
+    {
+      "word": "vier",
+      "en": "four",
+      "ne": "चार",
+      "partOfSpeech": "Number",
+      "examples": [
+        {
+          "de": "Vier Tische.",
+          "en": "",
+          "ne": ""
+        }
+      ],
+      "frequency": "active"
+    },
+    {
+      "word": "fünf",
+      "en": "five",
+      "ne": "पाँच",
+      "partOfSpeech": "Number",
+      "examples": [
+        {
+          "de": "Fünf Minuten.",
+          "en": "",
+          "ne": ""
+        }
+      ],
+      "frequency": "active"
+    },
+    {
+      "word": "sechs",
+      "en": "six",
+      "ne": "छ",
+      "partOfSpeech": "Number",
+      "examples": [
+        {
+          "de": "Sechs Personen.",
+          "en": "",
+          "ne": ""
+        }
+      ],
+      "frequency": "active"
+    },
+    {
+      "word": "sieben",
+      "en": "seven",
+      "ne": "सात",
+      "partOfSpeech": "Number",
+      "examples": [
+        {
+          "de": "Sieben Tage.",
+          "en": "",
+          "ne": ""
+        }
+      ],
+      "frequency": "active"
+    },
+    {
+      "word": "acht",
+      "en": "eight",
+      "ne": "आठ",
+      "partOfSpeech": "Number",
+      "examples": [
+        {
+          "de": "Acht Uhr.",
+          "en": "",
+          "ne": ""
+        }
+      ],
+      "frequency": "active"
+    },
+    {
+      "word": "neun",
+      "en": "nine",
+      "ne": "नौ",
+      "partOfSpeech": "Number",
+      "examples": [
+        {
+          "de": "Neun Euro.",
+          "en": "",
+          "ne": ""
+        }
+      ],
+      "frequency": "active"
+    },
+    {
+      "word": "zehn",
+      "en": "ten",
+      "ne": "दश",
+      "partOfSpeech": "Number",
+      "examples": [
+        {
+          "de": "Zehn Kinder.",
+          "en": "",
+          "ne": ""
+        }
+      ],
+      "frequency": "active"
+    },
+    {
+      "word": "elf",
+      "en": "eleven",
+      "ne": "एघार",
+      "partOfSpeech": "Number",
+      "examples": [
+        {
+          "de": "Elf Monate.",
+          "en": "",
+          "ne": ""
+        }
+      ],
+      "frequency": "active"
+    },
+    {
+      "word": "zwölf",
+      "en": "twelve",
+      "ne": "बारह",
+      "partOfSpeech": "Number",
+      "examples": [
+        {
+          "de": "Zwölf Monate.",
+          "en": "",
+          "ne": ""
+        }
+      ],
+      "frequency": "active"
+    },
+    {
+      "word": "zwanzig",
+      "en": "twenty",
+      "ne": "बीस",
+      "partOfSpeech": "Number",
+      "examples": [
+        {
+          "de": "Zwanzig Euro.",
+          "en": "",
+          "ne": ""
+        }
+      ],
+      "frequency": "active"
+    },
+    {
+      "word": "einsundzwanzig",
+      "en": "twenty-one",
+      "ne": "एक्काइस",
+      "partOfSpeech": "Number",
+      "examples": [
+        {
+          "de": "Einundzwanzig Jahre alt.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "hundert",
+      "en": "one hundred",
+      "ne": "एक सय",
+      "partOfSpeech": "Number",
+      "examples": [
+        {
+          "de": "Hundert Prozent.",
+          "en": "",
+          "ne": ""
+        }
+      ],
+      "frequency": "active"
+    },
+    {
+      "word": "Euro",
+      "en": "Euro (€)",
+      "ne": "युरो",
+      "article": "der",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Das macht fünf Euro.",
+          "en": "",
+          "ne": ""
+        }
+      ],
+      "frequency": "active"
+    },
+    {
+      "word": "Cent",
+      "en": "Cent",
+      "ne": "सेन्ट",
+      "article": "der",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Fünfzig Cent.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "kosten",
+      "en": "to cost",
+      "ne": "मूल्य पर्नु",
+      "partOfSpeech": "Verb",
+      "examples": [
+        {
+          "de": "Was kostet das?",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "Preis",
+      "en": "Price",
+      "ne": "मूल्य",
+      "article": "der",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Der Preis ist gut.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "Zahl",
+      "en": "Number",
+      "ne": "संख्या",
+      "article": "die",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Schreib die Zahl auf.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    }
+  ],
+  "grammar": [
+    {
+      "title": {
+        "en": "The German Unit-Inversion Rule (21 to 99)",
+        "de": "The German Unit-Inversion Rule (21 to 99)"
+      },
+      "notes": [
+        {
+          "en": "Units come FIRST, followed by und, then tens:",
+          "ne": "",
+          "de": ""
+        }
+      ],
+      "bullets": [
+        "21: ein + und + zwanzig = einundzwanzig",
+        "35: fünf + und + dreißig = fünfunddreißig",
+        "48: acht + und + vierzig = achtundvierzig"
+      ]
+    },
+    {
+      "title": {
+        "en": "Asking for Prices & Paying",
+        "de": "Asking for Prices & Paying"
+      },
+      "bullets": [
+        "Was kostet das? / Wie viel kostet das?",
+        "Das kostet 4,50 €. (Spoken: \"Vier Euro fünfzig\")",
+        "Das macht zusammen 12,80 €. (\"That comes to 12.80 € altogether.\")"
+      ]
+    }
+  ],
+  "dialogue": {
+    "id": "m02-dialogue",
+    "title": {
+      "en": "Dialogue",
+      "de": "Dialog"
+    },
+    "scenario": {
+      "en": "Buying Bakery Items at a Bäckerei",
+      "de": "Buying Bakery Items at a Bäckerei"
+    },
+    "turns": [
+      {
+        "speaker": "Bäckerin:",
+        "de": "Guten Tag! Was darf es sein?"
+      },
+      {
+        "speaker": "Kunde:",
+        "de": "Guten Tag. Ich hätte gerne zwei Brötchen und ein Stück Kuchen."
+      },
+      {
+        "speaker": "Bäckerin:",
+        "de": "Gerne. Das macht zusammen 4,50 €."
+      },
+      {
+        "speaker": "Kunde:",
+        "de": "Hier sind 5 Euro."
+      },
+      {
+        "speaker": "Bäckerin:",
+        "de": "Vielen Dank! Hier sind 50 Cent zurück."
+      }
+    ]
+  },
+  "miniGame": {
+    "type": "number_conversion",
+    "id": "m2-num-price-blitz",
+    "payload": {
+      "type": "number_conversion",
+      "id": "m2-num-price-blitz",
+      "title": "Euro Price & Digit Blitz",
+      "questions": [
+        {
+          "spoken_de": "Vierundzwanzig Euro fünfzig",
+          "correct_digits": "24.50",
+          "options": [
+            "24.50",
+            "42.50",
+            "24.05",
+            "14.50"
+          ]
+        }
+      ]
+    }
+  },
+  "practiceBank": [
+    {
+      "kind": "Drill",
+      "prompt": "What number is \"dreiundfünfzig\"?",
+      "answer": "53"
+    },
+    {
+      "kind": "Drill",
+      "prompt": "Convert 42 into German:",
+      "answer": "zweiundvierzig"
+    },
+    {
+      "kind": "Drill",
+      "prompt": "\"Was kostet das?\" means:",
+      "answer": "How much does that cost?"
+    }
+  ],
+  "culture": {
+    "title": {
+      "en": "Cultural context",
+      "de": "Kultureller Kontext"
+    },
+    "body": [
+      "⚠️ *Common Trap (Fettnäpfchen): Confusing 24 (vierundzwanzig) and 42 (zweiundvierzig*). Always read the units digit first in German!",
+      "🧠 Memory Hook: Notice the spelling of dreißig (30) — it is the ONLY decade that uses -ßig instead of -zig!",
+      "🇩🇪 *Cultural Insight (Kulturtipp): Cash is still king (Bargeld ist König*) in small German bakeries and kiosks. Always carry coins!"
+    ]
+  }
+}

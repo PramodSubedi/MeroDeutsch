@@ -28,6 +28,7 @@ import { useA1Path } from '../hooks/useA1Path';
 import { curriculumService } from '../services';
 import { CHECKPOINT_PASS_THRESHOLD, A1_UNITS, type CheckpointSource, type Article } from '../data/a1Path';
 import { TemplateResolver } from '../lib/templateResolver';
+import { TEMPLATE_COUNTRIES } from '../data/templateCountries';
 import { pickNUnique } from '../utils/questionGenerator';
 import { shuffleArray } from '../utils/shuffleArray';
 import { useExerciseSession, type ExerciseQuestion } from '../hooks/useExerciseSession';
@@ -35,8 +36,33 @@ import { playAudioUrl } from '../hooks/useSpeech';
 import { MultipleChoice } from '../components/exercises/MultipleChoice';
 import { theme } from '../config/theme';
 import { GenderBadge } from '../components/ui/GenderBadge';
+import { hasSpecificHint } from '../data/hints';
 import type { AlphabetItem, ArticleItem, CalendarItem, GreetingItem, NumberItem, VocabEntry } from '../types';
 import type { GrammarDrill } from '../types/curriculum';
+
+/** Shared empty array so `missedItemKeys` keeps a stable identity when there is
+    no history — otherwise the deck-build effect would re-run on every render. */
+const EMPTY_KEYS: readonly string[] = [];
+
+/**
+ * Fallback grammar pools for a module that declares no `grammarCategories`.
+ * Kept as the original four so a misconfigured module still builds a real deck
+ * instead of an empty one.
+ */
+const DEFAULT_GRAMMAR_CATEGORIES = ['sein', 'haben', 'weakVerb', 'cases'];
+
+/**
+ * Spec §3 audio pacing: Modules 1–5 play at 0.8x (slower, for beginners
+ * building sound recognition), Modules 6–15 at 1.0x (native speed, because
+ * those modules are about production and speed, not decoding).
+ *
+ * `unitIndex` is 0-based, so modules 1–5 are indices 0–4.
+ */
+const SLOW_AUDIO_MAX_MODULE_INDEX = 4;
+
+function playbackRateForModule(unitIndex: number): number {
+  return unitIndex <= SLOW_AUDIO_MAX_MODULE_INDEX ? 0.8 : 1.0;
+}
 
 /** Engine-compatible checkpoint question. */
 interface CheckpointQuestion extends ExerciseQuestion {
@@ -44,6 +70,17 @@ interface CheckpointQuestion extends ExerciseQuestion {
   source: CheckpointSource;
   article?: Article; // only for article-precision rendering
   audioUrl?: string; // only for listening-gap questions
+  /**
+   * More specific than `source` for the hint lookup, when we know it.
+   *
+   * `MultipleChoice` is given `hintReason` and looks up
+   * `a1-checkpoint:<hintReason>` in src/data/hints.ts. For grammar drills the
+   * useful granularity is the DRILL CATEGORY (perfekt / modals / prefix / stem),
+   * not the generic 'grammar-drill' source — so a learner who misses a Perfekt
+   * auxiliary is told about sein vs. haben instead of being handed a word-order
+   * hint that does not apply. Falls back to `source` when absent.
+   */
+  hintReason?: string;
 }
 
 interface LoadedData {
@@ -62,26 +99,58 @@ function buildOptions(correct: string, decoyPool: string[], count: number): stri
   return [correct, ...chosen]; // final shuffle happens once at session mount
 }
 
-const TEMPLATE_COUNTRIES = [
-  { id: 'country:nepal', category: 'country', lemma: 'Nepal', partOfSpeech: 'noun', gender: 'neuter', caseGovernance: { prep_aus: 'aus' }, translations: { en: 'Nepal', ne: 'नेपाल' } },
-  { id: 'country:schweiz', category: 'country', lemma: 'Schweiz', partOfSpeech: 'noun', gender: 'feminine', caseGovernance: { prep_aus: 'aus der' }, translations: { en: 'Switzerland', ne: 'स्वित्जरल्याण्ड' } },
-  { id: 'country:deutschland', category: 'country', lemma: 'Deutschland', partOfSpeech: 'noun', gender: 'neuter', caseGovernance: { prep_aus: 'aus' }, translations: { en: 'Germany', ne: 'जर्मनी' } },
-  { id: 'country:indien', category: 'country', lemma: 'Indien', partOfSpeech: 'noun', gender: 'neuter', caseGovernance: { prep_aus: 'aus' }, translations: { en: 'India', ne: 'भारत' } },
-] as const;
+// The origin-statement country pool is shared with SentenceBuilderPage — see
+// src/data/templateCountries.ts. This copy was previously 4 countries while
+// that one had 5, so the Gate A fallback silently offered a smaller distractor
+// pool than the sentence builder.
 
 function buildQuestions(
   specs: { type: CheckpointSource; count: number }[],
   data: LoadedData,
-  unitIndex: number
+  unitIndex: number,
+  priorityKeys?: readonly string[]
 ): CheckpointQuestion[] {
   const out: CheckpointQuestion[] = [];
-  const pick = <T,>(items: T[], count: number, getKey: (x: T) => string): T[] =>
-    pickNUnique({ items, count: Math.min(count, items.length), getKey });
+  const priority = new Set(priorityKeys ?? []);
+
+  /**
+   * Priority-aware without-replacement draw.
+   *
+   * Every candidate whose question key is in `priorityKeys` (the items missed on
+   * the previous FAILED attempt) is taken FIRST, then the remaining slots are
+   * filled by the ordinary random draw.
+   *
+   * This is the whole point of the Retry button. The deck used to be a fresh
+   * uniform random draw, so the 4 questions a learner had just failed were
+   * usually NOT in the next 12 — the retry measured luck, not learning. A key
+   * that is no longer available (pool changed, item filtered out) is skipped,
+   * degrading gracefully to the old behaviour.
+   *
+   * `getKey` MUST return the exact `key` assigned to the question below, or
+   * the priority set will never match.
+   */
+  const pick = <T,>(items: T[], count: number, getKey: (x: T) => string): T[] => {
+    if (priority.size === 0) {
+      return pickNUnique({ items, count: Math.min(count, items.length), getKey });
+    }
+    const seen = new Set<string>();
+    const forced: T[] = [];
+    const rest: T[] = [];
+    for (const item of items) {
+      const k = getKey(item);
+      if (seen.has(k)) continue;
+      seen.add(k);
+      if (priority.has(k)) forced.push(item);
+      else rest.push(item);
+    }
+    const take = Math.max(0, count - forced.length);
+    return [...forced, ...pickNUnique({ items: rest, count: Math.min(take, rest.length), getKey })];
+  };
 
   for (const spec of specs) {
     switch (spec.type) {
       case 'greeting-translation':
-        pick(data.greetings, spec.count, (g) => g.de).forEach((g) =>
+        pick(data.greetings, spec.count, (g) => `greeting:${g.de}`).forEach((g) =>
           out.push({
             key: `greeting:${g.de}`,
             prompt: g.en,
@@ -117,7 +186,7 @@ function buildQuestions(
         pick(
           data.numbers.filter((n) => Number(n.n) <= 12),
           spec.count,
-          (n) => n.de
+          (n) => `number:${n.de}`
         ).forEach((n) =>
           out.push({
             key: `number:${n.de}`,
@@ -131,7 +200,7 @@ function buildQuestions(
         );
         break;
       case 'alphabet-letter':
-        pick(data.alphabet, spec.count, (a) => a.id).forEach((a) =>
+        pick(data.alphabet, spec.count, (a) => `letter:${a.id}`).forEach((a) =>
           out.push({
             key: `letter:${a.id}`,
             prompt: a.letter,
@@ -144,7 +213,7 @@ function buildQuestions(
         );
         break;
       case 'article-precision':
-        pick(data.articles, spec.count, (a) => a.noun).forEach((a) =>
+        pick(data.articles, spec.count, (a) => `article:${a.noun}`).forEach((a) =>
           out.push({
             key: `article:${a.noun}`,
             prompt: a.noun, // noun WITHOUT article -> TTS safe before lock (C6)
@@ -158,22 +227,35 @@ function buildQuestions(
         );
         break;
       case 'grammar-drill': {
-        const drills = Object.values(data.grammar).flat();
-        pick(drills, spec.count, (g) => g.prompt + g.correct).forEach((g, i) =>
+        // Keep each drill's CATEGORY. `data.grammar` is a Record keyed by
+        // category, but `Object.values(...).flat()` drops that key — so a flat
+        // array cannot tell a Perfekt drill from a modal one. Pairing them back
+        // up lets the question carry an accurate `hintReason`, which is what
+        // picks the specific hint in src/data/hints.ts.
+        const drills = Object.entries(data.grammar).flatMap(([category, list]) =>
+          list.map((g) => ({ drill: g, category }))
+        );
+        // STABLE key (prompt-based, index-free). It used to embed the draw index
+        // `i`, which changes every round — so the same drill got a different
+        // `key` (and therefore a different SRS dedupe id) on each attempt,
+        // letting the review queue accumulate duplicates of one question. The
+        // index is still used for nothing else here.
+        pick(drills, spec.count, (g) => `grammar:${unitIndex}:${g.drill.prompt}`).forEach((g) =>
           out.push({
-            key: `grammar:${unitIndex}:${i}:${g.prompt}`,
-            prompt: g.prompt,
-            speakPrompt: g.prompt,
-            speakAfter: g.correct,
-            options: [...g.options],
-            correctAnswer: g.correct,
+            key: `grammar:${unitIndex}:${g.drill.prompt}`,
+            prompt: g.drill.prompt,
+            speakPrompt: g.drill.prompt,
+            speakAfter: g.drill.correct,
+            options: [...g.drill.options],
+            correctAnswer: g.drill.correct,
             source: 'grammar-drill',
+            hintReason: g.category,
           })
         );
         break;
       }
       case 'calendar-translation':
-        pick(data.calendar, spec.count, (c) => c.de).forEach((c) =>
+        pick(data.calendar, spec.count, (c) => `calendar:${c.de}`).forEach((c) =>
           out.push({
             key: `calendar:${c.de}`,
             prompt: c.en,
@@ -186,7 +268,7 @@ function buildQuestions(
         );
         break;
       case 'vocab-translation':
-        pick(data.vocabulary, spec.count, (v) => v.id).forEach((v) =>
+        pick(data.vocabulary, spec.count, (v) => `vocab:${v.id}`).forEach((v) =>
           out.push({
             key: `vocab:${v.id}`,
             prompt: v.en,
@@ -199,7 +281,7 @@ function buildQuestions(
         );
         break;
       case 'vocab-translation-ne':
-        pick(data.vocabulary, spec.count, (v) => v.id).forEach((v) =>
+        pick(data.vocabulary, spec.count, (v) => `vocab-ne:${v.id}`).forEach((v) =>
           out.push({
             key: `vocab-ne:${v.id}`,
             prompt: v.ne || v.en,
@@ -212,8 +294,7 @@ function buildQuestions(
         );
         break;
       case 'listening-gap':
-        pick(data.vocabulary, spec.count, (v) => v.id).forEach((v) => {
-          if (!v.audioUrl) return;
+        pick(data.vocabulary.filter((v) => Boolean(v.audioUrl)), spec.count, (v) => `listen:${v.id}`).forEach((v) => {
           out.push({
             key: `listen:${v.id}`,
             prompt: 'Höre und wähle das richtige Wort',
@@ -230,7 +311,12 @@ function buildQuestions(
         break;
     }
   }
-  return shuffleArray(out); // interleave pools, shuffle deck order
+  // Shuffle FIRST so sources interleave (without this the deck would run
+  // greetings → numbers → articles in blocks), then stable-sort the missed
+  // items to the front. `sort` is stable, so the shuffle inside each rank group
+  // survives — a retry stays varied, it just opens with what you got wrong.
+  const rank = (q: CheckpointQuestion) => (priority.has(q.key) ? 0 : 1);
+  return shuffleArray(out).sort((a, b) => rank(a) - rank(b));
 }
 
 /**
@@ -275,20 +361,22 @@ function CheckpointSignInGate({ isDE }: { isDE: boolean }) {
 }
 
 /**
- * A SUPPORT band (Band B) carries no checkpoint. A hard deep link still
- * loads (soft lock) — show a friendly "optional" screen, not an error.
+ * A module with no checkpoint (a future optional/support module). A hard deep
+ * link still loads (soft lock) — show a friendly "optional" screen, not an
+ * error. Every module in the current 15-module curriculum DOES carry a
+ * checkpoint, so this only renders for a misconfigured/out-of-range index.
  */
 function CheckpointNoGate({ isDE, code }: { isDE: boolean; code: string }) {
   return (
     <div className={theme.page.container}>
       <div className={theme.panel.surface}>
         <h1 className="text-xl font-bold text-ink-900 dark:text-ink-50">
-          {isDE ? `Band ${code}` : `Band ${code}`}
+          {isDE ? `Modul ${code}` : `Module ${code}`}
         </h1>
         <p className="mt-2 text-body text-ink-600 dark:text-ink-300">
           {isDE
-            ? 'Dieses Band hat keine Pflichtprüfung – es ist ein optionaler Unterstützungs-Band.'
-            : 'This band has no checkpoint — it is optional support content, no gate required.'}
+            ? 'Dieses Modul hat keine Pflichtprüfung – es ist optionale Unterstützung.'
+            : 'This module has no checkpoint — it is optional support content, no gate required.'}
         </p>
         <Link to="/learn" className={`${theme.button.primary} mt-5`}>
           {isDE ? 'Zurück zum Lernpfad' : 'Back to learning path'}
@@ -308,7 +396,7 @@ export function A1CheckpointPage() {
 
   const { langMode } = useLang();
   const isDE = langMode === 'german';
-  const { markCheckpointResult, isUnitUnlocked, isCheckpointComplete } = useA1Path();
+  const { markCheckpointResult, isUnitUnlocked, isCheckpointComplete, attemptsByUnit } = useA1Path();
 
   const unit = A1_UNITS[unitIndex];
   const { isAuthenticated } = useAuth();
@@ -336,6 +424,18 @@ export function A1CheckpointPage() {
   /** Increments on retry so the deck-build effect re-runs with a fresh draw. */
   const [runId, setRunId] = useState(0);
 
+  /**
+   * Question keys missed on the previous FAILED attempt.
+   *
+   * Read at the moment the deck is BUILT (not stored in component state) so a
+   * retry always picks up the newest list, including one written by another tab
+   * via the Dexie/BroadcastChannel path. The deck builder takes these first,
+   * which is what turns "Retry" from a coin flip into a re-test of the exact
+   * items that were wrong. Cleared by useA1Path once the gate is passed.
+   */
+  const missedItemKeys = attemptsByUnit[unitIndex]?.missedItemKeys ?? EMPTY_KEYS;
+  const attemptRecord = attemptsByUnit[unitIndex];
+
   // ---- Lesson Engine session (owns lock/score/reporting) ----
   const session = useExerciseSession<CheckpointQuestion>({
     questions,
@@ -354,9 +454,17 @@ export function A1CheckpointPage() {
       !recordedRef.current
     ) {
       recordedRef.current = true;
-      markCheckpointResult(unitIndex, questions.length > 0 ? score / questions.length : 0);
+      // Report the keys we actually got wrong so the next attempt can re-test
+      // them. `results` maps question key -> boolean (the engine's own record),
+      // so this cannot drift from what the learner was shown.
+      const missed = questions.filter((q) => results[q.key] === false).map((q) => q.key);
+      markCheckpointResult(
+        unitIndex,
+        questions.length > 0 ? score / questions.length : 0,
+        missed
+      );
     }
-  }, [phase, answered, questions.length, score, unitIndex, markCheckpointResult]);
+  }, [phase, answered, questions, score, results, unitIndex, markCheckpointResult]);
 
   useEffect(() => {
     if (!isAuthenticated || !unit?.checkpoint) {
@@ -371,7 +479,26 @@ export function A1CheckpointPage() {
     const build = async () => {
       const specs = unit.checkpoint!.specs;
       const needed = new Set(specs.map((s) => s.type));
-      const grammarCategories = ['sein', 'haben', 'weakVerb', 'cases'];
+      // Per-MODULE grammar categories, from the curriculum config.
+      //
+      // This was a hardcoded `['sein','haben','weakVerb','cases']` for every
+      // module, which silently ignored the `stem`, `modals` and `prefix` pools
+      // that already existed in content_items — so Module 8 (V2), Module 9
+      // (separable verbs) and Module 13 (modals) could not be assessed on the
+      // very grammar they teach.
+      //
+      // The module's OWN categories are always unioned with the four baseline
+      // ones, never swapped for them. That matters because the cloud
+      // `content_items` table only ever received the baseline four: `stem`,
+      // `modals` and `prefix` exist in the bundled offline snapshot but have
+      // never been seeded to the cloud. Unioning means an online learner with a
+      // partial cloud pool still gets a full 12-item deck (topped up from the
+      // baseline) instead of a short one, while still getting the module-specific
+      // drills once the cloud is backfilled. Categories are deduped; the reduce
+      // below is keyed by category, so a repeated key simply overwrites itself.
+      const grammarCategories = Array.from(
+        new Set([...(unit.grammarCategories ?? []), ...DEFAULT_GRAMMAR_CATEGORIES]),
+      );
       const vocabularyNeeded = needed.has('vocab-translation') || needed.has('vocab-translation-ne') || needed.has('listening-gap');
       const vocabulary = vocabularyNeeded
         ? unit.vocabCategories?.length || unit.vocabPos
@@ -409,7 +536,8 @@ export function A1CheckpointPage() {
             )
           : {},
       };
-      const deck = buildQuestions(specs, data, unitIndex);
+      // Prioritise the items missed last time so a retry re-tests them.
+      const deck = buildQuestions(specs, data, unitIndex, missedItemKeys);
       if (!cancelled) {
         setQuestions(deck);
         setPhase('ready');
@@ -419,7 +547,23 @@ export function A1CheckpointPage() {
     return () => {
       cancelled = true;
     };
-  }, [unlocked, unitIndex, isAuthenticated, unit?.checkpoint, runId]);
+    // `missedItemKeys` is a stable array reference from the path state, so
+    // including it makes the effect re-run when a retry updates the list.
+    // The unit's `vocab*` / `grammarCategories` values are listed explicitly:
+    // they come from the immutable A1_UNITS config, so their references are
+    // stable per unit and adding them cannot cause an extra rebuild — but
+    // omitting them would leave the dep list lying about what the effect reads.
+  }, [
+    unlocked,
+    unitIndex,
+    isAuthenticated,
+    unit?.checkpoint,
+    unit?.vocabCategories,
+    unit?.vocabPos,
+    unit?.grammarCategories,
+    runId,
+    missedItemKeys,
+  ]);
 
   const startRun = useCallback(() => {
     recordedRef.current = false;
@@ -528,6 +672,15 @@ export function A1CheckpointPage() {
               {isDE ? 'Bereits bestanden ✓' : 'Already passed ✓'}
             </p>
           )}
+          {/* A previous failed attempt changes what this run will be, so say so
+              before the learner commits — the deck opens with their misses. */}
+          {!alreadyPassed && attemptRecord && attemptRecord.missedItemKeys.length > 0 && (
+            <p className="mt-2 text-body text-warning-700 dark:text-warning-300">
+              {isDE
+                ? `Letzter Versuch: ${Math.round(attemptRecord.lastScore * 100)}% · Diese Runde beginnt mit deinen ${attemptRecord.missedItemKeys.length} Fehlern.`
+                : `Last attempt: ${Math.round(attemptRecord.lastScore * 100)}% · this run starts with your ${attemptRecord.missedItemKeys.length} mistakes.`}
+            </p>
+          )}
           {unitIndex === 2 && (
             <div className="mt-3 flex flex-wrap items-center gap-2">
               <GenderBadge article="der" />
@@ -609,6 +762,29 @@ export function A1CheckpointPage() {
               {isDE ? 'Zurück zum Lernpfad' : 'Back to map'}
             </Link>
           </div>
+
+          {/* Attempt history — makes a 3rd-attempt 80% pass read as earned
+              rather than lucky, and sets the expectation that retrying is
+              normal. Also states WHAT the retry will do, so the button below
+              is not a mystery. */}
+          {attemptRecord && attemptRecord.attempts > 1 && (
+            <div className="mt-4 rounded-md border border-ink-200 bg-ink-50 p-3 text-meta dark:border-ink-800 dark:bg-ink-800/60">
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                <span className="font-semibold text-ink-700 dark:text-ink-200">
+                  {isDE
+                    ? `${attemptRecord.attempts} Versuche · Bestwert ${Math.round(attemptRecord.best * 100)}%`
+                    : `${attemptRecord.attempts} attempts · best ${Math.round(attemptRecord.best * 100)}%`}
+                </span>
+                {!passed && missedItems.length > 0 && (
+                  <span className="text-ink-500 dark:text-ink-400">
+                    {isDE
+                      ? '· Der nächste Versuch beginnt mit genau diesen Fehlern.'
+                      : '· Your next attempt starts with exactly these mistakes.'}
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -640,7 +816,17 @@ export function A1CheckpointPage() {
           </>
         )}
         hideFooter
-        hintReason={session.current?.source}
+        // Prefer the drill CATEGORY's hint, but only when one actually exists —
+        // otherwise keep the generic 'grammar-drill' hint, which is a real hint
+        // and far better than getHint()'s universal "check the article or word
+        // order" fallback. Without this guard, adding `hintReason: <category>`
+        // unconditionally would have made 'a1-checkpoint:grammar-drill' dead.
+        hintReason={
+          hasSpecificHint('a1-checkpoint', session.current?.hintReason)
+            ? session.current?.hintReason
+            : session.current?.source
+        }
+        speechRate={playbackRateForModule(unitIndex)}
       />
       {/* Footer with Back + engine-driven Next/Finish */}
       <div className="mx-auto mt-3 flex max-w-3xl justify-between gap-2 px-1">

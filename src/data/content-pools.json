@@ -1979,6 +1979,170 @@
           "category": "prefix"
         },
         "sort": 7
+      },
+      {
+        "id": "grammar-perfekt-0",
+        "payload": {
+          "prompt": "Die Sonne hat gestern ___ (scheinen).",
+          "options": [
+            "geschienen",
+            "gescheint",
+            "geschehnen"
+          ],
+          "correct": "geschienen",
+          "category": "perfekt"
+        },
+        "sort": 0
+      },
+      {
+        "id": "grammar-perfekt-1",
+        "payload": {
+          "prompt": "Ich ___ nach Hause gegangen. (sein or haben?)",
+          "options": [
+            "bin",
+            "habe"
+          ],
+          "correct": "bin",
+          "category": "perfekt"
+        },
+        "sort": 1
+      },
+      {
+        "id": "grammar-perfekt-2",
+        "payload": {
+          "prompt": "Wir ___ Fußball gespielt. (sein or haben?)",
+          "options": [
+            "haben",
+            "sind"
+          ],
+          "correct": "haben",
+          "category": "perfekt"
+        },
+        "sort": 2
+      },
+      {
+        "id": "grammar-perfekt-3",
+        "payload": {
+          "prompt": "Er hat ein Buch ___ (lesen).",
+          "options": [
+            "gelesen",
+            "liest",
+            "gelesent"
+          ],
+          "correct": "gelesen",
+          "category": "perfekt"
+        },
+        "sort": 3
+      },
+      {
+        "id": "grammar-perfekt-4",
+        "payload": {
+          "prompt": "Sie ist zum Bahnhof ___ (gehen).",
+          "options": [
+            "gegangen",
+            "gegeht",
+            "gegangt"
+          ],
+          "correct": "gegangen",
+          "category": "perfekt"
+        },
+        "sort": 4
+      },
+      {
+        "id": "grammar-perfekt-5",
+        "payload": {
+          "prompt": "Ich ___ heute gearbeitet. (sein or haben?)",
+          "options": [
+            "habe",
+            "bin"
+          ],
+          "correct": "habe",
+          "category": "perfekt"
+        },
+        "sort": 5
+      },
+      {
+        "id": "grammar-perfekt-6",
+        "payload": {
+          "prompt": "haben + ___ (machen)",
+          "options": [
+            "gemacht",
+            "gemachet",
+            "gemahct"
+          ],
+          "correct": "gemacht",
+          "category": "perfekt"
+        },
+        "sort": 6
+      },
+      {
+        "id": "grammar-perfekt-7",
+        "payload": {
+          "prompt": "Du bist spät ___ (kommen).",
+          "options": [
+            "gekommen",
+            "gekomt",
+            "gekommt"
+          ],
+          "correct": "gekommen",
+          "category": "perfekt"
+        },
+        "sort": 7
+      },
+      {
+        "id": "grammar-perfekt-8",
+        "payload": {
+          "prompt": "Hat es heute ___ (regnen)?",
+          "options": [
+            "geregnet",
+            "regent",
+            "geregent"
+          ],
+          "correct": "geregnet",
+          "category": "perfekt"
+        },
+        "sort": 8
+      },
+      {
+        "id": "grammar-perfekt-9",
+        "payload": {
+          "prompt": "Ich habe dich gestern ___ (sehen).",
+          "options": [
+            "gesehen",
+            "sah",
+            "gesehent"
+          ],
+          "correct": "gesehen",
+          "category": "perfekt"
+        },
+        "sort": 9
+      },
+      {
+        "id": "grammar-perfekt-10",
+        "payload": {
+          "prompt": "Sie ___ mit dem Zug gefahren. (sein or haben?)",
+          "options": [
+            "ist",
+            "hat"
+          ],
+          "correct": "ist",
+          "category": "perfekt"
+        },
+        "sort": 10
+      },
+      {
+        "id": "grammar-perfekt-11",
+        "payload": {
+          "prompt": "haben + ___ (spielen)",
+          "options": [
+            "gespielt",
+            "gespieltet",
+            "gespilen"
+          ],
+          "correct": "gespielt",
+          "category": "perfekt"
+        },
+        "sort": 11
       }
     ]
   },

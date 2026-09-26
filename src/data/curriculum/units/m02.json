@@ -1,0 +1,84 @@
+{
+  "id": "m02",
+  "order": 2,
+  "code": "M02",
+  "kind": "core",
+  "cluster": 0,
+  "title": {
+    "en": "Numbers & Currency",
+    "de": "Zahlen & Geld"
+  },
+  "theme": {
+    "en": "Counting · Prices · Quantity",
+    "de": "Zählen · Preise · Mengen"
+  },
+  "goal": {
+    "en": "Count, understand prices, and state quantities",
+    "de": "Zählen, Preise verstehen, Mengen angeben"
+  },
+  "nodes": [
+    {
+      "id": "m02-numbers",
+      "kind": "learn",
+      "label": {
+        "en": "Numbers",
+        "de": "Zahlen"
+      },
+      "to": "/numbers"
+    },
+    {
+      "id": "m02-numbers-blitz",
+      "kind": "practice",
+      "label": {
+        "en": "Number Blitz",
+        "de": "Zahlen-Blitz"
+      },
+      "to": "/rapid-fire?mode=number-conversion"
+    },
+    {
+      "id": "m02-gate",
+      "kind": "checkpoint",
+      "label": {
+        "en": "Module 2 Checkpoint",
+        "de": "Modul 2 Prüfung"
+      },
+      "to": "/checkpoint/1"
+    }
+  ],
+  "bonus": [
+    {
+      "id": "m02-cypher",
+      "kind": "bonus",
+      "label": {
+        "en": "Number Code Cracker",
+        "de": "Zahlen-Code knacken"
+      },
+      "to": "/games?game=cypher",
+      "bonus": true
+    }
+  ],
+  "checkpoint": {
+    "moduleType": "a1-checkpoint",
+    "specs": [
+      {
+        "type": "number-conversion",
+        "count": 6
+      },
+      {
+        "type": "vocab-translation",
+        "count": 6
+      }
+    ]
+  },
+  "pedagogy": {
+    "grammarNote": {
+      "en": "Units come before tens: 21 = einundzwanzig, 45 = fünfundvierzig. And ein Paar (a pair) ≠ ein paar (a few).",
+      "de": "Eins vor den Zehnern: 21 = einundzwanzig, 45 = fünfundvierzig. Und ein Paar (ein Paar Schuhe) ≠ ein paar (ein paar Prozent)."
+    }
+  },
+  "vocabCategories": [
+    "numbers",
+    "personal"
+  ],
+  "hasLesson": true
+}

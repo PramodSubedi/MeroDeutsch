@@ -64,12 +64,27 @@ export const theme = {
     articles: 'bg-accent-50 text-accent-700 dark:bg-accent-950/50 dark:text-accent-300',
     greetings: 'bg-accent-50 text-accent-700 dark:bg-accent-950/50 dark:text-accent-300',
     grammar: 'bg-accent-50 text-accent-700 dark:bg-accent-950/50 dark:text-accent-300',
+    stories: 'bg-accent-50 text-accent-700 dark:bg-accent-950/50 dark:text-accent-300',
+    spelling: 'bg-accent-50 text-accent-700 dark:bg-accent-950/50 dark:text-accent-300',
     // practice tools
     pronunciation: 'bg-ink-100 text-ink-700 dark:bg-ink-800 dark:text-ink-300',
     dictation: 'bg-ink-100 text-ink-700 dark:bg-ink-800 dark:text-ink-300',
+    roleplay: 'bg-ink-100 text-ink-700 dark:bg-ink-800 dark:text-ink-300',
+    glossary: 'bg-ink-100 text-ink-700 dark:bg-ink-800 dark:text-ink-300',
+    'vocab-trainer': 'bg-ink-100 text-ink-700 dark:bg-ink-800 dark:text-ink-300',
+    'article-sprint': 'bg-ink-100 text-ink-700 dark:bg-ink-800 dark:text-ink-300',
+    'sentence-builder': 'bg-ink-100 text-ink-700 dark:bg-ink-800 dark:text-ink-300',
+    'rapid-blitz': 'bg-ink-100 text-ink-700 dark:bg-ink-800 dark:text-ink-300',
+    'rapid-fire': 'bg-ink-100 text-ink-700 dark:bg-ink-800 dark:text-ink-300',
+    games: 'bg-ink-100 text-ink-700 dark:bg-ink-800 dark:text-ink-300',
+    'email-builder': 'bg-ink-100 text-ink-700 dark:bg-ink-800 dark:text-ink-300',
+    'phonetic-traps': 'bg-ink-100 text-ink-700 dark:bg-ink-800 dark:text-ink-300',
+    'pronoun-traps': 'bg-ink-100 text-ink-700 dark:bg-ink-800 dark:text-ink-300',
     // gates
     'a1-checkpoint': 'bg-success-50 text-success-700 dark:bg-success-950/50 dark:text-success-300',
-    // fallback (open-ended moduleTypes: daily-challenge, stories, imported, …)
+    // fallback (open-ended moduleTypes: daily-challenge, imported, …)
+    'daily-challenge': 'bg-warning-50 text-warning-700 dark:bg-warning-950/50 dark:text-warning-300',
+    imported: 'bg-ink-100 text-ink-600 dark:bg-ink-800 dark:text-ink-400',
     fallback: 'bg-ink-100 text-ink-600 dark:bg-ink-800 dark:text-ink-400',
   } as Record<string, string>,
   /**

@@ -7,6 +7,7 @@ import { useAchievements } from '../hooks/useAchievements';
 import { useReviewQueue } from '../hooks/useReviewQueue';
 import { useXp } from '../hooks/useXp';
 import { getItem, setItem } from '../utils/safeStorage';
+import { scopedKey } from '../utils/userStorage';
 import { useAuth } from '../hooks/useAuth';
 import { theme } from '../config/theme';
 import { buildMcq } from '../utils/questionGenerator';
@@ -29,7 +30,15 @@ function getGermanWithArticle(word: string): string {
   return article ? `${article} ${word}` : word;
 }
 
-const KEY = 'meroDeutschLastDailyChallenge';
+// Per-user "last daily challenge completed" marker.
+//
+// This key used to be the bare string 'meroDeutschLastDailyChallenge', which
+// is the ONLY unscoped progress key in the app: on a shared device, signing in
+// as a second user immediately showed the first user's challenge as already
+// completed (and then wrote their completion back). Every sibling hook
+// (useStreak, useXp, useAchievements, useActivityLog) scopes via scopedKey;
+// this one now does too.
+const KEY_BASE = 'meroDeutschLastDailyChallenge';
 type QA = { prompt: string; options: string[]; correct: string };
 const daySeed = () => {
   const d = new Date();
@@ -110,7 +119,9 @@ export function DailyChallenge({ variant = 'normal' }: DailyChallengeProps) {
   const { unlockBadge } = useAchievements();
   const { addWrongAnswer } = useReviewQueue();
   const { reportAnswer } = useXp();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
+  // Scoped storage key — see KEY_BASE. Recomputed when the identity changes.
+  const KEY = useMemo(() => scopedKey(KEY_BASE, user?.userId ?? null), [user?.userId]);
   const seed = useMemo(daySeed, []);
 
   // State for data from curriculumService

@@ -1,0 +1,134 @@
+{
+  "id": "m07",
+  "order": 7,
+  "code": "M07",
+  "kind": "core",
+  "cluster": 1,
+  "title": {
+    "en": "Calendar & Time",
+    "de": "Kalender & Uhrzeit"
+  },
+  "theme": {
+    "en": "Clock times · Days · um/am/im",
+    "de": "Uhrzeiten · Tage · um/am/im"
+  },
+  "goal": {
+    "en": "State times, days and dates correctly",
+    "de": "Zeiten, Tage und Daten korrekt angeben"
+  },
+  "nodes": [
+    {
+      "id": "m07-calendar",
+      "kind": "learn",
+      "label": {
+        "en": "Calendar & Time",
+        "de": "Kalender & Uhrzeit"
+      },
+      "to": "/calendar"
+    },
+    {
+      "id": "m07-roleplay",
+      "kind": "practice",
+      "label": {
+        "en": "Making Plans",
+        "de": "Verabredungen"
+      },
+      "to": "/roleplay?scene=treffen"
+    },
+    {
+      "id": "m07-gate",
+      "kind": "checkpoint",
+      "label": {
+        "en": "Module 7 Checkpoint",
+        "de": "Modul 7 Prüfung"
+      },
+      "to": "/checkpoint/6"
+    }
+  ],
+  "bonus": [
+    {
+      "id": "m07-time-blitz",
+      "kind": "bonus",
+      "label": {
+        "en": "Time Practice",
+        "de": "Uhrzeit-Üben"
+      },
+      "to": "/rapid-fire?mode=calendar-translation",
+      "bonus": true
+    }
+  ],
+  "checkpoint": {
+    "moduleType": "a1-checkpoint",
+    "specs": [
+      {
+        "type": "calendar-translation",
+        "count": 7
+      },
+      {
+        "type": "vocab-translation",
+        "count": 5
+      }
+    ]
+  },
+  "pedagogy": {
+    "ruleTable": {
+      "title": {
+        "en": "Time prepositions",
+        "de": "Zeitpräpositionen"
+      },
+      "rows": [
+        {
+          "label": {
+            "en": "um",
+            "de": "um"
+          },
+          "usage": {
+            "en": "exact clock times",
+            "de": "genaue Uhrzeiten"
+          },
+          "example": {
+            "en": "um drei Uhr",
+            "de": "um drei Uhr"
+          }
+        },
+        {
+          "label": {
+            "en": "am",
+            "de": "am"
+          },
+          "usage": {
+            "en": "days and dates",
+            "de": "Tage und Daten"
+          },
+          "example": {
+            "en": "am Montag",
+            "de": "am Montag"
+          }
+        },
+        {
+          "label": {
+            "en": "im",
+            "de": "im"
+          },
+          "usage": {
+            "en": "months and seasons",
+            "de": "Monate und Jahreszeiten"
+          },
+          "example": {
+            "en": "im Juli",
+            "de": "im Juli"
+          }
+        }
+      ]
+    },
+    "grammarNote": {
+      "en": "The preposition depends on the unit of time: um for clock times, am for days and dates, im for months and seasons.",
+      "de": "Die Präposition hängt von der Zeiteinheit ab: um für Uhrzeiten, am für Tage und Daten, im für Monate und Jahreszeiten."
+    }
+  },
+  "vocabCategories": [
+    "time",
+    "nature-time"
+  ],
+  "hasLesson": true
+}

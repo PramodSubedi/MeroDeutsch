@@ -1,0 +1,95 @@
+{
+  "id": "m05",
+  "order": 5,
+  "code": "M05",
+  "kind": "core",
+  "cluster": 0,
+  "title": {
+    "en": "Housing & Negation",
+    "de": "Wohnen & Verneinung"
+  },
+  "theme": {
+    "en": "Rooms · Furniture · kein vs. nicht",
+    "de": "Zimmer · Möbel · kein vs. nicht"
+  },
+  "goal": {
+    "en": "Describe your home and negate correctly",
+    "de": "Die Wohnung beschreiben und korrekt verneinen"
+  },
+  "nodes": [
+    {
+      "id": "m05-articles",
+      "kind": "learn",
+      "label": {
+        "en": "Articles",
+        "de": "Artikel"
+      },
+      "to": "/articles"
+    },
+    {
+      "id": "m05-housing",
+      "kind": "practice",
+      "label": {
+        "en": "Housing Drill",
+        "de": "Wohnungs-Drill"
+      },
+      "to": "/vocab-trainer?category=housing"
+    },
+    {
+      "id": "m05-gate",
+      "kind": "checkpoint",
+      "label": {
+        "en": "Module 5 Checkpoint",
+        "de": "Modul 5 Prüfung"
+      },
+      "to": "/checkpoint/4"
+    }
+  ],
+  "bonus": [
+    {
+      "id": "m05-sentence",
+      "kind": "bonus",
+      "label": {
+        "en": "Sentence Builder",
+        "de": "Satzbau"
+      },
+      "to": "/sentence-builder",
+      "bonus": true
+    }
+  ],
+  "checkpoint": {
+    "moduleType": "a1-checkpoint",
+    "specs": [
+      {
+        "type": "article-precision",
+        "count": 6
+      },
+      {
+        "type": "vocab-translation",
+        "count": 6
+      }
+    ]
+  },
+  "pedagogy": {
+    "genderLegend": {
+      "en": "der = masculine, die = feminine, das = neuter, Plural = amber. Gender colors live in theme.ts tokens.",
+      "de": "der = maskulin, die = feminin, das = neutral, Plural = orange. Genus-Farben aus theme.ts."
+    },
+    "suffixNote": {
+      "en": "Tip: -ung, -heit, -keit, -schaft, -e → usually die (feminine).",
+      "de": "Tipp: -ung, -heit, -keit, -schaft, -e → meistens die (feminin)."
+    },
+    "grammarNote": {
+      "en": "Negation splits cleanly: kein / keine negates a NOUN (or ein); nicht negates everything else — verbs, adjectives, names.",
+      "de": "Verneinung ist getrennt: kein / keine verneint ein NOUN (oder ein); nicht verneint alles andere — Verben, Adjektive, Namen."
+    }
+  },
+  "vocabCategories": [
+    "housing",
+    "kitchen-household"
+  ],
+  "grammarCategories": [
+    "cases"
+  ],
+  "hasLesson": true
+}

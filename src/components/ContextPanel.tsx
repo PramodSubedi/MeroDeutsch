@@ -1,9 +1,13 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Target } from 'lucide-react';
 import { useA1Path } from '../hooks/useA1Path';
 import { useLang } from '../hooks/useLang';
 import { A1_UNITS, CHECKPOINT_PASS_THRESHOLD } from '../data/a1Path';
+import { resolveLessonTools } from '../data/lessonPracticeLinks';
+import { labelForPath } from '../config/routeLabels';
+import { lessonIndexFromPath } from '../config/moduleRail';
 import { A1PathProgress } from './path/A1PathProgress';
+import { usePremium } from '../hooks/usePremium';
 import { theme } from '../config/theme';
 import type { RailSpec } from '../config/moduleRail';
 
@@ -31,19 +35,166 @@ import type { RailSpec } from '../config/moduleRail';
  *
  * DATA: read-only from `useA1Path` + `A1_CURRICULUM`, the same state
  * `UnitSpine` and the Dashboard already read. No new state, no fetch.
+ *
+ * TIER: the two kinds differ, and the rule is not a blanket gate.
+ *   - `a1-aggregate` summarises the A1 campaign, which is the Premium
+ *     curriculum, so it is Premium only. `config/moduleRail.ts` decides WHICH
+ *     routes may have a rail; this component decides whether the TIER may see
+ *     one. Both must say yes.
+ *   - `a1-lesson` annotates the free interactive lesson, so it stays available
+ *     to everyone, and is gated only on the `/lesson/:n/notes` document route
+ *     that <PremiumGate> already wraps.
  */
+/**
+ * The rail for `/lesson/:n`: the practice tools that reinforce THIS lesson.
+ *
+ * These are SUPPORTING tools, not the lesson. The lesson is the material on the
+ * page — objectives, lexicon, grammar, traps, culture, dialogue, practice bank.
+ * A tool appears here only because it drills something that lesson covered, and
+ * each one says why in a sentence, so the learner can tell "this helps me with
+ * the accusative" from "this is just fun".
+ *
+ * Resolution is deliberately late: `toolId` is looked up in the module registry
+ * at render time, so renaming or retiming a tool needs no change here, and a tool
+ * that disappears simply drops out instead of rendering a dead link.
+ */
+function LessonPracticeRail({ pathname, isDE }: { pathname: string; isDE: boolean }) {
+  const index = lessonIndexFromPath(pathname);
+  const unit = index === null ? undefined : A1_UNITS[index];
+
+  // Resolve through the shared helper so the desktop rail and the inline
+  // below-xl list can never drift — same ids, same reasons, same registry.
+  const suggestions = index === null ? [] : resolveLessonTools(index);
+
+  return (
+    <aside
+      aria-label={isDE ? 'Passende Übungen' : 'Related practice'}
+      className="hidden w-72 shrink-0 xl:block"
+    >
+      <div className="sticky top-20 space-y-6 pb-8">
+        <section>
+          <h2 className={theme.type.kicker}>
+            {isDE ? 'Passende Übungen' : 'Related practice'}
+          </h2>
+          <p className="mt-1.5 text-meta text-ink-500 dark:text-ink-400">
+            {isDE
+              ? 'Optionale Wiederholung zu dieser Lektion. Die Lektion selbst ist der Text auf der Seite.'
+              : 'Optional reinforcement for this lesson. The lesson itself is the material on the page.'}
+          </p>
+        </section>
+
+        {suggestions.length > 0 ? (
+          <ul className="space-y-3">
+            {suggestions.map((tool) => {
+              const Icon = tool.Icon;
+              return (
+                <li key={tool.toolId}>
+                  <Link
+                    to={tool.path}
+                    className={`${theme.button.secondarySmall} w-full items-start justify-start gap-2.5 text-left`}
+                  >
+                    <span className="mt-0.5 shrink-0 text-ink-400" aria-hidden="true">
+                      <Icon className="h-4 w-4" />
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block font-semibold">
+                        {labelForPath(tool.path, isDE)}
+                      </span>
+                      <span className="mt-0.5 block text-micro font-normal leading-snug text-ink-500 dark:text-ink-400">
+                        {isDE ? tool.why.de : tool.why.en}
+                      </span>
+                    </span>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        ) : (
+          <p className="text-meta text-ink-500 dark:text-ink-400">
+            {isDE
+              ? 'Für diese Lektion sind keine Übungen hinterlegt.'
+              : 'No practice tools are linked to this lesson yet.'}
+          </p>
+        )}
+
+        {unit && (
+          <section className="border-t border-ink-200 pt-5 dark:border-ink-800">
+            <h2 className={theme.type.kicker}>{isDE ? 'Lektion abschließen' : 'Finish the lesson'}</h2>
+            <p className="mt-1.5 text-meta text-ink-500 dark:text-ink-400">
+              {isDE
+                ? `Die Prüfung für ${unit.code} braucht ${Math.round(CHECKPOINT_PASS_THRESHOLD * 100)} %.`
+                : `The ${unit.code} checkpoint needs ${Math.round(CHECKPOINT_PASS_THRESHOLD * 100)}%.`}
+            </p>
+            <Link to={`/checkpoint/${unit.index}`} className={`${theme.button.secondarySmall} mt-3 w-full justify-between`}>
+              <span className="inline-flex items-center gap-1.5">
+                <Target className="h-3.5 w-3.5" aria-hidden="true" />
+                {isDE ? 'Prüfung öffnen' : 'Open the checkpoint'}
+              </span>
+              <span aria-hidden="true">→</span>
+            </Link>
+          </section>
+        )}
+      </div>
+    </aside>
+  );
+}
+
 export function ContextPanel({ spec }: { spec: RailSpec }) {
   const { langMode } = useLang();
   const isDE = langMode === 'german';
   const { isCheckpointComplete, getPushNode, checkpointBestByUnit } = useA1Path();
+  const { pathname } = useLocation();
+
+  // ── TIER GATE ────────────────────────────────────────────────────────────
+  // The two rail kinds have DIFFERENT tier rules, which is why this is not one
+  // blanket `if (!isPremium) return null`.
+  //
+  //  - `a1-aggregate` (on /learn) summarises the A1 CAMPAIGN: the 15-module
+  //    spine and the five 80% checkpoint gates. That campaign is the Premium
+  //    curriculum. A guest or free learner lands on the free
+  //    learning-components path instead (`components/learning/LearningPath`), so
+  //    showing them "2/5 checkpoints passed" plus a button that opens
+  //    `/checkpoint/:n` would advertise a curriculum they are not on and route
+  //    them into it. Premium only.
+  //
+  //  - `a1-lesson` (on /lesson/:n) annotates the INTERACTIVE lesson surface,
+  //    which is free and stays free - only `/lesson/:n/notes`, the document
+  //    deep-dive, sits behind <PremiumGate>. So this rail must NOT be gated
+  //    generally, or a free learner would lose useful practice navigation on a
+  //    page they are fully entitled to read. It IS gated on the notes route,
+  //    where a rail of "related practice" next to a paywall would be nonsense.
+  //
+  // Returning null is layout-safe: `Layout` renders the rail as a sibling in a
+  // `flex gap-8` row, and a null child collapses that row to the single `flex-1`
+  // content column, so no dead 288px gutter is reserved.
+  //
+  // `isLoading` renders nothing rather than guessing, matching `PremiumGate` - a
+  // rail that flashes campaign state at a free learner, or hides it from a
+  // Premium one, is worse than one that arrives 100ms late.
+  const { isPremium, isLoading: planLoading } = usePremium();
+  const isNotesRoute = pathname.endsWith('/notes');
+  const railIsPremium = spec.kind !== 'a1-lesson' || isNotesRoute;
+  if (planLoading && railIsPremium) return null;
+  if (railIsPremium && !isPremium) return null;
+
+  // ── Lesson pages get a different rail entirely ──────────────────────────
+  // Dispatched first because the two kinds share nothing but the wrapper. The
+  // lesson rail answers one question ("what can I drill on what I just read?")
+  // and deliberately shows no cross-lesson roll-up: a learner mid-lesson does not
+  // need to be told how many gates they have passed.
+  if (spec.kind === 'a1-lesson') {
+    return <LessonPracticeRail pathname={pathname} isDE={isDE} />;
+  }
 
   if (spec.kind !== 'a1-aggregate') return null;
 
-  // CORE BANDS ONLY — the easy thing to get wrong here. A1_UNITS is
-  // A(core), B(SUPPORT), C, D, E, F: band B has no checkpoint,
-  // `getUnitPhase` returns 'current' for it forever, and `isCheckpointComplete`
-  // returns false. Counting it would report "2/6" when the learner has passed
-  // 2 of the 5 gates they are actually able to pass.
+  // CORE MODULES ONLY — the easy thing to get wrong here. Every one of the 15
+  // modules is currently 'core' (each carries a checkpoint that gates the next),
+  // so this filter is a no-op today. It stays because it is what makes the
+  // roll-up correct if a support/optional module is ever added back: such a
+  // module has no checkpoint, `getUnitPhase` returns 'optional' for it, and
+  // `isCheckpointComplete` returns false — counting it would report "2/16" when
+  // the learner has passed 2 of the 15 checkpoints they can actually pass.
   const coreBands = A1_UNITS.filter((band) => band.kind === 'core');
   const gatesPassed = coreBands.filter((band) => isCheckpointComplete(band.index)).length;
 
@@ -65,8 +216,8 @@ export function ContextPanel({ spec }: { spec: RailSpec }) {
     >
       <div className="sticky top-20 space-y-6 pb-8">
         {/* ── Band strip ───────────────────────────────────────────────
-            REUSED, not rebuilt. `A1PathProgress` already renders the six-band
-            phase strip (done / current / locked, amber for the support band)
+            REUSED, not rebuilt. `A1PathProgress` already renders the per-module
+            phase strip (done / current / locked, amber for an optional module)
             from this same hook; its `compact` mode had no caller until now. */}
         <section>
           <h2 className={theme.type.kicker}>{isDE ? 'Dein Kurs' : 'Your course'}</h2>
@@ -80,7 +231,7 @@ export function ContextPanel({ spec }: { spec: RailSpec }) {
         {/* ── Gate roll-up ───────────────────────────────────────────────
             The fact UnitSpine never states: totals ACROSS the five gates. */}
         <section className="border-t border-ink-200 pt-5 dark:border-ink-800">
-          <h2 className={theme.type.kicker}>{isDE ? 'Tore' : 'Gates'}</h2>
+          <h2 className={theme.type.kicker}>{isDE ? 'Prüfungen' : 'Checkpoints'}</h2>
           <p className={`${theme.type.display} mt-1.5`}>
             {gatesPassed}
             <span className="text-title text-ink-400 dark:text-ink-600">/{coreBands.length}</span>
@@ -89,8 +240,8 @@ export function ContextPanel({ spec }: { spec: RailSpec }) {
             {gatesPassed === 0
               ? isDE ? 'Noch keines bestanden' : 'None passed yet'
               : gatesPassed === coreBands.length
-                ? isDE ? 'Alle Tore bestanden' : 'All gates passed'
-                : isDE ? 'Tore bestanden' : 'gates passed'}
+                ? isDE ? 'Alle Prüfungen bestanden' : 'All checkpoints passed'
+                : isDE ? 'Prüfungen bestanden' : 'checkpoints passed'}
           </p>
         </section>
 
@@ -100,8 +251,8 @@ export function ContextPanel({ spec }: { spec: RailSpec }) {
             the Band card that also links to it further down the page. */}
         {nextGate ? (
           <section className="border-t border-ink-200 pt-5 dark:border-ink-800">
-            <h2 className={theme.type.kicker}>{isDE ? 'Nächstes Tor' : 'Next gate'}</h2>
-            <p className={`${theme.type.section} mt-1.5`}>Band {nextGate.code}</p>
+            <h2 className={theme.type.kicker}>{isDE ? 'Nächste Prüfung' : 'Next checkpoint'}</h2>
+            <p className={`${theme.type.section} mt-1.5`}>{nextGate.code}</p>
             <p className="mt-0.5 text-meta text-ink-500 dark:text-ink-400">
               {isDE ? nextGate.title.de : nextGate.title.en}
             </p>
@@ -121,7 +272,7 @@ export function ContextPanel({ spec }: { spec: RailSpec }) {
                   {isDE ? `Bestwert ${nextGatePct} %` : `Best ${nextGatePct}%`}
                 </span>
                 <span className="text-ink-500 dark:text-ink-400">
-                  {isDE ? `· ${passPct} % nötig` : `· needs ${passPct}%`}
+                  {isDE ? `· ${passPct} % zum Meistern` : `· ${passPct}% to master`}
                 </span>
               </p>
             )}
@@ -131,7 +282,7 @@ export function ContextPanel({ spec }: { spec: RailSpec }) {
             >
               <span className="inline-flex items-center gap-1.5">
                 <Target className="h-3.5 w-3.5" aria-hidden="true" />
-                {isDE ? 'Tor öffnen' : 'Open the gate'}
+                {isDE ? 'Prüfung öffnen' : 'Open the checkpoint'}
               </span>
               <span aria-hidden="true">→</span>
             </Link>

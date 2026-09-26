@@ -1,0 +1,62 @@
+[
+  {
+    "index": 0,
+    "code": "C1",
+    "title": {
+      "en": "Foundations & Identity",
+      "de": "Grundlagen & Identität"
+    },
+    "topicArea": {
+      "en": "Home, family, identity",
+      "de": "Zuhause, Familie, Identität"
+    }
+  },
+  {
+    "index": 1,
+    "code": "C2",
+    "title": {
+      "en": "Daily Life & Work",
+      "de": "Alltag & Arbeit"
+    },
+    "topicArea": {
+      "en": "Education, work, routine",
+      "de": "Bildung, Beruf, Alltag"
+    }
+  },
+  {
+    "index": 2,
+    "code": "C3",
+    "title": {
+      "en": "Consumption & Commerce",
+      "de": "Konsum & Handel"
+    },
+    "topicArea": {
+      "en": "Food, health, shopping",
+      "de": "Essen, Gesundheit, Einkaufen"
+    }
+  },
+  {
+    "index": 3,
+    "code": "C4",
+    "title": {
+      "en": "Navigation & Capability",
+      "de": "Orientierung & Können"
+    },
+    "topicArea": {
+      "en": "Local area, transport, modals",
+      "de": "Umgebung, Verkehr, Modalverben"
+    }
+  },
+  {
+    "index": 4,
+    "code": "C5",
+    "title": {
+      "en": "Well-Being & Experiences",
+      "de": "Wohlbefinden & Erlebnisse"
+    },
+    "topicArea": {
+      "en": "Health, leisure, past events",
+      "de": "Gesundheit, Freizeit, Vergangenheit"
+    }
+  }
+]

@@ -1,0 +1,857 @@
+{
+  "cefr": "A1.2",
+  "docRoute": "/grammar",
+  "objectives": {
+    "en": [
+      "Split separable verb prefixes (aufstehen, einkaufen, anrufen) and place them at the end of main clauses (Satzklammer).",
+      "Estimated time 50 Minutes · Prerequisites: Units 01–08"
+    ]
+  },
+  "lexicon": [
+    {
+      "word": "aufstehen",
+      "en": "to get up / rise",
+      "ne": "उठ्नु",
+      "plural": "steht auf / stand auf / ist aufgestanden",
+      "ipa": "/ˈaʊ̯f_ʃteːən/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Ich stehe jeden Morgen um 6 Uhr auf.",
+          "en": "I get up at 6 o'clock every morning.",
+          "ne": "म हरेक बिहान ६ बजे उठ्छु।"
+        }
+      ]
+    },
+    {
+      "word": "einkaufen",
+      "en": "to shop / buy groceries",
+      "ne": "सामान किन्नु",
+      "plural": "kauft ein / kaufte ein / eingekauft",
+      "ipa": "/ˈaɪ̯n_kaʊ̯fn̩/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Am Samstag kaufe ich im Supermarkt ein.",
+          "en": "On Saturday I shop at the supermarket.",
+          "ne": "शनिबार म सुपरमार्केटमा सामान किन्छु।"
+        }
+      ]
+    },
+    {
+      "word": "anrufen",
+      "en": "to call (phone)",
+      "ne": "फोन गर्नु",
+      "plural": "ruft an / rief an / angerufen",
+      "ipa": "/ˈan_ʁuːfn̩/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Ich rufe meine Mutter an.",
+          "en": "I call my mother.",
+          "ne": "म मेरो आमालाई फोन गर्छु।"
+        }
+      ]
+    },
+    {
+      "word": "fernsehen",
+      "en": "to watch TV",
+      "ne": "टेलिभिजन हेर्नु",
+      "plural": "sieht fern / sah fern / ferngesehen",
+      "ipa": "/ˈfɛʁn_zeːən/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Abends sehe ich zwei Stunden fern.",
+          "en": "In the evening I watch TV for two hours.",
+          "ne": "साँझ म दुई घण्टा टिभी हेर्छु।"
+        }
+      ]
+    },
+    {
+      "word": "ankommen",
+      "en": "to arrive",
+      "ne": "आइपुग्नु",
+      "plural": "kommt an / kam an / ist angekommen",
+      "ipa": "/ˈan_kɔmən/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Der Zug kommt um 14 Uhr an.",
+          "en": "The train arrives at 2 PM.",
+          "ne": "रेल दुई बजे आइपुग्छ।"
+        }
+      ]
+    },
+    {
+      "word": "abfahren",
+      "en": "to depart",
+      "ne": "प्रस्थान गर्नु",
+      "plural": "fährt ab / fuhr ab / ist abgefahren",
+      "ipa": "/ˈap_faːʁən/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Der Bus fährt um 8 Uhr ab.",
+          "en": "The bus departs at 8 o'clock.",
+          "ne": "बस आठ बजे प्रस्थान गर्छ।"
+        }
+      ]
+    },
+    {
+      "word": "mitkommen",
+      "en": "to come along",
+      "ne": "सँगै आउनु",
+      "plural": "kommt mit / kam mit / ist mitgekommen",
+      "ipa": "/ˈmɪt_kɔmən/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Kommst du heute Abend mit?",
+          "en": "Are you coming along this evening?",
+          "ne": "के तिमी आज साँझ सँगै आउँछौ?"
+        }
+      ]
+    },
+    {
+      "word": "ausmachen",
+      "en": "to turn off / switch off",
+      "ne": "बन्द गर्नु",
+      "plural": "macht aus / machte aus / ausgemacht",
+      "ipa": "/ˈaʊ̯s_maxn̩/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Er macht das Licht aus.",
+          "en": "He turns off the light.",
+          "ne": "उहाँ बत्ती बन्द गर्नुहुन्छ।"
+        }
+      ]
+    },
+    {
+      "word": "anmachen",
+      "en": "to turn on / switch on",
+      "ne": "बाल्नु",
+      "plural": "macht an / machte an / angemacht",
+      "ipa": "/ˈan_maxn̩/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Bitte machen Sie die Heizung an.",
+          "en": "Please turn on the heating.",
+          "ne": "कृपया हिटर बाल्नुहोस्।"
+        }
+      ]
+    },
+    {
+      "word": "aufhören",
+      "en": "to stop / cease",
+      "ne": "रोक्नु / रोकिनु",
+      "plural": "hört auf / hörte auf / aufgehört",
+      "ipa": "/ˈaʊ̯f_høːʁən/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Der Regen hört bald auf.",
+          "en": "The rain stops soon.",
+          "ne": "पानी छिटै रोकिनेछ।"
+        }
+      ]
+    },
+    {
+      "word": "anfangen",
+      "en": "to start / begin",
+      "ne": "सुरु गर्नु",
+      "plural": "fängt an / fing an / angefangen",
+      "ipa": "/ˈan_faŋən/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Der Kurs fängt um 9 Uhr an.",
+          "en": "The course starts at 9 o'clock.",
+          "ne": "कक्षा ९ बजे सुरु हुन्छ।"
+        }
+      ]
+    },
+    {
+      "word": "einladen",
+      "en": "to invite",
+      "ne": "निमन्त्रणा गर्नु",
+      "plural": "lädt ein / lud ein / eingeladen",
+      "ipa": "/ˈaɪ̯n_laːdn̩/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Ich lade dich zu meiner Party ein.",
+          "en": "I invite you to my party.",
+          "ne": "म तिमीलाई मेरो पार्टीमा निमन्त्रणा गर्छु।"
+        }
+      ]
+    },
+    {
+      "word": "vorbereiten",
+      "en": "to prepare",
+      "ne": "तयारी गर्नु",
+      "plural": "bereitet vor / bereitete vor / vorbereitet",
+      "ipa": "/ˈfoːɐ̯_bəˌʁaɪ̯tn̩/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Wir bereiten das Essen vor.",
+          "en": "We prepare the food.",
+          "ne": "हामी खानाको तयारी गर्दैछौँ।"
+        }
+      ]
+    },
+    {
+      "word": "aufräumen",
+      "en": "to clean up / tidy up",
+      "ne": "सरसफाइ गर्नु",
+      "plural": "räumt auf / räumte auf / aufgeräumt",
+      "ipa": "/ˈaʊ̯f_ʁɔɪ̯mən/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Am Sonntag räume ich das Zimmer auf.",
+          "en": "On Sunday I tidy up the room.",
+          "ne": "शनिबार म कोठा सरसफाइ गर्छु।"
+        }
+      ]
+    },
+    {
+      "word": "mitbringen",
+      "en": "to bring along",
+      "ne": "सँगै ल्याउनु",
+      "plural": "bringt mit / brachte mit / mitgebracht",
+      "ipa": "/ˈmɪt_bʁɪŋən/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Ich bringe Kuchen mit.",
+          "en": "I bring cake along.",
+          "ne": "म केक सँगै ल्याउँछु।"
+        }
+      ]
+    },
+    {
+      "word": "kennenlernen",
+      "en": "to get to know",
+      "ne": "परिचय हुनु",
+      "plural": "lernt kennen / lernte kennen / kennengelernt",
+      "ipa": "/ˈkɛnən_lɛʁnən/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Ich lerne neue Freunde kennen.",
+          "en": "I get to know new friends.",
+          "ne": "म नयाँ साथीहरूसँग परिचय गर्छु।"
+        }
+      ]
+    },
+    {
+      "word": "ausfüllen",
+      "en": "to fill out (form)",
+      "ne": "फारम भर्नु",
+      "plural": "füllt aus / füllte aus / ausgefüllt",
+      "ipa": "/ˈaʊ̯s_fyːlən/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Bitte füllen Sie das Formular aus.",
+          "en": "Please fill out the form.",
+          "ne": "कृपया फारम भर्नुहोस्।"
+        }
+      ]
+    },
+    {
+      "word": "umsteigen",
+      "en": "to change trains/busses",
+      "ne": "गाडी फेर्नु",
+      "plural": "steigt um / stieg um / ist umgestiegen",
+      "ipa": "/ˈʊm_ʃtaɪ̯ɡn̩/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "In München steige ich um.",
+          "en": "In Munich I change trains.",
+          "ne": "म्युनिखमा म रेल फेर्छु।"
+        }
+      ]
+    },
+    {
+      "word": "einsteigen",
+      "en": "to board / get in",
+      "ne": "गाडीमा चढ्नु",
+      "plural": "steigt ein / stieg ein / ist eingestiegen",
+      "ipa": "/ˈaɪ̯n_ʃtaɪ̯ɡn̩/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Alle Passagiere steigen ein.",
+          "en": "All passengers board.",
+          "ne": "सबै यात्रीहरू चढ्दैछन्।"
+        }
+      ]
+    },
+    {
+      "word": "aussteigen",
+      "en": "to alight / get off",
+      "ne": "गाडीबाट ओर्लनु",
+      "plural": "steigt aus / stieg aus / ist ausgestiegen",
+      "ipa": "/ˈaʊ̯s_ʃtaɪ̯ɡn̩/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Am Hauptbahnhof steige ich aus.",
+          "en": "At the main station I get off.",
+          "ne": "मुख्य स्टेशनमा म ओर्लन्छु।"
+        }
+      ]
+    },
+    {
+      "word": "Wecker",
+      "en": "Alarm clock",
+      "ne": "अलार्म घडी",
+      "article": "der",
+      "plural": "Wecker",
+      "ipa": "/ˈvɛkɐ/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Der Wecker klingelt um 6 Uhr.",
+          "en": "The alarm clock rings at 6 o'clock.",
+          "ne": "अलार्म घडी ६ बजे बज्छ।"
+        }
+      ]
+    },
+    {
+      "word": "Frühstück",
+      "en": "Breakfast",
+      "ne": "बिहानको खाजा",
+      "article": "das",
+      "plural": "-",
+      "ipa": "/ˈfʁyː_ʃtʏk/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Nach dem Aufstehen esse ich Frühstück.",
+          "en": "After getting up I eat breakfast.",
+          "ne": "उठेपछि म बिहानको खाजा खान्छु।"
+        }
+      ]
+    },
+    {
+      "word": "frühstücken",
+      "en": "to eat breakfast",
+      "ne": "बिहानको खाजा खान्छु",
+      "plural": "frühstückt / frühstückte / gefrühstückt",
+      "ipa": "/ˈfʁyː_ʃtʏkn̩/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Wir frühstücken um 7 Uhr.",
+          "en": "We eat breakfast at 7 o'clock.",
+          "ne": "हामी ७ बजे बिहानको खाजा खान्छौँ।"
+        }
+      ]
+    },
+    {
+      "word": "Formular",
+      "en": "Form / Document",
+      "ne": "फारम",
+      "article": "das",
+      "plural": "Formulare",
+      "ipa": "/fɔʁmuˈlaːɐ̯/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Hier ist das Formular.",
+          "en": "Here is the form.",
+          "ne": "यहाँ फारम छ।"
+        }
+      ]
+    },
+    {
+      "word": "Party",
+      "en": "Party",
+      "ne": "पार्टी",
+      "article": "die",
+      "plural": "Partys",
+      "ipa": "/ˈpaːʁti/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Die Party fängt um 20 Uhr an.",
+          "en": "The party starts at 8 PM.",
+          "ne": "पार्टी आठ बजे सुरु हुन्छ।"
+        }
+      ]
+    },
+    {
+      "word": "Licht",
+      "en": "Light",
+      "ne": "बत्ती",
+      "article": "das",
+      "plural": "Lichter",
+      "ipa": "/lɪçt/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Mach bitte das Licht an.",
+          "en": "Please turn on the light.",
+          "ne": "कृपया बत्ती बाल्नुहोस्।"
+        }
+      ]
+    },
+    {
+      "word": "Zug",
+      "en": "Train",
+      "ne": "रेल",
+      "article": "der",
+      "plural": "Züge",
+      "ipa": "/tsuːk/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Der Zug fährt jetzt ab.",
+          "en": "The train departs now.",
+          "ne": "रेल अब प्रस्थान गर्दैछ।"
+        }
+      ]
+    },
+    {
+      "word": "Bus",
+      "en": "Bus",
+      "ne": "बस",
+      "article": "der",
+      "plural": "Busse",
+      "ipa": "/bʊs/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Der Bus kommt pünktlich an.",
+          "en": "The bus arrives punctually.",
+          "ne": "बस समयमै आइपुग्छ।"
+        }
+      ]
+    },
+    {
+      "word": "Hauptbahnhof",
+      "en": "Central station",
+      "ne": "मुख्य रेल स्टेशन",
+      "article": "der",
+      "plural": "Hauptbahnhöfe",
+      "ipa": "/ˈhaʊ̯pt_baːnˌhoːf/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Wir treffen uns am Hauptbahnhof.",
+          "en": "We meet at the central station.",
+          "ne": "हामी मुख्य रेल स्टेशनमा भेट्छौँ।"
+        }
+      ]
+    },
+    {
+      "word": "Routine",
+      "en": "Daily routine",
+      "ne": "दैनिक तालिका",
+      "article": "die",
+      "plural": "Routinen",
+      "ipa": "/ʁuˈtiːnə/",
+      "frequency": "passive",
+      "examples": [
+        {
+          "de": "Das ist meine tägliche Routine.",
+          "en": "That is my daily routine.",
+          "ne": "यो मेरो दैनिक तालिका हो।"
+        }
+      ]
+    },
+    {
+      "word": "Alltag",
+      "en": "Everyday life",
+      "ne": "दैनिक जीवन",
+      "article": "der",
+      "plural": "-",
+      "ipa": "/ˈal_taːk/",
+      "frequency": "passive",
+      "examples": [
+        {
+          "de": "Mein Alltag ist gut strukturiert.",
+          "en": "My everyday life is well structured.",
+          "ne": "मेरो दैनिक जीवन व्यवस्थित छ।"
+        }
+      ]
+    },
+    {
+      "word": "morgens",
+      "en": "In the mornings",
+      "ne": "बिहानपख",
+      "plural": "-",
+      "ipa": "/ˈmɔʁɡns/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Morgens stehe ich früh auf.",
+          "en": "In the mornings I get up early.",
+          "ne": "बिहानपख म चाँडै उठ्छु।"
+        }
+      ]
+    },
+    {
+      "word": "abends",
+      "en": "In the evenings",
+      "ne": "साँझपख",
+      "plural": "-",
+      "ipa": "/ˈaːbn̩ts/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Abends sehe ich fern.",
+          "en": "In the evenings I watch TV.",
+          "ne": "साँझपख म टिभी हेर्छु।"
+        }
+      ]
+    },
+    {
+      "word": "nachmittags",
+      "en": "In the afternoons",
+      "ne": "दिउँसोपख",
+      "plural": "-",
+      "ipa": "/ˈnaːx_mɪtaːɡs/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Nachmittags kaufe ich ein.",
+          "en": "In the afternoons I shop.",
+          "ne": "दिउँसोपख म सामान किन्छु।"
+        }
+      ]
+    },
+    {
+      "word": "nachts",
+      "en": "At night",
+      "ne": "राति",
+      "plural": "-",
+      "ipa": "/naxts/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Nachts schlafe ich tief.",
+          "en": "At night I sleep deeply.",
+          "ne": "राति म गाढा निद्रामा सुत्छु।"
+        }
+      ]
+    },
+    {
+      "word": "früh",
+      "en": "Early",
+      "ne": "चाँडै",
+      "plural": "-",
+      "ipa": "/fʁyː/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Ich stehe sehr früh auf.",
+          "en": "I get up very early.",
+          "ne": "म धेरै चाँडै उठ्छु।"
+        }
+      ]
+    },
+    {
+      "word": "spät",
+      "en": "Late",
+      "ne": "ढिलो",
+      "plural": "-",
+      "ipa": "/ʃpɛːt/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Er kommt heute spät an.",
+          "en": "He arrives late today.",
+          "ne": "उहाँ आज ढिलो आइपुग्नुहुन्छ।"
+        }
+      ]
+    },
+    {
+      "word": "pünktlich",
+      "en": "Punctual / On time",
+      "ne": "समयमै",
+      "plural": "-",
+      "ipa": "/ˈpʏŋkt_lɪç/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Der Zug ist immer pünktlich.",
+          "en": "The train is always punctual.",
+          "ne": "रेल सधैँ समयमै आइपुग्छ।"
+        }
+      ]
+    },
+    {
+      "word": "verspätet",
+      "en": "Delayed",
+      "ne": "ढिलाइ भएको",
+      "plural": "-",
+      "ipa": "/fɛɐ̯ˈʃpɛːtət/",
+      "frequency": "passive",
+      "examples": [
+        {
+          "de": "Der Bus ist 10 Minuten verspätet.",
+          "en": "The bus is 10 minutes delayed.",
+          "ne": "बस १० मिनेट ढिलाइ भएको छ।"
+        }
+      ]
+    },
+    {
+      "word": "müde",
+      "en": "Tired",
+      "ne": "थकित",
+      "plural": "-",
+      "ipa": "/ˈmyːdə/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Ich bin abends sehr müde.",
+          "en": "In the evening I am very tired.",
+          "ne": "साँझपख म धेरै थकित हुन्छु।"
+        }
+      ]
+    }
+  ],
+  "grammar": [
+    {
+      "title": {
+        "en": "Mechanics of Separable Verbs (Trennbare Verben)",
+        "de": "Mechanics of Separable Verbs (Trennbare Verben)"
+      },
+      "notes": [
+        {
+          "en": "Separable verbs consist of a prefix + base verb. In main sentences (Präsens): 1. The base verb is conjugated and placed in Position 2. 2. The prefix detaches and moves to the VERY END of the sentence (Satzklammer / Sentence Bracket). German Sentence Bracket Structure (Satzklammer): ┌──────────────┬──────────────┬──────────────────────────┬──────────────┐ │ Position 1 │ Pos 2 (VERB) │ Middle Sentence Field │ END (PREFIX) │ ├──────────────┼──────────────┼──────────────────────────┼──────────────┤ │ Ich │ stehe │ jeden Morgen um 6 Uhr │ auf. │ │ Wir │ kaufen │ im Supermarkt │ ein. │ │ Er │ ruft │ seine Mutter │ an. │ │ Das Fest │ fängt │ um 20 Uhr │ an. │ └──────────────┴──────────────┴──────────────────────────┴──────────────┘",
+          "ne": "",
+          "de": ""
+        }
+      ]
+    },
+    {
+      "title": {
+        "en": "Common Separable Prefixes List",
+        "de": "Common Separable Prefixes List"
+      },
+      "notes": [
+        {
+          "en": "The following prefixes ALWAYS detach in main sentences: auf-, ab-, an-, aus-, ein-, mit-, fern-, vor-, zurück-. ---",
+          "ne": "",
+          "de": ""
+        }
+      ]
+    }
+  ],
+  "dialogue": {
+    "id": "m09-dialogue",
+    "title": {
+      "en": "Dialogue",
+      "de": "Dialog"
+    },
+    "scenario": {
+      "en": "Planning the Daily Routine",
+      "de": "Planning the Daily Routine"
+    },
+    "turns": [
+      {
+        "speaker": "A:",
+        "de": "Wann stehst du morgens auf?"
+      },
+      {
+        "speaker": "B:",
+        "de": "Ich stehe meistens um 7 Uhr auf. Und du?"
+      },
+      {
+        "speaker": "A:",
+        "de": "Ich stehe erst um 8 Uhr auf. Wann fängt deine Arbeit an?"
+      },
+      {
+        "speaker": "B:",
+        "de": "Meine Arbeit fängt um 9 Uhr an. Am Abend kaufe ich noch ein."
+      },
+      {
+        "speaker": "A:",
+        "de": "Rufst du mich später an?"
+      }
+    ]
+  },
+  "miniGame": {
+    "type": "cloze_drill",
+    "id": "m9-prefix-bracket",
+    "payload": {
+      "type": "cloze_drill",
+      "id": "m9-prefix-bracket",
+      "sentence_template": "Ich ___ (aufstehen) jeden Tag um 6 Uhr ___.",
+      "correct_answers": [
+        "stehe",
+        "auf"
+      ],
+      "explanation": "Base verb 'stehen' conjugates to 'stehe' in Pos 2; prefix 'auf' goes to the end."
+    }
+  },
+  "practiceBank": [
+    {
+      "kind": "MCQ",
+      "prompt": "Where does the prefix of a separable verb go in a simple statement?",
+      "options": [
+        "Position 1",
+        "Position 2",
+        "Before the verb",
+        "Very end of the sentence"
+      ],
+      "answer": "Very end of the sentence"
+    },
+    {
+      "kind": "MCQ",
+      "prompt": "Which verb prefix means \"to watch TV\" when attached to sehen?",
+      "options": [
+        "an-",
+        "auf-",
+        "fern-",
+        "aus-"
+      ],
+      "answer": "fern-"
+    },
+    {
+      "kind": "Fill-in",
+      "prompt": "Ich stehe um 6 Uhr _______ (aufstehen). \\(\\rightarrow\\) auf"
+    },
+    {
+      "kind": "Fill-in",
+      "prompt": "Er kauft im Supermarkt _______ (einkaufen). \\(\\rightarrow\\) ein"
+    },
+    {
+      "kind": "Fill-in",
+      "prompt": "Der Zug kommt um 14 Uhr _______ (ankommen). \\(\\rightarrow\\) an"
+    },
+    {
+      "kind": "Sentence Unscramble",
+      "prompt": "[auf / Um / stehe / 6 Uhr / ich] \\(\\rightarrow\\) Um 6 Uhr stehe ich auf. / Ich stehe um 6 Uhr auf."
+    },
+    {
+      "kind": "Sentence Unscramble",
+      "prompt": "[meine Mutter / an / Ich / rufe] \\(\\rightarrow\\) Ich rufe meine Mutter an."
+    },
+    {
+      "kind": "Verb Bracket",
+      "prompt": "Place prefix: \"Er sieht jeden Abend fern\" \\(\\rightarrow\\) Prefix is fern."
+    },
+    {
+      "kind": "Verb Bracket",
+      "prompt": "Place prefix: \"Wir steigen am Hauptbahnhof aus\" \\(\\rightarrow\\) Prefix is aus."
+    },
+    {
+      "kind": "Translation DE->EN",
+      "prompt": "\"Bitte füllen Sie das Formular aus.\" \\(\\rightarrow\\) Please fill out the form."
+    },
+    {
+      "kind": "Translation EN->DE",
+      "prompt": "\"The train departs at 8 o'clock.\" \\(\\rightarrow\\) Der Zug fährt um 8 Uhr ab."
+    },
+    {
+      "kind": "Translation NE->DE",
+      "prompt": "\"म मेरो आमालाई फोन गर्छु।\" \\(\\rightarrow\\) Ich rufe meine Mutter an."
+    },
+    {
+      "kind": "Matching",
+      "prompt": "einsteigen \\(\\rightarrow\\) to board / get in"
+    },
+    {
+      "kind": "Matching",
+      "prompt": "aussteigen \\(\\rightarrow\\) to get off / alight"
+    },
+    {
+      "kind": "Matching",
+      "prompt": "umsteigen \\(\\rightarrow\\) to transfer / change trains"
+    },
+    {
+      "kind": "Dictation",
+      "prompt": "Listen & Type: \"Ich stehe jeden Morgen um sechs Uhr auf.\""
+    },
+    {
+      "kind": "Dictation",
+      "prompt": "Listen & Type: \"Der Bus kommt pünktlich am Bahnhof an.\""
+    },
+    {
+      "kind": "Error Correction",
+      "prompt": "\"Ich aufstehe um 6 Uhr.\" \\(\\rightarrow\\) Ich stehe um 6 Uhr auf."
+    },
+    {
+      "kind": "Error Correction",
+      "prompt": "\"Er ruft an seine Frau.\" \\(\\rightarrow\\) Er ruft seine Frau an."
+    },
+    {
+      "kind": "Culture MCQ",
+      "prompt": "What does \"10 Min. Verspätung\" mean at a train station?",
+      "options": [
+        "Train arrived 10 mins early",
+        "10 minutes delay",
+        "Platform 10",
+        "10 Euro fare"
+      ],
+      "answer": "10 minutes delay"
+    },
+    {
+      "kind": "Conjugation",
+      "prompt": "Conjugate einkaufen for du: du kaufst ... ein"
+    },
+    {
+      "kind": "Conjugation",
+      "prompt": "Conjugate anfangen for es: es fängt ... an"
+    },
+    {
+      "kind": "Listening Gap",
+      "prompt": "\"Der Kurs fängt um 9 Uhr _______.\" (Audio: an) \\(\\rightarrow\\) an"
+    },
+    {
+      "kind": "Prefix Quiz",
+      "prompt": "What is the prefix in aufräumen? \\(\\rightarrow\\) auf"
+    },
+    {
+      "kind": "Prefix Quiz",
+      "prompt": "What is the prefix in mitbringen? \\(\\rightarrow\\) mit"
+    }
+  ],
+  "culture": {
+    "title": {
+      "en": "Cultural context",
+      "de": "Kultureller Kontext"
+    },
+    "body": [
+      "⚠️ Common Trap: Forgetting the prefix at the end of the sentence!",
+      "XP Reward: 100 XP | Badge Unlocked: 🧩 Prefix Puzzle Master"
+    ]
+  },
+  "traps": [
+    {
+      "note": {
+        "en": "Trap 1: Forgetting to put the prefix at the end",
+        "ne": "",
+        "de": ""
+      },
+      "wrong": "Falsch: \"Ich stehe auf um 6 Uhr.\"",
+      "right": "Richtig: \"Ich stehe um 6 Uhr AUF.\" (Prefix MUST go to the end!)."
+    },
+    {
+      "note": {
+        "en": "Trap 2: Conjugating the prefix instead of the base verb",
+        "ne": "",
+        "de": ""
+      },
+      "wrong": "Falsch: \"Ich aufstehe um 6 Uhr.\"",
+      "right": "Richtig: \"Ich STEHE um 6 Uhr AUF.\""
+    },
+    {
+      "note": {
+        "en": "Trap 3: Misinterpreting einsteigen, aussteigen, umsteigen einsteigen = get in / board vehicle. aussteigen = get off / alight vehicle. umsteigen = transfer / change vehicles.",
+        "ne": "",
+        "de": ""
+      }
+    }
+  ]
+}

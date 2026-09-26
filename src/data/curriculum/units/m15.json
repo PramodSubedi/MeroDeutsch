@@ -1,0 +1,161 @@
+{
+  "id": "m15",
+  "order": 15,
+  "code": "M15",
+  "kind": "core",
+  "cluster": 4,
+  "title": {
+    "en": "Hobbies, Weather & Perfekt",
+    "de": "Hobbys, Wetter & Perfekt"
+  },
+  "theme": {
+    "en": "Leisure · Weather · The past tense",
+    "de": "Freizeit · Wetter · Vergangenheit"
+  },
+  "goal": {
+    "en": "Talk about hobbies and weather, and recount the past",
+    "de": "Über Hobbys und Wetter sprechen und von der Vergangenheit erzählen"
+  },
+  "nodes": [
+    {
+      "id": "m15-stories",
+      "kind": "learn",
+      "label": {
+        "en": "Hobby & Weather",
+        "de": "Hobby & Wetter"
+      },
+      "to": "/stories"
+    },
+    {
+      "id": "m15-blitz",
+      "kind": "practice",
+      "label": {
+        "en": "Weekend Blitz",
+        "de": "Wochenend-Blitz"
+      },
+      "to": "/rapid-fire"
+    },
+    {
+      "id": "m15-gate",
+      "kind": "checkpoint",
+      "label": {
+        "en": "Module 15 Checkpoint",
+        "de": "Modul 15 Prüfung"
+      },
+      "to": "/checkpoint/14"
+    }
+  ],
+  "bonus": [
+    {
+      "id": "m15-mixed",
+      "kind": "bonus",
+      "label": {
+        "en": "Mixed Blitz",
+        "de": "Mixed-Quiz"
+      },
+      "to": "/rapid-fire?mode=mixed",
+      "bonus": true
+    },
+    {
+      "id": "m15-stories-extra",
+      "kind": "bonus",
+      "label": {
+        "en": "More Stories",
+        "de": "Mehr Geschichten"
+      },
+      "to": "/stories",
+      "bonus": true
+    }
+  ],
+  "checkpoint": {
+    "moduleType": "a1-checkpoint",
+    "specs": [
+      {
+        "type": "vocab-translation",
+        "count": 6
+      },
+      {
+        "type": "grammar-drill",
+        "count": 6
+      }
+    ]
+  },
+  "pedagogy": {
+    "ruleTable": {
+      "title": {
+        "en": "Das Perfekt",
+        "de": "Das Perfekt"
+      },
+      "rows": [
+        {
+          "label": {
+            "en": "haben + Partizip II",
+            "de": "haben + Partizip II"
+          },
+          "usage": {
+            "en": "most verbs",
+            "de": "die meisten Verben"
+          },
+          "example": {
+            "en": "Ich habe Fußball gespielt.",
+            "de": "Ich habe Fußball gespielt."
+          }
+        },
+        {
+          "label": {
+            "en": "sein + Partizip II",
+            "de": "sein + Partizip II"
+          },
+          "usage": {
+            "en": "movement / change of place",
+            "de": "Bewegung und Ortswechsel"
+          },
+          "example": {
+            "en": "Ich bin nach Hause gegangen.",
+            "de": "Ich bin nach Hause gegangen."
+          }
+        },
+        {
+          "label": {
+            "en": "ge- … -t",
+            "de": "ge- … -t"
+          },
+          "usage": {
+            "en": "regular (weak) verbs",
+            "de": "regelmäßige Verben"
+          },
+          "example": {
+            "en": "spielen → gespielt",
+            "de": "spielen → gespielt"
+          }
+        },
+        {
+          "label": {
+            "en": "ge- … -en",
+            "de": "ge- … -en"
+          },
+          "usage": {
+            "en": "strong verbs, vowel may change",
+            "de": "starke Verben, Vokal wechselt"
+          },
+          "example": {
+            "en": "scheinen → geschienen",
+            "de": "scheinen → geschienen"
+          }
+        }
+      ]
+    },
+    "grammarNote": {
+      "en": "The spoken past tense is a two-part frame: the auxiliary (haben or sein) in position two, the Partizip II at the very end. Use sein for movement.",
+      "de": "Das gesprochene Perfekt ist ein Zweiteil: das Hilfsverb (haben/sein) an Position zwei, das Partizip II ganz am Ende. Für Bewegung nimmt man sein."
+    }
+  },
+  "vocabCategories": [
+    "hobby-verbs",
+    "weather-wishes"
+  ],
+  "grammarCategories": [
+    "perfekt"
+  ],
+  "hasLesson": true
+}

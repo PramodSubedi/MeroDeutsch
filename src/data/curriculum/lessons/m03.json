@@ -1,0 +1,243 @@
+{
+  "cefr": "A1.1",
+  "docRoute": "/alphabet",
+  "objectives": {
+    "en": [
+      "Master German letter pronunciations, Umlauts (ä, ö, ü), Eszett (ß), diphthongs (ei, ie, eu), and spell names over the phone.",
+      "How do you spell your Nepali or foreign name over a noisy German telephone connection without letters getting misunderstood?",
+      "Estimated time 40 Minutes · Prerequisites: Units 01–02"
+    ]
+  },
+  "lexicon": [
+    {
+      "word": "Buchstabe",
+      "en": "Letter of alphabet",
+      "ne": "अक्षर",
+      "article": "der",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Welcher Buchstabe ist das?",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "buchstabieren",
+      "en": "to spell out",
+      "ne": "अक्षर-अक्षर उच्चारण गर्नु",
+      "partOfSpeech": "Verb",
+      "examples": [
+        {
+          "de": "Können Sie das bitte buchstabieren?",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "Umlaut",
+      "en": "Umlaut (ä, ö, ü)",
+      "ne": "उमलाउट",
+      "article": "der",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Ä, Ö und Ü sind Umlaute.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "Eszett",
+      "en": "Sharp S (ß)",
+      "ne": "एस-त्सेट (ß)",
+      "article": "das",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Das Wort 'Fuß' hat ein ß.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "Vorname",
+      "en": "First name",
+      "ne": "पहिलो नाम",
+      "article": "der",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Mein Vorname ist Anita.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "Nachname",
+      "en": "Surname",
+      "ne": "थर",
+      "article": "der",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Mein Nachname ist Sharma.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "Äpfel",
+      "en": "Apples",
+      "ne": "स्याउहरू",
+      "article": "die",
+      "partOfSpeech": "Noun (pl)",
+      "examples": [
+        {
+          "de": "Die Äpfel sind süß.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "Öl",
+      "en": "Oil",
+      "ne": "तेल",
+      "article": "das",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Das Öl ist heiß.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "Übung",
+      "en": "Exercise",
+      "ne": "अभ्यास",
+      "article": "die",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Übung macht den Meister.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    },
+    {
+      "word": "Straße",
+      "en": "Street",
+      "ne": "सडक",
+      "article": "die",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Ich wohne in der Bahnhofstraße.",
+          "en": "",
+          "ne": ""
+        }
+      ]
+    }
+  ],
+  "grammar": [
+    {
+      "title": {
+        "en": "Special German Characters",
+        "de": "Special German Characters"
+      },
+      "bullets": [
+        "Ä / ä = /ɛ/ (like English \"e\" in bed). Example: spät.",
+        "Ö / ö = /ø/ (say \"eh\" with rounded lips). Example: schön.",
+        "Ü / ü = /y/ (say \"ee\" with rounded lips). Example: über.",
+        "ß (Eszett) = /s/ (sharp 's' after long vowels). Example: groß."
+      ]
+    },
+    {
+      "title": {
+        "en": "German Diphthongs",
+        "de": "German Diphthongs"
+      },
+      "bullets": [
+        "ei = \"eye\" (mein, heißen) | ie = \"ee\" (sie, wie)",
+        "eu / äu = \"oy\" (deutsch, Häuser) | au = \"ow\" (Haus, Frau)"
+      ]
+    }
+  ],
+  "dialogue": {
+    "id": "m03-dialogue",
+    "title": {
+      "en": "Dialogue",
+      "de": "Dialog"
+    },
+    "scenario": {
+      "en": "Hotel Reservation over the Phone",
+      "de": "Hotel Reservation over the Phone"
+    },
+    "turns": [
+      {
+        "speaker": "Receptionist:",
+        "de": "Hotel Central, guten Tag!"
+      },
+      {
+        "speaker": "Caller:",
+        "de": "Guten Tag. Ich möchte ein Zimmer reservieren. Mein Name ist Poudel."
+      },
+      {
+        "speaker": "Receptionist:",
+        "de": "Können Sie Ihren Nachnamen bitte buchstabieren?"
+      },
+      {
+        "speaker": "Caller:",
+        "de": "Ja, gerne: P - O - U - D - E - L."
+      }
+    ]
+  },
+  "miniGame": {
+    "type": "spelling_word",
+    "id": "m3-spelling-bee",
+    "payload": {
+      "type": "spelling_word",
+      "id": "m3-spelling-bee",
+      "spelled_audio": "M - U - T - T - E - R",
+      "correct_word": "Mutter"
+    }
+  },
+  "practiceBank": [
+    {
+      "kind": "Drill",
+      "prompt": "How is the diphthong \"ei\" in \"nein\" pronounced?",
+      "answer": "Like \"eye\" in bite"
+    },
+    {
+      "kind": "Drill",
+      "prompt": "Spell the name \"MAYA\" in German letters:",
+      "answer": "M - A - Y - A"
+    },
+    {
+      "kind": "Drill",
+      "prompt": "Alternative spelling for \"Müller\" without Umlaut:",
+      "answer": "Mueller"
+    }
+  ],
+  "culture": {
+    "title": {
+      "en": "Cultural context",
+      "de": "Kultureller Kontext"
+    },
+    "body": [
+      "⚠️ *Common Trap (Fettnäpfchen): Replacing ß with B. ß is a sharp S* sound, not the letter B!",
+      "🧠 Memory Hook: If your keyboard lacks Umlauts, replace them with 'e': ä = ae, ö = oe, ü = ue, ß = ss.",
+      "🇩🇪 *Cultural Insight (Kulturtipp): Germans use the DIN 5009 spelling alphabet over the phone (Anton, Berta, Cäsar, Dora...*)."
+    ]
+  }
+}

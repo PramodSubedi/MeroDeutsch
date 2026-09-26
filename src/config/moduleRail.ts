@@ -14,10 +14,18 @@
  * So the rule is inverted: a route gets a rail ONLY by adding itself here,
  * with a written rationale. Silence means no rail and a full-width page.
  *
+ * SECOND, INDEPENDENT GATE: TIER. `/learn` describes the A1 campaign (the
+ * 15-module spine and its checkpoint gates), which is the Premium curriculum, so
+ * `ContextPanel` renders no aggregate rail for a guest or a signed-in free
+ * learner. The `/lesson/` prefix is NOT gated: it annotates the free interactive
+ * lesson, and is only suppressed on the `/notes` document route. This file
+ * answers "may this ROUTE have a rail?"; ContextPanel answers "may this TIER
+ * see one?". Both must say yes, and neither file can decide the other's half.
+ *
  * Currently ONE route qualifies:
- *   /learn — `UnitSpine` is a per-band LIST. What it cannot show in one
- *   glance is the roll-up across bands: how many of the five gates are
- *   passed, and which gate is the one to tackle next. That aggregate is
+ *   /learn — `UnitSpine` is a per-module LIST. What it cannot show in one
+ *   glance is the roll-up across modules: how many of the fifteen checkpoints
+ *   are passed, and which one is the one to tackle next. That aggregate is
  *   genuinely new information, not a restatement.
  *
  * Audited and deliberately EXCLUDED (each already has the content on-page):
@@ -32,9 +40,16 @@
  * Related but separate: `DashboardPage` renders `<A1PathProgress />` in full
  * mode, which shows the same per-band list `UnitSpine` shows on /learn. That
  * duplication is pre-existing and is NOT addressed here.
+ *
+ * SECOND ENTRY: /lesson/:n. The lesson page is the study surface, and the
+ * practice tools are deliberately NOT on it — they are optional reinforcement
+ * for material the learner has just read. The rail is the only place that can
+ * say which tools suit THIS lesson (`data/lessonPracticeLinks.ts`) without
+ * turning the lesson into a tool launcher. It qualifies on the same test as
+ * /learn: information the page below genuinely cannot show in one glance.
  */
 
-export type RailKind = 'a1-aggregate';
+export type RailKind = 'a1-aggregate' | 'a1-lesson';
 
 export interface RailSpec {
   kind: RailKind;
@@ -50,11 +65,51 @@ export const RAIL_SPECS: Readonly<Record<string, RailSpec>> = {
   '/learn': {
     kind: 'a1-aggregate',
     rationale:
-      'UnitSpine lists bands one card at a time; it never states the cross-band roll-up (gates passed, next gate due).',
+      'UnitSpine lists lessons one row at a time; it never states the cross-lesson roll-up (gates passed, next gate due).',
   },
 };
 
+/**
+ * PARAM routes, which cannot live in the exact-path table above because the
+ * pathname carries a variable. Matched by prefix on a `/seg/:` boundary so
+ * `/lesson/3` matches while `/lessons-stuff` does not.
+ */
+const RAIL_PREFIX_SPECS: ReadonlyArray<{ prefix: string; spec: RailSpec }> = [
+  {
+    prefix: '/lesson/',
+    spec: {
+      kind: 'a1-lesson',
+      rationale:
+        'The lesson page holds the study material only. Which practice tools drill THIS lesson is per-lesson knowledge the page cannot state, so it lives in the rail.',
+    },
+  },
+];
+
 /** The rail spec for this route, or undefined — which means NO rail. */
 export function railSpecFor(pathname: string): RailSpec | undefined {
-  return RAIL_SPECS[pathname];
+  const exact = RAIL_SPECS[pathname];
+  if (exact) return exact;
+  for (const entry of RAIL_PREFIX_SPECS) {
+    if (pathname.startsWith(entry.prefix) && pathname.length > entry.prefix.length) {
+      return entry.spec;
+    }
+  }
+  return undefined;
+}
+
+/**
+ * The unit index a `/lesson/:n` pathname refers to, or null. Exported so the
+ * rail reads the SAME number the page does instead of re-parsing the path with
+ * its own rules.
+ */
+export function lessonIndexFromPath(pathname: string): number | null {
+  if (!pathname.startsWith('/lesson/')) return null;
+  const raw = pathname.slice('/lesson/'.length);
+  // Tolerate a trailing slash; reject anything non-numeric so /lesson/abc
+  // renders the page's own "Lesson not found" state instead of a rail for a
+  // lesson that does not exist.
+  const cleaned = raw.endsWith('/') ? raw.slice(0, -1) : raw;
+  if (!/^\d+$/.test(cleaned)) return null;
+  const n = Number(cleaned);
+  return Number.isFinite(n) ? n : null;
 }

@@ -1,0 +1,885 @@
+{
+  "cefr": "A1.2",
+  "docRoute": "/roleplay",
+  "objectives": {
+    "en": [
+      "Ask for directions in a city, describe means of transport, and use Dative prepositions with transportation (mit dem / mit der)."
+    ]
+  },
+  "lexicon": [
+    {
+      "word": "Stadt",
+      "en": "City / Town",
+      "ne": "शहर",
+      "article": "die",
+      "plural": "Städte",
+      "ipa": "/ʃtat/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Berlin ist eine große Stadt.",
+          "en": "Berlin is a big city.",
+          "ne": "बर्लिन एउटा ठूलो शहर हो।"
+        }
+      ]
+    },
+    {
+      "word": "Bahnhof",
+      "en": "Train station",
+      "ne": "रेल स्टेशन",
+      "article": "der",
+      "plural": "Bahnhöfe",
+      "ipa": "/ˈbaːn_hoːf/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Wo ist der Bahnhof?",
+          "en": "Where is the train station?",
+          "ne": "रेल स्टेशन कहाँ छ?"
+        }
+      ]
+    },
+    {
+      "word": "Flughafen",
+      "en": "Airport",
+      "ne": "विमानस्थल",
+      "article": "der",
+      "plural": "Flughäfen",
+      "ipa": "/ˈfluːk_haːfn̩/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Der Bus fährt zum Flughafen.",
+          "en": "The bus drives to the airport.",
+          "ne": "बस विमानस्थलतर्फ जान्छ।"
+        }
+      ]
+    },
+    {
+      "word": "Haltestelle",
+      "en": "Bus/Tram stop",
+      "ne": "बस बिसौनी",
+      "article": "die",
+      "plural": "Haltestellen",
+      "ipa": "/ˈhal tə_ʃtɛlə/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Die Haltestelle ist da drüben.",
+          "en": "The bus stop is over there.",
+          "ne": "बस बिसौनी उतातिर छ।"
+        }
+      ]
+    },
+    {
+      "word": "Zug",
+      "en": "Train",
+      "ne": "रेल",
+      "article": "der",
+      "plural": "Züge",
+      "ipa": "/tsuːk/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Der Zug kommt pünktlich an.",
+          "en": "The train arrives on time.",
+          "ne": "रेल समयमै आइपुग्छ।"
+        }
+      ]
+    },
+    {
+      "word": "Bus",
+      "en": "Bus",
+      "ne": "बस",
+      "article": "der",
+      "plural": "Busse",
+      "ipa": "/bʊs/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Ich fahre mit dem Bus.",
+          "en": "I travel by bus.",
+          "ne": "म बसमा जान्छु।"
+        }
+      ]
+    },
+    {
+      "word": "U-Bahn",
+      "en": "Underground / Subway",
+      "ne": "भूमिगत रेल",
+      "article": "die",
+      "plural": "U-Bahnen",
+      "ipa": "/ˈuː_baːn/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Die U-Bahn ist sehr schnell.",
+          "en": "The subway is very fast.",
+          "ne": "भूमिगत रेल धेरै छिटो हुन्छ।"
+        }
+      ]
+    },
+    {
+      "word": "S-Bahn",
+      "en": "Suburban train",
+      "ne": "उपनगरीय रेल",
+      "article": "die",
+      "plural": "S-Bahnen",
+      "ipa": "/ˈɛs_baːn/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Wir nehmen die S-Bahn.",
+          "en": "We take the suburban train.",
+          "ne": "हामी उपनगरीय रेल लिन्छौँ।"
+        }
+      ]
+    },
+    {
+      "word": "Straßenbahn / Tram",
+      "en": "Tram / Streetcar",
+      "ne": "ट्राम",
+      "article": "die",
+      "plural": "Straßenbahnen",
+      "ipa": "/ˈʃtʁaːsn̩_baːn/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Die Tram hält am Platz.",
+          "en": "The tram stops at the square.",
+          "ne": "ट्राम चोकमा रोकिन्छ।"
+        }
+      ]
+    },
+    {
+      "word": "Taxi",
+      "en": "Taxi",
+      "ne": "ट्याक्सी",
+      "article": "das",
+      "plural": "Taxis",
+      "ipa": "/ˈtaksi/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Ein Taxi ist teuer.",
+          "en": "A taxi is expensive.",
+          "ne": "ट्याक्सी महँगो हुन्छ।"
+        }
+      ]
+    },
+    {
+      "word": "Fahrrad",
+      "en": "Bicycle",
+      "ne": "साइकल",
+      "article": "das",
+      "plural": "Fahrräder",
+      "ipa": "/ˈfaːɐ̯_ʁaːt/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Er fährt mit dem Fahrrad.",
+          "en": "He rides a bicycle.",
+          "ne": "उहाँ साइकलमा जानुहुन्छ।"
+        }
+      ]
+    },
+    {
+      "word": "Auto",
+      "en": "Car",
+      "ne": "गाडी",
+      "article": "das",
+      "plural": "Autos",
+      "ipa": "/ˈaʊ̯to/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Das Auto steht auf dem Parkplatz.",
+          "en": "The car is in the parking lot.",
+          "ne": "गाडी पार्किङमा छ।"
+        }
+      ]
+    },
+    {
+      "word": "Ticket / Fahrkarte",
+      "en": "Transit ticket",
+      "ne": "यात्रा टिकट",
+      "article": "die",
+      "plural": "Tickets / Fahrkarten",
+      "ipa": "/ˈfaːɐ̯_kaʁtə/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Eine Fahrkarte nach München, bitte.",
+          "en": "A ticket to Munich, please.",
+          "ne": "म्युनिखको लागि एउटा टिकट, कृपया।"
+        }
+      ]
+    },
+    {
+      "word": "Gleis",
+      "en": "Railway platform",
+      "ne": "प्लेटफर्म",
+      "article": "das",
+      "plural": "Gleise",
+      "ipa": "/ɡlaɪ̯s/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Der Zug fährt von Gleis 4 ab.",
+          "en": "The train departs from platform 4.",
+          "ne": "रेल प्लेटफर्म ४ बाट प्रस्थान गर्छ।"
+        }
+      ]
+    },
+    {
+      "word": "Straße",
+      "en": "Street",
+      "ne": "सडक",
+      "article": "die",
+      "plural": "Straßen",
+      "ipa": "/ˈʃtʁaːsə/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Die Straße ist lang.",
+          "en": "The street is long.",
+          "ne": "सडक लामो छ।"
+        }
+      ]
+    },
+    {
+      "word": "Platz",
+      "en": "Square / Plaza",
+      "ne": "चोक",
+      "article": "der",
+      "plural": "Plätze",
+      "ipa": "/plats/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Der Alexanderplatz ist im Zentrum.",
+          "en": "Alexanderplatz is in the center.",
+          "ne": "अलेक्ज्यान्डर चोक केन्द्रमा छ।"
+        }
+      ]
+    },
+    {
+      "word": "Weg",
+      "en": "Path / Way",
+      "ne": "बाटो",
+      "article": "der",
+      "plural": "Wege",
+      "ipa": "/veːk/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Kennen Sie den Weg zum Hotel?",
+          "en": "Do you know the way to the hotel?",
+          "ne": "के तपाईंलाई होटल जाने बाटो थाहा छ?"
+        }
+      ]
+    },
+    {
+      "word": "Zentrum / Stadtmitte",
+      "en": "City center / Downtown",
+      "ne": "शहरको केन्द्र",
+      "plural": "Zentren",
+      "ipa": "/ˈtsɛntʁʊm/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Das Hotel ist im Zentrum.",
+          "en": "The hotel is in the center.",
+          "ne": "होटल शहरको केन्द्रमा छ।"
+        }
+      ]
+    },
+    {
+      "word": "Bank",
+      "en": "Bank",
+      "ne": "बैंक",
+      "article": "die",
+      "plural": "Banken",
+      "ipa": "/baŋk/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Wo ist die nächste Bank?",
+          "en": "Where is the nearest bank?",
+          "ne": "नजिकैको बैंक कहाँ छ?"
+        }
+      ]
+    },
+    {
+      "word": "Post",
+      "en": "Post office",
+      "ne": "हुलाक",
+      "article": "die",
+      "plural": "-",
+      "ipa": "/pɔst/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Die Post ist am Platz.",
+          "en": "The post office is at the square.",
+          "ne": "हुलाक चोकमा छ।"
+        }
+      ]
+    },
+    {
+      "word": "Apotheke",
+      "en": "Pharmacy / Chemist",
+      "ne": "औषधि पसल",
+      "article": "die",
+      "plural": "Apotheken",
+      "ipa": "/apoˈteːkə/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Ich brauche Medizin aus der Apotheke.",
+          "en": "I need medicine from the pharmacy.",
+          "ne": "मलाई औषधि पसलबाट औषधि चाहिन्छ।"
+        }
+      ]
+    },
+    {
+      "word": "Supermarkt",
+      "en": "Supermarket",
+      "ne": "सुपरमार्केट",
+      "article": "der",
+      "plural": "Supermärkte",
+      "ipa": "/ˈzuːpɐ_maʁkt/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Der Supermarkt schließt um 20 Uhr.",
+          "en": "The supermarket closes at 8 PM.",
+          "ne": "सुपरमार्केट आठ बजे बन्द हुन्छ।"
+        }
+      ]
+    },
+    {
+      "word": "Hotel",
+      "en": "Hotel",
+      "ne": "होटल",
+      "article": "das",
+      "plural": "Hotels",
+      "ipa": "/hoˈtɛl/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Das Hotel liegt nahe am Bahnhof.",
+          "en": "The hotel is near the station.",
+          "ne": "होटल रेल स्टेशन नजिकै छ।"
+        }
+      ]
+    },
+    {
+      "word": "geradeaus",
+      "en": "Straight ahead",
+      "ne": "सीधा",
+      "plural": "-",
+      "ipa": "/ɡəˈʁaːdə_ʔaʊ̯s/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Gehen Sie immer geradeaus!",
+          "en": "Go straight ahead!",
+          "ne": "सीधा जानुहोस्!"
+        }
+      ]
+    },
+    {
+      "word": "links",
+      "en": "Left",
+      "ne": "देब्रे",
+      "plural": "-",
+      "ipa": "/lɪŋks/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Biegen Sie nach links ab!",
+          "en": "Turn left!",
+          "ne": "देब्रे मोड्नुहोस्!"
+        }
+      ]
+    },
+    {
+      "word": "rechts",
+      "en": "Right",
+      "ne": "दाहिने",
+      "plural": "-",
+      "ipa": "/ʁɛçts/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Die Apotheke ist auf der rechten Seite.",
+          "en": "The pharmacy is on the right side.",
+          "ne": "औषधि पसल दाहिनेतर्फ छ।"
+        }
+      ]
+    },
+    {
+      "word": "Ecke",
+      "en": "Corner",
+      "ne": "कुना",
+      "article": "die",
+      "plural": "Ecken",
+      "ipa": "/ˈɛkə/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "An der Ecke nach rechts.",
+          "en": "Turn right at the corner.",
+          "ne": "कुनामा दाहिने मोड्नुहोस्।"
+        }
+      ]
+    },
+    {
+      "word": "Kreuzung",
+      "en": "Intersection / Crossroad",
+      "ne": "चौबाटो",
+      "article": "die",
+      "plural": "Kreuzungen",
+      "ipa": "/ˈkʁɔɪ̯tsʊŋ/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "An der Kreuzung geradeaus.",
+          "en": "Straight ahead at the intersection.",
+          "ne": "चौबाटोमा सीधा जानुहोस्।"
+        }
+      ]
+    },
+    {
+      "word": "Ampel",
+      "en": "Traffic light",
+      "ne": "ट्राफिक बत्ती",
+      "article": "die",
+      "plural": "Ampeln",
+      "ipa": "/ˈampl̩/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "An der Ampel nach links.",
+          "en": "Turn left at the traffic light.",
+          "ne": "ट्राफिक बत्तीमा देब्रे मोड्नुहोस्।"
+        }
+      ]
+    },
+    {
+      "word": "nahe / in der Nähe",
+      "en": "Near / Nearby",
+      "ne": "नजिकै",
+      "plural": "-",
+      "ipa": "/ˈnɛːə/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Das Hotel ist in der Nähe.",
+          "en": "The hotel is nearby.",
+          "ne": "होटल नजिकै छ।"
+        }
+      ]
+    },
+    {
+      "word": "weit",
+      "en": "Far",
+      "ne": "टाढा",
+      "plural": "-",
+      "ipa": "/vaɪ̯t/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Ist der Bahnhof weit von hier?",
+          "en": "Is the station far from here?",
+          "ne": "के रेल स्टेशन यहाँबाट टाढा छ?"
+        }
+      ]
+    },
+    {
+      "word": "fahren",
+      "en": "to drive / ride / travel",
+      "ne": "जान्नु (सवारी साधन)",
+      "plural": "fährt / fuhr / ist gefahren",
+      "ipa": "/ˈfaːʁən/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Ich fahre mit der U-Bahn.",
+          "en": "I travel by subway.",
+          "ne": "म भूमिगत रेलमा जान्छु।"
+        }
+      ]
+    },
+    {
+      "word": "gehen",
+      "en": "to walk / go",
+      "ne": "हिँड्नु / जान्नु",
+      "plural": "geht / ging / ist gegangen",
+      "ipa": "/ˈɡeːən/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Wir gehen zu Fuß.",
+          "en": "We go on foot.",
+          "ne": "हामी पैदल जान्छौँ।"
+        }
+      ]
+    },
+    {
+      "word": "abbiegen",
+      "en": "to turn (direction)",
+      "ne": "मोड्नु",
+      "plural": "biegt ab / bieg ab / ist abgebogen",
+      "ipa": "/ˈap_biːɡn̩/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Biegen Sie nach links ab.",
+          "en": "Turn left.",
+          "ne": "देब्रे मोड्नुहोस्।"
+        }
+      ]
+    },
+    {
+      "word": "suchen",
+      "en": "to search",
+      "ne": "खोज्नु",
+      "plural": "sucht / suchte / gesucht",
+      "ipa": "/ˈzuːxn̩/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Ich suche den Bahnhof.",
+          "en": "I am looking for the train station.",
+          "ne": "म रेल स्टेशन खोज्दैछु।"
+        }
+      ]
+    },
+    {
+      "word": "finden",
+      "en": "to find",
+      "ne": "भेट्टाउनु",
+      "plural": "findet / fand / gefunden",
+      "ipa": "/ˈfɪndn̩/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Sie finden das Hotel auf der linken Seite.",
+          "en": "You will find the hotel on the left side.",
+          "ne": "तपाईंले होटल देब्रेतर्फ भेट्टाउनुहुनेछ।"
+        }
+      ]
+    },
+    {
+      "word": "mit",
+      "en": "With / By (transport)",
+      "ne": "द्वारा / सँग",
+      "plural": "-",
+      "ipa": "/mɪt/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Ich fahre mit dem Bus.",
+          "en": "I travel by bus.",
+          "ne": "म बसद्वारा जान्छु।"
+        }
+      ]
+    },
+    {
+      "word": "zu Fuß",
+      "en": "On foot",
+      "ne": "पैदल",
+      "plural": "-",
+      "ipa": "/tsuː fuːs/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Ich gehe zu Fuß.",
+          "en": "I walk on foot.",
+          "ne": "म पैदल जान्छु।"
+        }
+      ]
+    },
+    {
+      "word": "Nähe",
+      "en": "Proximity / Vicinity",
+      "ne": "आसपास",
+      "article": "die",
+      "plural": "-",
+      "ipa": "/ˈnɛːə/",
+      "frequency": "active",
+      "examples": [
+        {
+          "de": "Gibt es ein Cafe in der Nähe?",
+          "en": "Is there a cafe nearby?",
+          "ne": "आसपास कुनै क्याफे छ?"
+        }
+      ]
+    },
+    {
+      "word": "Auskunft",
+      "en": "Information counter",
+      "ne": "सोधपुछ कक्ष",
+      "article": "die",
+      "plural": "Auskünfte",
+      "ipa": "/ˈaʊ̯s_kʊnft/",
+      "frequency": "passive",
+      "examples": [
+        {
+          "de": "Fragen Sie an der Auskunft!",
+          "en": "Ask at the information counter!",
+          "ne": "सोधपुछ कक्षमा सोध्नुहोस्!"
+        }
+      ]
+    }
+  ],
+  "grammar": [
+    {
+      "title": {
+        "en": "Transportation Preposition: mit (+ Dative Case)",
+        "de": "Transportation Preposition: mit (+ Dative Case)"
+      },
+      "notes": [
+        {
+          "en": "The preposition mit ALWAYS triggers the Dative case:",
+          "ne": "",
+          "de": ""
+        }
+      ],
+      "bullets": [
+        "Masculine (der Bus/Zug): mit dem Bus / mit dem Zug",
+        "Neuter (das Auto/Taxi): mit dem Auto / mit dem Taxi",
+        "Feminine (die Bahn/U-Bahn): mit der Bahn / mit der U-Bahn"
+      ]
+    },
+    {
+      "title": {
+        "en": "Giving & Asking for Directions",
+        "de": "Giving & Asking for Directions"
+      },
+      "bullets": [
+        "Asking: Entschuldigung, wie komme ich zum Bahnhof?",
+        "Commands (Imperative Formal):",
+        "Gehen Sie geradeaus. (\"Go straight ahead.\")",
+        "Biegen Sie links / rechts ab. (\"Turn left / right.\")",
+        "Nehmen Sie die erste Straße rechts. (\"Take the first street on the right.\")"
+      ]
+    }
+  ],
+  "dialogue": {
+    "id": "m12-dialogue",
+    "title": {
+      "en": "Dialogue",
+      "de": "Dialog"
+    },
+    "scenario": {
+      "en": "Asking for Directions on the Street",
+      "de": "Asking for Directions on the Street"
+    },
+    "turns": [
+      {
+        "speaker": "Passant:",
+        "de": "Entschuldigung! Wie komme ich zum Bahnhof?"
+      },
+      {
+        "speaker": "Einheimischer:",
+        "de": "Das ist nicht weit. Gehen Sie hier geradeaus."
+      },
+      {
+        "speaker": "Passant:",
+        "de": "Und dann?"
+      },
+      {
+        "speaker": "Einheimischer:",
+        "de": "Biegen Sie an der Kreuzung links ab. Der Bahnhof ist auf der rechten Seite."
+      },
+      {
+        "speaker": "Passant:",
+        "de": "Fährt dort auch ein Bus?"
+      },
+      {
+        "speaker": "Einheimischer:",
+        "de": "Ja, Sie können auch mit dem Bus Nummer 5 fahren."
+      },
+      {
+        "speaker": "Passant:",
+        "de": "Vielen Dank für die Hilfe!"
+      }
+    ]
+  },
+  "miniGame": {
+    "type": "directions_quest",
+    "id": "m12-city-navigator",
+    "payload": {
+      "type": "directions_quest",
+      "id": "m12-city-navigator",
+      "scenario": "Wo ist der Bahnhof?",
+      "correct_steps": [
+        "geradeaus gehen",
+        "an der Ampel links abbiegen"
+      ],
+      "transport_phrase": "mit dem Bus"
+    }
+  },
+  "practiceBank": [
+    {
+      "kind": "MCQ",
+      "prompt": "Which article correctly fills: \"Ich fahre mit ___ (der) Bus\"?",
+      "options": [
+        "den",
+        "dem",
+        "der",
+        "das"
+      ],
+      "answer": "dem"
+    },
+    {
+      "kind": "MCQ",
+      "prompt": "How do you say \"I am going on foot\"?",
+      "options": [
+        "Ich gehe mit Fuß.",
+        "Ich gehe zu Fuß.",
+        "Ich fahre zu Fuß.",
+        "Ich gehe im Fuß."
+      ],
+      "answer": "Ich gehe zu Fuß."
+    },
+    {
+      "kind": "Fill-in",
+      "prompt": "Sie fährt mit _______ (die) U-Bahn. \\(\\rightarrow\\) der"
+    },
+    {
+      "kind": "Fill-in",
+      "prompt": "Er fährt mit _______ (das) Auto. \\(\\rightarrow\\) dem"
+    },
+    {
+      "kind": "Fill-in",
+      "prompt": "An der Ampel nach _______ (right) abbiegen. \\(\\rightarrow\\) rechts"
+    },
+    {
+      "kind": "Direction Matching",
+      "prompt": "geradeaus \\(\\rightarrow\\) straight ahead"
+    },
+    {
+      "kind": "Direction Matching",
+      "prompt": "links \\(\\rightarrow\\) left"
+    },
+    {
+      "kind": "Direction Matching",
+      "prompt": "rechts \\(\\rightarrow\\) right"
+    },
+    {
+      "kind": "Translation DE->EN",
+      "prompt": "\"Wo ist die nächste Haltestelle?\" \\(\\rightarrow\\) Where is the nearest bus stop?"
+    },
+    {
+      "kind": "Translation EN->DE",
+      "prompt": "\"Turn left at the intersection.\" \\(\\rightarrow\\) Biegen Sie an der Kreuzung nach links ab."
+    },
+    {
+      "kind": "Translation NE->DE",
+      "prompt": "\"म बसद्वारा जान्छु।\" \\(\\rightarrow\\) Ich fahre mit dem Bus."
+    },
+    {
+      "kind": "Matching",
+      "prompt": "der Bahnhof \\(\\rightarrow\\) train station"
+    },
+    {
+      "kind": "Matching",
+      "prompt": "die Apotheke \\(\\rightarrow\\) pharmacy"
+    },
+    {
+      "kind": "Matching",
+      "prompt": "das Gleis \\(\\rightarrow\\) railway platform"
+    },
+    {
+      "kind": "Verb Selection",
+      "prompt": "Walking on foot uses: gehen"
+    },
+    {
+      "kind": "Dictation",
+      "prompt": "Listen & Type: \"Ich fahre jeden Morgen mit der U-Bahn zur Arbeit.\""
+    },
+    {
+      "kind": "Dictation",
+      "prompt": "Listen & Type: \"Gehen Sie an der Ampel nach rechts.\""
+    },
+    {
+      "kind": "Error Correction",
+      "prompt": "\"Ich fahre mit die S-Bahn.\" \\(\\rightarrow\\) Ich fahre mit der S-Bahn."
+    },
+    {
+      "kind": "Error Correction",
+      "prompt": "\"Ich fahre zu Fuß.\" \\(\\rightarrow\\) Ich gehe zu Fuß."
+    },
+    {
+      "kind": "Culture MCQ",
+      "prompt": "What does Schwarzfahren mean in Germany?",
+      "options": [
+        "Driving at night",
+        "Riding public transport without a valid ticket",
+        "Driving a black car",
+        "Cycling in the dark"
+      ],
+      "answer": "Riding public transport without a valid ticket"
+    },
+    {
+      "kind": "Dative Shift",
+      "prompt": "der Zug + mit \\(\\rightarrow\\) mit dem Zug"
+    },
+    {
+      "kind": "Dative Shift",
+      "prompt": "die Tram + mit \\(\\rightarrow\\) mit der Tram"
+    },
+    {
+      "kind": "Listening Gap",
+      "prompt": "\"Der Zug fährt von _______ 4 ab.\" (Audio: Gleis) \\(\\rightarrow\\) Gleis"
+    },
+    {
+      "kind": "Sentence Unscramble",
+      "prompt": "[mit / Ich / dem / fahre / Bus] \\(\\rightarrow\\) Ich fahre mit dem Bus."
+    },
+    {
+      "kind": "Antonym Match",
+      "prompt": "weit (far) \\(\\leftrightarrow\\) nah / in der Nähe (near)"
+    }
+  ],
+  "traps": [
+    {
+      "note": {
+        "en": "Trap 1: Saying \"by foot\" as \"mit Fuß\"",
+        "ne": "",
+        "de": ""
+      },
+      "wrong": "Falsch: \"Ich gehe mit Fuß.\"",
+      "right": "Richtig: \"Ich gehe ZU FUß.\""
+    },
+    {
+      "note": {
+        "en": "Trap 2: Forgetting Dative shift with mit",
+        "ne": "",
+        "de": ""
+      },
+      "wrong": "Falsch: \"Ich fahre mit der Bus.\" (Bus is masculine).",
+      "right": "Richtig: \"Ich fahre mit DEM Bus.\""
+    },
+    {
+      "note": {
+        "en": "Trap 3: Confusing fahren and gehen gehen = walking on foot (\"Ich gehe zum Supermarkt\"). fahren = traveling by vehicle (\"Ich fahre mit dem Bus\").",
+        "ne": "",
+        "de": ""
+      }
+    }
+  ],
+  "culture": {
+    "title": {
+      "en": "Cultural context",
+      "de": "Kultureller Kontext"
+    },
+    "body": [
+      "*Public Transit Etiquette (Fahrkarten entwerten): In many German and Austrian cities, buying a transit ticket is not enough—you must validation-stamp (entwerten) the paper ticket at a small platform machine before boarding! Ticket inspectors (Kontrolleure) issue heavy fines for unvalidated tickets (Schwarzfahren*)."
+    ]
+  }
+}

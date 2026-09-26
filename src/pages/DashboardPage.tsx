@@ -19,12 +19,16 @@ import { ReviewSessionManager, filterReviewQueue } from '../components/ReviewSes
 import { MasteryIndicator } from '../components/MasteryIndicator';
 import { SRSReviewWidget } from '../components/SRSReviewWidget';
 import { A1PathProgress } from '../components/path/A1PathProgress';
+import { useA1Path } from '../hooks/useA1Path';
+import { useHasA1Campaign } from '../hooks/usePremium';
+import { A1_UNITS } from '../data/a1Path';
+import { useXp } from '../hooks/useXp';
 import { DailyQuestsWidget } from '../components/DailyQuestsWidget';
 import { StatTile } from '../components/ui/StatTile';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { useAchievements } from '../hooks/useAchievements';
 import { Link } from 'react-router-dom';
-import { ArrowRight, BookOpen, ChevronDown, CircleCheck, Gauge, Flame, Pencil, Settings } from 'lucide-react';
+import { ArrowRight, BookOpen, ChevronDown, CircleCheck, Gauge, Flame, RefreshCw, Settings } from 'lucide-react';
 import type { WrongAnswerItem } from '../types';
 import { ANCHORS } from '../lib/anchors';
 
@@ -47,6 +51,9 @@ export function DashboardPage() {
   const [confirmClearOpen, setConfirmClearOpen] = useState(false);
   const { langMode } = useLang();
   const { streakCount, longestStreak } = useStreak();
+  const { isCheckpointComplete, attemptsByUnit } = useA1Path();
+  const { hasCampaign } = useHasA1Campaign();
+  const { totalXp, level, xpProgress } = useXp();
   const { unlockBadge } = useAchievements();
   const { activities } = useActivityLog();
   const { showToast } = useMilestoneToast();
@@ -89,6 +96,39 @@ export function DashboardPage() {
   // Overall score = genuine blend across alphabet, quiz & spelling. Previously
   // this duplicated quiz accuracy under two different labels on the same page.
   const overallScore = Math.round((lettersPct + quizPctBar + spellingPct) / 3);
+
+  /* ── Course-scoped headline metrics ──────────────────────────────────────
+   * The four tiles at the top of this page used to be Alphabet-era
+   * (letters practiced /26, quiz %, spelling %, "overall"). For a learner
+   * walking the A1 campaign those numbers describe almost none of what they
+   * have done: the course is six bands and five gates, and `/alphabet` is only
+   * an optional side track. So the headline answered "how far through the
+   * alphabet am I?" while `A1PathProgress` further down the page answered
+   * "how far through the course am I?" — two competing truths.
+   *
+   * These are now derived from the SAME state `A1PathProgress` reads, so the
+   * tiles and the band strip beneath them can never disagree.
+   *
+   * CORE bands only (A, C, D, E, F). Band B is a SUPPORT band with no gate, so
+   * including it would understate progress — the same trap ContextPanel
+   * documents.
+   */
+  // Plain consts, NOT useMemo: these iterate at most 5 bands, and the hook
+  // block above has an early `return <Navigate>`, so a hook here would be
+  // conditionally called. Memoising 5 array reads would be noise anyway.
+  const coreBands = A1_UNITS.filter((band) => band.kind === 'core');
+  const gatesPassed = coreBands.filter((band) => isCheckpointComplete(band.index)).length;
+  // Mean of the best score on every gate the learner has actually attempted.
+  // No attempts yet -> null, so the tile can say "—" instead of a fake 0%.
+  const attemptedScores = coreBands
+    .map((band) => attemptsByUnit[band.index]?.best)
+    .filter((s): s is number => typeof s === 'number');
+  const gateAveragePct =
+    attemptedScores.length === 0
+      ? null
+      : Math.round((attemptedScores.reduce((a, b) => a + b, 0) / attemptedScores.length) * 100);
+  const gatesTotal = coreBands.length;
+
   const greeting = isDE ? 'Willkommen zurück' : 'Welcome back';
   const dashboardTitle = isDE ? 'Dashboard' : 'Dashboard';
   const reviewTitle = isDE ? 'Review-Warteschlange' : 'Review queue';
@@ -99,7 +139,6 @@ export function DashboardPage() {
   const overallScoreLabel = isDE ? 'Gesamtpunktzahl' : 'Overall score';
   const streakLabel = isDE ? 'Serie' : 'Streak';
   const streakSubtitle = isDE ? 'Aktuelle Serie und längste Rekord-Serie' : 'Current and longest streak';
-  const progressLabel = isDE ? 'Fortschritt' : 'Progress';
   const lettersPracticed = isDE ? 'Alphabet-Buchstaben geübt' : 'Alphabet letters practiced';
   const spellingRounds = isDE ? 'Abgeschlossene Rechtschreibrunden' : 'Spelling rounds completed';
   const quizAttempts = isDE ? 'Quiz-Versuche' : 'Quiz attempts';
@@ -158,42 +197,75 @@ export function DashboardPage() {
       {/* Milestone/level-up feedback surfaces via the GLOBAL toast in <Layout />
           (single fixed z-[60] viewport) — no inline banner here. */}
 
-      {/* Compact stats grid — shared StatTile component (same as Home) */}
+      {/* Headline tiles.
+          COURSE-scoped tiles (Modules "n/5 checkpoints passed" and Gate
+          average) are A1 CAMPAIGN state, so they render for Premium only. A
+          free learner has the `LearningPath` roadmap, where those numbers would
+          be permanently "0/5" and "No gate attempted yet" — two tiles
+          permanently lying about progress they are not even being measured on.
+          The Review and Level & XP tiles are tier-neutral and always show, so
+          the grid simply reflows from 4 to 2 rather than leaving holes. */}
       <div className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-4">
+        {hasCampaign && (
+          <>
+            <StatTile
+              label={isDE ? 'Module' : 'Modules'}
+              value={`${gatesPassed}/${gatesTotal}`}
+              subValue={isDE ? 'Prüfungen bestanden' : 'checkpoints passed'}
+              progressPct={gatesTotal > 0 ? Math.round((gatesPassed / gatesTotal) * 100) : 0}
+              color="blue"
+              icon={BookOpen}
+            />
+            <StatTile
+              label={isDE ? 'Tor-Durchschnitt' : 'Gate average'}
+              value={gateAveragePct === null ? '—' : `${gateAveragePct}%`}
+              caption={
+                gateAveragePct === null
+                  ? isDE
+                    ? 'Noch kein Tor versucht.'
+                    : 'No gate attempted yet.'
+                  : isDE
+                    ? 'Bestwert je Tor.'
+                    : 'Best score per gate.'
+              }
+              progressPct={gateAveragePct ?? 0}
+              color="emerald"
+              icon={CircleCheck}
+            />
+          </>
+        )}
         <StatTile
-          label={isDE ? 'Alphabet' : 'Alphabet'}
-          value={`${lettersPct}%`}
-          subValue={`${progress.practiced.length}/26`}
-          progressPct={lettersPct}
-          color="blue"
-          icon={BookOpen}
-        />
-        <StatTile
-          label={isDE ? 'Quiz' : 'Quiz'}
-          value={`${quizPctBar}%`}
-          subValue={`${progress.quizCorrect}/${progress.quizTotal}`}
-          progressPct={quizPctBar}
-          color="emerald"
-          icon={CircleCheck}
-        />
-        <StatTile
-          label={isDE ? 'Rechtschreibung' : 'Spelling'}
-          value={`${spellingPct}%`}
-          subValue={`${progress.spellCompleted}/10`}
-          progressPct={spellingPct}
+          label={isDE ? 'Wiederholen' : 'Review'}
+          value={String(dueCount)}
+          subValue={isDE ? 'jetzt fällig' : 'due now'}
+          to="/dashboard#review-queue"
           color="amber"
-          icon={Pencil}
+          icon={RefreshCw}
         />
         <StatTile
-          label={overallScoreLabel}
-          value={`${formatCount.format(overallScore)}%`}
-          caption={isDE ? 'Über Alphabet, Quiz & Rechtschreibung.' : 'Across alphabet, quiz & spelling.'}
-          color="blue"
+          label="Level & XP"
+          value={String(level)}
+          subValue={`${formatCount.format(totalXp)} XP`}
+          progressPct={xpProgress}
+          color="violet"
           icon={Gauge}
         />
       </div>
 
-      {/* Streak + Progress details — wider cards */}
+      {/* The A1 band strip — the campaign's own progress view, so Premium only.
+          It is deliberately NOT swapped for a free-tier strip: the free roadmap
+          has no per-module completion to ring, so inventing one would be a
+          fiction. A free learner's course position lives on /learn. */}
+      {hasCampaign && (
+        <div className="mb-6">
+          <A1PathProgress />
+        </div>
+      )}
+
+      {/* Streak + letter-practice details — wider cards.
+          The alphabet/quiz/spelling counters still matter, but they describe the
+          OPTIONAL side track, so they are framed as such instead of as the
+          course headline. */}
       <div className="mb-6 grid gap-4 lg:grid-cols-2">
         {/* Same vertical rhythm as StatTile: label → mt-3 bold value → mt-3 detail. */}
         <div className={theme.panel.surface}>
@@ -208,12 +280,20 @@ export function DashboardPage() {
         </div>
 
         <div className={theme.panel.surface}>
-          <div className="text-meta font-semibold uppercase tracking-[0.18em] text-ink-500 dark:text-ink-400">{progressLabel}</div>
+          <div className="text-meta font-semibold uppercase tracking-[0.18em] text-ink-500 dark:text-ink-400">
+            {isDE ? 'Buchstaben-Praxis' : 'Letter practice'}
+          </div>
           <div className="mt-3 space-y-1.5 text-body text-ink-600 dark:text-ink-300">
             <div>{lettersPracticed}: {formatCount.format(progress.practiced.length)}/26</div>
             <div>{spellingRounds}: {formatCount.format(progress.spellCompleted)}</div>
             <div>{quizAttempts}: {formatCount.format(progress.quizTotal)}</div>
+            <div>{overallScoreLabel}: {formatCount.format(overallScore)}%</div>
           </div>
+          <p className="mt-2 text-meta text-ink-500 dark:text-ink-400">
+            {isDE
+              ? 'Alphabet & Rechtschreibung sind eine optionale Nebenstrecke (Band B).'
+              : 'Alphabet & spelling are an optional side track (Band B).'}
+          </p>
         </div>
       </div>
 
@@ -237,14 +317,12 @@ export function DashboardPage() {
       </details>
 
       {/* The path answers "where next" while the right rail answers "what today". */}
-      <div className="mb-6 grid items-start gap-4 xl:grid-cols-[minmax(0,1.2fr)_minmax(20rem,0.8fr)]">
-        <div className="min-w-0">
-          {/* A1 linear campaign progress (bands A–F + checkpoint gates) */}
-          <A1PathProgress />
-        </div>
+      <div className="mb-6 grid items-start gap-4 xl:grid-cols-2">
         <div className="min-w-0">
           {/* Daily quests hub + compact SRS due-now widget */}
           <DailyQuestsWidget />
+        </div>
+        <div className="min-w-0">
           <SRSReviewWidget />
         </div>
       </div>

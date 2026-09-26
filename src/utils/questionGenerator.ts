@@ -10,9 +10,18 @@
  *
  * Provides:
  *   - pickRandom       — pick one item, optionally excluding others (e.g. the last card)
- *   - pickNUnique      — pick N distinct items, deduplicated by a key function
+ *   - pickNUnique      — pick N distinct items, deduplicated by a key function,
+ *                        optionally front-loading previously-missed keys
  *   - buildMcq         — build a full multiple-choice option set (correct + decoys, shuffled)
  *   - buildQuestionDeck — shuffled deck of N unique items (for timed rotation games)
+ *   - drawWithoutReplacement — one-at-a-time draw that cycles the pool
+ *
+ * ADAPTIVE DECKS
+ * --------------
+ * `pickNUnique({ preferKeys })` re-tests what the learner got wrong before
+ * sampling anything new. It is the one place deck bias lives, so every drill
+ * (dictation, article sprint, vocab trainer, checkpoints) can become adaptive
+ * by passing a list — with no list, behaviour is unchanged.
  */
 
 import { shuffleArray } from './shuffleArray';
@@ -28,6 +37,24 @@ export interface PickNUniqueOptions<T> {
   exclude?: (item: T) => boolean;
   /** Optional positive seed for deterministic picks (e.g. daily challenge). */
   seed?: number;
+  /**
+   * ADAPTIVE BIAS — keys the learner has previously answered wrong, best-first.
+   *
+   * Any pool item whose `getKey` appears here is taken FIRST, and the remaining
+   * slots are filled by the ordinary random draw. This is how the drills stop
+   * being uniform-at-random and start re-testing what the learner actually got
+   * wrong, using rows the SRS queue already records (see `useWeakItems`).
+   *
+   * STRICTLY ADDITIVE: with no `preferKeys` (or none that match the pool) the
+   * output is identical to the previous behaviour, so a caller that passes a
+   * stale or mismatched key list degrades to a plain random draw rather than
+   * breaking. Matching is by exact `getKey` output, so a caller must pass the
+   * same key function it uses for `getKey`.
+   *
+   * Ignored when `seed` is set, so seeded/deterministic surfaces (the daily
+   * challenge) stay byte-for-byte reproducible.
+   */
+  preferKeys?: readonly string[];
 }
 
 export interface BuildMcqOptions<T> {
@@ -104,7 +131,7 @@ export function pickRandom<T>(
  * When `seed` is provided, the selection is deterministic.
  */
 export function pickNUnique<T>(options: PickNUniqueOptions<T>): T[] {
-  const { items, count, getKey = defaultKey, exclude, seed } = options;
+  const { items, count, getKey = defaultKey, exclude, seed, preferKeys } = options;
   const seen = new Set<string>();
   const pool = items.filter((item) => {
     if (exclude && exclude(item)) return false;
@@ -114,9 +141,32 @@ export function pickNUnique<T>(options: PickNUniqueOptions<T>): T[] {
     return true;
   });
 
+  // Seeded surfaces stay deterministic — a daily challenge must not reshuffle
+  // just because the learner got something wrong yesterday.
   if (seed !== undefined) {
     return seededShuffle(pool, seed).slice(0, Math.min(count, pool.length));
   }
+
+  // Adaptive path: front-load previously-missed items, then fill randomly.
+  // Order within the weak group follows the caller's ranking (best-first).
+  if (preferKeys && preferKeys.length > 0) {
+    const priority = new Set(preferKeys);
+    const weak: T[] = [];
+    const rest: T[] = [];
+    for (const item of pool) {
+      if (priority.has(getKey(item))) weak.push(item);
+      else rest.push(item);
+    }
+    if (weak.length > 0) {
+      const take = Math.max(0, count - weak.length);
+      return [
+        ...weak,
+        ...shuffleArray(rest).slice(0, Math.min(take, rest.length)),
+      ];
+    }
+    // No overlap: fall through to the plain random draw.
+  }
+
   return shuffleArray(pool).slice(0, Math.min(count, pool.length));
 }
 

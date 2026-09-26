@@ -1,0 +1,75 @@
+{
+  "id": "m09",
+  "order": 9,
+  "code": "M09",
+  "kind": "core",
+  "cluster": 1,
+  "title": {
+    "en": "Separable Verbs & Routines",
+    "de": "Trennbare Verben & Routinen"
+  },
+  "theme": {
+    "en": "Prefixes · Sentence bracket",
+    "de": "Präfixe · Satzklammer"
+  },
+  "goal": {
+    "en": "Describe daily routines with separable verbs",
+    "de": "Tägliche Routinen mit trennbaren Verben beschreiben"
+  },
+  "nodes": [
+    {
+      "id": "m09-separable",
+      "kind": "learn",
+      "label": {
+        "en": "Separable Verbs",
+        "de": "Trennbare Verben"
+      },
+      "to": "/sentence-builder?focus=separable"
+    },
+    {
+      "id": "m09-prefix",
+      "kind": "practice",
+      "label": {
+        "en": "Prefix Drill",
+        "de": "Präfix-Drill"
+      },
+      "to": "/grammar?tab=prefix"
+    },
+    {
+      "id": "m09-gate",
+      "kind": "checkpoint",
+      "label": {
+        "en": "Module 9 Checkpoint",
+        "de": "Modul 9 Prüfung"
+      },
+      "to": "/checkpoint/8"
+    }
+  ],
+  "checkpoint": {
+    "moduleType": "a1-checkpoint",
+    "specs": [
+      {
+        "type": "grammar-drill",
+        "count": 6
+      },
+      {
+        "type": "vocab-translation",
+        "count": 6
+      }
+    ]
+  },
+  "pedagogy": {
+    "grammarNote": {
+      "en": "The prefix detaches and jumps to the very end: Ich stehe um sechs Uhr auf. (auf + stehen → stehe … auf). Inseparable prefixes like ver-, be-, ge- never split.",
+      "de": "Das Präfix löst sich und springt ganz nach hinten: Ich stehe um sechs Uhr auf. Untrennbare Präfixe (ver-, be-, ge-) trennen sich nie."
+    }
+  },
+  "vocabCategories": [
+    "daily-routine",
+    "action-verbs"
+  ],
+  "grammarCategories": [
+    "prefix"
+  ],
+  "hasLesson": true
+}
