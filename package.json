@@ -16,6 +16,7 @@
     "check:reviewqueue": "tsx src/admin/data/reviewQueue.check.ts",
     "check:integrity": "tsx src/admin/data/integrity.check.ts",
     "check:csv": "tsx src/admin/data/csv.check.ts",
+    "check:auditlog": "tsx src/admin/data/auditLog.check.ts",
     "check:adminaction": "tsx supabase/functions/admin-action/guards.check.ts",
     "check:currsource": "tsx src/data/curriculum/source.check.ts",
     "check:deployfilter": "tsx scripts/ci/deployFilter.check.ts",

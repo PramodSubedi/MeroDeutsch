@@ -27,6 +27,7 @@ import { SystemPage } from './pages/SystemPage';
 import { ReviewQueuePage } from './pages/ReviewQueuePage';
 import { CurriculumPage } from './pages/CurriculumPage';
 import { IntegrityPage } from './pages/IntegrityPage';
+import { AuditLogPage } from './pages/AuditLogPage';
 import { VocabularyPage } from './pages/VocabularyPage';
 import { AnalyticsPage } from './pages/AnalyticsPage';
 import { useAdminAuth } from './hooks/useAdminAuth';
@@ -170,6 +171,7 @@ export function AdminApp() {
         <Route path="review-queue" element={<ReviewQueuePage />} />
         <Route path="curriculum" element={<CurriculumPage />} />
         <Route path="integrity" element={<IntegrityPage />} />
+        <Route path="audit-log" element={<AuditLogPage />} />
         <Route path="vocabulary" element={<VocabularyPage />} />
         <Route path="analytics" element={<AnalyticsPage />} />
         <Route path="system" element={<SystemPage />} />
