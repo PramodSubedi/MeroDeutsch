@@ -9,7 +9,7 @@
  * A lie here is not cosmetic. An operator who reads "applied" for a partial
  * repair will assume all 45 rows are fixed, and stop looking.
  */
-import { interpretAdminResponse } from './adminActions';
+import { interpretAdminResponse, unreadableResponse } from './adminActions';
 
 let checks = 0;
 const failures: string[] = [];
@@ -119,6 +119,54 @@ check('every outcome is a known value', outcomes.every((o) => KNOWN.includes(o.o
 check('every outcome has a message', outcomes.every((o) => o.message.length > 0));
 check('ok implies "applied"', outcomes.every((o) => !o.ok || o.outcome === 'applied'));
 check('"applied" implies ok', outcomes.every((o) => o.outcome !== 'applied' || o.ok));
+
+console.log('\n=== 8. AN UNREADABLE RESPONSE IS NOT A FAILED ACTION ===');
+// THE REGRESSION. A blank Access-Control-Allow-Origin made the browser discard
+// every reply, so the client got a status with no readable body. That used to be
+// reported as "The action could not be completed" — pointing an operator at the
+// database and the write path, neither of which was involved. The outage was
+// diagnosed from the wrong layer and took hours to find.
+const blocked = unreadableResponse(403);
+check('an unreadable response is NOT ok', blocked.ok === false);
+check('its outcome is unreadable, not failed', blocked.outcome === 'unreadable', blocked.outcome);
+check('it is distinguishable from "failed"', blocked.outcome !== interpretAdminResponse(500, null).outcome);
+check('it carries a code', blocked.code === 'response-unreadable', blocked.code);
+check('it names CORS as the cause', /cors|cross-origin/i.test(blocked.message), blocked.message);
+check('it says the outcome is UNKNOWN', /unknown/i.test(blocked.message), blocked.message);
+check('it does NOT claim success', !/applied|succeeded|done\b/i.test(blocked.message));
+check('it does NOT claim the action failed', !/could not be completed/i.test(blocked.message), blocked.message);
+check('it says the status it saw', blocked.message.includes('403'), blocked.message);
+check('it points at the audit log', /audit/i.test(blocked.message), blocked.message);
+check('the status is reflected for any code', unreadableResponse(500).message.includes('500'));
+check('a 200 that was unreadable is still not ok', unreadableResponse(200).ok === false);
+
+console.log('\n=== 9. ONLY A REAL SUCCESS MAY CLAIM ONE ===');
+// Each outcome is held to ITS OWN rule. A blanket "all failures say nothing
+// changed" would be wrong: a 207 partial DID change things, and telling an
+// operator otherwise is the same class of lie as claiming it all applied.
+const applied = interpretAdminResponse(200, { ok: true, action: 'user.ban' });
+const partial2 = interpretAdminResponse(207, { applied: 40, failed: [{ id: 'x' }] });
+const refused = interpretAdminResponse(403, { code: 'last-admin', message: 'You cannot remove the only active admin.' });
+const session = interpretAdminResponse(401, {});
+const blocked2 = unreadableResponse(403);
+
+check('200 is the only ok outcome here', [applied, partial2, refused, session, blocked2].filter((r) => r.ok).length === 1);
+check('200 claims it applied', /applied/i.test(applied.message), applied.message);
+check('a partial does NOT claim nothing changed', !/nothing changed/i.test(partial2.message), partial2.message);
+check('a partial still refuses ok', partial2.ok === false);
+check('a guard refusal says nothing changed', /nothing was changed/i.test(refused.message), refused.message);
+check('a 401 says nothing changed', /nothing was changed/i.test(session.message), session.message);
+check('an unreadable says the outcome is UNKNOWN', /unknown/i.test(blocked2.message), blocked2.message);
+
+// Nothing may imply success unless it is `applied`. The one word that matters.
+const all = [applied, partial2, refused, session, blocked2, interpretAdminResponse(500, { code: 'x' })];
+check('every message is non-empty', all.every((r) => r.message.trim().length > 0));
+check(
+  'no non-applied outcome uses the word "applied" as a claim',
+  all.filter((r) => r.outcome !== 'applied').every((r) => !/\bapplied\b/i.test(r.message) || r.outcome === 'partial'),
+  all.filter((r) => r.outcome !== 'applied').map((r) => r.message).join(' | '),
+);
+check('ok implies applied', all.every((r) => !r.ok || r.outcome === 'applied'));
 
 console.log(`\n${failures.length === 0 ? '[summary] ALL' : '[summary]'} ${checks} CHECKS ${failures.length === 0 ? 'PASSED' : `FAILED (${failures.length})`}`);
 if (failures.length > 0) {

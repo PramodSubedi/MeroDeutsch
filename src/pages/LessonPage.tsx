@@ -166,7 +166,7 @@ function LessonNotes() {
 
       {/* Previous / next. The old footer had two buttons that both said "back to
           the path"; one of those is now the header link, and the space is better
-          spent letting a learner walk the fifteen lessons in order. */}
+          spent letting a learner walk every lesson in order. */}
       <nav
         aria-label={isDE ? 'Lektionsnavigation' : 'Lesson navigation'}
         className="mt-10 flex items-stretch justify-between gap-3 border-t border-ink-200 pt-4 dark:border-ink-800"

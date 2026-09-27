@@ -12,12 +12,14 @@ limitation that decides how the next task must be scoped.
 
 | | |
 |---|---|
-| **Checks** | **983 passing** across 17 suites · `npx tsc -b` clean · `npm run build` clean · `npm run lint` 0 errors |
-| **Deployed** | Edge Function `admin-action` **v3**, `verify_jwt: true` |
+| **Checks** | **1175 passing** across 21 suites · `npx tsc -b` clean · `npm run build` clean · `npm run lint` 0 errors |
+| **CI** | GitHub Actions runs all 21 suites + tsc + lint + validate on every push (`.github/workflows/checks.yml`). **Never actually executed** — Actions only runs on push. |
+| **Deployed** | Edge Function `admin-action` **v5**, `verify_jwt: true`, `ADMIN_ALLOWED_ORIGIN` set |
 | **Migrations applied** | `20260930000000`, `20260930010000`, `20260930020000` |
 | **Live DB** | `curriculum_units` **0 rows** · `admin_audit_log` **0 rows** · `curriculum_source` = **`bundle`** |
-| **Biggest risk** | **No write path has ever executed against production.** Every call returns `401`. |
+| **Biggest risk** | **No write path has ever executed against production.** CORS is fixed and verified, but ban itself is still unproven. |
 | **Blocking decision** | The learner app **cannot** serve `db` curriculum without a boot-gate change (§4) |
+| **Also open** | `curriculum:verify` is **RED** (40 diffs after the v4.0 15→16 re-sequence) and runs nowhere. `curriculum:baseline` CANNOT re-cut it — it restores the frozen pre-P0 snapshot. Needs a manual decision — see §6.5. |
 
 ---
 
@@ -179,6 +181,74 @@ and every `<Route>` element is imported. That catches the realistic failure mode
    it from `KNOWN_ACTIONS`. A permanently-501 action is the same smell as the
    silent no-op already fixed.
 
+4. **CORS — FIXED AND DEPLOYED, but the lesson is the point.**
+   `ADMIN_ALLOWED_ORIGIN` was read in exactly one place and **set nowhere** —
+   no `config.toml`, no deploy doc, no CI step. Every response therefore carried
+   a blank `Access-Control-Allow-Origin`, the browser discarded every reply, and
+   ban / promote / demote / publish / repair were all unreachable. Read-only
+   screens kept working, because PostgREST and GoTrue send their own CORS
+   headers, so the control centre looked healthy right up to the write button.
+
+   **DONE:** secret set, function at v5, verified live — the admin origin and
+   localhost are granted, `https://evil.example` is refused, `Vary: Origin` is
+   set. Rules live in `cors.ts`, pure, 48 checks. A missing secret now writes a
+   loud `console.error` on every POST, so the failure is visible in the function
+   logs instead of being a mystery.
+
+   **But it took hours to find, and that is the real lesson.** It was invisible
+   to every check because the value lived in Deno's environment. This is the
+   THIRD time in one session that something critical was unfalsifiable by the
+   test suite: an unwired `*.check.ts`, the CORS secret, and
+   `curriculum:verify` running nowhere. **A check that nothing runs is
+   indistinguishable from a passing one.** When adding a check, add the npm
+   script AND the CI step, or it does not exist.
+
+6. **LEARNER PROGRESS IS SILENTLY ORPHANED BY THE v4.0 RENAME — FIX NEXT.**
+   The V4 migration (`V4_ORDER_MARKER` / `remapV3UnitIndex` in `useA1Path.tsx`)
+   remaps `unlockedUnitIndex`, `checkpointBestByUnit` and `attemptsByUnit`, and
+   its own comment says:
+
+   > *"this one is a pure REORDER: every unit still exists with the same id and
+   > the same content, so `completedNodeIds` is left completely alone"*
+
+   **That premise is false.** Unit ids are stable, but 20 NODE ids were renamed,
+   from semantic to positional:
+
+   ```
+   m06-professions → m06-learn        m09-separable → m09-learn
+   m06-grammar     → m06-practice     m09-prefix    → m09-practice
+   m06-gate        → m06-checkpoint   (m06…m15, every unit)
+   ```
+
+   `isNodeComplete` is `completedNodeIds.includes(node.id)`. So every learner who
+   finished a renamed node now shows it **incomplete**. They are not locked out —
+   `unlockedUnitIndex` was remapped, so checkpoint gating still holds — but up
+   to 20 nodes per learner revert to "not done".
+
+   **Fix:** the V4 migration must also remap node ids inside
+   `completedNodeIds`, keyed on unit id + node kind (learn/practice/checkpoint)
+   rather than on position, because the unit ORDER changed too. It must be
+   idempotent via `V4_ORDER_MARKER` like the existing migrations, and it needs
+   its own check.
+
+   This is the plan's own HIGH risk
+   (`1790504406225-curriculum-sequence-upgrade.md` line 189), and it is why the
+   v4.0 sequence is **not** finished.
+   After the v4.0 re-sequence (15 → 16 units) it reports 40 value-parity
+   differences and exits 1. It is in neither CI nor §8's run list.
+
+   **`npm run curriculum:baseline` CANNOT fix this.** It rebuilds from the
+   *frozen pre-P0 source* — running it reproduces the 15-unit baseline
+   byte-for-byte. There is no tooling to re-cut the baseline to the current
+   spine; that is a deliberate manual edit, and it means accepting the v4.0
+   sequence as the new truth.
+
+   Read the 40 differences first. They are renumbered `bonusNodes` and renamed
+   `nodeIds` (`m11-shopping` → `m11-practice`). If that is what the re-sequence
+   was meant to do, re-cut the baseline by hand and wire this into CI. If not,
+   the re-sequence is wrong. **Do not silence it** — right now it is the only
+   thing standing between "the spine changed" and "nobody noticed".
+
 ---
 
 ## 7. Conventions
@@ -197,11 +267,23 @@ and every `<Route>` element is imported. That catches the realistic failure mode
 ## 8. Run everything
 
 ```bash
+# All 21 suites. If you add a *.check.ts, add it here AND to
+# .github/workflows/checks.yml — an unwired suite is a suite that silently
+# never runs (this is how check:currapply stayed orphaned, and how
+# curriculum:verify stayed red and unnoticed for a whole session).
+#
+# NOT in this list, on purpose:
+#   curriculum:backfill — touches the live database. Dry run only.
+#
+# Also run these by hand; they are about DATA, not code:
+#   npm run curriculum:verify    # spine drift — now also in CI
+#   npm run curriculum:backfill  # dry run only, do NOT --apply without review
 foreach ($s in @('check:debugmode','check:qabridge','check:userfilters',
   'check:analytics','check:userdetail','check:reviewqueue','check:integrity',
   'check:csv','check:auditlog','check:search','check:adminaction',
-  'check:adminactionclient','check:adminpublish','check:currstore',
-  'check:currsource','check:currresolve','check:deployfilter')) {
+  'check:adminactionclient','check:adminpublish','check:cors','check:currstore',
+  'check:currsource','check:currresolve','check:currapply','check:v4migration',
+  'check:deployfilter','check:answers','check:chatbot')) {
   npm run $s
 }
 

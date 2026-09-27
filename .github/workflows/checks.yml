@@ -115,8 +115,12 @@ jobs:
       # glance.
       - name: check:currapply
         run: npm run check:currapply
+      - name: check:v4migration
+        run: npm run check:v4migration
       - name: check:deployfilter
         run: npm run check:deployfilter
+      - name: check:routes
+        run: npm run check:routes
 
       # ── Gates ────────────────────────────────────────────────────────────
       - name: typecheck
@@ -130,6 +134,18 @@ jobs:
 
       - name: curriculum:validate
         run: npm run curriculum:validate
+
+      # Spine drift detector. Red for a whole session after the v4.0 15→16
+      # re-sequence because NOTHING ran it — the third time in this project's
+      # history that a check existed but was never executed, which is
+      # indistinguishable from a passing one. Now it runs on every push.
+      #
+      # If this goes red, do NOT silence it. Read the diffs: they are either an
+      # unintended spine change (a bug) or a deliberate re-sequence (accept it
+      # with `npm run curriculum:baseline -- --from-current`, which archives the
+      # old baseline first so the change stays reviewable).
+      - name: curriculum:verify
+        run: npm run curriculum:verify
 
       - name: build
         run: npm run build

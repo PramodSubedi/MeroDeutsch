@@ -71,6 +71,7 @@ export type AdminOutcome =
   | 'rejected'
   | 'not-implemented'
   | 'failed'
+  | 'unreadable'
   | 'unreachable';
 
 export interface AdminActionResult {
@@ -161,7 +162,11 @@ export function interpretAdminResponse(status: number, body: unknown): AdminActi
       ok: false,
       outcome: 'refused',
       code: code ?? 'unauthenticated',
-      message: 'Your session has expired. Sign in again.',
+      // The ONLY non-success path that used to skip `withNoChange`. A 401 is
+      // returned by `identify()`, before any write is attempted — so nothing
+      // changed, and saying so is the whole point of this function. Without it an
+      // operator cannot tell whether their ban landed and has to guess.
+      message: withNoChange('Your session has expired. Sign in again.'),
     };
   }
 
@@ -182,6 +187,34 @@ export function interpretAdminResponse(status: number, body: unknown): AdminActi
  * promise in a click handler is how a button ends up doing nothing visible and
  * an operator concludes it worked.
  */
+/**
+ * The result of a response whose STATUS we could see but whose BODY we could not
+ * read — which is exactly what a CORS failure looks like to JavaScript.
+ *
+ * ── WHY THIS IS NOT THE `failed` BRANCH ─────────────────────────────────────
+ * A blank `Access-Control-Allow-Origin` once made every privileged action look
+ * like a server-side failure. `interpretAdminResponse(status, null)` cannot tell
+ * that apart from a genuine 500, so it fabricated a message — "The action could
+ * not be completed" — for what was actually an unreadable response. An operator
+ * debugging that is sent to the wrong layer entirely: the database, the guards,
+ * the write, none of which were involved.
+ *
+ * So the two are reported separately. This one names the real cause and says
+ * explicitly that the outcome is UNKNOWN: the action may or may not have been
+ * applied, and the only way to know is the audit log. Overstating certainty in
+ * either direction is what makes an incident take hours instead of minutes.
+ */
+export function unreadableResponse(status: number): AdminActionResult {
+  return {
+    ok: false,
+    outcome: 'unreadable',
+    code: 'response-unreadable',
+    message:
+      `The server replied (${status}) but the browser blocked the reply, so its explanation could not be read. ` +
+      'This is a cross-origin (CORS) problem, not a failed action. The outcome is UNKNOWN — check the audit log before retrying.',
+  };
+}
+
 export async function runAdminAction(req: AdminActionRequest): Promise<AdminActionResult> {
   const body: Record<string, unknown> = { action: req.action };
   if (req.targetId) body.targetId = req.targetId;
@@ -200,12 +233,21 @@ export async function runAdminAction(req: AdminActionRequest): Promise<AdminActi
     if (error) {
       const ctx = error as unknown as { context?: Response };
       const status = typeof ctx.context?.status === 'number' ? ctx.context.status : 500;
+
       let parsed: unknown = null;
+      let readFailed = false;
       try {
         parsed = await ctx.context?.json?.();
       } catch {
-        parsed = null;
+        // A body we cannot read is NOT a body with no `message` field. Treating
+        // the two alike is what produced a fabricated failure message.
+        readFailed = true;
       }
+
+      // No `context` at all means the request never produced a response object
+      // — indistinguishable from a network failure, so say exactly that.
+      if (!ctx.context || readFailed) return unreadableResponse(status);
+
       return interpretAdminResponse(status, parsed);
     }
 

@@ -407,6 +407,91 @@ export function remapV3UnitIndex(oldIndex: number): number {
 }
 
 /**
+ * v3 node id → v4 node id.
+ *
+ * ── WHY THIS EXISTS, AND WHY IT IS NOT THE SAME THING AS THE INDEX MAP ───────
+ * `V3_TO_V4_UNIT_INDEX` above assumes "every unit still exists with the same id
+ * and the same content", so node ids need no remapping. That assumption is
+ * FALSE. The v4.0 pass renamed 20 NODE ids from semantic to positional:
+ *
+ *     m06-professions → m06-learn          m09-separable → m09-learn
+ *     m06-grammar     → m06-practice       m09-prefix    → m09-practice
+ *     m07-calendar    → m07-learn          m10-roleplay  → m10-learn
+ *     m07-roleplay    → m07-practice       m10-accusative→ m10-practice
+ *     m08-grammar     → m08-learn          m11-clothing  → m11-learn
+ *     m08-sentence    → m08-practice       m11-shopping  → m11-practice
+ *     m12-roleplay    → m12-learn          m13-modals    → m13-learn
+ *     m12-travel      → m12-practice       m13-games     → m13-practice
+ *     m14-health      → m14-learn          m15-stories   → m15-learn
+ *     m14-doctor      → m14-practice       m15-blitz     → m15-practice
+ *     mNN-gate        → mNN-checkpoint     (m06 … m15, every unit)
+ *
+ * That is 30 ids in total, and the count is the point: the first pass at this
+ * map covered 22 and silently orphaned 8. `check:v4migration` asserts coverage
+ * against the LIVE spine, which is what caught the shortfall.
+ *
+ * `completedNodeIds` is keyed on NODE ids (`isNodeComplete` is
+ * `completedNodeIds.includes(node.id)`), so a learner who finished
+ * `m06-professions` sees that node as INCOMPLETE after the rename. They are not
+ * locked out — `unlockedUnitIndex` is remapped by the table above, so checkpoint
+ * gating still holds — but roughly twenty finished nodes per learner silently
+ * revert to "not done".
+ *
+ * Keyed by node id, NOT by array position: the unit ORDER changed too, so the
+ * old learn node of m08 is not at the new m08's index. Matching on id is the
+ * only stable key available.
+ *
+ * m01–m05 were already positional and are deliberately absent.
+ */
+export const V3_TO_V4_NODE_ID: Readonly<Record<string, string>> = {
+  'm06-professions': 'm06-learn',
+  'm06-grammar': 'm06-practice',
+  'm07-calendar': 'm07-learn',
+  'm07-roleplay': 'm07-practice',
+  'm08-grammar': 'm08-learn',
+  'm08-sentence': 'm08-practice',
+  'm09-separable': 'm09-learn',
+  'm09-prefix': 'm09-practice',
+  'm10-roleplay': 'm10-learn',
+  'm10-accusative': 'm10-practice',
+  'm11-clothing': 'm11-learn',
+  'm11-shopping': 'm11-practice',
+  'm12-roleplay': 'm12-learn',
+  'm12-travel': 'm12-practice',
+  'm13-modals': 'm13-learn',
+  'm13-games': 'm13-practice',
+  'm14-health': 'm14-learn',
+  'm14-doctor': 'm14-practice',
+  'm15-stories': 'm15-learn',
+  'm15-blitz': 'm15-practice',
+  'm06-gate': 'm06-checkpoint',
+  'm07-gate': 'm07-checkpoint',
+  'm08-gate': 'm08-checkpoint',
+  'm09-gate': 'm09-checkpoint',
+  'm10-gate': 'm10-checkpoint',
+  'm11-gate': 'm11-checkpoint',
+  'm12-gate': 'm12-checkpoint',
+  'm13-gate': 'm13-checkpoint',
+  'm14-gate': 'm14-checkpoint',
+  'm15-gate': 'm15-checkpoint',
+};
+
+/**
+ * Remap a learner's completed node ids onto the v4 naming scheme.
+ *
+ * Idempotent by construction: a v4 id is never a KEY in the map, so passing an
+ * already-migrated list through again is a no-op. That matters because the
+ * caller may run this on any hydrate, not only the first.
+ *
+ * Unmapped ids are PRESERVED, not dropped. Migration markers ride along in this
+ * array, and a stale id from some future schema is a harmless no-op at lookup
+ * time — whereas dropping it would silently discard real completion.
+ */
+export function remapV3NodeIds(ids: readonly string[]): string[] {
+  return ids.map((id) => V3_TO_V4_NODE_ID[id] ?? id);
+}
+
+/**
  * Marker injected into `completedNodeIds` exactly once so the v3→v4 reorder is
  * idempotent, on the same terms as `BAND_MIGRATION_MARKER` and
  * `M15_MIGRATION_MARKER`. Not a real node id; path lookups ignore it.

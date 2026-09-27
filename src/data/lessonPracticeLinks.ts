@@ -23,6 +23,11 @@
  * exists one click away.
  */
 import { MODULES } from '../config/modules';
+// The unit count is DERIVED from the curriculum, never written as a literal. The
+// v4.0 sequence grew the course from 15 units to 16, and a hardcoded "all 15
+// units" in learner-facing copy was left behind to lie to them. Reading the
+// count means the next re-sequence cannot desynchronise this sentence again.
+import { A1_UNIT_COUNT } from './a1Path';
 
 export interface LessonPracticeLink {
   /** Key into `config/modules.ts` → MODULES[].id */
@@ -143,7 +148,7 @@ export const LESSON_PRACTICE_LINKS: Readonly<Record<number, readonly LessonPract
   15: [
     { toolId: 'rapid', why: { en: 'Run the five integrated review exercises end to end', de: 'Die fünf integrierten Wiederholungsübungen durchlaufen' } },
     { toolId: 'grammar', why: { en: 'Revisit any rule table you scored below 80% on', de: 'Jede Regeltabelle erneut ansehen, bei der du unter 80 % lagst' } },
-    { toolId: 'vocab-trainer', why: { en: 'Sweep the grammar vocab pools behind all 15 units', de: 'Die Grammatik-Vokabelpools aller 15 Einheiten durchgehen' } },
+    { toolId: 'vocab-trainer', why: { en: `Sweep the grammar vocab pools behind all ${A1_UNIT_COUNT} units`, de: `Die Grammatik-Vokabelpools aller ${A1_UNIT_COUNT} Einheiten durchgehen` } },
   ],
 };
 

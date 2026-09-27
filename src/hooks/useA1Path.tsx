@@ -68,6 +68,7 @@ import {
   remapBandToModuleIndex,
   remapLegacyUnitIndex,
   remapV3UnitIndex,
+  remapV3NodeIds,
   type PathMode,
   type PathNode,
 } from '../data/a1Path';
@@ -166,7 +167,9 @@ function hasProgress(s: Partial<A1PathState>): boolean {
 
 /** Clamp/normalize any partial state into a valid A1PathState. */
 function normalizeState(raw: Partial<A1PathState>): A1PathState {
-  const completedNodeIds = Array.isArray(raw.completedNodeIds)
+  // `let`, not `const`: the v3->v4 node-id migration below REBINDS this to the
+  // remapped list. Same pattern as `markCheckpointResult` further down.
+  let completedNodeIds = Array.isArray(raw.completedNodeIds)
     ? raw.completedNodeIds.filter((id): id is string => typeof id === 'string')
     : [];
 
@@ -238,10 +241,16 @@ function normalizeState(raw: Partial<A1PathState>): A1PathState {
   // Fires for EVERY existing learner on first load after the reorder, because
   // none of them can be carrying the new marker yet.
   //
-  // Unlike the 5->6->15 migrations this one is a pure REORDER: every unit still
-  // exists with the same id and the same content, so `completedNodeIds` is left
-  // completely alone (see V3_TO_V4_UNIT_INDEX). What moves is the three
-  // index-keyed maps.
+  // Two things move, and the second is easy to miss:
+  //   1. everything keyed by unit INDEX — `unlockedUnitIndex`,
+  //      `checkpointBestByUnit`, `attemptsByUnit` (see V3_TO_V4_UNIT_INDEX);
+  //   2. every NODE id in `completedNodeIds`, because the v4.0 pass renamed 20
+  //      node ids from semantic to positional (`m06-professions` → `m06-learn`,
+  //      `mNN-gate` → `mNN-checkpoint`). This used to be skipped on the
+  //      assumption that only ORDER changed. It did not: `isNodeComplete` is
+  //      `completedNodeIds.includes(node.id)`, so a learner who finished
+  //      `m06-professions` saw that node revert to incomplete. Roughly twenty
+  //      finished nodes per learner were being silently discarded.
   //
   // `missedItemKeys` are cleared on remap rather than carried across: Phase 1
   // changed those units' decks (m07 gained `prepositions`, m10 moved to its own
@@ -267,6 +276,10 @@ function normalizeState(raw: Partial<A1PathState>): A1PathState {
     }
     attemptsRaw = remappedAttempts;
     bestRaw = remapKeyed(bestRaw);
+    // Node ids are remapped BEFORE the marker is pushed, so the marker is not
+    // itself run through the map. `remapV3NodeIds` is idempotent regardless,
+    // but keeping the marker out of it makes the intent obvious.
+    completedNodeIds = remapV3NodeIds(completedNodeIds);
     completedNodeIds.push(V4_ORDER_MARKER);
   }
 

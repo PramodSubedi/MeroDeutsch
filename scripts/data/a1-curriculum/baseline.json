@@ -2,17 +2,6 @@
   "bonusNodes": [
     {
       "bonus": true,
-      "id": "m02-cypher",
-      "kind": "bonus",
-      "label": {
-        "de": "Zahlen-Code knacken",
-        "en": "Number Code Cracker"
-      },
-      "to": "/games?game=cypher",
-      "unitIndex": 1
-    },
-    {
-      "bonus": true,
       "id": "m01-oddone",
       "kind": "bonus",
       "label": {
@@ -21,6 +10,17 @@
       },
       "to": "/games?game=oddoneout",
       "unitIndex": 0
+    },
+    {
+      "bonus": true,
+      "id": "m02-cypher",
+      "kind": "bonus",
+      "label": {
+        "de": "Zahlen-Code knacken",
+        "en": "Number Code Cracker"
+      },
+      "to": "/games?game=cypher",
+      "unitIndex": 1
     },
     {
       "bonus": true,
@@ -43,116 +43,6 @@
       },
       "to": "/sentence-builder",
       "unitIndex": 4
-    },
-    {
-      "bonus": true,
-      "id": "m07-time-blitz",
-      "kind": "bonus",
-      "label": {
-        "de": "Uhrzeit-Üben",
-        "en": "Time Practice"
-      },
-      "to": "/rapid-fire?mode=calendar-translation",
-      "unitIndex": 6
-    },
-    {
-      "bonus": true,
-      "id": "m08-dice",
-      "kind": "bonus",
-      "label": {
-        "de": "Verben-Würfelspiel",
-        "en": "Verb Dice"
-      },
-      "to": "/games?game=dice",
-      "unitIndex": 7
-    },
-    {
-      "bonus": true,
-      "id": "m08-sprint",
-      "kind": "bonus",
-      "label": {
-        "de": "Artikel-Sprint",
-        "en": "Article Sprint"
-      },
-      "to": "/article-sprint",
-      "unitIndex": 7
-    },
-    {
-      "bonus": true,
-      "id": "m11-vocab-blitz",
-      "kind": "bonus",
-      "label": {
-        "de": "Wortschatz-Drill",
-        "en": "Vocab Drill"
-      },
-      "to": "/rapid-fire?mode=vocabulary-translation",
-      "unitIndex": 10
-    },
-    {
-      "bonus": true,
-      "id": "m13-tictactoe",
-      "kind": "bonus",
-      "label": {
-        "de": "Konjugations-Spiel",
-        "en": "Conjugation Tic-Tac-Toe"
-      },
-      "to": "/games?game=tictactoe",
-      "unitIndex": 12
-    },
-    {
-      "bonus": true,
-      "id": "m14-glossary",
-      "kind": "bonus",
-      "label": {
-        "de": "Glossar",
-        "en": "Glossary"
-      },
-      "to": "/glossary",
-      "unitIndex": 13
-    },
-    {
-      "bonus": true,
-      "id": "m15-mixed",
-      "kind": "bonus",
-      "label": {
-        "de": "Mixed-Quiz",
-        "en": "Mixed Blitz"
-      },
-      "to": "/rapid-fire?mode=mixed",
-      "unitIndex": 14
-    },
-    {
-      "bonus": true,
-      "id": "m06-email",
-      "kind": "bonus",
-      "label": {
-        "de": "E-Mail-Trainer",
-        "en": "Email Builder"
-      },
-      "to": "/email-builder",
-      "unitIndex": 5
-    },
-    {
-      "bonus": true,
-      "id": "m12-pron",
-      "kind": "bonus",
-      "label": {
-        "de": "Aussprache",
-        "en": "Pronunciation"
-      },
-      "to": "/pronunciation",
-      "unitIndex": 11
-    },
-    {
-      "bonus": true,
-      "id": "m15-stories-extra",
-      "kind": "bonus",
-      "label": {
-        "de": "Mehr Geschichten",
-        "en": "More Stories"
-      },
-      "to": "/stories",
-      "unitIndex": 14
     }
   ],
   "clusters": [
@@ -218,7 +108,7 @@
     }
   ],
   "constants": {
-    "A1_UNIT_COUNT": 15,
+    "A1_UNIT_COUNT": 16,
     "BAND_MIGRATION_MARKER": "a1-path-bands-v2",
     "BAND_TO_MODULE_INDEX": [
       1,
@@ -248,16 +138,17 @@
       "m03-gate",
       "m04-gate",
       "m05-gate",
-      "m06-gate",
-      "m07-gate",
-      "m08-gate",
-      "m09-gate",
-      "m10-gate",
-      "m11-gate",
-      "m12-gate",
-      "m13-gate",
-      "m14-gate",
-      "m15-gate"
+      "m06-checkpoint",
+      "m07-checkpoint",
+      "m08-checkpoint",
+      "m09-checkpoint",
+      "m10-checkpoint",
+      "m11-checkpoint",
+      "m12-checkpoint",
+      "m13-checkpoint",
+      "m14-checkpoint",
+      "m15-checkpoint",
+      null
     ],
     "nodeIds": [
       "m01-greetings",
@@ -275,50 +166,43 @@
       "m05-articles",
       "m05-housing",
       "m05-gate",
-      "m06-professions",
-      "m06-grammar",
-      "m06-gate",
-      "m07-calendar",
-      "m07-roleplay",
-      "m07-gate",
-      "m08-grammar",
-      "m08-sentence",
-      "m08-gate",
-      "m09-separable",
-      "m09-prefix",
-      "m09-gate",
-      "m10-roleplay",
-      "m10-accusative",
-      "m10-gate",
-      "m11-clothing",
-      "m11-shopping",
-      "m11-gate",
-      "m12-roleplay",
-      "m12-travel",
-      "m12-gate",
-      "m13-modals",
-      "m13-games",
-      "m13-gate",
-      "m14-health",
-      "m14-doctor",
-      "m14-gate",
-      "m15-stories",
-      "m15-blitz",
-      "m15-gate",
-      "m02-cypher",
+      "m06-learn",
+      "m06-practice",
+      "m06-checkpoint",
+      "m07-learn",
+      "m07-practice",
+      "m07-checkpoint",
+      "m08-learn",
+      "m08-practice",
+      "m08-checkpoint",
+      "m09-learn",
+      "m09-practice",
+      "m09-checkpoint",
+      "m10-learn",
+      "m10-practice",
+      "m10-checkpoint",
+      "m11-learn",
+      "m11-practice",
+      "m11-checkpoint",
+      "m12-learn",
+      "m12-practice",
+      "m12-checkpoint",
+      "m13-learn",
+      "m13-practice",
+      "m13-checkpoint",
+      "m14-learn",
+      "m14-practice",
+      "m14-checkpoint",
+      "m15-learn",
+      "m15-practice",
+      "m15-checkpoint",
+      "m16-learn",
+      "m16-practice",
+      "m16-bonus",
       "m01-oddone",
+      "m02-cypher",
       "m03-spelling",
-      "m05-sentence",
-      "m07-time-blitz",
-      "m08-dice",
-      "m08-sprint",
-      "m11-vocab-blitz",
-      "m13-tictactoe",
-      "m14-glossary",
-      "m15-mixed",
-      "m06-email",
-      "m12-pron",
-      "m15-stories-extra"
+      "m05-sentence"
     ],
     "unitIds": [
       "m01",
@@ -335,7 +219,8 @@
       "m12",
       "m13",
       "m14",
-      "m15"
+      "m15",
+      "m16"
     ]
   },
   "functions": {
@@ -354,7 +239,8 @@
       "/checkpoint/11",
       "/checkpoint/12",
       "/checkpoint/13",
-      "/checkpoint/14"
+      "/checkpoint/14",
+      null
     ],
     "clusterForModule": [
       "C1",
@@ -364,12 +250,13 @@
       "C1",
       "C2",
       "C2",
-      "C2",
-      "C2",
+      "C3",
       "C3",
       "C3",
       "C4",
       "C4",
+      "C4",
+      "C5",
       "C5",
       "C5"
     ],
@@ -388,16 +275,17 @@
       12,
       13,
       14,
-      14
+      15,
+      15
     ],
     "nodeByRoute": [
       "m01-greetings",
       "m01-greetings",
-      "m13-modals",
+      "m12-learn",
       "m04-family",
-      "m10-roleplay",
+      "m10-learn",
       null,
-      "m15-mixed",
+      null,
       "m05-articles",
       null
     ],
@@ -572,27 +460,27 @@
       "unitIndex": 4
     },
     {
-      "id": "m06-professions",
+      "id": "m06-learn",
       "kind": "learn",
       "label": {
-        "de": "Berufe",
-        "en": "Professions"
+        "de": "Konjugationstabellen",
+        "en": "Conjugation Tables"
       },
-      "to": "/vocab-trainer?category=professions",
+      "to": "/grammar?tab=conjugation",
       "unitIndex": 5
     },
     {
-      "id": "m06-grammar",
+      "id": "m06-practice",
       "kind": "practice",
       "label": {
-        "de": "Arbeitsverben",
-        "en": "Work Verbs"
+        "de": "Verben-Würfel",
+        "en": "Verb Dice"
       },
-      "to": "/grammar?tab=weakVerb",
+      "to": "/games?game=dice",
       "unitIndex": 5
     },
     {
-      "id": "m06-gate",
+      "id": "m06-checkpoint",
       "kind": "checkpoint",
       "label": {
         "de": "Modul 6 Prüfung",
@@ -602,27 +490,27 @@
       "unitIndex": 5
     },
     {
-      "id": "m07-calendar",
+      "id": "m07-learn",
       "kind": "learn",
       "label": {
-        "de": "Kalender & Uhrzeit",
-        "en": "Calendar & Time"
+        "de": "V2-Wortstellung",
+        "en": "V2 Word Order"
       },
-      "to": "/calendar",
+      "to": "/grammar?tab=v2",
       "unitIndex": 6
     },
     {
-      "id": "m07-roleplay",
+      "id": "m07-practice",
       "kind": "practice",
       "label": {
-        "de": "Verabredungen",
-        "en": "Making Plans"
+        "de": "Satzbau",
+        "en": "Sentence Builder"
       },
-      "to": "/roleplay?scene=treffen",
+      "to": "/sentence-builder",
       "unitIndex": 6
     },
     {
-      "id": "m07-gate",
+      "id": "m07-checkpoint",
       "kind": "checkpoint",
       "label": {
         "de": "Modul 7 Prüfung",
@@ -632,27 +520,27 @@
       "unitIndex": 6
     },
     {
-      "id": "m08-grammar",
+      "id": "m08-learn",
       "kind": "learn",
       "label": {
-        "de": "Verben & Wortstellung",
-        "en": "Verbs & Word Order"
+        "de": "Akkusativ-Bau",
+        "en": "Accusative Builder"
       },
-      "to": "/grammar",
+      "to": "/sentence-builder?focus=akkusativ",
       "unitIndex": 7
     },
     {
-      "id": "m08-sentence",
+      "id": "m08-practice",
       "kind": "practice",
       "label": {
-        "de": "Satzbau",
-        "en": "Sentence Builder"
+        "de": "Artikel-Sprint",
+        "en": "Article Sprint"
       },
-      "to": "/sentence-builder",
+      "to": "/article-sprint",
       "unitIndex": 7
     },
     {
-      "id": "m08-gate",
+      "id": "m08-checkpoint",
       "kind": "checkpoint",
       "label": {
         "de": "Modul 8 Prüfung",
@@ -662,7 +550,7 @@
       "unitIndex": 7
     },
     {
-      "id": "m09-separable",
+      "id": "m09-learn",
       "kind": "learn",
       "label": {
         "de": "Trennbare Verben",
@@ -672,7 +560,7 @@
       "unitIndex": 8
     },
     {
-      "id": "m09-prefix",
+      "id": "m09-practice",
       "kind": "practice",
       "label": {
         "de": "Präfix-Drill",
@@ -682,7 +570,7 @@
       "unitIndex": 8
     },
     {
-      "id": "m09-gate",
+      "id": "m09-checkpoint",
       "kind": "checkpoint",
       "label": {
         "de": "Modul 9 Prüfung",
@@ -692,27 +580,27 @@
       "unitIndex": 8
     },
     {
-      "id": "m10-roleplay",
+      "id": "m10-learn",
       "kind": "learn",
       "label": {
-        "de": "Essen bestellen",
-        "en": "Ordering Food"
+        "de": "Café-Bestellung",
+        "en": "Café Ordering"
       },
       "to": "/roleplay?scene=cafe",
       "unitIndex": 9
     },
     {
-      "id": "m10-accusative",
+      "id": "m10-practice",
       "kind": "practice",
       "label": {
-        "de": "Akkusativ-Bau",
-        "en": "Akkusativ Builder"
+        "de": "Restaurant-Rollenspiel",
+        "en": "Restaurant Roleplay"
       },
-      "to": "/sentence-builder?focus=akkusativ",
+      "to": "/roleplay?scene=restaurant",
       "unitIndex": 9
     },
     {
-      "id": "m10-gate",
+      "id": "m10-checkpoint",
       "kind": "checkpoint",
       "label": {
         "de": "Modul 10 Prüfung",
@@ -722,27 +610,27 @@
       "unitIndex": 9
     },
     {
-      "id": "m11-clothing",
+      "id": "m11-learn",
       "kind": "learn",
       "label": {
-        "de": "Kleidung & Farben",
-        "en": "Clothes & Colours"
+        "de": "Kalender & Zeit",
+        "en": "Calendar & Time"
       },
-      "to": "/vocab-trainer?category=clothing",
+      "to": "/calendar",
       "unitIndex": 10
     },
     {
-      "id": "m11-shopping",
+      "id": "m11-practice",
       "kind": "practice",
       "label": {
-        "de": "Einkaufs-Rollenspiel",
-        "en": "Shopping Roleplay"
+        "de": "Kalender-Blitz",
+        "en": "Calendar Blitz"
       },
-      "to": "/roleplay?scene=cloth",
+      "to": "/rapid-fire?mode=calendar-translation",
       "unitIndex": 10
     },
     {
-      "id": "m11-gate",
+      "id": "m11-checkpoint",
       "kind": "checkpoint",
       "label": {
         "de": "Modul 11 Prüfung",
@@ -752,27 +640,27 @@
       "unitIndex": 10
     },
     {
-      "id": "m12-roleplay",
+      "id": "m12-learn",
       "kind": "learn",
       "label": {
-        "de": "Nach dem Weg fragen",
-        "en": "Asking Directions"
+        "de": "Modalverben",
+        "en": "Modal Verbs"
       },
-      "to": "/roleplay?scene=directions",
+      "to": "/grammar?tab=modals",
       "unitIndex": 11
     },
     {
-      "id": "m12-travel",
+      "id": "m12-practice",
       "kind": "practice",
       "label": {
-        "de": "Stadt & Reisen",
-        "en": "City & Travel"
+        "de": "Tic-Tac-Toe",
+        "en": "Tic-Tac-Toe"
       },
-      "to": "/vocab-trainer?category=city-travel",
+      "to": "/games?game=tictactoe",
       "unitIndex": 11
     },
     {
-      "id": "m12-gate",
+      "id": "m12-checkpoint",
       "kind": "checkpoint",
       "label": {
         "de": "Modul 12 Prüfung",
@@ -782,27 +670,27 @@
       "unitIndex": 11
     },
     {
-      "id": "m13-modals",
+      "id": "m13-learn",
       "kind": "learn",
       "label": {
-        "de": "Modalverben",
-        "en": "Modal Verbs"
+        "de": "Kleidung & Farben",
+        "en": "Clothes & Colors"
       },
-      "to": "/grammar?tab=modals",
+      "to": "/vocab-trainer?category=clothing",
       "unitIndex": 12
     },
     {
-      "id": "m13-games",
+      "id": "m13-practice",
       "kind": "practice",
       "label": {
-        "de": "Konjugations-Spiel",
-        "en": "Conjugation Game"
+        "de": "Einkaufs-Rollenspiel",
+        "en": "Shopping Roleplay"
       },
-      "to": "/games",
+      "to": "/roleplay?scene=cloth",
       "unitIndex": 12
     },
     {
-      "id": "m13-gate",
+      "id": "m13-checkpoint",
       "kind": "checkpoint",
       "label": {
         "de": "Modul 13 Prüfung",
@@ -812,27 +700,27 @@
       "unitIndex": 12
     },
     {
-      "id": "m14-health",
+      "id": "m14-learn",
       "kind": "learn",
       "label": {
-        "de": "Körper & Gesundheit",
-        "en": "Body & Health"
+        "de": "Richtungen",
+        "en": "Directions"
       },
-      "to": "/vocab-trainer?category=body-health",
+      "to": "/roleplay?scene=directions",
       "unitIndex": 13
     },
     {
-      "id": "m14-doctor",
+      "id": "m14-practice",
       "kind": "practice",
       "label": {
-        "de": "Arztbesuch",
-        "en": "Doctor Visit"
+        "de": "Stadt & Reisen",
+        "en": "City & Travel"
       },
-      "to": "/roleplay?scene=doctor",
+      "to": "/vocab-trainer?category=city-travel",
       "unitIndex": 13
     },
     {
-      "id": "m14-gate",
+      "id": "m14-checkpoint",
       "kind": "checkpoint",
       "label": {
         "de": "Modul 14 Prüfung",
@@ -842,17 +730,17 @@
       "unitIndex": 13
     },
     {
-      "id": "m15-stories",
+      "id": "m15-learn",
       "kind": "learn",
       "label": {
-        "de": "Hobby & Wetter",
-        "en": "Hobby & Weather"
+        "de": "Hobby, Wetter & Gesundheit",
+        "en": "Hobby, Weather & Health"
       },
       "to": "/stories",
       "unitIndex": 14
     },
     {
-      "id": "m15-blitz",
+      "id": "m15-practice",
       "kind": "practice",
       "label": {
         "de": "Wochenend-Blitz",
@@ -862,7 +750,7 @@
       "unitIndex": 14
     },
     {
-      "id": "m15-gate",
+      "id": "m15-checkpoint",
       "kind": "checkpoint",
       "label": {
         "de": "Modul 15 Prüfung",
@@ -870,112 +758,43 @@
       },
       "to": "/checkpoint/14",
       "unitIndex": 14
+    },
+    {
+      "id": "m16-learn",
+      "kind": "learn",
+      "label": {
+        "de": "Wiederholungskarte",
+        "en": "Review Map"
+      },
+      "to": "/grammar",
+      "unitIndex": 15
+    },
+    {
+      "id": "m16-practice",
+      "kind": "practice",
+      "label": {
+        "de": "Abschlussübung",
+        "en": "Final Practice Set"
+      },
+      "to": "/rapid-fire?mode=final-review",
+      "unitIndex": 15
+    },
+    {
+      "bonus": true,
+      "id": "m16-bonus",
+      "kind": "bonus",
+      "label": {
+        "de": "A1-Beherrschungs-Checkliste",
+        "en": "A1 Mastery Checklist"
+      },
+      "to": "/grammar?tab=review",
+      "unitIndex": 15
     }
   ],
-  "note": "Canonical pre-P0 snapshot of every observable export of src/data/a1Path.ts, derived from scripts/data/a1-curriculum/_legacy.ts by rebuild-baseline.ts. Consumed only by verify.ts.",
+  "note": "Baseline of the CURRENT spine, re-cut with `rebuild-baseline.ts --from-current` after a deliberate re-sequence. The pre-P0 baseline it replaced is kept, never overwritten, at baseline-pre-p0.json; differences between the two are the re-sequence.",
   "pedagogy": {
-    "ACCUSATIVE_RULES": [
-      {
-        "example": {
-          "de": "Ich sehe den Mann.",
-          "en": "Ich sehe den Mann."
-        },
-        "label": {
-          "de": "der → den",
-          "en": "der → den"
-        },
-        "usage": {
-          "de": "männliches Objekt",
-          "en": "masculine direct object"
-        }
-      },
-      {
-        "example": {
-          "de": "Ich esse einen Apfel.",
-          "en": "Ich esse einen Apfel."
-        },
-        "label": {
-          "de": "ein → einen",
-          "en": "ein → einen"
-        },
-        "usage": {
-          "de": "männlich, ohne Artikel",
-          "en": "masculine, no article"
-        }
-      },
-      {
-        "example": {
-          "de": "Ich habe keinen Stuhl.",
-          "en": "Ich habe keinen Stuhl."
-        },
-        "label": {
-          "de": "kein → keinen",
-          "en": "kein → keinen"
-        },
-        "usage": {
-          "de": "verneintes Maskulinum",
-          "en": "negated masculine"
-        }
-      },
-      {
-        "example": {
-          "de": "Ich trinke das Wasser.",
-          "en": "Ich trinke das Wasser."
-        },
-        "label": {
-          "de": "die / das → gleich",
-          "en": "die / das → same"
-        },
-        "usage": {
-          "de": "Feminin, Neutrum, Plural",
-          "en": "feminine, neuter, plural"
-        }
-      }
-    ],
-    "DIRECTIONAL_RULES": [
-      {
-        "example": {
-          "de": "nach links, nach Berlin",
-          "en": "nach links, nach Berlin"
-        },
-        "label": {
-          "de": "nach",
-          "en": "nach"
-        },
-        "usage": {
-          "de": "Städte, Länder, Richtungen",
-          "en": "cities, countries, directions"
-        }
-      },
-      {
-        "example": {
-          "de": "zum Bahnhof, zur Schule",
-          "en": "zum Bahnhof, zur Schule"
-        },
-        "label": {
-          "de": "zu / zum / zur",
-          "en": "zu / zum / zur"
-        },
-        "usage": {
-          "de": "bestimmte Orte, Personen",
-          "en": "specific places, people"
-        }
-      },
-      {
-        "example": {
-          "de": "ins Kaufhaus",
-          "en": "ins Kaufhaus"
-        },
-        "label": {
-          "de": "in / ins",
-          "en": "in / ins"
-        },
-        "usage": {
-          "de": "in ein Gebäude hinein",
-          "en": "inside a building"
-        }
-      }
-    ],
+    "ACCUSATIVE_RULES": [],
+    "DIRECTIONAL_RULES": [],
     "HONORIFICS": [
       {
         "pronoun": {
@@ -1011,161 +830,9 @@
         }
       }
     ],
-    "MODAL_VERB_FINAL_PANEL": [
-      {
-        "example": {
-          "de": "Ich kann schwimmen.",
-          "en": "I can swim.",
-          "ne": "म तराई गर्न सक्छु।"
-        },
-        "language": {
-          "de": "Deutsch",
-          "en": "English",
-          "ne": "नेपाली"
-        },
-        "order": {
-          "de": "V2 (Haupt-) / Modal am Ende (Nebensatz)",
-          "en": "Subject–Modal–Verb (V2)",
-          "ne": "SOV (विषय–वस्तु–क्रिया)"
-        }
-      },
-      {
-        "example": {
-          "de": "Ich kann schwimmen.",
-          "en": "I can swim.",
-          "ne": "म तराई गर्न सक्छु।"
-        },
-        "language": {
-          "de": "Deutsch",
-          "en": "Nepali",
-          "ne": "नेपाली"
-        },
-        "order": {
-          "de": "V2 / verb-final",
-          "en": "Subject–Modal–Verb",
-          "ne": "SOV"
-        }
-      },
-      {
-        "example": {
-          "de": "Ich kann schwimmen. (V2 im Hauptsatz)",
-          "en": "I can swim.",
-          "ne": "म तराई गर्न सक्छु।"
-        },
-        "language": {
-          "de": "Deutsch",
-          "en": "German",
-          "ne": "नेपाली"
-        },
-        "order": {
-          "de": "Modal am Ende im Nebensatz",
-          "en": "SVO",
-          "ne": "SOV"
-        }
-      }
-    ],
-    "PERFEKT_RULES": [
-      {
-        "example": {
-          "de": "Ich habe Fußball gespielt.",
-          "en": "Ich habe Fußball gespielt."
-        },
-        "label": {
-          "de": "haben + Partizip II",
-          "en": "haben + Partizip II"
-        },
-        "usage": {
-          "de": "die meisten Verben",
-          "en": "most verbs"
-        }
-      },
-      {
-        "example": {
-          "de": "Ich bin nach Hause gegangen.",
-          "en": "Ich bin nach Hause gegangen."
-        },
-        "label": {
-          "de": "sein + Partizip II",
-          "en": "sein + Partizip II"
-        },
-        "usage": {
-          "de": "Bewegung und Ortswechsel",
-          "en": "movement / change of place"
-        }
-      },
-      {
-        "example": {
-          "de": "spielen → gespielt",
-          "en": "spielen → gespielt"
-        },
-        "label": {
-          "de": "ge- … -t",
-          "en": "ge- … -t"
-        },
-        "usage": {
-          "de": "regelmäßige Verben",
-          "en": "regular (weak) verbs"
-        }
-      },
-      {
-        "example": {
-          "de": "scheinen → geschienen",
-          "en": "scheinen → geschienen"
-        },
-        "label": {
-          "de": "ge- … -en",
-          "en": "ge- … -en"
-        },
-        "usage": {
-          "de": "starke Verben, Vokal wechselt",
-          "en": "strong verbs, vowel may change"
-        }
-      }
-    ],
-    "UM_AM_IM_RULES": [
-      {
-        "example": {
-          "de": "um drei Uhr",
-          "en": "um drei Uhr"
-        },
-        "label": {
-          "de": "um",
-          "en": "um"
-        },
-        "usage": {
-          "de": "genaue Uhrzeiten",
-          "en": "exact clock times"
-        }
-      },
-      {
-        "example": {
-          "de": "am Montag",
-          "en": "am Montag"
-        },
-        "label": {
-          "de": "am",
-          "en": "am"
-        },
-        "usage": {
-          "de": "Tage und Daten",
-          "en": "days and dates"
-        }
-      },
-      {
-        "example": {
-          "de": "im Juli",
-          "en": "im Juli"
-        },
-        "label": {
-          "de": "im",
-          "en": "im"
-        },
-        "usage": {
-          "de": "Monate und Jahreszeiten",
-          "en": "months and seasons"
-        }
-      }
-    ],
+    "MODAL_VERB_FINAL_PANEL": [],
+    "PERFEKT_RULES": [],
+    "UM_AM_IM_RULES": [],
     "WORD_ORDER_PANEL": [
       {
         "example": {
@@ -1219,59 +886,7 @@
         }
       }
     ],
-    "WORD_ORDER_TABLE": [
-      {
-        "example": {
-          "de": "Ich trinke Tee.",
-          "en": "I drink tea.",
-          "ne": "म चिया पिउँछु।"
-        },
-        "language": {
-          "de": "Deutsch",
-          "en": "English",
-          "ne": "नेपाली"
-        },
-        "order": {
-          "de": "V2 (main)",
-          "en": "SVO",
-          "ne": "SOV"
-        }
-      },
-      {
-        "example": {
-          "de": "Ich trinke Tee.",
-          "en": "I drink tea.",
-          "ne": "म चिया पिउँछु।"
-        },
-        "language": {
-          "de": "Deutsch",
-          "en": "Nepali",
-          "ne": "नेपाली"
-        },
-        "order": {
-          "de": "V2/verb-final",
-          "en": "SVO",
-          "ne": "SOV"
-        }
-      },
-      {
-        "example": {
-          "de": "Ich trinke Tee. (V2 im Hauptsatz)",
-          "en": "I drink tea.",
-          "ne": "म चिया पिउँछु।"
-        },
-        "language": {
-          "de": "Deutsch",
-          "en": "German",
-          "ne": "नेपाली"
-        },
-        "order": {
-          "de": "V2 (Haupt-) / verb-final (Nebensatz)",
-          "en": "SVO",
-          "ne": "SOV"
-        }
-      }
-    ]
+    "WORD_ORDER_TABLE": []
   },
   "predicates": {
     "sample": [
@@ -1340,6 +955,7 @@
         "de": "Menschen begrüßen, sich vorstellen, höflich antworten",
         "en": "Greet people, introduce yourself, and reply politely"
       },
+      "hasLesson": true,
       "id": "m01",
       "index": 0,
       "kind": "core",
@@ -1429,6 +1045,7 @@
         "de": "Zählen, Preise verstehen, Mengen angeben",
         "en": "Count, understand prices, and state quantities"
       },
+      "hasLesson": true,
       "id": "m02",
       "index": 1,
       "kind": "core",
@@ -1466,7 +1083,7 @@
           },
           {
             "count": 6,
-            "type": "listening-gap"
+            "type": "vocab-translation"
           }
         ]
       },
@@ -1476,6 +1093,7 @@
         "de": "Namen buchstabieren und persönliche Angaben machen",
         "en": "Spell your name and give personal details"
       },
+      "hasLesson": true,
       "id": "m03",
       "index": 2,
       "kind": "core",
@@ -1524,8 +1142,9 @@
         "en": "Describe family members and their qualities"
       },
       "grammarCategories": [
-        "cases"
+        "possessive"
       ],
+      "hasLesson": true,
       "id": "m04",
       "index": 3,
       "kind": "core",
@@ -1558,11 +1177,15 @@
         "moduleType": "a1-checkpoint",
         "specs": [
           {
-            "count": 6,
+            "count": 4,
             "type": "article-precision"
           },
           {
-            "count": 6,
+            "count": 4,
+            "type": "grammar-drill"
+          },
+          {
+            "count": 4,
             "type": "vocab-translation"
           }
         ]
@@ -1574,8 +1197,10 @@
         "en": "Describe your home and negate correctly"
       },
       "grammarCategories": [
-        "cases"
+        "cases",
+        "kein"
       ],
+      "hasLesson": true,
       "id": "m05",
       "index": 4,
       "kind": "core",
@@ -1616,11 +1241,7 @@
         "moduleType": "a1-checkpoint",
         "specs": [
           {
-            "count": 8,
-            "type": "vocab-translation"
-          },
-          {
-            "count": 4,
+            "count": 12,
             "type": "grammar-drill"
           }
         ]
@@ -1628,37 +1249,798 @@
       "cluster": 1,
       "code": "M06",
       "goal": {
-        "de": "Über Berufe, Arbeitsplätze und Studium sprechen",
-        "en": "Discuss occupations, workplaces and study"
+        "de": "Jedes regelmäßige Verb konjugieren, Stammwechsel-Muster beherrschen, sein/haben im Präsens richtig anwenden.",
+        "en": "Conjugate any regular verb, master stem-changing patterns, and use sein/haben correctly in present tense."
       },
       "grammarCategories": [
-        "weakVerb"
+        "conjugation",
+        "stem-change",
+        "irregular-verbs"
       ],
+      "hasLesson": true,
       "id": "m06",
       "index": 5,
       "kind": "core",
       "nodeIds": [
-        "m06-professions",
-        "m06-grammar",
-        "m06-gate"
+        "m06-learn",
+        "m06-practice",
+        "m06-checkpoint"
       ],
       "pedagogy": {
+        "callouts": [
+          "Stem vowel NEVER changes for ich, wir, ihr, sie/Sie — only du and er/sie/es!",
+          "essen: du isst (not esst), er isst (not esst) — double-s spelling!",
+          "sein and haben are the two most important verbs — memorize them completely"
+        ],
         "grammarNote": {
-          "de": "Weibliche Berufsbezeichnungen entstehen mit -in: der Arzt → die Ärztin, der Kellner → die Kellnerin. Oft ändert sich auch der Stammvokal.",
-          "en": "Feminine job titles are built from the masculine: der Arzt → die Ärztin, der Kellner → die Kellnerin. Often the stem vowel also takes an umlaut."
-        }
+          "de": "Nimm das -en vom Infinitiv und hänge die Personalendung an: ich lerne, du lernst, er lernt, wir lernen.",
+          "en": "Take the -en off the infinitive, then add the personal ending: ich lerne, du lernst, er lernt, wir lernen."
+        },
+        "grammarNotes": [
+          "Regular verbs: remove -en, add -e/-st/-t/-en/-t/-en",
+          "Stem-changing verbs (e→i/ie, a→ä) affect ONLY du and er/sie/es",
+          "sein (bin/bist/ist/sind/seid/sind) and haben (habe/hast/hat/haben/habt/haben) are highly irregular"
+        ],
+        "ruleTables": [
+          {
+            "columns": [
+              "Pronoun",
+              "Ending",
+              "wohnen",
+              "lernen",
+              "machen"
+            ],
+            "rows": [
+              [
+                "ich",
+                "-e",
+                "wohne",
+                "lerne",
+                "mache"
+              ],
+              [
+                "du",
+                "-st",
+                "wohnst",
+                "lernst",
+                "machst"
+              ],
+              [
+                "er/sie/es",
+                "-t",
+                "wohnt",
+                "lernt",
+                "macht"
+              ],
+              [
+                "wir",
+                "-en",
+                "wohnen",
+                "lernen",
+                "machen"
+              ],
+              [
+                "ihr",
+                "-t",
+                "wohnt",
+                "lernt",
+                "macht"
+              ],
+              [
+                "sie/Sie",
+                "-en",
+                "wohnen",
+                "lernen",
+                "machen"
+              ]
+            ],
+            "title": {
+              "de": "Regelmäßige Verbendungen",
+              "en": "Regular Verb Endings"
+            }
+          },
+          {
+            "columns": [
+              "Pattern",
+              "Infinitive",
+              "ich",
+              "du",
+              "er/sie/es",
+              "wir"
+            ],
+            "rows": [
+              [
+                "e → i",
+                "geben",
+                "gebe",
+                "gibst",
+                "gibt",
+                "geben"
+              ],
+              [
+                "e → ie",
+                "lesen",
+                "lese",
+                "liest",
+                "liest",
+                "lesen"
+              ],
+              [
+                "e → ie",
+                "sehen",
+                "sehe",
+                "siehst",
+                "sieht",
+                "sehen"
+              ],
+              [
+                "e → i",
+                "essen",
+                "esse",
+                "isst",
+                "isst",
+                "essen"
+              ],
+              [
+                "a → ä",
+                "fahren",
+                "fahre",
+                "fährst",
+                "fährt",
+                "fahren"
+              ],
+              [
+                "a → ä",
+                "schlafen",
+                "schlafe",
+                "schläfst",
+                "schläft",
+                "schlafen"
+              ]
+            ],
+            "title": {
+              "de": "Stammwechsel-Verben (nur du/er/sie/es)",
+              "en": "Stem-Changing Verbs (du/er/sie/es only)"
+            }
+          },
+          {
+            "columns": [
+              "Pronoun",
+              "sein",
+              "haben"
+            ],
+            "rows": [
+              [
+                "ich",
+                "bin",
+                "habe"
+              ],
+              [
+                "du",
+                "bist",
+                "hast"
+              ],
+              [
+                "er/sie/es",
+                "ist",
+                "hat"
+              ],
+              [
+                "wir",
+                "sind",
+                "haben"
+              ],
+              [
+                "ihr",
+                "seid",
+                "habt"
+              ],
+              [
+                "sie/Sie",
+                "sind",
+                "haben"
+              ]
+            ],
+            "title": {
+              "de": "Unregelmäßige Verben: sein & haben",
+              "en": "Irregular Verbs: sein & haben"
+            }
+          }
+        ]
       },
       "theme": {
-        "de": "Berufe · Arbeitsplätze · die -in-Endung",
-        "en": "Jobs · Workplaces · the -in suffix"
+        "de": "Regelmäßige & unregelmäßige Verben, Stammwechsel, sein/haben",
+        "en": "Regular & irregular verbs, stem changes, sein/haben"
       },
       "title": {
-        "de": "Berufe & Bildung",
-        "en": "Professions & Education"
+        "de": "Präsens-Verbkonjugation",
+        "en": "Present Tense Verb Conjugation"
       },
       "vocabCategories": [
-        "professions",
-        "school-office"
+        "conjugation",
+        "action-verbs"
+      ]
+    },
+    {
+      "checkpoint": {
+        "moduleType": "a1-checkpoint",
+        "specs": [
+          {
+            "count": 10,
+            "type": "grammar-drill"
+          },
+          {
+            "count": 4,
+            "type": "vocab-translation"
+          }
+        ]
+      },
+      "cluster": 1,
+      "code": "M07",
+      "goal": {
+        "de": "Richtige deutsche Hauptsätze bilden: konjugiertes Verb auf Position 2, Inversion bei Zeit/Ort vorne beherrschen.",
+        "en": "Build correct German main clauses by placing the conjugated verb in Position 2, master inversion when time/place leads."
+      },
+      "grammarCategories": [
+        "v2-word-order",
+        "inversion",
+        "tekamolo"
+      ],
+      "hasLesson": true,
+      "id": "m07",
+      "index": 6,
+      "kind": "core",
+      "nodeIds": [
+        "m07-learn",
+        "m07-practice",
+        "m07-checkpoint"
+      ],
+      "pedagogy": {
+        "callouts": [
+          "The verb NEVER moves from Position 2 in a main clause — this is the GOLDEN RULE!",
+          "Inversion is MANDATORY: 'Heute lerne ich' NOT 'Heute ich lerne'",
+          "Subordinate clauses (weil, dass, wenn) push verb to the END — different rule!"
+        ],
+        "grammarNote": {
+          "de": "Das konjugierte Verb steht fest auf Position 2. Steht zuerst eine Zeit- oder Ortsangabe, rückt das SUBJEKT auf Position 3 — niemals das Verb.",
+          "en": "The conjugated verb is pinned to Position 2. Put a time or place phrase first and the SUBJECT moves to Position 3 — never the verb."
+        },
+        "grammarNotes": [
+          "Main clause (Hauptsatz): conjugated verb ALWAYS in Position 2",
+          "Position 1 can be: Subject, Time, Place, Object, or Adverb",
+          "When non-subject takes Position 1, subject moves to Position 3 (INVERSION)",
+          "Multiple adverbials follow TeKaMoLo order: Temporal → Kausal → Modal → Lokal"
+        ],
+        "ruleTables": [
+          {
+            "columns": [
+              "Pos 1 (Any Element)",
+              "Pos 2 (VERB)",
+              "Pos 3 (Subject)",
+              "Pos 4+ (Rest)"
+            ],
+            "rows": [
+              [
+                "Ich",
+                "trinke",
+                "—",
+                "heute Tee."
+              ],
+              [
+                "Heute",
+                "trinke",
+                "ich",
+                "Tee."
+              ],
+              [
+                "In Berlin",
+                "wohnt",
+                "meine Schwester",
+                "seit zwei Jahren."
+              ],
+              [
+                "Gestern",
+                "war",
+                "ich",
+                "müde."
+              ],
+              [
+                "Morgen",
+                "fahre",
+                "ich",
+                "nach München."
+              ],
+              [
+                "Den Apfel",
+                "isst",
+                "er",
+                "gerne."
+              ]
+            ],
+            "title": {
+              "de": "V2-Positions-Matrix",
+              "en": "V2 Position Matrix"
+            }
+          },
+          {
+            "columns": [
+              "Type",
+              "Question",
+              "Examples",
+              "Position"
+            ],
+            "rows": [
+              [
+                "Temporal (Time)",
+                "Wann?",
+                "heute, gestern, morgens, um 8 Uhr",
+                "First"
+              ],
+              [
+                "Kausal (Reason)",
+                "Warum?",
+                "deshalb, daher, wegen dem Regen",
+                "Second"
+              ],
+              [
+                "Modal (Manner)",
+                "Wie?",
+                "mit dem Bus, schnell, gerne",
+                "Third"
+              ],
+              [
+                "Lokal (Place)",
+                "Wo?",
+                "in Berlin, nach Hause, im Park",
+                "Last"
+              ]
+            ],
+            "title": {
+              "de": "TeKaMoLo Adverbial-Reihenfolge",
+              "en": "TeKaMoLo Adverbial Order"
+            }
+          }
+        ]
+      },
+      "theme": {
+        "de": "Verbposition 2, Subjekt-Verb-Inversion, TeKaMoLo",
+        "en": "Verb position 2, subject-verb inversion, TeKaMoLo"
+      },
+      "title": {
+        "de": "V2-Wortstellung & Satztopologie",
+        "en": "V2 Word Order & Sentence Topology"
+      },
+      "vocabCategories": [
+        "v2-order",
+        "action-verbs",
+        "nature-time"
+      ]
+    },
+    {
+      "checkpoint": {
+        "moduleType": "a1-checkpoint",
+        "specs": [
+          {
+            "count": 6,
+            "type": "grammar-drill"
+          },
+          {
+            "count": 6,
+            "type": "vocab-translation"
+          }
+        ]
+      },
+      "cluster": 2,
+      "code": "M08",
+      "goal": {
+        "de": "Direkte Objekte erkennen, maskulinen Akkusativ-Wechsel anwenden, transitive Verben richtig nutzen.",
+        "en": "Identify direct objects, apply accusative masculine shift, use transitive verbs correctly."
+      },
+      "grammarCategories": [
+        "accusative",
+        "cases"
+      ],
+      "hasLesson": true,
+      "id": "m08",
+      "index": 7,
+      "kind": "core",
+      "nodeIds": [
+        "m08-learn",
+        "m08-practice",
+        "m08-checkpoint"
+      ],
+      "pedagogy": {
+        "callouts": [
+          "🚨 CRITICAL: ONLY masculine (der) shifts in accusative! Feminine, neuter, plural = NO CHANGE!",
+          "Verbs that ALWAYS take accusative objects: bestellen, trinken, essen, haben, kaufen, brauchen, sehen, möchten",
+          "Example: Ich habe EINEN Kaffee (masc). Ich esse EIN Brot (neut). Ich bestelle EINE Suppe (fem)."
+        ],
+        "grammarNote": {
+          "de": "Nur das Maskulinum wechselt im Akkusativ: der → den, ein → einen, kein → keinen. Feminin, Neutrum und Plural bleiben unverändert.",
+          "en": "Only the masculine shifts in the accusative: der → den, ein → einen, kein → keinen. Feminine, neuter and plural stay exactly as they are."
+        },
+        "grammarNotes": [
+          "Direct object = receiver of action (Wen oder was?)",
+          "ONLY masculine articles change: der→den, ein→einen, kein→keinen",
+          "Feminine (die/eine), Neuter (das/ein), Plural (die/keine) stay IDENTICAL to Nominative",
+          "Transitive verbs triggering accusative: haben, trinken, essen, kaufen, brauchen, sehen, möchten, bestellen"
+        ],
+        "ruleTables": [
+          {
+            "columns": [
+              "Gender/Number",
+              "Nominative (Subject)",
+              "Accusative (Direct Object)",
+              "Indefinite Acc.",
+              "Negative Acc."
+            ],
+            "rows": [
+              [
+                "Masculine",
+                "der Tisch",
+                "den Tisch",
+                "einen Tisch",
+                "keinen Tisch"
+              ],
+              [
+                "Feminine",
+                "die Suppe",
+                "die Suppe",
+                "eine Suppe",
+                "keine Suppe"
+              ],
+              [
+                "Neuter",
+                "das Brot",
+                "das Brot",
+                "ein Brot",
+                "kein Brot"
+              ],
+              [
+                "Plural",
+                "die Äpfel",
+                "die Äpfel",
+                "— Äpfel",
+                "keine Äpfel"
+              ]
+            ],
+            "title": {
+              "de": "Akkusativ-Artikel-Wechsel-Matrix",
+              "en": "Accusative Article Shift Matrix"
+            }
+          }
+        ]
+      },
+      "theme": {
+        "de": "Maskuliner Wechsel der→den, transitive Verben, direkte Objekte",
+        "en": "Masculine shift der→den, transitive verbs, direct objects"
+      },
+      "title": {
+        "de": "Akkusativ & Direkte Objekte",
+        "en": "Accusative Case & Direct Objects"
+      },
+      "vocabCategories": [
+        "food-drink",
+        "action-verbs"
+      ]
+    },
+    {
+      "checkpoint": {
+        "moduleType": "a1-checkpoint",
+        "specs": [
+          {
+            "count": 6,
+            "type": "grammar-drill"
+          },
+          {
+            "count": 3,
+            "type": "word-order"
+          },
+          {
+            "count": 3,
+            "type": "vocab-translation"
+          }
+        ]
+      },
+      "cluster": 2,
+      "code": "M09",
+      "goal": {
+        "de": "Trennbare Verbpräfixe abtrennen, ans Satzende setzen, Tagesabläufe beschreiben.",
+        "en": "Split separable verb prefixes, place them at sentence end, describe daily routines."
+      },
+      "grammarCategories": [
+        "separable-verbs",
+        "word-order",
+        "prefix"
+      ],
+      "hasLesson": true,
+      "id": "m09",
+      "index": 8,
+      "kind": "core",
+      "nodeIds": [
+        "m09-learn",
+        "m09-practice",
+        "m09-checkpoint"
+      ],
+      "pedagogy": {
+        "callouts": [
+          "Prefix goes to the VERY END — not just after the verb, but after ALL other elements!",
+          "Stress test: inseparable = stress on ROOT (verSTEHen); separable = stress on PREFIX (AUFstehen)",
+          "Question form: 'Räumst du dein Zimmer AUF?' — prefix still at end!"
+        ],
+        "grammarNote": {
+          "de": "Ein trennbares Verb trennt sich im Hauptsatz: der konjugierte Stamm auf Position 2, die Vorsilbe ans Satzende.",
+          "en": "A separable verb splits in a main clause: the conjugated stem takes Position 2 and the prefix goes to the very end."
+        },
+        "grammarNotes": [
+          "Separable verbs = prefix + base verb (auf|stehen, ein|kaufen, an|rufen)",
+          "In main clauses: base verb conjugates to Position 2, prefix jumps to VERY END (Satzklammer)",
+          "Common separable prefixes: auf-, ab-, an-, aus-, ein-, mit-, fern-, vor-, zurück-",
+          "Inseparable prefixes (ver-, be-, ge-, ent-, er-, emp-, miss-, zer-) NEVER split"
+        ],
+        "ruleTables": [
+          {
+            "columns": [
+              "Pos 1",
+              "Pos 2 (Verb)",
+              "Middle",
+              "END (Prefix)"
+            ],
+            "rows": [
+              [
+                "Ich",
+                "stehe",
+                "jeden Morgen um 6 Uhr",
+                "auf."
+              ],
+              [
+                "Wir",
+                "kaufen",
+                "heute im Supermarkt",
+                "ein."
+              ],
+              [
+                "Er",
+                "ruft",
+                "seine Mutter",
+                "an."
+              ],
+              [
+                "Das Fest",
+                "fängt",
+                "um 20 Uhr",
+                "an."
+              ],
+              [
+                "Räumst",
+                "du",
+                "bitte dein Zimmer",
+                "auf?"
+              ]
+            ],
+            "title": {
+              "de": "Satzklammer-Struktur",
+              "en": "Satzklammer (Sentence Bracket) Structure"
+            }
+          },
+          {
+            "columns": [
+              "Verb",
+              "Prefix|Base",
+              "Meaning",
+              "Example"
+            ],
+            "rows": [
+              [
+                "aufstehen",
+                "auf|stehen",
+                "get up",
+                "Ich stehe um 7 Uhr auf."
+              ],
+              [
+                "einkaufen",
+                "ein|kaufen",
+                "shop",
+                "Am Samstag kaufe ich ein."
+              ],
+              [
+                "anrufen",
+                "an|rufen",
+                "call",
+                "Ich rufe dich an."
+              ],
+              [
+                "fernsehen",
+                "fern|sehen",
+                "watch TV",
+                "Wir sehen abends fern."
+              ],
+              [
+                "ankommen",
+                "an|kommen",
+                "arrive",
+                "Der Zug kommt um 14 Uhr an."
+              ],
+              [
+                "abfahren",
+                "ab|fahren",
+                "depart",
+                "Der Bus fährt um 8 Uhr ab."
+              ],
+              [
+                "anfangen",
+                "an|fangen",
+                "begin",
+                "Der Kurs fängt um 9 Uhr an."
+              ],
+              [
+                "ausmachen",
+                "aus|machen",
+                "turn off",
+                "Er macht das Licht aus."
+              ],
+              [
+                "anmachen",
+                "an|machen",
+                "turn on",
+                "Mach bitte die Heizung an."
+              ],
+              [
+                "aufhören",
+                "auf|hören",
+                "stop",
+                "Der Regen hört auf."
+              ],
+              [
+                "vorbereiten",
+                "vor|bereiten",
+                "prepare",
+                "Wir bereiten das Essen vor."
+              ],
+              [
+                "aufräumen",
+                "auf|räumen",
+                "tidy up",
+                "Ich räume das Zimmer auf."
+              ]
+            ],
+            "title": {
+              "de": "Wichtige trennbare Verben für Tagesabläufe",
+              "en": "Key Separable Verbs for Daily Routines"
+            }
+          }
+        ]
+      },
+      "theme": {
+        "de": "Präfix-Abtrennung, Satzklammer, Tagesablauf-Verben",
+        "en": "Prefix detachment, Satzklammer, daily routine verbs"
+      },
+      "title": {
+        "de": "Trennbare Verben & Tagesabläufe",
+        "en": "Separable Verbs & Daily Routines"
+      },
+      "vocabCategories": [
+        "daily-routine",
+        "action-verbs",
+        "action-verbs"
+      ]
+    },
+    {
+      "checkpoint": {
+        "moduleType": "a1-checkpoint",
+        "specs": [
+          {
+            "count": 12,
+            "type": "vocab-translation"
+          }
+        ]
+      },
+      "cluster": 2,
+      "code": "M10",
+      "goal": {
+        "de": "Im Restaurant höflich Essen/Trinken bestellen, Akkusativ bei Essenswörtern anwenden.",
+        "en": "Order food/drinks politely in a restaurant, apply accusative case to food items."
+      },
+      "grammarCategories": [
+        "accusative",
+        "modal-verbs"
+      ],
+      "hasLesson": true,
+      "id": "m10",
+      "index": 9,
+      "kind": "core",
+      "nodeIds": [
+        "m10-learn",
+        "m10-practice",
+        "m10-checkpoint"
+      ],
+      "pedagogy": {
+        "callouts": [
+          "⚠️ TRAP: 'Ich möchte ein Kaffee' is WRONG — Kaffee is masculine → 'einen Kaffee'!",
+          "Polite: 'Ich möchte bitte...' / Rude: 'Ich will...' / 'Gib mir...'",
+          "Tip (Trinkgeld): Tell waiter total when paying (€18.50 bill → hand €20, say 'Stimmt so')"
+        ],
+        "grammarNote": {
+          "de": "Beim Bestellen zeigt sich der Akkusativ: „Ich möchte einen Salat und ein Wasser\" — maskulin einen, neutrum ein.",
+          "en": "Ordering is where the accusative earns its keep: \"Ich möchte einen Salat und ein Wasser\" — masculine einen, neuter ein."
+        },
+        "grammarNotes": [
+          "Polite ordering: 'Ich möchte bitte...' (NOT 'Ich will...')",
+          "Apply accusative to food: masculine items shift (der Kaffee → einen Kaffee)",
+          "Feminine/Neuter/Plural food items: NO change in accusative",
+          "Asking for bill: 'Die Rechnung, bitte.' / 'Zusammen oder getrennt?'"
+        ],
+        "ruleTables": [
+          {
+            "columns": [
+              "Situation",
+              "German",
+              "English",
+              "Accusative Note"
+            ],
+            "rows": [
+              [
+                "Order drink (masc)",
+                "Ich möchte einen Kaffee.",
+                "I'd like a coffee.",
+                "der Kaffee → einen"
+              ],
+              [
+                "Order drink (neut)",
+                "Ich möchte ein Wasser.",
+                "I'd like a water.",
+                "das Wasser → ein (no change)"
+              ],
+              [
+                "Order food (masc)",
+                "Ich nehme einen Salat.",
+                "I'll take a salad.",
+                "der Salat → einen"
+              ],
+              [
+                "Order food (fem)",
+                "Ich bestelle eine Suppe.",
+                "I order a soup.",
+                "die Suppe → eine (no change)"
+              ],
+              [
+                "Ask for bill",
+                "Die Rechnung, bitte.",
+                "The bill, please.",
+                "—"
+              ],
+              [
+                "Pay together",
+                "Zusammen, bitte.",
+                "Together, please.",
+                "—"
+              ],
+              [
+                "Pay separate",
+                "Getrennt, bitte.",
+                "Separately, please.",
+                "—"
+              ]
+            ],
+            "title": {
+              "de": "Restaurant-Phrasen & Akkusativ-Anwendung",
+              "en": "Restaurant Phrases & Accusative Application"
+            }
+          }
+        ]
+      },
+      "theme": {
+        "de": "Höflich bestellen (möchten), Essensvokabular, Akkusativ anwenden",
+        "en": "Polite ordering (möchten), food vocab, applying accusative"
+      },
+      "title": {
+        "de": "Restaurant, Essen & Bestellen",
+        "en": "Restaurant, Food & Ordering"
+      },
+      "vocabCategories": [
+        "food-drink",
+        "restaurant",
+        "taste-texture-adjectives"
       ]
     },
     {
@@ -1675,194 +2057,133 @@
           }
         ]
       },
-      "cluster": 1,
-      "code": "M07",
+      "cluster": 3,
+      "code": "M11",
       "goal": {
-        "de": "Zeiten, Tage und Daten korrekt angeben",
-        "en": "State times, days and dates correctly"
+        "de": "Zeit, Daten, Termine ausdrücken und deutsche Umgangsuhrzeit beherrschen (halb neun = 8:30).",
+        "en": "Express time, dates, appointments, and master German colloquial clock (halb neun = 8:30)."
       },
-      "id": "m07",
-      "index": 6,
+      "grammarCategories": [
+        "temporal-prepositions",
+        "prepositions",
+        "time"
+      ],
+      "hasLesson": true,
+      "id": "m11",
+      "index": 10,
       "kind": "core",
       "nodeIds": [
-        "m07-calendar",
-        "m07-roleplay",
-        "m07-gate"
+        "m11-learn",
+        "m11-practice",
+        "m11-checkpoint"
       ],
       "pedagogy": {
+        "callouts": [
+          "⚠️ TRAP: 'Halb acht' = 7:30, NOT 8:30! 'Halb' means half TO the next hour!",
+          "Memory hook: Am für Alle Tage (am Montag). Im für Im Monat (im Juli). Um für Uhrzeit (um 8 Uhr).",
+          "Cultural: Pünktlichkeit is paramount — arrive 5 minutes early!"
+        ],
         "grammarNote": {
-          "de": "Die Präposition hängt von der Zeiteinheit ab: um für Uhrzeiten, am für Tage und Daten, im für Monate und Jahreszeiten.",
-          "en": "The preposition depends on the unit of time: um for clock times, am for days and dates, im for months and seasons."
+          "de": "am = Tage, im = Monate und Jahreszeiten, um = Uhrzeiten. Und halb acht heißt 7:30, nicht 8:30.",
+          "en": "am = days, im = months and seasons, um = clock times. And halb acht is 7:30, not 8:30."
         },
-        "ruleTable": {
-          "rows": [
-            {
-              "example": {
-                "de": "um drei Uhr",
-                "en": "um drei Uhr"
-              },
-              "label": {
-                "de": "um",
-                "en": "um"
-              },
-              "usage": {
-                "de": "genaue Uhrzeiten",
-                "en": "exact clock times"
-              }
-            },
-            {
-              "example": {
-                "de": "am Montag",
-                "en": "am Montag"
-              },
-              "label": {
-                "de": "am",
-                "en": "am"
-              },
-              "usage": {
-                "de": "Tage und Daten",
-                "en": "days and dates"
-              }
-            },
-            {
-              "example": {
-                "de": "im Juli",
-                "en": "im Juli"
-              },
-              "label": {
-                "de": "im",
-                "en": "im"
-              },
-              "usage": {
-                "de": "Monate und Jahreszeiten",
-                "en": "months and seasons"
-              }
-            }
-          ],
-          "title": {
-            "de": "Zeitpräpositionen",
-            "en": "Time prepositions"
-          }
-        }
-      },
-      "theme": {
-        "de": "Uhrzeiten · Tage · um/am/im",
-        "en": "Clock times · Days · um/am/im"
-      },
-      "title": {
-        "de": "Kalender & Uhrzeit",
-        "en": "Calendar & Time"
-      },
-      "vocabCategories": [
-        "time",
-        "nature-time"
-      ]
-    },
-    {
-      "checkpoint": {
-        "moduleType": "a1-checkpoint",
-        "specs": [
+        "grammarNotes": [
+          "Temporal prepositions: am + days/dates/times of day, im + months/seasons, um + clock times",
+          "Exception: 'in der Nacht' (not 'am Nacht')",
+          "Colloquial clock inversion: 08:30 = 'halb neun' (half TO nine), 08:15 = 'viertel nach acht', 08:45 = 'viertel vor neun'",
+          "Standard clock: 08:30 = 'acht Uhr dreißig' (formal)"
+        ],
+        "ruleTables": [
           {
-            "count": 12,
-            "type": "grammar-drill"
+            "columns": [
+              "Preposition",
+              "Case",
+              "Used With",
+              "Examples"
+            ],
+            "rows": [
+              [
+                "am",
+                "Dative",
+                "Days, dates, parts of day",
+                "am Montag, am 15. Mai, am Morgen"
+              ],
+              [
+                "im",
+                "Dative",
+                "Months, seasons, years",
+                "im Juli, im Sommer, im Jahr 2026"
+              ],
+              [
+                "um",
+                "Accusative",
+                "Exact clock times",
+                "um 8 Uhr, um 14:30 Uhr"
+              ],
+              [
+                "in der",
+                "Dative",
+                "Night (exception)",
+                "in der Nacht"
+              ]
+            ],
+            "title": {
+              "de": "Zeit-Präposition-Spickzettel",
+              "en": "Time Preposition Cheat Sheet"
+            }
+          },
+          {
+            "columns": [
+              "Digital",
+              "Colloquial",
+              "Formal"
+            ],
+            "rows": [
+              [
+                "08:00",
+                "acht Uhr",
+                "acht Uhr"
+              ],
+              [
+                "08:15",
+                "viertel nach acht",
+                "acht Uhr fünfzehn"
+              ],
+              [
+                "08:30",
+                "halb neun",
+                "acht Uhr dreißig"
+              ],
+              [
+                "08:45",
+                "viertel vor neun",
+                "acht Uhr fünfundvierzig"
+              ],
+              [
+                "09:30",
+                "halb zehn",
+                "neun Uhr dreißig"
+              ]
+            ],
+            "title": {
+              "de": "Umgangssprachliche vs Formale Uhrzeit",
+              "en": "Colloquial vs Formal Clock"
+            }
           }
         ]
       },
-      "cluster": 1,
-      "code": "M08",
-      "goal": {
-        "de": "Verben konjugieren und das Verb an Position zwei halten",
-        "en": "Conjugate verbs and keep the verb in second position"
-      },
-      "grammarCategories": [
-        "sein",
-        "haben",
-        "weakVerb",
-        "stem"
-      ],
-      "id": "m08",
-      "index": 7,
-      "kind": "core",
-      "nodeIds": [
-        "m08-grammar",
-        "m08-sentence",
-        "m08-gate"
-      ],
-      "pedagogy": {
-        "grammarComparison": {
-          "rows": [
-            {
-              "example": {
-                "de": "Ich trinke Tee.",
-                "en": "I drink tea.",
-                "ne": "म चिया पिउँछु।"
-              },
-              "language": {
-                "de": "Deutsch",
-                "en": "English",
-                "ne": "नेपाली"
-              },
-              "order": {
-                "de": "V2 (main)",
-                "en": "SVO",
-                "ne": "SOV"
-              }
-            },
-            {
-              "example": {
-                "de": "Ich trinke Tee.",
-                "en": "I drink tea.",
-                "ne": "म चिया पिउँछु।"
-              },
-              "language": {
-                "de": "Deutsch",
-                "en": "Nepali",
-                "ne": "नेपाली"
-              },
-              "order": {
-                "de": "V2/verb-final",
-                "en": "SVO",
-                "ne": "SOV"
-              }
-            },
-            {
-              "example": {
-                "de": "Ich trinke Tee. (V2 im Hauptsatz)",
-                "en": "I drink tea.",
-                "ne": "म चिया पिउँछु।"
-              },
-              "language": {
-                "de": "Deutsch",
-                "en": "German",
-                "ne": "नेपाली"
-              },
-              "order": {
-                "de": "V2 (Haupt-) / verb-final (Nebensatz)",
-                "en": "SVO",
-                "ne": "SOV"
-              }
-            }
-          ],
-          "title": {
-            "de": "Wortstellung",
-            "en": "Word order"
-          }
-        },
-        "grammarNote": {
-          "de": "Das konjugierte Verb steht IMMER an zweiter Stelle. Beginnt der Satz mit einem Zeitwort, rückt das Subjekt auf Position drei: Heute gehe ich zur Schule.",
-          "en": "The conjugated verb is always the SECOND element. Start with a time word and the subject moves to position three: Heute gehe ich zur Schule."
-        }
-      },
       "theme": {
-        "de": "Präsens · Verb an Position zwei",
-        "en": "Present tense · Verb-second position"
+        "de": "Tage, Monate, Jahreszeiten, temporale Präpositionen (am/im/um), umgangssprachliche Uhrzeit",
+        "en": "Days, months, seasons, temporal prepositions (am/im/um), colloquial clock"
       },
       "title": {
-        "de": "Verben & V2-Wortstellung",
-        "en": "Verbs & V2 Word Order"
+        "de": "Zeit, Kalender & Uhrzeit-Inversion",
+        "en": "Time, Calendar & Clock Inversion"
       },
       "vocabCategories": [
-        "action-verbs"
+        "nature-time",
+        "travel-questions",
+        "travel"
       ]
     },
     {
@@ -1879,40 +2200,219 @@
           }
         ]
       },
-      "cluster": 1,
-      "code": "M09",
+      "cluster": 3,
+      "code": "M12",
       "goal": {
-        "de": "Tägliche Routinen mit trennbaren Verben beschreiben",
-        "en": "Describe daily routines with separable verbs"
+        "de": "Beruf angeben, Modalverben für Fähigkeit/Pflicht/Erlaubnis/Wünsche nutzen, Modalsatzklammern bilden.",
+        "en": "State profession, use modal verbs for ability/obligation/permission/wishes, build modal sentence brackets."
       },
       "grammarCategories": [
-        "prefix"
+        "modal-verbs",
+        "professions",
+        "sentence-bracket"
       ],
-      "id": "m09",
-      "index": 8,
+      "hasLesson": true,
+      "id": "m12",
+      "index": 11,
       "kind": "core",
       "nodeIds": [
-        "m09-separable",
-        "m09-prefix",
-        "m09-gate"
+        "m12-learn",
+        "m12-practice",
+        "m12-checkpoint"
       ],
       "pedagogy": {
+        "callouts": [
+          "⚠️ TRAP: 'Ich kann Deutsch spreche' is WRONG — end verb MUST be infinitive: 'Ich kann Deutsch SPRECHEN'",
+          "⚠️ TRAP: 'Ich musst lernen' / 'Er kannt' — ich/er/sie/es have NO ending on modals!",
+          "⚠️ TRAP: 'Ich muss nicht' = I don't have to (optional). 'Ich darf nicht' = I'm NOT allowed (forbidden)!",
+          "Job titles: Drop 'ein' — 'Ich bin Student' not 'Ich bin ein Student'",
+          "Modal order: können > müssen > wollen > dürfen > sollen > möchten (frequency)"
+        ],
         "grammarNote": {
-          "de": "Das Präfix löst sich und springt ganz nach hinten: Ich stehe um sechs Uhr auf. Untrennbare Präfixe (ver-, be-, ge-) trennen sich nie.",
-          "en": "The prefix detaches and jumps to the very end: Ich stehe um sechs Uhr auf. (auf + stehen → stehe … auf). Inseparable prefixes like ver-, be-, ge- never split."
-        }
+          "de": "Das Modalverb steht auf Position 2, das Hauptverb bleibt im Infinitiv am Satzende: Ich kann Deutsch sprechen.",
+          "en": "The modal takes Position 2 and the main verb stays infinitive at the very end: Ich kann Deutsch sprechen."
+        },
+        "grammarNotes": [
+          "Female professions: add -in to masculine (Lehrer → Lehrerin, Arzt → Ärztin), plural -innen",
+          "Stating profession: 'als' for titles (Ich arbeite als Lehrer), 'bei' + Dative for companies (Ich arbeite bei Siemens)",
+          "NO article before job titles with sein/werden: Ich bin Lehrer (NOT: Ich bin ein Lehrer)",
+          "Modal verbs: conjugated in Position 2, main verb → END in INFINITIVE (Satzklammer)",
+          "Modal conjugation: ich/er/sie/es share SAME form (no ending), du adds -st, wir/sie/Sie add -en"
+        ],
+        "ruleTables": [
+          {
+            "columns": [
+              "Masculine",
+              "Feminine",
+              "Plural Feminine",
+              "Meaning"
+            ],
+            "rows": [
+              [
+                "der Lehrer",
+                "die Lehrerin",
+                "die Lehrerinnen",
+                "teacher"
+              ],
+              [
+                "der Arzt",
+                "die Ärztin",
+                "die Ärztinnen",
+                "doctor"
+              ],
+              [
+                "der Student",
+                "die Studentin",
+                "die Studentinnen",
+                "student"
+              ],
+              [
+                "der Ingenieur",
+                "die Ingenieurin",
+                "die Ingenieurinnen",
+                "engineer"
+              ],
+              [
+                "der Verkäufer",
+                "die Verkäuferin",
+                "die Verkäuferinnen",
+                "salesperson"
+              ]
+            ],
+            "title": {
+              "de": "Weibliche Berufsbildung",
+              "en": "Female Profession Formation"
+            }
+          },
+          {
+            "columns": [
+              "Pronoun",
+              "können (can)",
+              "müssen (must)",
+              "wollen (want)",
+              "dürfen (may)",
+              "sollen (should)",
+              "möchten (would like)"
+            ],
+            "rows": [
+              [
+                "ich",
+                "kann",
+                "muss",
+                "will",
+                "darf",
+                "soll",
+                "möchte"
+              ],
+              [
+                "du",
+                "kannst",
+                "musst",
+                "willst",
+                "darfst",
+                "sollst",
+                "möchtest"
+              ],
+              [
+                "er/sie/es",
+                "kann",
+                "muss",
+                "will",
+                "darf",
+                "soll",
+                "möchte"
+              ],
+              [
+                "wir",
+                "können",
+                "müssen",
+                "wollen",
+                "dürfen",
+                "sollen",
+                "möchten"
+              ],
+              [
+                "ihr",
+                "könnt",
+                "müsst",
+                "wollt",
+                "dürft",
+                "sollt",
+                "möchtet"
+              ],
+              [
+                "sie/Sie",
+                "können",
+                "müssen",
+                "wollen",
+                "dürfen",
+                "sollen",
+                "möchten"
+              ]
+            ],
+            "title": {
+              "de": "Modalverb-Konjugation (Präsens)",
+              "en": "Modal Verb Conjugation (Present Tense)"
+            }
+          },
+          {
+            "columns": [
+              "Pos 1",
+              "Pos 2 (Modal)",
+              "Middle",
+              "END (Infinitive)"
+            ],
+            "rows": [
+              [
+                "Ich",
+                "kann",
+                "schon gut Deutsch",
+                "sprechen."
+              ],
+              [
+                "Er",
+                "muss",
+                "heute lange",
+                "arbeiten."
+              ],
+              [
+                "Hier",
+                "darf",
+                "man nicht",
+                "rauchen."
+              ],
+              [
+                "Wir",
+                "wollen",
+                "nach Berlin",
+                "fahren."
+              ],
+              [
+                "Möchtest",
+                "du",
+                "einen Kaffee",
+                "trinken?"
+              ]
+            ],
+            "title": {
+              "de": "Modalsatzklammer",
+              "en": "Modal Sentence Bracket (Satzklammer)"
+            }
+          }
+        ]
       },
       "theme": {
-        "de": "Präfixe · Satzklammer",
-        "en": "Prefixes · Sentence bracket"
+        "de": "Berufsbezeichnungen, weibliche Endung -in, Modalverben, Satzklammer",
+        "en": "Job titles, female suffix -in, modal verbs (können/müssen/wollen/dürfen/sollen/möchten), sentence bracket"
       },
       "title": {
-        "de": "Trennbare Verben & Routinen",
-        "en": "Separable Verbs & Routines"
+        "de": "Berufe, Arbeit & Modalverben",
+        "en": "Professions, Work & Modal Verbs"
       },
       "vocabCategories": [
-        "daily-routine",
-        "action-verbs"
+        "professions",
+        "action-verbs",
+        "modal-verbs"
       ]
     },
     {
@@ -1920,113 +2420,111 @@
         "moduleType": "a1-checkpoint",
         "specs": [
           {
-            "count": 6,
+            "count": 4,
             "type": "grammar-drill"
           },
           {
-            "count": 6,
+            "count": 8,
             "type": "vocab-translation"
           }
         ]
       },
-      "cluster": 2,
-      "code": "M10",
+      "cluster": 3,
+      "code": "M13",
       "goal": {
-        "de": "Essen bestellen und den Akkusativ korrekt benutzen",
-        "en": "Order food and use the accusative correctly"
+        "de": "Kleidung kaufen, Farben/Größen beschreiben, Demonstrativartikel richtig nutzen, Vorlieben äußern.",
+        "en": "Shop for clothes, describe colors/sizes, use demonstratives correctly, express preferences."
       },
       "grammarCategories": [
-        "cases"
+        "demonstrative",
+        "adjectives",
+        "preferences"
       ],
-      "id": "m10",
-      "index": 9,
+      "hasLesson": true,
+      "id": "m13",
+      "index": 12,
       "kind": "core",
       "nodeIds": [
-        "m10-roleplay",
-        "m10-accusative",
-        "m10-gate"
+        "m13-learn",
+        "m13-practice",
+        "m13-checkpoint"
       ],
       "pedagogy": {
+        "callouts": [
+          "Demonstratives = definite article endings + 'dies-' prefix (dies-er, dies-e, dies-es)",
+          "Masculine accusative: dieser → diesen (like der → den)",
+          "After 'sein/bleiben/werden': adjective has NO ending — 'Das Hemd ist rot' (not 'rote')",
+          "Gefallen takes dative: 'Mir gefällt diese Jacke' (not 'Ich gefalle')"
+        ],
         "grammarNote": {
-          "de": "Nur MASKULINE Artikel ändern sich im Akkusativ: der → den, ein → einen, kein → keinen. Feminin, Neutrum und Plural bleiben gleich.",
-          "en": "Only MASCULINE articles change in the accusative: der → den, ein → einen, kein → keinen. Feminine, neuter and plural stay the same."
+          "de": "Demonstrativa richten sich nach dem Genus: dieser (der), diese (die), dieses (das) — und nach sein nie mit Endung.",
+          "en": "Demonstratives take the gender of the noun: dieser (der), diese (die), dieses (das) — and after sein they never take an ending."
         },
-        "ruleTable": {
-          "rows": [
-            {
-              "example": {
-                "de": "Ich sehe den Mann.",
-                "en": "Ich sehe den Mann."
-              },
-              "label": {
-                "de": "der → den",
-                "en": "der → den"
-              },
-              "usage": {
-                "de": "männliches Objekt",
-                "en": "masculine direct object"
-              }
-            },
-            {
-              "example": {
-                "de": "Ich esse einen Apfel.",
-                "en": "Ich esse einen Apfel."
-              },
-              "label": {
-                "de": "ein → einen",
-                "en": "ein → einen"
-              },
-              "usage": {
-                "de": "männlich, ohne Artikel",
-                "en": "masculine, no article"
-              }
-            },
-            {
-              "example": {
-                "de": "Ich habe keinen Stuhl.",
-                "en": "Ich habe keinen Stuhl."
-              },
-              "label": {
-                "de": "kein → keinen",
-                "en": "kein → keinen"
-              },
-              "usage": {
-                "de": "verneintes Maskulinum",
-                "en": "negated masculine"
-              }
-            },
-            {
-              "example": {
-                "de": "Ich trinke das Wasser.",
-                "en": "Ich trinke das Wasser."
-              },
-              "label": {
-                "de": "die / das → gleich",
-                "en": "die / das → same"
-              },
-              "usage": {
-                "de": "Feminin, Neutrum, Plural",
-                "en": "feminine, neuter, plural"
-              }
+        "grammarNotes": [
+          "Demonstratives take same endings as definite articles: dieser (der), diese (die), dieses (das)",
+          "Accusative shift for masculine: dieser → diesen (feminine/neuter/plural unchanged)",
+          "Adjectives after sein take NO ending: 'Die Hose ist rot' (not 'rote')",
+          "Asking size: 'Welche Größe haben Sie?' → 'Ich habe Größe M / 38'",
+          "Preference verbs: 'gefallen' (appeals to me, takes dative), 'passen' (fits)"
+        ],
+        "ruleTables": [
+          {
+            "columns": [
+              "Gender",
+              "Nominative",
+              "Accusative",
+              "Example (Nom)",
+              "Example (Acc)"
+            ],
+            "rows": [
+              [
+                "Masculine (der)",
+                "dieser",
+                "diesen",
+                "dieser Pullover",
+                "diesen Pullover"
+              ],
+              [
+                "Feminine (die)",
+                "diese",
+                "diese",
+                "diese Hose",
+                "diese Hose"
+              ],
+              [
+                "Neuter (das)",
+                "dieses",
+                "dieses",
+                "dieses Hemd",
+                "dieses Hemd"
+              ],
+              [
+                "Plural (die)",
+                "diese",
+                "diese",
+                "diese Schuhe",
+                "diese Schuhe"
+              ]
+            ],
+            "title": {
+              "de": "Demonstrativartikel (dieser/diese/dieses)",
+              "en": "Demonstrative Articles (dieser/diese/dieses)"
             }
-          ],
-          "title": {
-            "de": "Akkusativ",
-            "en": "Akkusativ"
           }
-        }
+        ]
       },
       "theme": {
-        "de": "Bestellen · Objekte · der → den",
-        "en": "Ordering · Direct objects · der → den"
+        "de": "Kleidung, Farben, Größen, Demonstrativartikel (dieser/diese/dieses), Vorlieben (gefallen/passen)",
+        "en": "Clothing, colors, sizes, demonstratives (dieser/diese/dieses), preferences (gefallen/passen)"
       },
       "title": {
-        "de": "Essen & Akkusativ",
-        "en": "Food & the Accusative"
+        "de": "Einkaufen, Kleidung & Demonstrativartikel",
+        "en": "Shopping, Clothes & Demonstratives"
       },
       "vocabCategories": [
-        "food",
-        "food-drink",
+        "clothing",
+        "colors",
+        "describing-adjectives",
         "taste-texture-adjectives"
       ]
     },
@@ -2036,299 +2534,314 @@
         "specs": [
           {
             "count": 8,
-            "type": "vocab-translation"
-          },
-          {
-            "count": 4,
-            "type": "listening-gap"
-          }
-        ]
-      },
-      "cluster": 2,
-      "code": "M11",
-      "goal": {
-        "de": "Kleidung kaufen, Farben nennen und Artikel beschreiben",
-        "en": "Buy clothes, name colours and describe items"
-      },
-      "id": "m11",
-      "index": 10,
-      "kind": "core",
-      "nodeIds": [
-        "m11-clothing",
-        "m11-shopping",
-        "m11-gate"
-      ],
-      "pedagogy": {
-        "grammarNote": {
-          "de": "Adjektive nach sein bekommen keine Endung: Die Hose ist rot. Demonstrativartikel richten sich nach dem Nomen: dieser Mantel, diese Hose, dieses Hemd.",
-          "en": "Adjectives after sein take no ending: Die Hose ist rot. Demonstratives match the noun: dieser Mantel, diese Hose, dieses Hemd."
-        }
-      },
-      "theme": {
-        "de": "Kleidung · Farben · dieser/diese/dieses",
-        "en": "Apparel · Colours · dieser/diese/dieses"
-      },
-      "title": {
-        "de": "Einkaufen & Kleidung",
-        "en": "Shopping & Clothes"
-      },
-      "vocabCategories": [
-        "clothing",
-        "colors",
-        "describing-adjectives"
-      ]
-    },
-    {
-      "checkpoint": {
-        "moduleType": "a1-checkpoint",
-        "specs": [
-          {
-            "count": 8,
-            "type": "vocab-translation"
-          },
-          {
-            "count": 4,
-            "type": "listening-gap"
-          }
-        ]
-      },
-      "cluster": 3,
-      "code": "M12",
-      "goal": {
-        "de": "Nach dem Weg fragen, Richtungen geben, Verkehr nutzen",
-        "en": "Ask for and give directions, and use transport"
-      },
-      "id": "m12",
-      "index": 11,
-      "kind": "core",
-      "nodeIds": [
-        "m12-roleplay",
-        "m12-travel",
-        "m12-gate"
-      ],
-      "pedagogy": {
-        "grammarNote": {
-          "de": "In formellen Anweisungen steht das Verb vorn, Sie folgt sofort: Gehen Sie geradeaus! Fahren Sie nach links!",
-          "en": "In formal instructions the verb leads and Sie follows immediately: Gehen Sie geradeaus! Fahren Sie nach links!"
-        },
-        "ruleTable": {
-          "rows": [
-            {
-              "example": {
-                "de": "nach links, nach Berlin",
-                "en": "nach links, nach Berlin"
-              },
-              "label": {
-                "de": "nach",
-                "en": "nach"
-              },
-              "usage": {
-                "de": "Städte, Länder, Richtungen",
-                "en": "cities, countries, directions"
-              }
-            },
-            {
-              "example": {
-                "de": "zum Bahnhof, zur Schule",
-                "en": "zum Bahnhof, zur Schule"
-              },
-              "label": {
-                "de": "zu / zum / zur",
-                "en": "zu / zum / zur"
-              },
-              "usage": {
-                "de": "bestimmte Orte, Personen",
-                "en": "specific places, people"
-              }
-            },
-            {
-              "example": {
-                "de": "ins Kaufhaus",
-                "en": "ins Kaufhaus"
-              },
-              "label": {
-                "de": "in / ins",
-                "en": "in / ins"
-              },
-              "usage": {
-                "de": "in ein Gebäude hinein",
-                "en": "inside a building"
-              }
-            }
-          ],
-          "title": {
-            "de": "Richtungspräpositionen",
-            "en": "Directional prepositions"
-          }
-        }
-      },
-      "theme": {
-        "de": "Orte · Richtungen · nach/zu/in",
-        "en": "Places · Directions · nach/zu/in"
-      },
-      "title": {
-        "de": "Stadt & Verkehr",
-        "en": "City & Transport"
-      },
-      "vocabCategories": [
-        "city-travel",
-        "travel",
-        "travel-questions"
-      ]
-    },
-    {
-      "checkpoint": {
-        "moduleType": "a1-checkpoint",
-        "specs": [
-          {
-            "count": 6,
             "type": "grammar-drill"
           },
           {
-            "count": 6,
-            "type": "vocab-translation"
-          }
-        ]
-      },
-      "cluster": 3,
-      "code": "M13",
-      "goal": {
-        "de": "Fähigkeit, Pflicht, Erlaubnis und Wünsche ausdrücken",
-        "en": "Express ability, obligation, permission and wishes"
-      },
-      "grammarCategories": [
-        "modals"
-      ],
-      "id": "m13",
-      "index": 12,
-      "kind": "core",
-      "nodeIds": [
-        "m13-modals",
-        "m13-games",
-        "m13-gate"
-      ],
-      "pedagogy": {
-        "grammarComparison": {
-          "rows": [
-            {
-              "example": {
-                "de": "Ich kann schwimmen.",
-                "en": "I can swim.",
-                "ne": "म तराई गर्न सक्छु।"
-              },
-              "language": {
-                "de": "Deutsch",
-                "en": "English",
-                "ne": "नेपाली"
-              },
-              "order": {
-                "de": "V2 (Haupt-) / Modal am Ende (Nebensatz)",
-                "en": "Subject–Modal–Verb (V2)",
-                "ne": "SOV (विषय–वस्तु–क्रिया)"
-              }
-            },
-            {
-              "example": {
-                "de": "Ich kann schwimmen.",
-                "en": "I can swim.",
-                "ne": "म तराई गर्न सक्छु।"
-              },
-              "language": {
-                "de": "Deutsch",
-                "en": "Nepali",
-                "ne": "नेपाली"
-              },
-              "order": {
-                "de": "V2 / verb-final",
-                "en": "Subject–Modal–Verb",
-                "ne": "SOV"
-              }
-            },
-            {
-              "example": {
-                "de": "Ich kann schwimmen. (V2 im Hauptsatz)",
-                "en": "I can swim.",
-                "ne": "म तराई गर्न सक्छु।"
-              },
-              "language": {
-                "de": "Deutsch",
-                "en": "German",
-                "ne": "नेपाली"
-              },
-              "order": {
-                "de": "Modal am Ende im Nebensatz",
-                "en": "SVO",
-                "ne": "SOV"
-              }
-            }
-          ],
-          "title": {
-            "de": "Modalverben & Wortstellung",
-            "en": "Modals & word order"
-          }
-        },
-        "grammarNote": {
-          "de": "Das Modalverb steht an Position zwei, das zweite Verb bleibt unverändert am Ende: Ich muss heute zur Arbeit gehen.",
-          "en": "The modal takes position two, the second verb goes to the very end unchanged: Ich muss heute zur Arbeit gehen. (müssen + Infinitiv)."
-        }
-      },
-      "theme": {
-        "de": "Fähigkeit · Pflicht · Erlaubnis",
-        "en": "Ability · Obligation · Permission"
-      },
-      "title": {
-        "de": "Modalverben",
-        "en": "Modal Verbs"
-      },
-      "vocabCategories": [
-        "action-verbs"
-      ]
-    },
-    {
-      "checkpoint": {
-        "moduleType": "a1-checkpoint",
-        "specs": [
-          {
-            "count": 8,
-            "type": "vocab-translation"
-          },
-          {
             "count": 4,
-            "type": "listening-gap"
+            "type": "vocab-translation"
           }
         ]
       },
       "cluster": 4,
       "code": "M14",
       "goal": {
-        "de": "Beschwerden beschreiben und einen Arztbesuch meistern",
-        "en": "Describe symptoms and handle a doctor visit"
+        "de": "Nach Weg fragen/geben, Verkehrsmittel mit mit + Dativ beschreiben, Wechselpräpositionsfälle unterscheiden (Wohin? Akkusativ vs. Wo? Dativ), formale Imperative für Navigation nutzen.",
+        "en": "Ask/give directions, describe transport using mit + Dative, distinguish two-way preposition cases (Wohin? accusative vs. Wo? dative), use formal imperatives for navigation."
       },
+      "grammarCategories": [
+        "dative-prepositions",
+        "imperative",
+        "prepositions",
+        "transport"
+      ],
+      "hasLesson": true,
       "id": "m14",
       "index": 13,
       "kind": "core",
       "nodeIds": [
-        "m14-health",
-        "m14-doctor",
-        "m14-gate"
+        "m14-learn",
+        "m14-practice",
+        "m14-checkpoint"
       ],
       "pedagogy": {
+        "callouts": [
+          "⚠️ TRAP: 'Ich gehe mit Fuß' is WRONG — correct: 'Ich gehe ZU FUß'",
+          "⚠️ TRAP: 'Ich fahre mit die S-Bahn' — mit takes DATIVE: 'mit DER S-Bahn'",
+          "⚠️ TRAP: 'fahren' vs 'gehen' — gehen = walking on foot, fahren = by vehicle",
+          "🚨 WOHIN or WO? Ask the question first: 'Wohin?' → Accusative (Ich gehe IN DEN Park). 'Wo?' → Dative (Ich bin IM Park).",
+          "🚨 TRAP: 'in den Park' is NOT the same as 'im Park' — one is movement, the other is location.",
+          "Contractions exist ONLY in Dative (im, am, vom, zum, zur). In the accusative you always write in and an in full (ins Kino, ans Meer).",
+          "Cultural: 'Schwarzfahren' (riding without valid ticket) = heavy fine! Validate tickets (entwerten).",
+          "Ticket validation: Stamp paper tickets at platform machine BEFORE boarding."
+        ],
         "grammarNote": {
-          "de": "Zwei Wege: das Kompositum (Ich habe Kopfschmerzen) oder weh tun (Der Kopf tut mir weh). Wie es einem geht: Es geht mir gut / schlecht.",
-          "en": "Two ways to say it hurts: the compound noun (Ich habe Kopfschmerzen) or weh tun (Der Kopf tut mir weh). How you feel: Es geht mir gut / schlecht."
-        }
+          "de": "Wechselpräpositionen stellen eine Frage: Wohin? → Akkusativ (in den Park), Wo? → Dativ (im Park). Kontraktionen nur im Dativ.",
+          "en": "Two-way prepositions ask one question: Wohin? → accusative (in den Park), Wo? → dative (im Park). Contractions only happen in the dative."
+        },
+        "grammarNotes": [
+          "Transport preposition 'mit' ALWAYS triggers Dative: mit dem Bus, mit der U-Bahn, mit dem Auto",
+          "Directional prepositions: nach + cities/countries (nach Berlin), zu + specific places/people (zum Bahnhof), in + buildings (ins Kaufhaus)",
+          "TWO-WAY prepositions (Wechselpräpositionen) in/an/auf/über/unter/vor/zwischen take ACCUSATIVE for movement toward a goal (Wohin?) and DATIVE for static location (Wo?)",
+          "Test the case with the question: Wohin? → Accusative (in den Park). Wo? → Dative (im Park).",
+          "Contractions only form in Dative: im = in + dem, am = an + dem, vom = von + dem, zum = zu + dem, zur = zu + der. There is NO accusative contraction (ins and ans stay written out).",
+          "Formal imperative (Sie-Form): verb first, then 'Sie' — 'Gehen Sie geradeaus!', 'Biegen Sie links ab!'",
+          "Walking on foot: 'zu Fuß' (NOT 'mit Fuß')",
+          "fahren vs gehen: fahren = by vehicle, gehen = walking"
+        ],
+        "ruleTables": [
+          {
+            "columns": [
+              "Preposition",
+              "Case",
+              "Question",
+              "Example",
+              "Meaning"
+            ],
+            "rows": [
+              [
+                "in",
+                "Accusative",
+                "Wohin?",
+                "in den Park / in die Stadt",
+                "into the park / into town"
+              ],
+              [
+                "in",
+                "Dative",
+                "Wo?",
+                "im Park / in der Stadt",
+                "in the park / in town"
+              ],
+              [
+                "an",
+                "Accusative",
+                "Wohin?",
+                "an den See / ans Meer",
+                "to the lake / to the sea"
+              ],
+              [
+                "an",
+                "Dative",
+                "Wo?",
+                "am See / am Meer",
+                "at the lake / at the sea"
+              ],
+              [
+                "auf",
+                "Accusative",
+                "Wohin?",
+                "auf den Tisch",
+                "onto the table"
+              ],
+              [
+                "auf",
+                "Dative",
+                "Wo?",
+                "auf dem Tisch",
+                "on the table"
+              ],
+              [
+                "vor",
+                "Accusative",
+                "Wohin?",
+                "vor das Haus",
+                "in front of the house (to)"
+              ],
+              [
+                "vor",
+                "Dative",
+                "Wo?",
+                "vor dem Haus",
+                "in front of the house (at)"
+              ],
+              [
+                "zwischen",
+                "Accusative",
+                "Wohin?",
+                "zwischen die Bäume",
+                "between the trees (to)"
+              ],
+              [
+                "zwischen",
+                "Dative",
+                "Wo?",
+                "zwischen den Bäumen",
+                "between the trees (at)"
+              ]
+            ],
+            "title": {
+              "de": "Wechselpräpositionen: Akkusativ vs Dativ (Wohin? / Wo?)",
+              "en": "Wechselpräpositionen: Accusative vs Dative (Wohin? / Wo?)"
+            }
+          },
+          {
+            "columns": [
+              "Contraction",
+              "= Full Form",
+              "Case",
+              "Example"
+            ],
+            "rows": [
+              [
+                "im",
+                "in + dem",
+                "Dative (masc/neut)",
+                "im Park, im Garten"
+              ],
+              [
+                "am",
+                "an + dem",
+                "Dative (masc/neut)",
+                "am Tisch, am Bahnhof"
+              ],
+              [
+                "vom",
+                "von + dem",
+                "Dative (masc/neut)",
+                "vom Bahnhof"
+              ],
+              [
+                "zum",
+                "zu + dem",
+                "Dative (masc/neut)",
+                "zum Bahnhof, zum Strand"
+              ],
+              [
+                "zur",
+                "zu + der",
+                "Dative (fem)",
+                "zur Schule, zur Arbeit"
+              ],
+              [
+                "ins",
+                "in + das",
+                "Accusative (neut) — NO contraction",
+                "ins Kino"
+              ],
+              [
+                "ans",
+                "an + das",
+                "Accusative (neut) — NO contraction",
+                "ans Meer"
+              ]
+            ],
+            "title": {
+              "de": "Dative-Kontraktionen (nur im Dativ!)",
+              "en": "Dative Contractions (nur im Dativ!)"
+            }
+          },
+          {
+            "columns": [
+              "Gender",
+              "Noun",
+              "Dative Article",
+              "Full Phrase"
+            ],
+            "rows": [
+              [
+                "Masculine",
+                "der Bus / der Zug",
+                "dem",
+                "mit dem Bus / mit dem Zug"
+              ],
+              [
+                "Neuter",
+                "das Auto / das Taxi",
+                "dem",
+                "mit dem Auto / mit dem Taxi"
+              ],
+              [
+                "Feminine",
+                "die Bahn / die U-Bahn",
+                "der",
+                "mit der Bahn / mit der U-Bahn"
+              ]
+            ],
+            "title": {
+              "de": "Verkehr: mit + Dativ",
+              "en": "Transport: mit + Dative"
+            }
+          },
+          {
+            "columns": [
+              "Preposition",
+              "Case",
+              "Usage",
+              "Examples"
+            ],
+            "rows": [
+              [
+                "nach",
+                "Dative",
+                "Cities, countries, directions",
+                "nach Berlin, nach links, nach Hause"
+              ],
+              [
+                "zu / zum / zur",
+                "Dative",
+                "Specific places, people",
+                "zum Bahnhof, zur Schule, zum Arzt"
+              ],
+              [
+                "in / ins",
+                "Accusative",
+                "Into buildings",
+                "ins Kaufhaus, ins Kino, in die Apotheke"
+              ]
+            ],
+            "title": {
+              "de": "Richtungspräpositionen",
+              "en": "Directional Prepositions"
+            }
+          },
+          {
+            "columns": [
+              "German",
+              "English",
+              "Structure"
+            ],
+            "rows": [
+              [
+                "Gehen Sie geradeaus!",
+                "Go straight ahead!",
+                "Verb + Sie + Adverb"
+              ],
+              [
+                "Biegen Sie links ab!",
+                "Turn left!",
+                "Verb + Sie + Prep + ab"
+              ],
+              [
+                "Nehmen Sie die erste Straße rechts!",
+                "Take the first street right!",
+                "Verb + Sie + Object"
+              ],
+              [
+                "Fahren Sie mit der U-Bahn!",
+                "Take the subway!",
+                "Verb + Sie + mit + Dative"
+              ]
+            ],
+            "title": {
+              "de": "Formale Imperative für Richtungen",
+              "en": "Formal Imperatives for Directions"
+            }
+          }
+        ]
       },
       "theme": {
-        "de": "Körperteile · Beschwerden · weh tun",
-        "en": "Body parts · Symptoms · weh tun"
+        "de": "Orte, Richtungen, Verkehr (mit + Dativ), Wechselpräpositionen (in/an: Wohin? Akk. vs. Wo? Dat.), Kontraktionen, formale Imperative",
+        "en": "Places, directions, transport (mit + Dative), two-way prepositions (in/an: Wohin? acc vs. Wo? dat), contractions, formal imperatives"
       },
       "title": {
-        "de": "Gesundheit & Arzt",
-        "en": "Health & the Doctor"
+        "de": "Stadtnavigation, Verkehr & Dativ-Präpositionen",
+        "en": "City Navigation, Transport & Dative Prepositions"
       },
       "vocabCategories": [
-        "body-health",
-        "doctor-shopping-phrases"
+        "city-travel",
+        "travel",
+        "travel-questions",
+        "action-verbs"
       ]
     },
     {
@@ -2348,101 +2861,415 @@
       "cluster": 4,
       "code": "M15",
       "goal": {
-        "de": "Über Hobbys und Wetter sprechen und von der Vergangenheit erzählen",
-        "en": "Talk about hobbies and weather, and recount the past"
+        "de": "Gesundheitsprobleme beschreiben, über Hobbys/Wetter sprechen, Vergangenes mit Perfekt erzählen.",
+        "en": "Describe health issues, discuss hobbies/weather, recount past events using Perfekt."
       },
       "grammarCategories": [
-        "perfekt"
+        "dative",
+        "perfekt",
+        "health",
+        "past-tense"
       ],
+      "hasLesson": true,
       "id": "m15",
       "index": 14,
       "kind": "core",
       "nodeIds": [
-        "m15-stories",
-        "m15-blitz",
-        "m15-gate"
+        "m15-learn",
+        "m15-practice",
+        "m15-checkpoint"
       ],
       "pedagogy": {
+        "callouts": [
+          "⚠️ HEALTH TRAP: 'Meine Augen tut weh' — Augen is plural → 'Meine Augen TUN weh'!",
+          "⚠️ HEALTH TRAP: 'Ich bin kalt' = I'm a cold person. Correct: 'Mir ist kalt' (Dative!)",
+          "⚠️ PERFEKT TRAP: 'Ich habe nach Berlin gefahren' — movement verbs take SEIN: 'Ich BIN nach Berlin gefahren'",
+          "⚠️ PERFEKT TRAP: 'Ich gelernt gestern Deutsch' — auxiliary in Pos 2, Partizip at END: 'Ich HABE gestern Deutsch GELERNT'",
+          "⚠️ PERFEKT TRAP: Forgetting 'ge-' prefix on regular verbs: machen → gemacht (not 'macht')",
+          "Cultural: 'Gute Besserung!' = Get well sick note (Krankschreibung/AU-Bescheinigung) required by day 3 in Germany"
+        ],
         "grammarNote": {
-          "de": "Das gesprochene Perfekt ist ein Zweiteil: das Hilfsverb (haben/sein) an Position zwei, das Partizip II ganz am Ende. Für Bewegung nimmt man sein.",
-          "en": "The spoken past tense is a two-part frame: the auxiliary (haben or sein) in position two, the Partizip II at the very end. Use sein for movement."
+          "de": "Das Perfekt ist die gesprochene Vergangenheit: konjugiertes haben oder sein auf Position 2, dann Partizip II am Ende. Nur Bewegung und Zustandswechsel nehmen sein.",
+          "en": "The perfect tense is the spoken past: conjugated haben or sein in Position 2, then Partizip II at the end. Only motion and change of state take sein."
         },
-        "ruleTable": {
-          "rows": [
-            {
-              "example": {
-                "de": "Ich habe Fußball gespielt.",
-                "en": "Ich habe Fußball gespielt."
-              },
-              "label": {
-                "de": "haben + Partizip II",
-                "en": "haben + Partizip II"
-              },
-              "usage": {
-                "de": "die meisten Verben",
-                "en": "most verbs"
-              }
-            },
-            {
-              "example": {
-                "de": "Ich bin nach Hause gegangen.",
-                "en": "Ich bin nach Hause gegangen."
-              },
-              "label": {
-                "de": "sein + Partizip II",
-                "en": "sein + Partizip II"
-              },
-              "usage": {
-                "de": "Bewegung und Ortswechsel",
-                "en": "movement / change of place"
-              }
-            },
-            {
-              "example": {
-                "de": "spielen → gespielt",
-                "en": "spielen → gespielt"
-              },
-              "label": {
-                "de": "ge- … -t",
-                "en": "ge- … -t"
-              },
-              "usage": {
-                "de": "regelmäßige Verben",
-                "en": "regular (weak) verbs"
-              }
-            },
-            {
-              "example": {
-                "de": "scheinen → geschienen",
-                "en": "scheinen → geschienen"
-              },
-              "label": {
-                "de": "ge- … -en",
-                "en": "ge- … -en"
-              },
-              "usage": {
-                "de": "starke Verben, Vokal wechselt",
-                "en": "strong verbs, vowel may change"
-              }
+        "grammarNotes": [
+          "HEALTH: Two ways to express pain — compound nouns (Ich habe Kopfschmerzen) or weh tun (Der Kopf tut mir weh). Singular body part = 'tut', plural = 'tun'",
+          "HEALTH: 'Mir ist kalt' (I feel cold) NOT 'Ich bin kalt' (I'm a cold person). Dative for sensations!",
+          "PERFEKT: Spoken past = Auxiliary (haben/sein) in Pos 2 + Partizip II at END",
+          "Auxiliary selection: SEIN for movement/change of state (kommen, fahren, gehen, laufen, einschlafen, aufwachen). HABEN for everything else",
+          "Partizip II formation: Regular = ge- + stem + -t (spielen → gespielt). Strong verbs = ge- + stem + -en with possible vowel change (essen → gegessen, fahren → gefahren)",
+          "Irregular Partizip II: sein → gewesen, haben → gehabt, gehen → gegangen, kommen → gekommen, stehen → gestanden"
+        ],
+        "ruleTables": [
+          {
+            "columns": [
+              "Structure",
+              "Singular Body Part",
+              "Plural Body Part",
+              "Example"
+            ],
+            "rows": [
+              [
+                "weh tun",
+                "Der Kopf TUT weh.",
+                "Die Augen TUN weh.",
+                "Mein Rücken tut mir weh."
+              ],
+              [
+                "Schmerzen haben",
+                "Ich habe Kopfschmerzen.",
+                "—",
+                "Er hat Bauchschmerzen."
+              ]
+            ],
+            "title": {
+              "de": "Schmerzausdrücke: weh tun vs. Schmerzen haben",
+              "en": "Pain Expressions: weh tun vs. Schmerzen haben"
             }
-          ],
-          "title": {
-            "de": "Das Perfekt",
-            "en": "Das Perfekt"
+          },
+          {
+            "columns": [
+              "Auxiliary",
+              "When to Use",
+              "Key Verbs",
+              "Example"
+            ],
+            "rows": [
+              [
+                "SEIN",
+                "Movement / change of state",
+                "kommen, fahren, gehen, laufen, fliegen, reisen, einschlafen, aufwachen, sterben, werden",
+                "Ich BIN nach Berlin GEFAHREN."
+              ],
+              [
+                "HABEN",
+                "All other verbs (transitive, stationary)",
+                "machen, kaufen, lernen, spielen, essen, trinken, lesen, sehen, hören, arbeiten",
+                "Ich HABE Fußball GESPIELT."
+              ]
+            ],
+            "title": {
+              "de": "Perfekt: Hilfsverbwahl",
+              "en": "Perfekt: Auxiliary Selection"
+            }
+          },
+          {
+            "columns": [
+              "Pattern",
+              "Rule",
+              "Examples"
+            ],
+            "rows": [
+              [
+                "Regular (weak)",
+                "ge- + stem + -t",
+                "machen → gemacht, lernen → gelernt, kaufen → gekauft, spielen → gespielt"
+              ],
+              [
+                "Strong (vowel change)",
+                "ge- + stem + -en",
+                "essen → gegessen, trinken → getrunken, lesen → gelesen, fahren → gefahren, geben → gegeben"
+              ],
+              [
+                "Mixed",
+                "ge- + stem + -t (vowel change)",
+                "denken → gedacht, kennen → gekannt, brennen → gebrannt, rennen → gerannt"
+              ],
+              [
+                "Inseparable prefixes",
+                "NO ge- (prefix stays)",
+                "verstehen → verstanden, bekommen → bekommen, erzählen → erzählt"
+              ],
+              [
+                "Separable prefixes",
+                "ge- between prefix & stem",
+                "einkaufen → eingekauft, aufstehen → aufgestanden, anrufen → angerufen"
+              ],
+              [
+                "Verbs ending in -ieren",
+                "NO ge-, just -t",
+                "studieren → studiert, telefonieren → telefoniert, reparieren → repariert"
+              ]
+            ],
+            "title": {
+              "de": "Partizip-II-Bildungsmuster",
+              "en": "Partizip II Formation Patterns"
+            }
+          },
+          {
+            "columns": [
+              "Infinitive",
+              "Partizip II",
+              "Auxiliary",
+              "English"
+            ],
+            "rows": [
+              [
+                "sein",
+                "gewesen",
+                "sein",
+                "been"
+              ],
+              [
+                "haben",
+                "gehabt",
+                "haben",
+                "had"
+              ],
+              [
+                "gehen",
+                "gegangen",
+                "sein",
+                "gone/walked"
+              ],
+              [
+                "kommen",
+                "gekommen",
+                "sein",
+                "come"
+              ],
+              [
+                "stehen",
+                "gestanden",
+                "sein",
+                "stood"
+              ],
+              [
+                "sitzen",
+                "gesessen",
+                "haben",
+                "sat"
+              ],
+              [
+                "liegen",
+                "gelegen",
+                "haben",
+                "lay"
+              ],
+              [
+                "schlafen",
+                "geschlafen",
+                "haben",
+                "slept"
+              ],
+              [
+                "essen",
+                "gegessen",
+                "haben",
+                "eaten"
+              ],
+              [
+                "trinken",
+                "getrunken",
+                "haben",
+                "drunk"
+              ],
+              [
+                "lesen",
+                "gelesen",
+                "haben",
+                "read"
+              ],
+              [
+                "sehen",
+                "gesehen",
+                "haben",
+                "seen"
+              ],
+              [
+                "helfen",
+                "geholfen",
+                "haben",
+                "helped"
+              ],
+              [
+                "geben",
+                "gegeben",
+                "haben",
+                "given"
+              ],
+              [
+                "nehmen",
+                "genommen",
+                "haben",
+                "taken"
+              ]
+            ],
+            "title": {
+              "de": "Wichtige unregelmäßige Partizip-II-Formen",
+              "en": "Key Irregular Partizip II Forms"
+            }
           }
-        }
+        ]
       },
       "theme": {
-        "de": "Freizeit · Wetter · Vergangenheit",
-        "en": "Leisure · Weather · The past tense"
+        "de": "Körperteile, Beschwerden, Arztbesuch, Hobbys, Wetter, Perfekt (haben/sein + Partizip II)",
+        "en": "Body parts, symptoms, doctor visits, hobbies, weather, Present Perfect (haben/sein + Partizip II)"
       },
       "title": {
-        "de": "Hobbys, Wetter & Perfekt",
-        "en": "Hobbies, Weather & Perfekt"
+        "de": "Gesundheit, Hobbys, Wetter & Perfekt",
+        "en": "Health, Hobbies, Weather & Past Tense (Perfekt)"
       },
       "vocabCategories": [
+        "body-health",
+        "doctor-shopping-phrases",
         "hobby-verbs",
-        "weather-wishes"
+        "weather-wishes",
+        "perfekt"
+      ]
+    },
+    {
+      "cluster": 4,
+      "code": "M16",
+      "goal": {
+        "de": "Die gesamte A1-Sequenz mit fünf integrierten Übungsgruppen und einem vollständigen DE/EN/NE-Lösungsschlüssel prüfen.",
+        "en": "Test mastery of the whole A1 sequence with five integrated exercise sets and a complete DE/EN/NE answer key."
+      },
+      "grammarCategories": [
+        "accusative",
+        "v2-word-order",
+        "modal-verbs",
+        "prepositions",
+        "perfekt"
+      ],
+      "hasLesson": true,
+      "id": "m16",
+      "index": 15,
+      "kind": "support",
+      "nodeIds": [
+        "m16-learn",
+        "m16-practice",
+        "m16-bonus"
+      ],
+      "pedagogy": {
+        "callouts": [
+          "This module is optional (SUPPORT). Skipping it does not affect your progress or any unlock.",
+          "Do the exercises BEFORE opening the answer key — the value is in the attempt, not the reading.",
+          "If you score below 80% on any exercise, go back to that unit: Exercise 1→M05, 2→M08, 3→M06/M12, 4→M07, 5→cumulative.",
+          "The answer key is trilingual (DE/EN/NE) — check the German first, then your own translation against the English."
+        ],
+        "grammarNote": {
+          "de": "Prüfe dich ehrlich mit dem Lösungsschlüssel — ein niedriger Wert sagt dir, wohin du zurückmusst, er ist kein Urteil.",
+          "en": "Check yourself honestly against the answer key — a low score is information about where to go back to, not a verdict."
+        },
+        "grammarNotes": [
+          "This module is a SUPPORT band: it reviews Units 01–15 and never gates progress, so it cannot lock a learner out of completion.",
+          "Exercise 1 targets gender + nominative article (Units 04–05).",
+          "Exercise 2 targets the masculine accusative shift (Unit 08).",
+          "Exercise 3 targets verb conjugation, stem changes, and modals (Units 06, 12).",
+          "Exercise 4 targets V2 word order and inversion (Unit 07).",
+          "Exercise 5 targets end-to-end translation across all structures (cumulative).",
+          "Every answer key entry is given in DE, EN and NE so the learner can self-check without a tutor."
+        ],
+        "ruleTables": [
+          {
+            "columns": [
+              "Structure",
+              "Unit",
+              "Can you…",
+              "Self-rating"
+            ],
+            "rows": [
+              [
+                "Gender + Nominative",
+                "M04–M05",
+                "Give the article for any noun (der/die/das)",
+                "☐"
+              ],
+              [
+                "kein / keine",
+                "M05",
+                "Negate a noun phrase in the nominative",
+                "☐"
+              ],
+              [
+                "Present conjugation",
+                "M06",
+                "Conjugate any regular verb for all 6 persons",
+                "☐"
+              ],
+              [
+                "Stem changes",
+                "M06",
+                "Apply e→ie, e→i, a→ä in du/er only",
+                "☐"
+              ],
+              [
+                "V2 word order",
+                "M07",
+                "Place the conjugated verb in Position 2",
+                "☐"
+              ],
+              [
+                "Inversion",
+                "M07",
+                "Shift the subject to Position 3 after a time/place phrase",
+                "☐"
+              ],
+              [
+                "Accusative",
+                "M08",
+                "Shift only masculine articles (der→den, ein→einen, kein→keinen)",
+                "☐"
+              ],
+              [
+                "Separable verbs",
+                "M09",
+                "Send the prefix to the clause end",
+                "☐"
+              ],
+              [
+                "Modals",
+                "M12",
+                "Put the infinitive at the end after a modal",
+                "☐"
+              ],
+              [
+                "Demonstratives",
+                "M13",
+                "Match dieser/diese/dieses to gender",
+                "☐"
+              ],
+              [
+                "Dative prepositions",
+                "M14",
+                "Use mit + dem/der for transport",
+                "☐"
+              ],
+              [
+                "Two-way prepositions",
+                "M14",
+                "Choose acc (Wohin?) vs. dat (Wo?)",
+                "☐"
+              ],
+              [
+                "Perfekt",
+                "M15",
+                "Pick haben/sein and form Partizip II",
+                "☐"
+              ]
+            ],
+            "title": {
+              "de": "A1-Beherrschungs-Checkliste",
+              "en": "A1 Mastery Checklist"
+            }
+          }
+        ]
+      },
+      "theme": {
+        "de": "Konsolidierung der Einheiten 01–15: Genus, Akkusativ, Konjugation, Modalverben, trennbare Verben, V2, Präpositionen",
+        "en": "Consolidation of Units 01–15: genders, accusative, conjugation, modals, separable verbs, V2, prepositions"
+      },
+      "title": {
+        "de": "Umfassende Übung & Endprüfung",
+        "en": "Comprehensive Practice & Final Review"
+      },
+      "vocabCategories": [
+        "conjugation",
+        "v2-order",
+        "modal-verbs",
+        "dative-prepositions",
+        "perfekt"
       ]
     }
   ]

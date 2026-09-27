@@ -26,6 +26,12 @@ import { readFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createClient } from '@supabase/supabase-js';
+// Statically imported. This module is ESM ("type": "module"), where `require`
+// is not defined — the previous lazy `require('dotenv')` threw
+// "require is not defined" the moment credentials were actually needed, which is
+// to say on every `--apply` and never on a dry run. A script whose write path
+// is the only path that has ever crashed is a script that has never been run.
+import dotenv from 'dotenv';
 import { CURRICULUM_FILE, RESOLVED_PATH } from '../../src/data/curriculum';
 import { hasCurriculumErrors, validateCurriculum } from '../../src/data/curriculum/schema';
 
@@ -35,11 +41,18 @@ const UNITS_DIR = path.join(ROOT, 'src', 'data', 'curriculum', 'units');
 
 const apply = process.argv.includes('--apply');
 
-function env(name: string): string {
-  // Loaded lazily so a dry run needs no credentials at all.
-  const dotenv = require('dotenv') as { config: (o: { path: string; override?: boolean }) => void };
+/** Env files are loaded once; a dry run simply never calls `env()`. */
+let envLoaded = false;
+
+function loadEnv(): void {
+  if (envLoaded) return;
   dotenv.config({ path: path.join(ROOT, '.env'), override: false });
   dotenv.config({ path: path.join(ROOT, '.env.local'), override: true });
+  envLoaded = true;
+}
+
+function env(name: string): string {
+  loadEnv();
   const v = process.env[name];
   if (!v) {
     console.error(`✗ ${name} is not set`);

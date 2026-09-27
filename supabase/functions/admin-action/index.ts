@@ -212,7 +212,22 @@ async function applyRepair(db: SupabaseClient, edits: RepairEdit[], actorId: str
 
 Deno.serve(async (req: Request) => {
   // Per-request, because the grant depends on who is asking.
-  const CORS = corsHeaders(req.headers.get('Origin'), Deno.env.get(ALLOW_ORIGIN_SECRET));
+  const rawAllowlist = Deno.env.get(ALLOW_ORIGIN_SECRET);
+  const CORS = corsHeaders(req.headers.get('Origin'), rawAllowlist);
+
+  // A MISSING SECRET IS NOT SILENT. It used to be: the header came back blank,
+  // the browser discarded every reply, and the control centre reported a vague
+  // server failure for every privileged action. This deployment would look
+  // perfectly healthy in every other respect. One line here turns that class of
+  // outage into something visible in the function logs within a request.
+  if (!rawAllowlist && req.method === 'POST') {
+    console.error(
+      `[admin-action] ${ALLOW_ORIGIN_SECRET} is NOT SET. No origin will be granted CORS, so every ` +
+        'privileged action (ban/promote/demote/publish/repair) will be unreachable from a browser. ' +
+        `Set it with: supabase secrets set ${ALLOW_ORIGIN_SECRET}="https://<admin-origin>"`,
+    );
+  }
+
   const json = (status: number, body: unknown): Response =>
     new Response(JSON.stringify(body), { status, headers: { ...CORS, 'Content-Type': 'application/json' } });
 
