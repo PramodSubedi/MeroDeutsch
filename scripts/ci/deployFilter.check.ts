@@ -19,6 +19,7 @@
  * `process.exit` here and the suite would report success with zero output.
  */
 import { spawnSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { classify, shouldBuild, type Scope, type Target } from './deployFilter';
 
@@ -211,6 +212,80 @@ check(
   'first deploy → exit 1 (BUILD, fail open)',
   firstDeploy.code === VERCEL_BUILD,
   `exit ${firstDeploy.code}; ${firstDeploy.log.trim().slice(0, 120)}`,
+);
+
+console.log('\n=== 11. vercel.json MUST MATCH VERCEL\'S SCHEMA ===');
+// The reason this section exists: `vercel.json` once carried a `"//"` comment
+// key holding the design rationale. It parsed fine as JSON and every local
+// check passed, then Vercel rejected the DEPLOY with
+//   should NOT have additional property `//`
+// — i.e. the failure only surfaced at deploy time, on the one step that could
+// not be iterated on quickly.
+//
+// The lesson: a config file is validated against a schema we do not control, so
+// the properties we USE are worth asserting. This is not a full schema check —
+// it is the subset that has actually bitten, plus the invariants that keep the
+// two projects correctly separated.
+const vercelPath = resolve(import.meta.dirname ?? __dirname, '..', '..', 'vercel.json');
+const vercelRaw = readFileSync(vercelPath, 'utf8');
+const vercel = JSON.parse(vercelRaw) as Record<string, unknown>;
+
+/** Properties the Vercel vercel.json schema actually defines. */
+const VERCEL_SCHEMA_PROPERTIES = new Set([
+  '$schema', 'build', 'buildCommand', 'builds', 'cleanUrls', 'crons',
+  'devCommand', 'framework', 'functions', 'github', 'headers', 'ignoreCommand',
+  'installCommand', 'installs', 'outputDirectory', 'public', 'redirects',
+  'regions', 'rewrites', 'routes', 'trailingSlash', 'version',
+]);
+const extra = Object.keys(vercel).filter((k) => !VERCEL_SCHEMA_PROPERTIES.has(k));
+check(
+  'no unknown top-level properties (a "//" comment key fails the deploy)',
+  extra.length === 0,
+  `unexpected: ${extra.join(', ')}`,
+);
+
+const rewrites = vercel.rewrites as { source: string; destination: string; has?: { type: string; value: string }[] }[];
+check('rewrites array is present', Array.isArray(rewrites));
+check('rewrites is non-empty', rewrites.length > 0);
+
+// Host-gated rules must name the ADMIN host. A rule that lost its `has` clause
+// would silently apply to the learner project, and an unconditional
+// `X-Robots-Tag: noindex` on the catch-all would deindex the entire product.
+const ADMIN_HOST = 'admin.merodeutsch.pramods.com.np';
+const hostGated = rewrites.filter((r) => r.has?.some((h) => h.type === 'host'));
+check('at least one rewrite is host-gated', hostGated.length >= 1, `found ${hostGated.length}`);
+check(
+  'every host-gated rewrite targets the admin host',
+  hostGated.every((r) => r.has?.some((h) => h.value === ADMIN_HOST)),
+  JSON.stringify(hostGated.map((r) => r.has?.[0]?.value)),
+);
+
+// The admin catch-all MUST come before the learner catch-all, or the learner
+// catch-all eats every admin path and the control centre serves the app.
+const adminCatchAll = rewrites.findIndex((r) => r.destination === '/admin.html' && r.source === '/(.*)');
+const learnerCatchAll = rewrites.findIndex((r) => r.destination === '/index.html');
+check('admin catch-all is present', adminCatchAll >= 0);
+check('learner catch-all is present', learnerCatchAll >= 0);
+check(
+  'admin catch-all is ordered BEFORE the learner catch-all',
+  adminCatchAll >= 0 && learnerCatchAll >= 0 && adminCatchAll < learnerCatchAll,
+  `admin at ${adminCatchAll}, learner at ${learnerCatchAll}`,
+);
+
+// The learner SW must be revalidated, or a deploy can be masked by a cached
+// sw.js — the usual cause of "PWA not updating".
+const headers = vercel.headers as { source: string; has?: unknown[]; headers: { key: string; value: string }[] }[];
+const swHeader = headers.find((h) => h.source === '/sw.js');
+check('sw.js has a revalidate header', !!swHeader?.headers.some((x) => /must-revalidate/.test(x.value)));
+check('sw.js header is NOT host-gated (both apps need the SW)', !swHeader?.has, JSON.stringify(swHeader?.has));
+
+// The noindex headers must be host-gated for the reason above.
+const noindexRule = headers.find((h) => h.headers.some((x) => /noindex/.test(x.value)));
+check('a noindex rule exists', !!noindexRule);
+check(
+  'the noindex rule IS host-gated (unconditional would deindex the learner app)',
+  !!noindexRule?.has?.some((x) => (x as { type?: string; value?: string })?.type === 'host'),
+  JSON.stringify(noindexRule?.has),
 );
 
 console.log(`\n${failures.length === 0 ? '[summary] ALL' : '[summary]'} ${checks} CHECKS ${failures.length === 0 ? 'PASSED' : `FAILED (${failures.length})`}`);
