@@ -9,6 +9,7 @@ import { useAuth } from './hooks/useAuth';
 import { LearningContextProvider } from './context/LearningContext';
 import { useAdminModeBootstrap } from './hooks/useAdminModeBootstrap';
 import { useQaBridge } from './hooks/useQaBridge';
+import { useCurriculumSource } from './hooks/useCurriculumSource';
 import { DebugModeBanner } from './components/debug/DebugModeBanner';
 
 // Core pages - eagerly loaded for instant navigation
@@ -96,6 +97,12 @@ export default function App() {
   // a tab the control center drives may be sitting on `/welcome`, which renders
   // outside the app shell, and the listener must be live there too.
   useQaBridge();
+  // Resolve `curriculum_source` and serve the right curriculum. WITHOUT THIS
+  // the flag is inert for learners: the admin control centre can flip it, and
+  // the app that actually needs the new content would keep serving the bundle.
+  //
+  // Mounted at the root, for the same reason as the bootstraps above.
+  useCurriculumSource();
   return (
     <ErrorBoundary>
       <BrowserRouter>
