@@ -27,9 +27,12 @@ import {
   evaluateAction,
   isKnownAction,
   requiresTarget,
+  REPAIR_COLUMNS,
+  validateRepair,
   type ActionRequest,
   type Actor,
   type AdminAction,
+  type RepairEdit,
   type TargetUser,
 } from './guards.ts';
 
@@ -148,6 +151,67 @@ function profileWrite(action: AdminAction, target: TargetUser): { column: 'role'
   }
 }
 
+/**
+ * Apply a validated repair batch.
+ *
+ * PER-ROW, NOT BULK, ON PURPOSE: a single `.in()` update either lands or does
+ * not, and a bulk write that partially matched would report success while
+ * leaving some rows unrepaired. Each edit is applied and checked on its own, and
+ * the response reports exactly which ids succeeded and which did not — so an
+ * operator can retry the remainder without guessing.
+ *
+ * `before` is captured from the row as it actually is, so the audit log records
+ * the real prior value rather than whatever the client believed it was.
+ */
+async function applyRepair(db: SupabaseClient, edits: RepairEdit[], actorId: string, reason: string | null, userAgent: string | null): Promise<{
+  applied: number;
+  failed: { id: string; field: string; reason: string }[];
+}> {
+  const applied: string[] = [];
+  const failed: { id: string; field: string; reason: string }[] = [];
+
+  for (const edit of edits) {
+    const column = REPAIR_COLUMNS[edit.field];
+
+    const { data: before, error: readErr } = await db
+      .from('vocabulary')
+      .select(`id, word, ${column}`)
+      .eq('id', edit.id)
+      .maybeSingle();
+
+    if (readErr || !before) {
+      failed.push({ id: edit.id, field: edit.field, reason: 'row not found' });
+      continue;
+    }
+
+    const previous = (before as Record<string, unknown>)[column];
+    if (typeof previous === 'string' && previous === edit.value) {
+      // Already correct. Counting it as "applied" would inflate the repair
+      // count and hide the fact that nothing needed doing.
+      failed.push({ id: edit.id, field: edit.field, reason: 'value already matches' });
+      continue;
+    }
+
+    const { error } = await db.from('vocabulary').update({ [column]: edit.value }).eq('id', edit.id);
+    if (error) {
+      failed.push({ id: edit.id, field: edit.field, reason: error.message });
+      continue;
+    }
+
+    await audit(db, {
+      adminId: actorId,
+      action: 'vocab.repair',
+      targetId: edit.id,
+      before: { field: edit.field, value: previous ?? null, word: before.word ?? null },
+      after: { field: edit.field, value: edit.value, reason },
+      userAgent,
+    });
+    applied.push(edit.id);
+  }
+
+  return { applied: applied.length, failed };
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS });
   if (req.method !== 'POST') return json(405, { ok: false, code: 'method-not-allowed' });
@@ -214,6 +278,44 @@ Deno.serve(async (req: Request) => {
   }
 
   // ── 4. The write ─────────────────────────────────────────────────────────
+  //
+  // `vocab.repair` is handled FIRST and separately: it takes a validated batch
+  // rather than a single user target, and it used to fall through this block
+  // entirely — which returned 200 "ok" without changing anything. A success
+  // response for a repair that never happened is worse than a missing feature.
+  if (action === 'vocab.repair') {
+    const repair = validateRepair(body.payload);
+    if (!repair.ok) {
+      // Nothing is written when any edit in the batch is invalid: a partially
+      // applied repair across many rows is harder to reason about than none.
+      await audit(db, {
+        adminId: actorId,
+        action: 'vocab.repair.rejected',
+        targetId: null,
+        before: { problems: repair.problems.slice(0, 20) },
+        after: null,
+        userAgent,
+      });
+      return json(400, {
+        ok: false,
+        code: 'invalid-repair',
+        message: 'The repair payload was rejected; no rows were changed.',
+        problems: repair.problems,
+      });
+    }
+    const result = await applyRepair(db, repair.edits, actorId, reason, userAgent);
+    // A batch where nothing landed is a failure, not a success.
+    if (result.applied === 0) {
+      return json(400, { ok: false, code: 'repair-applied-none', failed: result.failed });
+    }
+    // Partial success is reported as partial, never as a clean 200.
+    return json(result.failed.length > 0 ? 207 : 200, {
+      ok: result.failed.length === 0,
+      applied: result.applied,
+      failed: result.failed,
+    });
+  }
+
   if (requiresTarget(action) && target) {
     const { column, value } = profileWrite(action, target);
     const patch: Record<string, unknown> = { [column]: value };
@@ -248,5 +350,28 @@ Deno.serve(async (req: Request) => {
     });
   }
 
+  // ── 5. Actions that are registered but NOT yet implemented ────────────────
+  //
+  // `config.set` and `unit.publish` are in the registry so their guards and
+  // audit codes are fixed, but no write is implemented for them yet. They used
+  // to fall through to the `ok: true` return below, reporting success for
+  // nothing. An explicit refusal is the honest answer until they are built.
+  if (action === 'config.set' || action === 'unit.publish' || action === 'vocab.clear_flag') {
+    await audit(db, {
+      adminId: actorId,
+      action: action + '.unimplemented',
+      targetId,
+      before: null,
+      after: null,
+      userAgent,
+    });
+    return json(501, {
+      ok: false,
+      code: 'not-implemented',
+      message: `${action} is not implemented yet. No change was made.`,
+    });
+  }
+
+  // Reached only by a fully-guarded, fully-applied user action.
   return json(200, { ok: true, action });
 });

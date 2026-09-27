@@ -43,6 +43,7 @@ export type AdminAction =
   | 'user.demote'
   | 'user.promote'
   | 'vocab.repair'
+  | 'vocab.clear_flag'
   | 'config.set'
   | 'unit.publish';
 
@@ -121,6 +122,7 @@ const KNOWN_ACTIONS: ReadonlySet<string> = new Set<AdminAction>([
   'user.demote',
   'user.promote',
   'vocab.repair',
+  'vocab.clear_flag',
   'config.set',
   'unit.publish',
 ]);
@@ -154,6 +156,126 @@ function checkActorAndTarget(
   }
   return null;
 }
+
+/** Fields a repair is allowed to touch. Deliberately NOT `word`. */
+export type RepairField = 'translationEn' | 'translationNp' | 'exampleDe' | 'exampleEn' | 'exampleNp' | 'partOfSpeech';
+
+export const REPAIR_FIELDS: readonly RepairField[] = [
+  'translationEn',
+  'translationNp',
+  'exampleDe',
+  'exampleEn',
+  'exampleNp',
+  'partOfSpeech',
+];
+
+export interface RepairEdit {
+  id: string;
+  field: RepairField;
+  value: string;
+}
+
+/** Rejections specific to a malformed repair payload. */
+export interface RepairValidation {
+  ok: boolean;
+  problems: string[];
+  edits: RepairEdit[];
+}
+
+const MAX_EDITS = 200;
+const MAX_VALUE_LEN = 2000;
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/**
+ * Validate a batch of repair edits.
+ *
+ * ── WHY THERE IS NO AUTO-FIX ────────────────────────────────────────────────
+ * The 47 flagged rows were investigated rather than assumed. Two of them
+ * (`Fahrkarte -> ticket`, `schlecht -> bad`) are CORRECT: the detector fires
+ * because "ticket" and "bad" collide with unrelated German words elsewhere in
+ * the table. A further pair (`weiss -> rot`) is a plausible-looking swap.
+ *
+ * The constant-offset theory was also tested and REJECTED: a fixed row shift
+ * cannot produce the repeated bogus values that were observed. So there is no
+ * derivable repair, and guessing one would overwrite correct data.
+ *
+ * Therefore every value must be supplied by a human, per row, per field, and
+ * the batch is validated atomically before anything is written.
+ */
+export function validateRepair(raw: unknown): RepairValidation {
+  const problems: string[] = [];
+
+  if (!Array.isArray(raw)) {
+    return { ok: false, problems: ['repair payload must be an array of edits'], edits: [] };
+  }
+  if (raw.length === 0) {
+    return { ok: false, problems: ['repair payload contained no edits'], edits: [] };
+  }
+  if (raw.length > MAX_EDITS) {
+    return { ok: false, problems: [`at most ${MAX_EDITS} edits may be applied at once`], edits: [] };
+  }
+
+  const seen = new Set<string>();
+  const edits: RepairEdit[] = [];
+
+  raw.forEach((item, i) => {
+    if (item === null || typeof item !== 'object') {
+      problems.push(`edit ${i}: must be an object`);
+      return;
+    }
+    const e = item as Record<string, unknown>;
+
+    const id = typeof e.id === 'string' ? e.id.trim() : '';
+    if (id === '') {
+      problems.push(`edit ${i}: id is required`);
+      return;
+    }
+    // This id decides which row gets written, so non-UUID text must never
+    // reach the query.
+    if (!UUID_RE.test(id)) {
+      problems.push(`edit ${i}: id must be a UUID`);
+      return;
+    }
+
+    const field = e.field;
+    if (typeof field !== 'string' || !REPAIR_FIELDS.includes(field as RepairField)) {
+      problems.push(`edit ${i}: field must be one of ${REPAIR_FIELDS.join(', ')}`);
+      return;
+    }
+
+    if (typeof e.value !== 'string' || e.value.trim().length === 0) {
+      problems.push(`edit ${i}: value must be a non-empty string`);
+      return;
+    }
+    if (e.value.length > MAX_VALUE_LEN) {
+      problems.push(`edit ${i}: value exceeds ${MAX_VALUE_LEN} characters`);
+      return;
+    }
+
+    const key = `${id}:${field}`;
+    if (seen.has(key)) {
+      // Two edits to one cell in a batch makes the result depend on application
+      // order, which is not something an operator should have to reason about.
+      problems.push(`edit ${i}: duplicate edit for the same row and field`);
+      return;
+    }
+    seen.add(key);
+
+    edits.push({ id, field: field as RepairField, value: e.value });
+  });
+
+  return { ok: problems.length === 0, problems, edits };
+}
+
+/** Column each repair field maps to. `word` is absent by design. */
+export const REPAIR_COLUMNS: Record<RepairField, string> = {
+  translationEn: 'translation_en',
+  translationNp: 'translation_np',
+  exampleDe: 'example_de',
+  exampleEn: 'example_en',
+  exampleNp: 'example_np',
+  partOfSpeech: 'part_of_speech',
+};
 
 export function evaluateAction(req: ActionRequest): Decision {
   const { action, actor, target, reason, activeAdminCount } = req;

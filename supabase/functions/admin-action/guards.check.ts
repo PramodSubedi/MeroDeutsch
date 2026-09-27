@@ -10,7 +10,7 @@
  *
  * A guard with no test is a guard that does not exist.
  */
-import { evaluateAction, hasReason, requiresTarget, type ActionRequest, type Actor, type TargetUser } from './guards';
+import { evaluateAction, hasReason, requiresTarget, isKnownAction, validateRepair, REPAIR_FIELDS, REPAIR_COLUMNS, type ActionRequest, type Actor, type TargetUser } from './guards';
 
 let checks = 0;
 const failures: string[] = [];
@@ -114,6 +114,66 @@ check('every decision has a code', every.every((d) => d.code.length > 0));
 check('every decision has a message', every.every((d) => d.message.length > 0));
 check('only "ok" is ever allowed', every.filter((d) => d.allowed).every((d) => d.code === 'ok'));
 check('every denial has a reason', every.filter((d) => !d.allowed).every((d) => d.message.length > 10));
+
+console.log('\n=== 11. REPAIR PAYLOAD VALIDATION ===');
+const ID = '029d6f9a-1381-471b-8b6a-27bee0e06bde';
+const good = { id: ID, field: 'translationEn', value: 'to stop' };
+
+check('a well-formed edit is accepted', validateRepair([good]).ok, JSON.stringify(validateRepair([good]).problems));
+check('one edit yields one cleaned edit', validateRepair([good]).edits.length === 1);
+check('a non-array payload is rejected', !validateRepair('nope').ok);
+check('null is rejected', !validateRepair(null).ok);
+check('an object is rejected', !validateRepair({ edits: [] }).ok);
+check('an empty array is rejected', !validateRepair([]).ok);
+check('an empty array explains why', validateRepair([]).problems[0].includes('no edits'));
+check('a huge batch is rejected whole', !validateRepair(Array.from({ length: 201 }, () => good)).ok);
+
+// THE INJECTION-ADJACENT CASE. `id` is interpolated into a filter that decides
+// which rows get written, so anything that is not a UUID must be refused here
+// rather than reaching the query.
+check('a non-UUID id is rejected', !validateRepair([{ ...good, id: '1 OR 1=1' }]).ok);
+check("an id with a quote is rejected", !validateRepair([{ ...good, id: "x'; drop table vocabulary;--" }]).ok);
+check('an empty id is rejected', !validateRepair([{ ...good, id: '' }]).ok);
+check('a missing id is rejected', !validateRepair([{ field: 'translationEn', value: 'x' }]).ok);
+
+// `word` is not repairable. Allowing it would mean renaming a vocabulary entry
+// and invalidating every SRS item keyed on it.
+check('word is not a repairable field', !validateRepair([{ ...good, field: 'word' }]).ok);
+check('an unknown field is rejected', !validateRepair([{ ...good, field: 'id' }]).ok);
+check('a non-string field is rejected', !validateRepair([{ ...good, field: 7 }]).ok);
+check('an empty value is rejected', !validateRepair([{ ...good, value: '' }]).ok);
+check('a whitespace value is rejected', !validateRepair([{ ...good, value: '   ' }]).ok);
+check('a non-string value is rejected', !validateRepair([{ ...good, value: 42 }]).ok);
+check('an over-long value is rejected', !validateRepair([{ ...good, value: 'x'.repeat(2001) }]).ok);
+check('a 2000-char value is accepted', validateRepair([{ ...good, value: 'x'.repeat(2000) }]).ok);
+check('a null item is rejected', !validateRepair([null]).ok);
+check('a non-object item is rejected', !validateRepair(['nope']).ok);
+
+// One bad edit must void the WHOLE batch. A partially applied repair is worse
+// than none, because the operator cannot tell what landed.
+const mixed = validateRepair([good, { ...good, id: 'bad-id' }]);
+check('one bad edit voids the whole batch', !mixed.ok, JSON.stringify(mixed.problems));
+check('the problem names the offending index', mixed.problems.some((p) => p.startsWith('edit 1:')), JSON.stringify(mixed.problems));
+check('duplicate row+field is rejected', !validateRepair([good, good]).ok);
+check('same row, DIFFERENT field is fine', validateRepair([good, { ...good, field: 'translationNp' }]).ok);
+check('different row, same field is fine', validateRepair([good, { ...good, id: '69ea032c-8523-4181-8d2d-917c71488e23' }]).ok);
+
+console.log('\n=== 12. FIELD/COLUMN MAPPING ===');
+for (const f of REPAIR_FIELDS) check(`${f} maps to a real column`, /^[a-z_]+$/.test(REPAIR_COLUMNS[f]), REPAIR_COLUMNS[f]);
+check('word is NOT in the column map', !('word' in REPAIR_COLUMNS));
+check('translationEn maps to translation_en', REPAIR_COLUMNS.translationEn === 'translation_en');
+check('translationNp maps to translation_np', REPAIR_COLUMNS.translationNp === 'translation_np');
+check('exampleDe maps to example_de', REPAIR_COLUMNS.exampleDe === 'example_de');
+check('partOfSpeech maps to part_of_speech', REPAIR_COLUMNS.partOfSpeech === 'part_of_speech');
+
+console.log('\n=== 13. NO UNIMPLEMENTED ACTION IS ALLOWED BY THE GUARD ===');
+// The guard permits these (they are registered), but the HANDLER must refuse
+// them with 501 rather than fall through to a success response. These two
+// checks together are what stop that regression returning.
+for (const a of ['config.set', 'unit.publish', 'vocab.clear_flag'] as const) {
+  check(`${a} is a KNOWN action (passes membership)`, isKnownAction(a));
+  check(`${a} is guarded for a non-admin`, evaluateAction(req({ action: a, target: undefined, actor: { ...ADMIN, role: 'user' } })).allowed === false);
+}
 
 console.log(`\n${failures.length === 0 ? '[summary] ALL' : '[summary]'} ${checks} CHECKS ${failures.length === 0 ? 'PASSED' : `FAILED (${failures.length})`}`);
 if (failures.length > 0) {
