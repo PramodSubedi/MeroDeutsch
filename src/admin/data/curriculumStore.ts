@@ -26,6 +26,16 @@ export interface StoredUnit {
   title: string;
   nodeCount: number;
   updatedAt: string | null;
+  /**
+   * The raw document, kept so the editor can round-trip it.
+   *
+   * The list deliberately renders a SUMMARY rather than the doc, but an editor
+   * that cannot see the document it is about to edit has to re-fetch it anyway —
+   * and a re-fetch is where a stale read would come from. Carrying the doc
+   * alongside the summary means the editor and the row it is editing come from
+   * the same read.
+   */
+  doc: unknown;
 }
 
 export interface StoredVersion {
@@ -98,6 +108,7 @@ export async function fetchCurriculumStore(): Promise<CurriculumStore> {
         title: titleOf(u.doc),
         nodeCount: Array.isArray(doc?.nodes) ? doc.nodes.length : 0,
         updatedAt: (u.updated_at as string | null) ?? null,
+        doc: u.doc,
       };
     }),
     versions: (versions ?? []).map((v) => ({

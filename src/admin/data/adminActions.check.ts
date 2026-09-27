@@ -168,6 +168,40 @@ check(
 );
 check('ok implies applied', all.every((r) => !r.ok || r.outcome === 'applied'));
 
+console.log('\n=== UNIT.ROLLBACK + UNIT.SAVE RESPONSES ===');
+// Both are new privileged writes, so the same "never claim success falsely"
+// property applies to their refusals.
+const badRollback = interpretAdminResponse(400, { ok: false, code: 'invalid-rollback', message: 'That version cannot be restored. Nothing was changed.', errors: ['snapshot is for m03, not m02'] });
+check('a refused rollback is not ok', badRollback.ok === false);
+check('a refused rollback is rejected, not refused-by-guard', badRollback.outcome === 'rejected');
+check('a refused rollback carries the code', badRollback.code === 'invalid-rollback');
+check('a refused rollback says nothing changed', /nothing was changed/i.test(badRollback.message));
+check('a missing version is not ok', interpretAdminResponse(404, { ok: false, code: 'target-missing', message: 'That saved version no longer exists. Nothing was changed.' }).ok === false);
+check('a missing version still promises no change', /nothing was changed/i.test(interpretAdminResponse(404, { code: 'target-missing', message: 'That saved version no longer exists. Nothing was changed.' }).message));
+// A generic 404 with no message must not read as applied.
+check('a bare 404 is not ok', interpretAdminResponse(404, { ok: false }).ok === false);
+check('a bare 404 says nothing changed', /nothing was changed/i.test(interpretAdminResponse(404, { ok: false }).message));
+
+const badSave = interpretAdminResponse(400, { ok: false, code: 'invalid-unit', message: 'The draft is not a valid unit. Nothing was saved.', errors: ['unit.nodes must be a non-empty array'] });
+check('a rejected draft is not ok', badSave.ok === false);
+check('a rejected draft says nothing was saved', /nothing was saved/i.test(badSave.message));
+check('a unit id mismatch is not ok', interpretAdminResponse(400, { ok: false, code: 'unit-id-mismatch', message: 'Different unit id. Nothing was saved.' }).ok === false);
+check('a unit id mismatch is rejected', interpretAdminResponse(400, { code: 'unit-id-mismatch' }).outcome === 'rejected');
+// A 500 from a save is a FAIL-CLOSED outcome, and must say so. The live bug this
+// covers returned exactly this: the handler omitted the NOT NULL `order` column,
+// so every first save 500'd while the document itself was perfectly valid. The
+// message must not imply the content was the problem.
+const saveFailed = interpretAdminResponse(500, { ok: false, code: 'write-failed', message: 'The draft could not be saved.' });
+check('a failed save is not ok', saveFailed.ok === false);
+check('a failed save is failed, not rejected', saveFailed.outcome === 'failed');
+check('a failed save says nothing was saved', /nothing was changed/i.test(saveFailed.message));
+check('a failed save is not silently retryable as content-invalid', saveFailed.code === 'write-failed');
+// The critical one: a save must never be able to report the unit as published
+// unless the server said so. The client renders `published` from the body.
+const saved = interpretAdminResponse(200, { ok: true, unitId: 'm07', published: false });
+check('a save reports applied', saved.ok === true);
+check('a save is not the same as a publish', interpretAdminResponse(200, { ok: true, published: false }).outcome === 'applied');
+
 console.log(`\n${failures.length === 0 ? '[summary] ALL' : '[summary]'} ${checks} CHECKS ${failures.length === 0 ? 'PASSED' : `FAILED (${failures.length})`}`);
 if (failures.length > 0) {
   for (const f of failures) console.log(`  - ${f}`);

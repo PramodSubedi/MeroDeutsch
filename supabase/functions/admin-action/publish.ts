@@ -168,6 +168,109 @@ export interface PublishSetOptions {
   expectedCount?: number;
 }
 
+/**
+ * Decide whether a ROLLBACK may proceed.
+ *
+ * ── WHY THIS EXISTS ─────────────────────────────────────────────────────────
+ * `curriculum_versions` is append-only history, written on every `unit.publish`.
+ * Restoring a snapshot is a write to the live spine, so it needs the same
+ * scrutiny as the publish it is undoing — with one extra hazard that publish
+ * does not have.
+ *
+ * Publishing always moves FORWARD: the operator is replacing a draft with
+ * content they just reviewed. Rolling back moves to a document that was valid
+ * against an OLDER schema. The unit can have been renamed, reordered or
+ * extended since, so "it validated when we saved it" says nothing about whether
+ * it validates now. A rollback that restores a structurally valid unit into a
+ * position that no longer exists produces a spine with a hole in it, and every
+ * learner past that unit is stranded.
+ *
+ * So three things are checked, all pure:
+ *   1. the snapshot is a unit at all (`checkUnitShape`);
+ *   2. it is for the unit the caller named — a snapshot is not a wormhole;
+ *   3. the resulting SET is still contiguous and duplicate-free
+ *      (`checkPublishSet` with the caller's current peer documents).
+ *
+ * Reusing `checkUnitShape` / `checkPublishSet` rather than reimplementing is
+ * deliberate: a second, laxer copy of these rules is how a rollback ends up
+ * accepting something publish would have refused.
+ */
+export interface RollbackCheck {
+  ok: boolean;
+  errors: string[];
+  warnings: string[];
+}
+
+/**
+ * The unit document inside a `curriculum_versions` row.
+ *
+ * A snapshot arrives wrapped (`{ id, unit_id, lesson_json }`), but a caller
+ * holding only a doc must not be told the snapshot is unusable. Returning the
+ * doc unchanged when it is already a unit is what makes the same check usable
+ * for both a DB row and an in-memory object.
+ */
+export function unwrapSnapshot(snapshot: unknown): unknown {
+  if (snapshot === null || typeof snapshot !== 'object' || Array.isArray(snapshot)) return snapshot;
+  const doc = (snapshot as { lesson_json?: unknown }).lesson_json;
+  if (doc !== null && doc !== undefined && typeof doc === 'object' && !Array.isArray(doc)) return doc;
+  return snapshot;
+}
+
+/** `m07` from a snapshot row (or a bare doc), or null when the row is unusable. */
+export function snapshotUnitId(snapshot: unknown): string | null {
+  const doc = unwrapSnapshot(snapshot);
+  if (doc === null || typeof doc !== 'object' || Array.isArray(doc)) return null;
+  const id = (doc as UnitDoc).id;
+  return typeof id === 'string' ? id : null;
+}
+
+export function checkRollback(args: {
+  /** The unit the operator asked to roll back. */
+  unitId: unknown;
+  /** The chosen `curriculum_versions` row. */
+  snapshot: unknown;
+  /** Every unit doc currently in the store, used to re-check the whole spine. */
+  peers: unknown[];
+  /** How many units the table holds, so a short peer set warns rather than lies. */
+  expectedCount?: number;
+}): RollbackCheck {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+
+  if (typeof args.unitId !== 'string' || !/^m\d{2}$/.test(args.unitId)) {
+    errors.push(`unit id must look like "m07" (got ${JSON.stringify(args.unitId)})`);
+  }
+
+  if (args.snapshot === null || args.snapshot === undefined) {
+    return { ok: false, errors: [...errors, 'no snapshot was found to roll back to'], warnings };
+  }
+
+  // (2) A snapshot must belong to the unit being rolled back. Without this an
+  // operator who picks the wrong row silently replaces m07 with m09's content —
+  // and both units are individually valid, so nothing downstream complains.
+  const snapId = snapshotUnitId(args.snapshot);
+  if (snapId === null) {
+    errors.push('the snapshot has no readable unit id');
+  } else if (typeof args.unitId === 'string' && snapId !== args.unitId) {
+    errors.push(`snapshot is for ${snapId}, not ${args.unitId}`);
+  }
+
+  // (1) Same structural bar as publish. `unwrapSnapshot` matters here: a
+  // `curriculum_versions` ROW has no top-level id/order/nodes, so validating the
+  // row instead of the document inside it refuses every real snapshot.
+  const restored = unwrapSnapshot(args.snapshot);
+  const shape = checkUnitShape(restored);
+  errors.push(...shape.errors);
+  warnings.push(...shape.warnings);
+
+  // (3) The resulting spine must still hold together.
+  const set = checkPublishSet(args.peers, { expectedCount: args.expectedCount });
+  errors.push(...set.errors);
+  warnings.push(...set.warnings);
+
+  return { ok: errors.length === 0, errors, warnings };
+}
+
 export function checkPublishSet(docs: unknown[], options: PublishSetOptions = {}): PublishCheck {
   const errors: string[] = [];
   const warnings: string[] = [];

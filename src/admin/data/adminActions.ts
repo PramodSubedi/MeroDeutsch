@@ -37,7 +37,9 @@ export type AdminActionName =
   | 'user.promote'
   | 'vocab.repair'
   | 'config.set'
-  | 'unit.publish';
+  | 'unit.publish'
+  | 'unit.rollback'
+  | 'unit.save';
 
 export interface RepairEditInput {
   id: string;
@@ -54,6 +56,24 @@ export interface PublishPayload {
   unitIds: string[];
 }
 
+/**
+ * A rollback names BOTH the unit and the version to restore.
+ *
+ * Naming only the unit would mean "the most recent snapshot", and that is the
+ * wrong default: the most recent snapshot is the state a bad publish replaced,
+ * not the state before it. Restoring it is a no-op that reads like a success.
+ */
+export interface RollbackPayload {
+  unitId: string;
+  versionId: string;
+}
+
+export interface SaveUnitPayload {
+  unitId: string;
+  /** The full document, not a patch — the server validates the whole unit. */
+  doc: unknown;
+}
+
 export interface AdminActionRequest {
   action: AdminActionName;
   targetId?: string;
@@ -62,6 +82,8 @@ export interface AdminActionRequest {
   edits?: RepairEditInput[];
   config?: ConfigWritePayload;
   publish?: PublishPayload;
+  rollback?: RollbackPayload;
+  save?: SaveUnitPayload;
 }
 
 export type AdminOutcome =
@@ -224,6 +246,8 @@ export async function runAdminAction(req: AdminActionRequest): Promise<AdminActi
   if (req.edits) body.payload = req.edits;
   if (req.config) body.payload = { key: req.config.key, value: req.config.value };
   if (req.publish) body.payload = { unitIds: req.publish.unitIds };
+  if (req.rollback) body.payload = { unitId: req.rollback.unitId, versionId: req.rollback.versionId };
+  if (req.save) body.payload = { unitId: req.save.unitId, doc: req.save.doc };
 
   try {
     const { data, error } = await supabase.functions.invoke('admin-action', { body });

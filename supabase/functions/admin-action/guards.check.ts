@@ -85,7 +85,7 @@ check('a missing target is refused', evaluateAction(req({ target: undefined })).
 check('non-user actions need no target', evaluateAction(req({ action: 'vocab.repair', target: undefined })).allowed === true);
 
 console.log('\n=== 7. NON-USER ACTIONS ===');
-for (const action of ['vocab.repair', 'config.set', 'unit.publish'] as const) {
+for (const action of ['vocab.repair', 'config.set', 'unit.publish', 'unit.rollback', 'unit.save'] as const) {
   check(`${action} is allowed for an admin`, evaluateAction(req({ action, target: undefined })).allowed === true);
   check(`${action} is refused for a non-admin`, evaluateAction(req({ action, target: undefined, actor: { ...ADMIN, role: 'user' } })).allowed === false);
 }
@@ -101,7 +101,7 @@ check('whitespace-only cannot unlock a peer ban', evaluateAction(req({ action: '
 
 console.log('\n=== 9. TARGET REQUIREMENT ===');
 for (const a of ['user.ban', 'user.unban', 'user.demote', 'user.promote'] as const) check(`${a} requires a target`, requiresTarget(a));
-for (const a of ['vocab.repair', 'config.set', 'unit.publish'] as const) check(`${a} needs no target`, !requiresTarget(a));
+for (const a of ['vocab.repair', 'config.set', 'unit.publish', 'unit.rollback', 'unit.save'] as const) check(`${a} needs no target`, !requiresTarget(a));
 
 console.log('\n=== 10. DECISION SHAPE ===');
 const every = [

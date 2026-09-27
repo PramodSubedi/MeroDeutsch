@@ -115,6 +115,8 @@ jobs:
       # glance.
       - name: check:currapply
         run: npm run check:currapply
+      - name: check:currboot
+        run: npm run check:currboot
       - name: check:v4migration
         run: npm run check:v4migration
       - name: check:deployfilter

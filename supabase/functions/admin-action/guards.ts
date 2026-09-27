@@ -45,7 +45,9 @@ export type AdminAction =
   | 'vocab.repair'
   | 'vocab.clear_flag'
   | 'config.set'
-  | 'unit.publish';
+  | 'unit.publish'
+  | 'unit.rollback'
+  | 'unit.save';
 
 export interface ActionRequest {
   action: AdminAction;
@@ -125,6 +127,8 @@ const KNOWN_ACTIONS: ReadonlySet<string> = new Set<AdminAction>([
   'vocab.clear_flag',
   'config.set',
   'unit.publish',
+  'unit.rollback',
+  'unit.save',
 ]);
 
 export function isKnownAction(action: string): action is AdminAction {

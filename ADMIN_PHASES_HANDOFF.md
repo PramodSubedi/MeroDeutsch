@@ -12,14 +12,55 @@ limitation that decides how the next task must be scoped.
 
 | | |
 |---|---|
-| **Checks** | **1175 passing** across 21 suites · `npx tsc -b` clean · `npm run build` clean · `npm run lint` 0 errors |
-| **CI** | GitHub Actions runs all 21 suites + tsc + lint + validate on every push (`.github/workflows/checks.yml`). **Never actually executed** — Actions only runs on push. |
-| **Deployed** | Edge Function `admin-action` **v5**, `verify_jwt: true`, `ADMIN_ALLOWED_ORIGIN` set |
+| **Checks** | **1267 passing** across 24 suites · `npx tsc --noEmit` clean · `npm run build` clean · `npm run lint` 0 errors (43 warnings) |
+| **CI** | GitHub Actions runs all 24 suites + tsc + lint + validate on every push (`.github/workflows/checks.yml`). **Never actually executed** — Actions only runs on push. |
+| **Deployed** | Edge Function `admin-action` **v7**, `verify_jwt: true`, `ADMIN_ALLOWED_ORIGIN` set |
 | **Migrations applied** | `20260930000000`, `20260930010000`, `20260930020000` |
-| **Live DB** | `curriculum_units` **0 rows** · `admin_audit_log` **0 rows** · `curriculum_source` = **`bundle`** |
-| **Biggest risk** | **No write path has ever executed against production.** CORS is fixed and verified, but ban itself is still unproven. |
-| **Blocking decision** | The learner app **cannot** serve `db` curriculum without a boot-gate change (§4) |
-| **Also open** | `curriculum:verify` is **RED** (40 diffs after the v4.0 15→16 re-sequence) and runs nowhere. `curriculum:baseline` CANNOT re-cut it — it restores the frozen pre-P0 snapshot. Needs a manual decision — see §6.5. |
+| **Live DB** | `curriculum_units` **16 rows, 0 published** · `curriculum_versions` **0 rows** · `curriculum_source` = **`bundle`** |
+| **Live-verified** | `unit.save` + `unit.rollback` executed end-to-end against production, including a bidirectional rollback round-trip. Two real bugs were found this way and fixed — see §5. |
+| **Biggest risk** | **`curriculum:verify` is RED at HEAD** (parity diffs in `a1Path`), unrelated to this work — see §6.5. |
+| **Blocking decision** | Publishing all 16 units and flipping `curriculum_source = 'db'` is **deliberately still pending** — the content is unreviewed. |
+
+### 5.0 What changed in this pass
+
+**Task A — `unit.rollback` (DONE, live-verified).** Restores a unit from
+`curriculum_versions`. Validation reuses `checkUnitShape`/`checkPublishSet`
+rather than reimplementing them. The live doc is archived **before** the write,
+so a rollback is itself reversible — verified by round-trip. Rollback restores
+**content only** and never changes publication state.
+
+**Task B — `unit.save` + editor (DONE, live-verified).** Writes a DRAFT and can
+never publish: `is_published` is preserved on update and forced `false` on
+insert. `unit.publish` remains the only path that makes content live. The editor
+is `src/admin/components/UnitDocEditor.tsx` — a JSON textarea (the document *is*
+the interface; a per-node form would be a second, divergent definition of the
+node shape) with an `updated_at` stale-write guard.
+
+**Boot-gate (DONE, locally verified).** `src/main.tsx` now imports `App`
+**dynamically** after `runBootGate` resolves. This is the load-bearing change:
+`index.ts` derives the spine in module scope and ~50 modules read it
+synchronously, so a static import would have pinned the graph to the bundle and
+left the flag permanently inert. Built output confirms it: `bootGate-*.js` is a
+separate chunk loaded before `App-*.js`.
+
+> **NOT verified live.** The boot-gate has never run with `curriculum_source = 'db'`,
+> because that flag is still `bundle`. Its 35 checks cover the decision logic
+> (bundle default, validation, offline, hung request, late response) but the
+> end-to-end `db` boot still needs a published course first.
+
+### Two bugs the live smoke test caught
+
+Neither was reachable by unit tests, and both are now pinned:
+
+1. **`unit.save` 500'd on every call.** `curriculum_units.order` is a
+   `NOT NULL` column that the backfill writes alongside `doc`; the handler
+   omitted it, so a valid document failed with an opaque "could not be saved".
+   A schema fact the handler knew nothing about.
+
+2. **Every rollback was refused, blaming the wrong unit.** The handler passed
+   *all* units into the set check rather than only the **published** ones. `m16`
+   is a draft with no checkpoint, so every rollback failed on a defect in a draft
+   no learner can reach. The set a rollback must preserve is the *served* spine.
 
 ---
 
@@ -121,25 +162,27 @@ naive implementation gets wrong. Reuse it.
 
 ## 5. Remaining work, in dependency order
 
-### Task A — rollback action (do this next)
+### Task A — rollback action — **DONE**
 `curriculum_versions` receives a snapshot on **every** `unit.publish`, so the
 history a rollback needs already exists. Nothing reads it back.
 
-- Add `unit.rollback` to `KNOWN_ACTIONS` in `guards.ts`
-- Pure validation in `publish.ts`: a rollback must not restore a snapshot that
-  would produce an invalid spine
-- Handler in `index.ts`: read the newest `curriculum_versions` row for a unit,
-  write it back to `curriculum_units.doc`, re-validate, audit
-- Tests in `publish.check.ts`
-- UI in `CurriculumStorePanel.tsx` (versions are already rendered read-only)
+- [x] Add `unit.rollback` to `KNOWN_ACTIONS` in `guards.ts`
+- [x] Pure validation in `publish.ts` (`checkRollback`, `unwrapSnapshot`,
+      `snapshotUnitId`) — reuses `checkUnitShape`/`checkPublishSet`
+- [x] Handler in `index.ts`: validate against the published set, archive the live
+      doc, write back, audit success and refusal
+- [x] Tests in `publish.check.ts` (sections 11–13)
+- [x] UI in `CurriculumStorePanel.tsx` — versions are now actionable
+- [x] Live: published → broke a unit → rolled back → undid the rollback
 
-### Task B — content editor
-`CurriculumStorePanel` **publishes what the backfill imported; it does not
-author.** There is no per-field editing anywhere.
+### Task B — content editor — **DONE**
+`CurriculumStorePanel` **publishes what the backfill imported; it did not
+author.** There was no per-field editing anywhere.
 
-- Add a `unit.save` action: write a **draft** doc (`is_published` stays `false`)
-- Reuse `checkUnitShape` / `checkPublishSet` — do not reimplement
-- A textarea in the store panel, surfacing validation errors before publishing
+- [x] `unit.save` action: writes a **draft** doc, can never publish
+- [x] Reuses `checkUnitShape` — does not reimplement
+- [x] `UnitDocEditor` textarea surfacing validation errors before publishing
+- [x] Live-verified, including the two refusals (id mismatch, no checkpoint)
 
 ### Task C — run the backfill
 ```bash
@@ -282,7 +325,8 @@ foreach ($s in @('check:debugmode','check:qabridge','check:userfilters',
   'check:analytics','check:userdetail','check:reviewqueue','check:integrity',
   'check:csv','check:auditlog','check:search','check:adminaction',
   'check:adminactionclient','check:adminpublish','check:cors','check:currstore',
-  'check:currsource','check:currresolve','check:currapply','check:v4migration',
+  'check:currsource','check:currresolve','check:currapply','check:currboot',
+  'check:v4migration',
   'check:deployfilter','check:answers','check:chatbot')) {
   npm run $s
 }

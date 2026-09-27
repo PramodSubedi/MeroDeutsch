@@ -35,7 +35,7 @@ import {
   type RepairEdit,
   type TargetUser,
 } from './guards.ts';
-import { checkPublishSet, validateConfigWrite } from './publish.ts';
+import { checkPublishSet, checkRollback, checkUnitShape, validateConfigWrite } from './publish.ts';
 import { ALLOW_ORIGIN_SECRET, corsHeaders } from './cors.ts';
 
 // CORS is computed PER REQUEST because it echoes the caller's own Origin, so it
@@ -509,7 +509,247 @@ Deno.serve(async (req: Request) => {
     return json(200, { ok: true, action, published: unitIds, warnings: combined.warnings });
   }
 
-  // ── 7. vocab.clear_flag — registered, still unbuilt ─────────────────────
+  // ── 7. unit.rollback ────────────────────────────────────────────────────
+  //
+  // Restores a unit from `curriculum_versions`. The history has been written on
+  // every publish since Phase 3b, but until now nothing read it back, so a bad
+  // publish could only be undone by a redeploy.
+  //
+  // Order is not negotiable: VALIDATE the chosen snapshot against the CURRENT
+  // peers first, and only then archive the live doc. Archiving first would
+  // leave a rejected rollback in the history as though something had happened.
+  if (action === 'unit.rollback') {
+    const payload = body.payload as { unitId?: unknown; versionId?: unknown } | undefined;
+    const rollbackUnitId = payload?.unitId;
+    if (typeof rollbackUnitId !== 'string' || rollbackUnitId.length === 0) {
+      return json(400, { ok: false, code: 'target-required', message: 'Which unit should be rolled back?' });
+    }
+    if (typeof payload?.versionId !== 'string' || payload.versionId.length === 0) {
+      return json(400, { ok: false, code: 'target-required', message: 'Which saved version should be restored?' });
+    }
+
+    const { data: version, error: verErr } = await db
+      .from('curriculum_versions')
+      .select('id, unit_id, lesson_json')
+      .eq('id', payload.versionId)
+      .maybeSingle();
+
+    if (verErr) {
+      return json(500, { ok: false, code: 'read-failed', message: 'The saved version could not be read.' });
+    }
+    if (!version) {
+      await audit(db, {
+        adminId: actorId,
+        action: 'unit.rollback.rejected',
+        targetId: rollbackUnitId,
+        before: { versionId: payload.versionId, error: 'no such version' },
+        after: null,
+        userAgent,
+      });
+      return json(404, { ok: false, code: 'target-missing', message: 'That saved version no longer exists.' });
+    }
+
+    // The set that must still hold together is the PUBLISHED spine — the units a
+    // learner can actually reach. Unpublished drafts are not served, so a
+    // malformed one cannot break anything, and including them here was wrong in a
+    // way that looked correct: it made a rollback refuse for a defect in a draft
+    // nobody can see, and the error named the wrong unit entirely. A draft with
+    // no checkpoint (m16 today) would have blocked every rollback forever.
+    const { data: peers, error: peerErr } = await db.from('curriculum_units').select('id, doc, is_published');
+    if (peerErr) {
+      return json(500, { ok: false, code: 'read-failed', message: 'The unit store could not be read.' });
+    }
+
+    const restored = version.lesson_json;
+    // Swap the unit into the published set BEFORE validating, so the check sees
+    // the spine as it WILL be, not as it is.
+    const publishedPeers = (peers ?? []).filter((p) => p.is_published && p.id !== rollbackUnitId).map((p) => p.doc);
+    const targetIsPublished = (peers ?? []).find((p) => p.id === rollbackUnitId)?.is_published === true;
+
+    const rollbackCheck = checkRollback({
+      unitId: rollbackUnitId,
+      snapshot: restored,
+      // A draft being rolled back does not enter the served spine, so it is not
+      // part of the set — it is still shape-checked on its own inside
+      // `checkRollback`, which is what protects the moment it is published.
+      peers: targetIsPublished ? [...publishedPeers, restored] : publishedPeers,
+      expectedCount: targetIsPublished ? publishedPeers.length + 1 : undefined,
+    });
+
+    if (!rollbackCheck.ok) {
+      await audit(db, {
+        adminId: actorId,
+        action: 'unit.rollback.rejected',
+        targetId: rollbackUnitId,
+        before: { versionId: version.id, errors: rollbackCheck.errors.slice(0, 20) },
+        after: null,
+        userAgent,
+      });
+      return json(400, {
+        ok: false,
+        code: 'invalid-rollback',
+        message: 'That version cannot be restored. Nothing was changed.',
+        errors: rollbackCheck.errors,
+      });
+    }
+
+    // The live doc is archived BEFORE the write, so this rollback can itself be
+    // rolled back. Without it the operation is a one-way door.
+    const { data: live } = await db
+      .from('curriculum_units')
+      .select('doc, is_published')
+      .eq('id', rollbackUnitId)
+      .maybeSingle();
+
+    if (live) {
+      await db.from('curriculum_versions').insert({
+        unit_id: rollbackUnitId,
+        lesson_json: live.doc,
+        editor_id: actorId,
+      });
+    }
+
+    // A rollback restores CONTENT, never publication state. If the unit was an
+    // unpublished draft it stays one; publishing it here would be a side effect
+    // the operator never asked for.
+    const { error: writeErr } = await db
+      .from('curriculum_units')
+      .update({ doc: restored, updated_by: actorId, updated_at: new Date().toISOString() })
+      .eq('id', rollbackUnitId);
+
+    if (writeErr) {
+      await audit(db, {
+        adminId: actorId,
+        action: 'unit.rollback.failed',
+        targetId: rollbackUnitId,
+        before: { versionId: version.id, error: writeErr.message },
+        after: null,
+        userAgent,
+      });
+      return json(500, { ok: false, code: 'write-failed', message: 'The unit could not be restored.' });
+    }
+
+    await audit(db, {
+      adminId: actorId,
+      action: 'unit.rollback',
+      targetId: rollbackUnitId,
+      before: { versionId: version.id, doc: live?.doc ?? null },
+      after: { doc: restored, warnings: rollbackCheck.warnings, reason },
+      userAgent,
+    });
+    return json(200, { ok: true, action, unitId: rollbackUnitId, versionId: version.id, warnings: rollbackCheck.warnings });
+  }
+
+  // ── 8. unit.save — author a DRAFT ───────────────────────────────────────
+  //
+  // The store could publish what the backfill imported but could not author
+  // anything: there was no per-field editing anywhere in the control centre.
+  //
+  // It preserves `is_published` and NEVER sets it to true. That is the whole
+  // safety argument of the action: a save is a draft edit, and `unit.publish` is
+  // the only thing that can make content live. If a save could publish, "save my
+  // edit" would become a live write to every learner with no publish step in
+  // between — precisely the gap that made this panel safe to hand to an operator.
+  if (action === 'unit.save') {
+    const payload = body.payload as { unitId?: unknown; doc?: unknown } | undefined;
+    const saveUnitId = payload?.unitId;
+    if (typeof saveUnitId !== 'string' || !/^m\d{2}$/.test(saveUnitId)) {
+      return json(400, { ok: false, code: 'target-required', message: 'A unit id is required.' });
+    }
+    if (payload?.doc === undefined) {
+      return json(400, { ok: false, code: 'bad-json', message: 'No document was supplied.' });
+    }
+
+    // Same bar as publish: a draft that could never be published is not worth
+    // storing, and discovering that at publish time wastes the operator's work.
+    const shape = checkUnitShape(payload.doc);
+    if (!shape.ok) {
+      await audit(db, {
+        adminId: actorId,
+        action: 'unit.save.rejected',
+        targetId: saveUnitId,
+        before: { errors: shape.errors.slice(0, 20) },
+        after: null,
+        userAgent,
+      });
+      return json(400, {
+        ok: false,
+        code: 'invalid-unit',
+        message: 'The draft is not a valid unit. Nothing was saved.',
+        errors: shape.errors,
+        warnings: shape.warnings,
+      });
+    }
+
+    // The id inside the document must match the row it is being saved into, or
+    // the store quietly grows two units claiming the same identity.
+    if ((payload.doc as { id?: unknown }).id !== saveUnitId) {
+      return json(400, {
+        ok: false,
+        code: 'unit-id-mismatch',
+        message: `The document declares a different unit id than "${saveUnitId}". Nothing was saved.`,
+      });
+    }
+
+    const { data: existing } = await db
+      .from('curriculum_units')
+      .select('doc, is_published')
+      .eq('id', saveUnitId)
+      .maybeSingle();
+
+    // A new row is always a draft. An existing row keeps whatever publication
+    // state it had — a save is not a publish, in either direction.
+    //
+    // `order` is a NOT NULL COLUMN, and it is duplicated from the document on
+    // purpose: the backfill writes both, and the store's list ordering reads the
+    // column. Omitting it here made every first save fail with a 500 that said
+    // only "the draft could not be saved" — a schema fact the handler knew
+    // nothing about, and one no unit test could catch because the column lives
+    // in the database rather than in the payload.
+    const { error: writeErr } = await db
+      .from('curriculum_units')
+      .upsert(
+        {
+          id: saveUnitId,
+          order: (payload.doc as { order: number }).order,
+          doc: payload.doc,
+          is_published: existing?.is_published ?? false,
+          updated_by: actorId,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: 'id' },
+      );
+
+    if (writeErr) {
+      await audit(db, {
+        adminId: actorId,
+        action: 'unit.save.failed',
+        targetId: saveUnitId,
+        before: { error: writeErr.message },
+        after: null,
+        userAgent,
+      });
+      return json(500, { ok: false, code: 'write-failed', message: 'The draft could not be saved.' });
+    }
+
+    await audit(db, {
+      adminId: actorId,
+      action: 'unit.save',
+      targetId: saveUnitId,
+      before: { doc: existing?.doc ?? null },
+      after: { doc: payload.doc, warnings: shape.warnings, reason },
+      userAgent,
+    });
+    return json(200, {
+      ok: true,
+      action,
+      unitId: saveUnitId,
+      published: existing?.is_published ?? false,
+      warnings: shape.warnings,
+    });
+  }
+
+  // ── 9. vocab.clear_flag — registered, still unbuilt ─────────────────────
   if (action === 'vocab.clear_flag') {
     await audit(db, {
       adminId: actorId,

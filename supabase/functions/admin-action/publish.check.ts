@@ -7,7 +7,7 @@
  * to another. Every case below is a way the database could hold content that
  * breaks a lesson for a learner who cannot work around it.
  */
-import { CONFIG_KEYS, checkPublishSet, checkUnitShape, validateConfigWrite } from './publish';
+import { CONFIG_KEYS, checkPublishSet, checkRollback, checkUnitShape, snapshotUnitId, validateConfigWrite } from './publish';
 
 let checks = 0;
 const failures: string[] = [];
@@ -146,6 +146,95 @@ check('the string "false" is accepted', validateConfigWrite('maintenance_mode', 
 for (const bad of ['yes', 'on', 1, 0, null, 'TRUE', {}]) {
   check(`${JSON.stringify(bad)} is refused for a boolean key`, !validateConfigWrite('maintenance_mode', bad).ok, JSON.stringify(bad));
 }
+
+console.log('\n=== 11. ROLLBACK VALIDATION ===');
+// The hazard specific to rollback: a snapshot was valid against an OLDER
+// schema. Restoring it can produce a unit that is individually fine but sits in
+// a spine with a hole, or a snapshot belonging to a different unit entirely.
+const snap = (id: string, order: number) => ({
+  lesson_json: {
+    id,
+    order,
+    title: { en: 'T' },
+    nodes: [
+      { id: `${id}-a`, kind: 'learn' },
+      { id: `${id}-b`, kind: 'checkpoint' },
+    ],
+  },
+});
+const spine = Array.from({ length: 3 }, (_, i) => unit(`m${String(i + 1).padStart(2, '0')}`, i + 1));
+
+// Peers EXCLUDE the unit being rolled back, exactly as the handler builds them:
+// the restored doc is the replacement, not an addition. A test that left the old
+// copy in would prove nothing about gaps, because the set would stay contiguous.
+const without = (id: string) => spine.filter((u) => u.id !== id);
+const withRestored = (id: string, doc: unknown) => [...without(id), doc];
+
+check('a valid snapshot into a valid spine is allowed', checkRollback({ unitId: 'm02', snapshot: snap('m02', 2), peers: withRestored('m02', unit('m02', 2)) }).ok);
+check('a missing snapshot is refused', !checkRollback({ unitId: 'm02', snapshot: null, peers: without('m02') }).ok);
+check('the refusal names the missing version', checkRollback({ unitId: 'm02', snapshot: null, peers: without('m02') }).errors.some((e) => /no snapshot/i.test(e)));
+check('a snapshot for ANOTHER unit is refused', !checkRollback({ unitId: 'm02', snapshot: snap('m03', 3), peers: withRestored('m02', unit('m02', 2)) }).ok);
+check('the mismatch names both ids', checkRollback({ unitId: 'm02', snapshot: snap('m03', 3), peers: withRestored('m02', unit('m02', 2)) }).errors.some((e) => /m03/.test(e) && /m02/.test(e)));
+check('a structurally broken snapshot is refused', !checkRollback({ unitId: 'm02', snapshot: { lesson_json: { id: 'm02' } }, peers: withRestored('m02', unit('m02', 2)) }).ok);
+check('a snapshot with no checkpoint is refused', !checkRollback({ unitId: 'm02', snapshot: { lesson_json: { id: 'm02', order: 2, nodes: [{ id: 'x', kind: 'learn' }] } }, peers: withRestored('m02', unit('m02', 2)) }).ok);
+check('a bare doc is accepted as a snapshot', checkRollback({ unitId: 'm02', snapshot: unit('m02', 2), peers: withRestored('m02', unit('m02', 2)) }).ok);
+// The real hazard: an old snapshot whose `order` no longer matches its position.
+check('a snapshot that would leave a GAP is refused', !checkRollback({ unitId: 'm02', snapshot: snap('m02', 5), peers: withRestored('m02', snap('m02', 5).lesson_json) }).ok);
+check('the gap is explained', checkRollback({ unitId: 'm02', snapshot: snap('m02', 5), peers: withRestored('m02', snap('m02', 5).lesson_json) }).errors.some((e) => /contiguous|missing|order/i.test(e)));
+check('a bad unit id is refused', !checkRollback({ unitId: 'unit-two', snapshot: snap('m02', 2), peers: spine }).ok);
+check('a non-string unit id is refused', !checkRollback({ unitId: 2, snapshot: snap('m02', 2), peers: spine }).ok);
+check('a snapshot with no readable id is refused', !checkRollback({ unitId: 'm02', snapshot: { lesson_json: 'nope' }, peers: withRestored('m02', unit('m02', 2)) }).ok);
+check('a valid rollback reports no errors', checkRollback({ unitId: 'm02', snapshot: snap('m02', 2), peers: withRestored('m02', unit('m02', 2)) }).errors.length === 0);
+check('a short store warns rather than lies', checkRollback({ unitId: 'm02', snapshot: snap('m02', 2), peers: withRestored('m02', unit('m02', 2)), expectedCount: 15 }).ok);
+check('and the truncation is surfaced', checkRollback({ unitId: 'm02', snapshot: snap('m02', 2), peers: withRestored('m02', unit('m02', 2)), expectedCount: 15 }).warnings.some((w) => /3 of 15/.test(w)));
+
+console.log('\n=== 12. SNAPSHOT UNIT ID ===');
+check('a snapshot row yields its id', snapshotUnitId(snap('m07', 7)) === 'm07');
+check('a bare doc is also readable', snapshotUnitId({ id: 'm07', order: 7 }) === 'm07');
+check('a string snapshot yields null', snapshotUnitId('nope') === null);
+check('an array yields null', snapshotUnitId([]) === null);
+check('a snapshot with no id yields null', snapshotUnitId({ lesson_json: { order: 1 } }) === null);
+
+console.log('\n=== 13. AN UNRELATED DRAFT MUST NOT BLOCK A ROLLBACK ===');
+// The live bug. The handler passed EVERY unit in the table into the set check,
+// not just the published ones. Unit m16 is a draft with no checkpoint, so every
+// rollback refused — and the error named m16's defect while the operator was
+// trying to fix m01. Unserved drafts cannot break a served spine, so the set the
+// rollback validates must contain only published units.
+const brokenDraft = { id: 'm09', order: 9, nodes: [{ id: 'm09-a', kind: 'learn' }] };
+check(
+  'a published rollback is allowed despite a broken draft elsewhere',
+  checkRollback({ unitId: 'm01', snapshot: snap('m01', 1), peers: [unit('m01', 1)] }).ok,
+);
+// Reproduced through the handler's own construction, so the test fails if anyone
+// widens the peer set back to the whole table.
+const handlerPeers = (publishedIds: string[], drafts: unknown[]) => [
+  ...publishedIds.map((id) => unit(id, Number(id.slice(1)))),
+  ...drafts,
+];
+check(
+  'the published-only peer set ignores draft defects',
+  checkRollback({ unitId: 'm01', snapshot: snap('m01', 1), peers: handlerPeers(['m01'], []) }).ok,
+);
+check(
+  'and the whole-table set would have refused it (the regression, pinned)',
+  !checkRollback({ unitId: 'm01', snapshot: snap('m01', 1), peers: handlerPeers(['m01'], [brokenDraft]) }).ok,
+);
+// A defect in a PUBLISHED peer is still a real blocker and must not be lost.
+check(
+  'a defect in a published peer is still refused',
+  !checkRollback({ unitId: 'm01', snapshot: snap('m01', 1), peers: [unit('m01', 1), brokenDraft] }).ok,
+);
+// Rolling back a DRAFT does not join the served spine, so the peer set is the
+// published units only and the restored doc is still shape-checked alone.
+check(
+  'a draft rollback does not need itself in the peer set',
+  checkRollback({ unitId: 'm09', snapshot: { id: 'm09', order: 9, nodes: [{ id: 'x', kind: 'learn' }, { id: 'y', kind: 'checkpoint' }] }, peers: [unit('m01', 1)] }).ok,
+);
+check(
+  'but a structurally broken draft is still refused on its own',
+  !checkRollback({ unitId: 'm09', snapshot: { id: 'm09', order: 9, nodes: [{ id: 'x', kind: 'learn' }] }, peers: [unit('m01', 1)] }).ok,
+);
 
 console.log(`\n${failures.length === 0 ? '[summary] ALL' : '[summary]'} ${checks} CHECKS ${failures.length === 0 ? 'PASSED' : `FAILED (${failures.length})`}`);
 if (failures.length > 0) {

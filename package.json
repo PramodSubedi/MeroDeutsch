@@ -26,6 +26,7 @@
     "check:currsource": "tsx src/data/curriculum/source.check.ts",
     "check:currresolve": "tsx src/data/curriculum/resolveActive.check.ts",
     "check:currapply": "tsx src/data/curriculum/sourceApply.check.ts",
+    "check:currboot": "tsx src/data/curriculum/bootGate.check.ts",
     "check:v4migration": "tsx src/data/a1Path.v4migration.check.ts",
     "check:deployfilter": "tsx scripts/ci/deployFilter.check.ts",
     "check:routes": "tsx scripts/ci/routes.check.ts",

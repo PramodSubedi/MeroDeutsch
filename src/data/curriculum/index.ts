@@ -17,6 +17,7 @@
  *     means renumbering the gate routes after it.
  */
 import clustersJson from './clusters.json';
+import { getDbSeedAsFile } from './dbSeed';
 import { UNIT_FILES } from './units.generated';
 import {
   CURRICULUM_SCHEMA_VERSION,
@@ -36,12 +37,33 @@ import type {
 /** JSON modules are structurally typed as plain objects, hence the cast. */
 const RAW_CLUSTERS = clustersJson as unknown as Cluster[];
 
+/**
+ * The authored campaign as one object.
+ *
+ * ── WHY A SEED IS CONSULTED HERE ─────────────────────────────────────────────
+ * This is the earliest point in the module graph that needs the campaign, and it
+ * runs exactly once. The boot gate in `main.tsx` has already resolved the
+ * `curriculum_source` flag, validated any fetched content with the build's own
+ * `validateCurriculum`, and planted it in `dbSeed` BEFORE this module is first
+ * imported — so by the time this initialiser runs there is a valid document to
+ * use if and only if the flag said `db`.
+ *
+ * A seed is only ever planted by a caller that validated it, and this reads the
+ * result unconditionally, so the branch is "did a validated document arrive
+ * before the graph was built" — not a second, weaker validation path. The
+ * fallback is the bundle, which is what `bundle` mode, a failed fetch, and an
+ * offline boot all resolve to.
+ */
+const SEED = getDbSeedAsFile();
+
 /** The authored campaign as one object. */
-export const CURRICULUM_FILE: CurriculumFile = {
-  schemaVersion: CURRICULUM_SCHEMA_VERSION,
-  clusters: RAW_CLUSTERS,
-  units: [...UNIT_FILES],
-};
+export const CURRICULUM_FILE: CurriculumFile =
+  SEED ??
+  ({
+    schemaVersion: CURRICULUM_SCHEMA_VERSION,
+    clusters: RAW_CLUSTERS,
+    units: [...UNIT_FILES],
+  } satisfies CurriculumFile);
 
 export interface ResolvedPath {
   units: A1Unit[];
