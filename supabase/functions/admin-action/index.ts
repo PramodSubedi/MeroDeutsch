@@ -36,18 +36,15 @@ import {
   type TargetUser,
 } from './guards.ts';
 import { checkPublishSet, validateConfigWrite } from './publish.ts';
+import { ALLOW_ORIGIN_SECRET, corsHeaders } from './cors.ts';
 
-const ALLOW_ORIGIN = Deno.env.get('ADMIN_ALLOWED_ORIGIN') ?? '';
-
-const CORS = {
-  'Access-Control-Allow-Origin': ALLOW_ORIGIN,
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-};
-
-function json(status: number, body: unknown): Response {
-  return new Response(JSON.stringify(body), { status, headers: { ...CORS, 'Content-Type': 'application/json' } });
-}
+// CORS is computed PER REQUEST because it echoes the caller's own Origin, so it
+// can no longer be a module constant evaluated at import. `json` moves inside
+// the handler as a closure over it, which is why all 22 existing `json(...)`
+// call sites below are unchanged. The rules live in cors.ts, pure and tested —
+// the original inline version read an unset secret into a blank header and no
+// test could see it, which is exactly how every privileged action shipped
+// unreachable from a browser.
 
 /** Service-role client. Bypasses RLS — only for the privileged writes below. */
 function admin(): SupabaseClient {
@@ -214,6 +211,11 @@ async function applyRepair(db: SupabaseClient, edits: RepairEdit[], actorId: str
 }
 
 Deno.serve(async (req: Request) => {
+  // Per-request, because the grant depends on who is asking.
+  const CORS = corsHeaders(req.headers.get('Origin'), Deno.env.get(ALLOW_ORIGIN_SECRET));
+  const json = (status: number, body: unknown): Response =>
+    new Response(JSON.stringify(body), { status, headers: { ...CORS, 'Content-Type': 'application/json' } });
+
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS });
   if (req.method !== 'POST') return json(405, { ok: false, code: 'method-not-allowed' });
 

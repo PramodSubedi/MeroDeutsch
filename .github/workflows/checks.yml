@@ -1,0 +1,135 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# CI — every suite, on every push.
+#
+# WHY THIS EXISTS AT ALL
+# ----------------------
+# Until this file, all 1105 checks were MANUAL: §8 of ADMIN_PHASES_HANDOFF.md
+# told a human to paste a PowerShell loop. Nothing enforced it, and the failure
+# mode is silent by nature — `src/data/curriculum/sourceApply.check.ts` had 18
+# passing checks and no `package.json` script, so it never ran, ever. Nobody
+# noticed for a full session because an unwired suite is indistinguishable from
+# a passing one. CI makes that impossible to repeat.
+#
+# WHAT IS DELIBERATELY NOT HERE
+# -----------------------------
+#   · No secrets, no env block. `npm run build` was verified to succeed with
+#     VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY / VITE_APP_URL / VITE_ADMIN_URL
+#     all unset, and every suite is pure. A CI that needs a Supabase key to run
+#     unit tests is a CI that stops running the day the key rotates.
+#   · `curriculum:backfill` is NOT run. It is a dry-run review aid that prints
+#     what WOULD be written; it touches the live database. Never in CI.
+#   · No `git push`-triggered deploy. This repository deploys via Vercel's own
+#     git integration; adding a second deploy path here would be a way to
+#     double-deploy, not a way to be safe.
+#
+# THE MAINTENANCE RULE (this is the part that matters)
+# ----------------------------------------------------
+# If you add a `*.check.ts`, you MUST add an `npm run check:<name>` script AND a
+# step below. The cheapest CI failure you can ever have is the one that catches
+# a suite nobody wired up.
+# ─────────────────────────────────────────────────────────────────────────────
+name: checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# A new push supersedes an in-flight run on the same ref. Without this, a burst
+# of pushes queues every commit and the newest — the only one that matters —
+# finishes last, behind work already known to be stale.
+concurrency:
+  group: checks-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: checks + typecheck + lint + validate
+    runs-on: ubuntu-latest
+    # No timeout-minutes: these are fast and CPU-bound. A hang should surface as
+    # a hang, not be masked by a limit that hides which suite stalled.
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          # Matches the local toolchain (verified on v24.19.0 / npm 11.17.0).
+          # `npm ci` requires this to agree with package-lock.json, or the lock
+          # is silently re-resolved and CI stops testing what ships.
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Install
+        run: npm ci
+
+      # ── The 20 suites ────────────────────────────────────────────────────
+      # One step per suite, not a loop, so a failure names itself in the CI
+      # summary instead of hiding inside a wall of output.
+      - name: check:debugmode
+        run: npm run check:debugmode
+      - name: check:qabridge
+        run: npm run check:qabridge
+      - name: check:userfilters
+        run: npm run check:userfilters
+      - name: check:answers
+        run: npm run check:answers
+      - name: check:chatbot
+        run: npm run check:chatbot
+      - name: check:analytics
+        run: npm run check:analytics
+      - name: check:userdetail
+        run: npm run check:userdetail
+      - name: check:reviewqueue
+        run: npm run check:reviewqueue
+      - name: check:integrity
+        run: npm run check:integrity
+      - name: check:csv
+        run: npm run check:csv
+      - name: check:auditlog
+        run: npm run check:auditlog
+      - name: check:search
+        run: npm run check:search
+      - name: check:adminaction
+        run: npm run check:adminaction
+      - name: check:adminactionclient
+        run: npm run check:adminactionclient
+      - name: check:adminpublish
+        run: npm run check:adminpublish
+      # Regression guard for the CORS outage: an unset ADMIN_ALLOWED_ORIGIN
+      # shipped a blank Access-Control-Allow-Origin and made every privileged
+      # action unreachable, while every other suite stayed green.
+      - name: check:cors
+        run: npm run check:cors
+      - name: check:currstore
+        run: npm run check:currstore
+      - name: check:currsource
+        run: npm run check:currsource
+      - name: check:currresolve
+        run: npm run check:currresolve
+      # The suite that was orphaned until this file existed. Kept adjacent to
+      # the other curriculum-source suites so the group stays complete at a
+      # glance.
+      - name: check:currapply
+        run: npm run check:currapply
+      - name: check:deployfilter
+        run: npm run check:deployfilter
+
+      # ── Gates ────────────────────────────────────────────────────────────
+      - name: typecheck
+        run: npx tsc -b --force
+
+      # `lint` reports 42 warnings today and 0 errors. oxlint exits non-zero on
+      # errors only, so this gate is currently a no-op that will start biting the
+      # day an error appears. That is the intended behaviour.
+      - name: lint
+        run: npm run lint
+
+      - name: curriculum:validate
+        run: npm run curriculum:validate
+
+      - name: build
+        run: npm run build

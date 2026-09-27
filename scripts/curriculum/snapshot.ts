@@ -102,7 +102,16 @@ export function stableStringify(value: unknown): string {
     }
     return out;
   };
-  return JSON.stringify(walk(value));
+  // `JSON.stringify(undefined)` is `undefined`, not a string — so this function
+  // can hand back `undefined` despite its declared `string` return. `diff()`
+  // feeds it `undefined` whenever a key exists in one snapshot but not the
+  // other, and consumers dereference `.length` and crash.
+  //
+  // The fallback only applies to values that previously CRASHED, so the
+  // serialised form of every real value — and therefore the committed
+  // baseline.json — is byte-for-byte unchanged. Do NOT wrap the payload here:
+  // that would change the output shape and silently invalidate the baseline.
+  return JSON.stringify(walk(value)) ?? 'undefined';
 }
 
 /** Routes used to exercise `getNodeByRoute` in a fixed, meaningful order. */
