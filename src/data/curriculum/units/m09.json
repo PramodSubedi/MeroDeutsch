@@ -17,9 +17,9 @@
     "de": "Trennbare Verbpräfixe abtrennen, ans Satzende setzen, Tagesabläufe beschreiben."
   },
   "nodes": [
-    { "id": "m09-learn", "type": "learn", "label": { "en": "Separable Verbs", "de": "Trennbare Verben" }, "to": "/sentence-builder?focus=separable", "xp": 10 },
-    { "id": "m09-practice", "type": "practice", "label": { "en": "Prefix Drill", "de": "Präfix-Drill" }, "to": "/grammar?tab=prefix", "xp": 20 },
-    { "id": "m09-checkpoint", "type": "checkpoint", "label": { "en": "Module 9 Checkpoint", "de": "Modul 9 Prüfung" }, "to": "/checkpoint/8", "xp": 50 }
+    { "id": "m09-learn", "kind": "learn", "label": { "en": "Separable Verbs", "de": "Trennbare Verben" }, "to": "/sentence-builder?focus=separable", "xp": 10 },
+    { "id": "m09-practice", "kind": "practice", "label": { "en": "Prefix Drill", "de": "Präfix-Drill" }, "to": "/grammar?tab=prefix", "xp": 20 },
+    { "id": "m09-checkpoint", "kind": "checkpoint", "label": { "en": "Module 9 Checkpoint", "de": "Modul 9 Prüfung" } }
   ],
   "checkpoint": {
     "moduleType": "a1-checkpoint",

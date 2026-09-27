@@ -17,15 +17,14 @@
     "de": "Im Restaurant höflich Essen/Trinken bestellen, Akkusativ bei Essenswörtern anwenden."
   },
   "nodes": [
-    { "id": "m10-learn", "type": "learn", "label": { "en": "Café Ordering", "de": "Café-Bestellung" }, "to": "/roleplay?scene=cafe", "xp": 10 },
-    { "id": "m10-practice", "type": "practice", "label": { "en": "Restaurant Roleplay", "de": "Restaurant-Rollenspiel" }, "to": "/roleplay?scene=restaurant", "xp": 20 },
-    { "id": "m10-checkpoint", "type": "checkpoint", "label": { "en": "Module 10 Checkpoint", "de": "Modul 10 Prüfung" }, "to": "/checkpoint/9", "xp": 50 }
+    { "id": "m10-learn", "kind": "learn", "label": { "en": "Café Ordering", "de": "Café-Bestellung" }, "to": "/roleplay?scene=cafe", "xp": 10 },
+    { "id": "m10-practice", "kind": "practice", "label": { "en": "Restaurant Roleplay", "de": "Restaurant-Rollenspiel" }, "to": "/roleplay?scene=restaurant", "xp": 20 },
+    { "id": "m10-checkpoint", "kind": "checkpoint", "label": { "en": "Module 10 Checkpoint", "de": "Modul 10 Prüfung" } }
   ],
   "checkpoint": {
     "moduleType": "a1-checkpoint",
     "specs": [
-      { "type": "vocab-translation", "count": 8 },
-      { "type": "listening-gap", "count": 4 }
+      { "type": "vocab-translation", "count": 12 }
     ]
   },
   "pedagogy": {

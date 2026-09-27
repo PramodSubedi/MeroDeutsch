@@ -17,9 +17,9 @@
     "de": "Zeit, Daten, Termine ausdrücken und deutsche Umgangsuhrzeit beherrschen (halb neun = 8:30)."
   },
   "nodes": [
-    { "id": "m11-learn", "type": "learn", "label": { "en": "Calendar & Time", "de": "Kalender & Zeit" }, "to": "/calendar", "xp": 10 },
-    { "id": "m11-practice", "type": "practice", "label": { "en": "Calendar Blitz", "de": "Kalender-Blitz" }, "to": "/rapid-fire?mode=calendar-translation", "xp": 20 },
-    { "id": "m11-checkpoint", "type": "checkpoint", "label": { "en": "Module 11 Checkpoint", "de": "Modul 11 Prüfung" }, "to": "/checkpoint/10", "xp": 50 }
+    { "id": "m11-learn", "kind": "learn", "label": { "en": "Calendar & Time", "de": "Kalender & Zeit" }, "to": "/calendar", "xp": 10 },
+    { "id": "m11-practice", "kind": "practice", "label": { "en": "Calendar Blitz", "de": "Kalender-Blitz" }, "to": "/rapid-fire?mode=calendar-translation", "xp": 20 },
+    { "id": "m11-checkpoint", "kind": "checkpoint", "label": { "en": "Module 11 Checkpoint", "de": "Modul 11 Prüfung" } }
   ],
   "checkpoint": {
     "moduleType": "a1-checkpoint",
