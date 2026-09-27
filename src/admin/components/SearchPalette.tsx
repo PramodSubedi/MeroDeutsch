@@ -28,6 +28,8 @@ const GROUP_LABEL: Record<SearchGroup, string> = {
   users: 'Users',
   vocabulary: 'Vocabulary',
   audit: 'Audit',
+  content: 'Content pool',
+  unit: 'Curriculum unit',
 };
 
 export function SearchPalette({ index }: { index: Parameters<typeof searchAll>[0] }) {

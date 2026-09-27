@@ -42,6 +42,7 @@ import { useAdminAuth } from './hooks/useAdminAuth';
 import { ModeSwitcher } from './components/ModeSwitcher';
 import { SearchPalette } from './components/SearchPalette';
 import { fetchAuditLog } from './data/auditLog';
+import { fetchContentItems, fetchUnitDocs } from './data/contentItems';
 import { fetchUsers } from './data/users';
 import { fetchVocabulary } from './data/vocabulary';
 import type { SearchIndexInput } from './data/search';
@@ -105,12 +106,20 @@ export function AdminLayout() {
   const [searchIndex, setSearchIndex] = useState<SearchIndexInput>({});
 
   const refreshIndex = async () => {
-    const [users, vocab, audit] = await Promise.all([
+    const [users, vocab, audit, content, units] = await Promise.all([
       fetchUsers().catch(() => ({ rows: [] })),
       fetchVocabulary().catch(() => ({ rows: [] })),
       fetchAuditLog(200).catch(() => ({ entries: [] })),
+      fetchContentItems().catch(() => ({ rows: [] })),
+      fetchUnitDocs().catch(() => ({ docs: [] })),
     ]);
-    setSearchIndex({ users: users.rows, vocabulary: vocab.rows, audit: audit.entries });
+    setSearchIndex({
+      users: users.rows,
+      vocabulary: vocab.rows,
+      audit: audit.entries,
+      content: content.rows,
+      unitDocs: units.docs,
+    });
   };
 
   useEffect(() => {

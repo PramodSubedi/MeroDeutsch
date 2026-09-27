@@ -17,8 +17,9 @@
 import type { AdminUserRow } from './users';
 import type { VocabRow } from './vocabulary';
 import type { AuditEntry } from './auditLog';
+import { unitDocText } from './contentItems';
 
-export type SearchGroup = 'navigation' | 'users' | 'vocabulary' | 'audit';
+export type SearchGroup = 'navigation' | 'users' | 'vocabulary' | 'audit' | 'content' | 'unit';
 
 export interface SearchHit {
   id: string;
@@ -35,6 +36,10 @@ export interface SearchIndexInput {
   users?: AdminUserRow[];
   vocabulary?: VocabRow[];
   audit?: AuditEntry[];
+  /** `content_items` rows — the curriculum practice pools. */
+  content?: { id: string; contentType: string; label: string }[];
+  /** `curriculum_units` documents, so unit CONTENT is searchable, not just ids. */
+  unitDocs?: { id: string; doc: unknown }[];
 }
 
 export interface SearchOptions {
@@ -127,6 +132,41 @@ export function searchAll(input: SearchIndexInput, query: string, options: Searc
         title: a.action,
         subtitle: a.targetId ?? '',
         to: '/audit-log',
+        score: s - 10,
+      });
+    }
+  }
+
+  // `content_items` — the curriculum practice pools. Scored BELOW both vocabulary
+  // and unit: a pool row is the least specific thing that can match.
+  for (const c of input.content ?? []) {
+    const s = scoreMatch(q, c.label, c.contentType, c.id);
+    if (s > 0) {
+      hits.push({
+        id: `content-${c.contentType}-${c.id}`,
+        group: 'content',
+        title: c.label,
+        subtitle: c.contentType,
+        to: '/curriculum',
+        score: s - 30,
+      });
+    }
+  }
+
+  // `curriculum_units` — searching the DOCUMENT, not just the id, so "Restaurant"
+  // finds unit m10 without the admin having to know it is m10.
+  for (const u of input.unitDocs ?? []) {
+    const text = unitDocText(u.doc);
+    const s = scoreMatch(q, u.id, text);
+    if (s > 0) {
+      hits.push({
+        id: `unit-${u.id}`,
+        group: 'unit',
+        title: `Unit ${u.id}`,
+        subtitle: text.length > 90 ? `${text.slice(0, 90)}…` : text,
+        to: '/curriculum',
+        // Above content, below vocabulary. A unit match names a chapter of the
+        // course, which is a more useful answer than one pool row.
         score: s - 10,
       });
     }

@@ -106,6 +106,51 @@ check('whitespace is treated as empty', searchAll(index, '   ').every((h) => h.g
 check('query case is ignored', searchAll(index, 'HAUS').some((h) => h.group === 'vocabulary'));
 check('a query with no match returns only navigation', searchAll(index, 'zzzzz').every((h) => h.group === 'navigation'));
 
+console.log('\n=== 10. CONTENT ITEMS ARE SEARCHABLE ===');
+// The plan called for content_items coverage; it was MISSING and is added here.
+const withContent = {
+  content: [
+    { id: 'c1', contentType: 'vocab-item', label: 'der Apfel' },
+    { id: 'c2', contentType: 'grammar-drill', label: 'Konjugations-Spiel' },
+  ],
+} as never;
+check('a content label matches', searchAll(withContent, 'apfel').some((h) => h.group === 'content'), JSON.stringify(searchAll(withContent, 'apfel').map((h) => h.group)));
+check('a content TYPE matches', searchAll(withContent, 'grammar').some((h) => h.group === 'content'));
+check('a content hit shows its type', searchAll(withContent, 'apfel').find((h) => h.group === 'content')?.subtitle === 'vocab-item');
+check('a content hit navigates to curriculum', searchAll(withContent, 'apfel').find((h) => h.group === 'content')?.to === '/curriculum');
+check('content is searched when the other groups are empty', searchAll(withContent, 'apfel').length > 0);
+check('an empty content index is harmless', searchAll({ content: [] } as never, 'apfel').every((h) => h.group !== 'content'));
+
+console.log('\n=== 11. UNIT DOCUMENTS ARE SEARCHED BY CONTENT ===');
+// Not just by id: "Restaurant" should find m10 without the admin knowing that.
+const withUnits = {
+  unitDocs: [
+    { id: 'm10', doc: { title: { en: 'Restaurant, Food & Ordering' }, goals: ['order a coffee'] } },
+  ],
+} as never;
+check('a unit title matches', searchAll(withUnits, 'restaurant').some((h) => h.group === 'unit'), JSON.stringify(searchAll(withUnits, 'restaurant').map((h) => h.group)));
+check('a nested goal matches', searchAll(withUnits, 'coffee').some((h) => h.group === 'unit'));
+check('a unit id still matches', searchAll(withUnits, 'm10').some((h) => h.group === 'unit'));
+check('a unit hit is labelled with its id', searchAll(withUnits, 'm10').find((h) => h.group === 'unit')?.title === 'Unit m10');
+check('a unit hit navigates to curriculum', searchAll(withUnits, 'coffee').find((h) => h.group === 'unit')?.to === '/curriculum');
+check('a unit subtitle is truncated', (searchAll(withUnits, 'm10').find((h) => h.group === 'unit')?.subtitle?.length ?? 999) <= 91);
+check('a non-matching unit is not returned', searchAll(withUnits, 'zzzz').every((h) => h.group !== 'unit'));
+
+console.log('\n=== 12. RANKING BETWEEN THE NEW GROUPS ===');
+// A unit match is more specific than a content-pool match, and a vocabulary
+// match beats both, so a common word does not get buried by pool rows.
+const allGroups = {
+  vocabulary: [{ id: 'v1', word: 'Auto', translationEn: 'car' }],
+  content: [{ id: 'c1', contentType: 'vocab-item', label: 'Auto' }],
+  unitDocs: [{ id: 'm01', doc: { title: { en: 'Auto und Verkehr' } } }],
+} as never;
+const ranked = searchAll(allGroups, 'auto');
+check('all three groups can match at once', new Set(ranked.map((h) => h.group)).size >= 3, JSON.stringify(ranked.map((h) => h.group)));
+check('vocabulary outranks unit outranks content', (() => {
+  const g = ranked.map((h) => h.group);
+  return g.indexOf('vocabulary') < g.indexOf('unit') && g.indexOf('unit') < g.indexOf('content');
+})(), JSON.stringify(ranked.map((h) => h.group)));
+
 console.log(`\n${failures.length === 0 ? '[summary] ALL' : '[summary]'} ${checks} CHECKS ${failures.length === 0 ? 'PASSED' : `FAILED (${failures.length})`}`);
 if (failures.length > 0) {
   for (const f of failures) console.log(`  - ${f}`);
