@@ -18,6 +18,7 @@
     "check:csv": "tsx src/admin/data/csv.check.ts",
     "check:auditlog": "tsx src/admin/data/auditLog.check.ts",
     "check:search": "tsx src/admin/data/search.check.ts",
+    "check:adminactionclient": "tsx src/admin/data/adminActions.check.ts",
     "check:adminaction": "tsx supabase/functions/admin-action/guards.check.ts",
     "check:currsource": "tsx src/data/curriculum/source.check.ts",
     "check:currresolve": "tsx src/data/curriculum/resolveActive.check.ts",

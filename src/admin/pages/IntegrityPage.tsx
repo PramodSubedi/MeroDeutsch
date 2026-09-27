@@ -14,6 +14,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { AlertTriangle, CheckCircle2, Info, RefreshCw, TriangleAlert } from 'lucide-react';
 import { theme } from '../../config/theme';
+import { VocabularyRepair } from '../components/VocabularyRepair';
 import { KpiCard } from '../components/KpiCard';
 import { fetchIntegrity, type Finding, type Severity } from '../data/integrity';
 
@@ -193,6 +194,13 @@ export function IntegrityPage() {
           </ul>
         </aside>
       )}
+
+      <VocabularyRepair
+        onDone={() => {
+          void load();
+        }}
+        disabled={loading}
+      />
 
       {loading && findings.length === 0 ? (
         <p className="py-10 text-center text-body text-ink-500 dark:text-ink-400">Running checks…</p>

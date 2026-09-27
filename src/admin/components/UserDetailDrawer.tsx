@@ -22,6 +22,7 @@ import { useEffect, useState } from 'react';
 import { AlertTriangle, X } from 'lucide-react';
 import { theme } from '../../config/theme';
 import { KpiCard } from './KpiCard';
+import { PrivilegedControls } from './PrivilegedControls';
 import {
   fetchUserDetail,
   type DueState,
@@ -311,6 +312,10 @@ export function UserDetailDrawer({ userId, fallbackName, onClose }: UserDetailDr
   const [detail, setDetail] = useState<UserDetail | null>(null);
   const [missing, setMissing] = useState(false);
   const [loading, setLoading] = useState(false);
+  // Bumped after a privileged action so the effect below re-runs. Reloading is
+  // the point: the displayed role and ban state must come from the server, not
+  // from the value the client just asked for.
+  const [reloadToken, setReloadToken] = useState(0);
 
   useEffect(() => {
     if (!userId) {
@@ -333,7 +338,7 @@ export function UserDetailDrawer({ userId, fallbackName, onClose }: UserDetailDr
     return () => {
       cancelled = true;
     };
-  }, [userId]);
+  }, [userId, reloadToken]);
 
   // Escape closes, and the page behind must not scroll while the drawer is up.
   useEffect(() => {
@@ -391,7 +396,20 @@ export function UserDetailDrawer({ userId, fallbackName, onClose }: UserDetailDr
               may not permit it.
             </p>
           ) : detail ? (
-            <Body detail={detail} />
+            <div className="space-y-4">
+              {/* The ONLY write surface in the read-only drawer. After a
+                  successful action it calls `reload`, so the displayed role and
+                  ban state come from the server rather than from the value we
+                  asked for. */}
+              <PrivilegedControls
+                userId={detail.profile.id}
+                role={detail.profile.role}
+                banned={Boolean(detail.profile.banned_at)}
+                isAdmin={detail.profile.role === 'admin'}
+                onDone={() => setReloadToken((n) => n + 1)}
+              />
+              <Body detail={detail} />
+            </div>
           ) : null}
         </div>
       </div>
