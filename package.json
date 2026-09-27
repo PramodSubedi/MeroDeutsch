@@ -45,6 +45,7 @@
     "curriculum:verify": "tsx scripts/curriculum/verify.ts",
     "curriculum:barrel": "tsx scripts/curriculum/export.ts --barrel-only",
     "curriculum:baseline": "tsx scripts/curriculum/rebuild-baseline.ts",
+    "curriculum:backfill": "tsx scripts/curriculum/backfillUnits.ts",
     "check:chatbot": "tsx src/lib/chatbot.check.ts"
   },
   "dependencies": {
