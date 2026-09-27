@@ -508,12 +508,24 @@ export function validateCurriculum(file: CurriculumFile): CurriculumIssue[] {
 
   units.forEach((unit, position) => {
     const at = `unit ${unit.id}`;
+    // A unit with no `id` must be REPORTED, not dereferenced. The checks below
+    // read `unit.id` and `unit.order`, so an early exit is the only way to keep
+    // a malformed document from throwing instead of returning issues.
+    //
+    // This matters beyond the build: Phase 3b runs untrusted database content
+    // through this same validator at runtime, where a throw would surface as a
+    // broken lesson rather than a validation error.
+    if (typeof unit.id !== 'string' || unit.id.length === 0) {
+      err(`unit ${position}`, "id must be a non-empty string looking like 'm04'");
+      return;
+    }
     if (!/^m\d{2}$/.test(unit.id)) err(at, "id must look like 'm04'");
     if (unitIds.has(unit.id)) err(at, 'duplicate unit id');
     unitIds.add(unit.id);
 
-    if (!Number.isInteger(unit.order) || unit.order < 1) {
+    if (typeof unit.order !== 'number' || !Number.isInteger(unit.order) || unit.order < 1) {
       err(at, 'order must be an integer >= 1');
+      return;
     }
     if (orders.has(unit.order)) err(at, `duplicate order ${unit.order}`);
     orders.add(unit.order);
