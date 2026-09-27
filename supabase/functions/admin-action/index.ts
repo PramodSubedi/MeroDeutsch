@@ -35,6 +35,7 @@ import {
   type RepairEdit,
   type TargetUser,
 } from './guards.ts';
+import { checkPublishSet, validateConfigWrite } from './publish.ts';
 
 const ALLOW_ORIGIN = Deno.env.get('ADMIN_ALLOWED_ORIGIN') ?? '';
 
@@ -350,16 +351,152 @@ Deno.serve(async (req: Request) => {
     });
   }
 
-  // ── 5. Actions that are registered but NOT yet implemented ────────────────
+  // ── 5. config.set ───────────────────────────────────────────────────────
   //
-  // `config.set` and `unit.publish` are in the registry so their guards and
-  // audit codes are fixed, but no write is implemented for them yet. They used
-  // to fall through to the `ok: true` return below, reporting success for
-  // nothing. An explicit refusal is the honest answer until they are built.
-  if (action === 'config.set' || action === 'unit.publish' || action === 'vocab.clear_flag') {
+  // `app_config` is read by the LEARNER APP on boot, so the writable key set is
+  // closed: an arbitrary key is a channel for enabling something nobody
+  // reviewed. Every value is checked against a spec before it is written.
+  if (action === 'config.set') {
+    const cfg = body.payload as { key?: unknown; value?: unknown } | undefined;
+    const check = validateConfigWrite(cfg?.key, cfg?.value);
+
+    if (!check.ok) {
+      await audit(db, {
+        adminId: actorId,
+        action: 'config.set.rejected',
+        targetId: typeof cfg?.key === 'string' ? cfg.key : null,
+        before: { reason: check.message },
+        after: null,
+        userAgent,
+      });
+      return json(400, { ok: false, code: 'invalid-config', message: check.message });
+    }
+
+    const key = cfg!.key as string;
+    // Normalise before storing, so `flagReader.ts` always unwraps to the same
+    // shape `resolveSource` expects.
+    const value: unknown =
+      typeof cfg!.value === 'boolean' ? cfg!.value : String(cfg!.value).trim().toLowerCase();
+
+    const { data: before } = await db.from('app_config').select('value').eq('key', key).maybeSingle();
+    const { error } = await db
+      .from('app_config')
+      .upsert({ key, value, updated_by: actorId, updated_at: new Date().toISOString() }, { onConflict: 'key' });
+
+    if (error) {
+      await audit(db, {
+        adminId: actorId,
+        action: 'config.set.failed',
+        targetId: key,
+        before: { error: error.message },
+        after: null,
+        userAgent,
+      });
+      return json(500, { ok: false, code: 'write-failed', message: 'The setting could not be saved.' });
+    }
+
     await audit(db, {
       adminId: actorId,
-      action: action + '.unimplemented',
+      action: 'config.set',
+      targetId: key,
+      before: { value: before?.value ?? null },
+      after: { value, reason },
+      userAgent,
+    });
+    return json(200, { ok: true, action, key, value });
+  }
+
+  // ── 6. unit.publish ─────────────────────────────────────────────────────
+  //
+  // The most dangerous write in the system: it changes what every learner sees,
+  // and the failure mode is invisible — content that passes a shape check and
+  // then breaks `getNodeByRoute` mid-lesson, on someone else's device, with no
+  // rollback except a redeploy. So the SET is validated first, and the currently
+  // published state is snapshotted to `curriculum_versions` before the write.
+  if (action === 'unit.publish') {
+    const payload = body.payload as { unitIds?: unknown } | undefined;
+    if (!Array.isArray(payload?.unitIds) || payload.unitIds.length === 0) {
+      return json(400, { ok: false, code: 'target-required', message: 'Select at least one unit to publish.' });
+    }
+    const unitIds = (payload!.unitIds as unknown[]).filter((v): v is string => typeof v === 'string');
+
+    const { data: rows, error: readErr } = await db
+      .from('curriculum_units')
+      .select('id, doc, is_published')
+      .in('id', unitIds);
+
+    if (readErr) return json(500, { ok: false, code: 'read-failed', message: 'The units could not be read.' });
+    if (!rows || rows.length === 0) {
+      return json(404, { ok: false, code: 'target-missing', message: 'Those units do not exist.' });
+    }
+
+    // The total count, so a SHORT publish warns instead of silently truncating
+    // the course for everyone past that unit.
+    const { count: totalUnits } = await db.from('curriculum_units').select('id', { count: 'exact', head: true });
+
+    const combined = checkPublishSet(rows.map((r) => r.doc), { expectedCount: totalUnits ?? undefined });
+
+    if (!combined.ok) {
+      await audit(db, {
+        adminId: actorId,
+        action: 'unit.publish.rejected',
+        targetId: null,
+        before: { errors: combined.errors.slice(0, 20) },
+        after: null,
+        userAgent,
+      });
+      return json(400, {
+        ok: false,
+        code: 'invalid-publish',
+        message: 'The unit set failed validation. Nothing was published.',
+        errors: combined.errors,
+      });
+    }
+
+    // Snapshot the CURRENT published state first, so a bad publish is rollback-
+    // able from the database rather than needing a redeploy.
+    const { data: current } = await db
+      .from('curriculum_units')
+      .select('id, doc')
+      .in('id', unitIds)
+      .eq('is_published', true);
+    for (const c of current ?? []) {
+      await db.from('curriculum_versions').insert({ unit_id: c.id, lesson_json: c.doc, editor_id: actorId });
+    }
+
+    const { error: writeErr } = await db
+      .from('curriculum_units')
+      .update({ is_published: true, updated_by: actorId, updated_at: new Date().toISOString() })
+      .in('id', unitIds);
+
+    if (writeErr) {
+      await audit(db, {
+        adminId: actorId,
+        action: 'unit.publish.failed',
+        targetId: null,
+        before: { error: writeErr.message },
+        after: null,
+        userAgent,
+      });
+      return json(500, { ok: false, code: 'write-failed', message: 'The units could not be published.' });
+    }
+
+    await audit(db, {
+      adminId: actorId,
+      action: 'unit.publish',
+      targetId: null,
+      before: { alreadyPublished: (current ?? []).map((c) => c.id) },
+      after: { published: unitIds, warnings: combined.warnings, reason },
+      userAgent,
+    });
+    return json(200, { ok: true, action, published: unitIds, warnings: combined.warnings });
+  }
+
+  // ── 7. vocab.clear_flag — registered, still unbuilt ─────────────────────
+  if (action === 'vocab.clear_flag') {
+    await audit(db, {
+      adminId: actorId,
+      action: 'vocab.clear_flag.unimplemented',
       targetId,
       before: null,
       after: null,
@@ -368,7 +505,7 @@ Deno.serve(async (req: Request) => {
     return json(501, {
       ok: false,
       code: 'not-implemented',
-      message: `${action} is not implemented yet. No change was made.`,
+      message: 'vocab.clear_flag is not implemented yet. No change was made.',
     });
   }
 
