@@ -20,6 +20,7 @@ import { AlertTriangle, BookOpen, CheckCircle2, History, RefreshCw } from 'lucid
 import { theme } from '../../config/theme';
 import { KpiCard } from '../components/KpiCard';
 import { fetchCurriculum, issueCounts, type CurriculumData } from '../data/curriculum';
+import { CurriculumStorePanel } from '../components/CurriculumStorePanel';
 
 export function CurriculumPage() {
   const [data, setData] = useState<CurriculumData | null>(null);
@@ -44,7 +45,8 @@ export function CurriculumPage() {
           <p className={theme.type.kicker}>Content</p>
           <h1 className={theme.page.heading}>Curriculum</h1>
           <p className={theme.page.description}>
-            The authored spine, read from the same bundled JSON the app runs on.
+            The authored spine, read from the same bundled JSON the app runs on. The database store
+            below is a second source, currently not being served.
           </p>
         </div>
         <button
@@ -57,6 +59,8 @@ export function CurriculumPage() {
           {loading ? 'Loading…' : 'Refresh'}
         </button>
       </header>
+
+      <CurriculumStorePanel />
 
       <section aria-label="Totals" className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <KpiCard

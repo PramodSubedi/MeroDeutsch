@@ -35,7 +35,9 @@ export type AdminActionName =
   | 'user.unban'
   | 'user.demote'
   | 'user.promote'
-  | 'vocab.repair';
+  | 'vocab.repair'
+  | 'config.set'
+  | 'unit.publish';
 
 export interface RepairEditInput {
   id: string;
@@ -43,12 +45,23 @@ export interface RepairEditInput {
   value: string;
 }
 
+export interface ConfigWritePayload {
+  key: string;
+  value: string | boolean;
+}
+
+export interface PublishPayload {
+  unitIds: string[];
+}
+
 export interface AdminActionRequest {
   action: AdminActionName;
   targetId?: string;
   reason?: string;
-  /** Only for `vocab.repair`. */
+  /** `vocab.repair` edits, `config.set` key/value, or `unit.publish` unit ids. */
   edits?: RepairEditInput[];
+  config?: ConfigWritePayload;
+  publish?: PublishPayload;
 }
 
 export type AdminOutcome =
@@ -176,6 +189,8 @@ export async function runAdminAction(req: AdminActionRequest): Promise<AdminActi
   // `hasReason` check is what decides — not a client-side filter.
   if (req.reason && req.reason.trim().length > 0) body.reason = req.reason.trim();
   if (req.edits) body.payload = req.edits;
+  if (req.config) body.payload = { key: req.config.key, value: req.config.value };
+  if (req.publish) body.payload = { unitIds: req.publish.unitIds };
 
   try {
     const { data, error } = await supabase.functions.invoke('admin-action', { body });
