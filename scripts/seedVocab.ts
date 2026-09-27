@@ -141,8 +141,25 @@ async function loadLegacyBatch(file: string): Promise<VocabularyEntity[]> {
   return (rows as unknown as LegacyVocabRow[]).map(legacyToEntity);
 }
 
-async function loadEnriched(): Promise<VocabularyEntity[]> {
-  try {
+/**
+ * Map an authored entity onto the CURRENT `public.vocabulary` row shape.
+ *
+ * Migration 018 healed the topical values into `tags[]` and migration
+ * 20260928040000 DROPPED the `category` column; `tags[]` is the single source of
+ * truth end to end (see supabaseCurriculumService.ts, which selects `tags` and
+ * filters with `p_category = ANY(tags)`). Sending `category` to PostgREST now
+ * fails with "Could not find the 'category' column", so the authored scalar is
+ * folded into a one-element `tags[]` here and never sent.
+ */
+function toDbRow(entity: VocabularyEntity): Record<string, unknown> {
+  const { category, ...rest } = entity;
+  const tags = [category, entity.level].filter(
+    (t): t is string => typeof t === 'string' && t.trim() !== '',
+  );
+  return { ...rest, tags };
+}
+
+async function loadEnriched(): Promise<VocabularyEntity[]> {  try {
     const rows = JSON.parse(await fs.readFile(ENRICHED_FILE, 'utf8')) as Record<string, unknown>[];
     return rows.map(enrichedToEntity).filter((e): e is VocabularyEntity => e !== null);
   } catch {
@@ -222,7 +239,8 @@ async function main(): Promise<void> {
     return;
   }
 
-  const { error } = await client.from('vocabulary').upsert(applied, {
+  const payload = applied.map(toDbRow);
+  const { error } = await client.from('vocabulary').upsert(payload, {
     onConflict: 'word,part_of_speech',
   });
 

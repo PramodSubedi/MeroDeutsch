@@ -1,643 +1,293 @@
 {
   "cefr": "A1.2",
-  "docRoute": "/vocab",
+  "docRoute": "/roleplay",
   "objectives": {
     "en": [
-      "Identify body parts, express physical ailments (weh tun), make doctor appointments, and understand health advice."
+      "Ask for directions in a city, describe means of transport, and use Dative prepositions with transportation (mit dem / mit der).",
+      "Estimated time 50 Minutes · Prerequisites: Units 01–13"
     ]
   },
   "lexicon": [
     {
-      "word": "Körper",
-      "en": "Body",
-      "ne": "शरीर",
+      "word": "Bahnhof",
+      "en": "Train station",
+      "ne": "रेल स्टेशन",
       "article": "der",
-      "plural": "Körper",
-      "ipa": "/ˈkœʁpɐ/",
-      "frequency": "active",
+      "partOfSpeech": "Noun",
       "examples": [
         {
-          "de": "Der menschliche Körper ist komplex.",
-          "en": "The human body is complex.",
-          "ne": "मानव शरीर जटिल हुन्छ।"
+          "de": "Wo ist der Bahnhof?",
+          "en": "Where is the train station?",
+          "ne": "रेल स्टेशन कहाँ छ?"
         }
       ]
     },
     {
-      "word": "Kopf",
-      "en": "Head",
-      "ne": "टाउको",
+      "word": "Flughafen",
+      "en": "Airport",
+      "ne": "विमानस्थल",
       "article": "der",
-      "plural": "Köpfe",
-      "ipa": "/kɔpf/",
-      "frequency": "active",
+      "partOfSpeech": "Noun",
       "examples": [
         {
-          "de": "Mein Kopf tut weh.",
-          "en": "My head hurts.",
-          "ne": "मेरो टाउको दुखिरहेको छ।"
+          "de": "Der Flughafen ist groß.",
+          "en": "The airport is big.",
+          "ne": "विमानस्थल ठूलो छ।"
         }
       ]
     },
     {
-      "word": "Auge",
-      "en": "Eye",
-      "ne": "आँखा",
+      "word": "Bus",
+      "en": "Bus",
+      "ne": "बस",
+      "article": "der",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Ich fahre mit dem Bus.",
+          "en": "I travel by bus.",
+          "ne": "म बसद्वारा जान्छु।"
+        }
+      ]
+    },
+    {
+      "word": "Zug",
+      "en": "Train",
+      "ne": "रेल",
+      "article": "der",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Der Zug kommt um 10 Uhr.",
+          "en": "The train arrives at 10 o'clock.",
+          "ne": "रेल १० बजे आइपुग्छ।"
+        }
+      ]
+    },
+    {
+      "word": "Taxi",
+      "en": "Taxi",
+      "ne": "ट्याक्सी",
       "article": "das",
-      "plural": "Augen",
-      "ipa": "/ˈaʊ̯ɡə/",
-      "frequency": "active",
+      "partOfSpeech": "Noun",
       "examples": [
         {
-          "de": "Meine Augen sind blau.",
-          "en": "My eyes are blue.",
-          "ne": "मेरो आँखा नीलो छ।"
+          "de": "Wir nehmen ein Taxi.",
+          "en": "We take a taxi.",
+          "ne": "हामी एउटा ट्याक्सी लिन्छौँ।"
         }
       ]
     },
     {
-      "word": "Ohr",
-      "en": "Ear",
-      "ne": "कान",
-      "article": "das",
-      "plural": "Ohren",
-      "ipa": "/oːɐ̯/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Mein Ohr tut weh.",
-          "en": "My ear hurts.",
-          "ne": "मेरो कान दुखिरहेको छ।"
-        }
-      ]
-    },
-    {
-      "word": "Nase",
-      "en": "Nose",
-      "ne": "नाक",
+      "word": "Straße",
+      "en": "Street",
+      "ne": "सडक",
       "article": "die",
-      "plural": "Nasen",
-      "ipa": "/ˈnaːzə/",
-      "frequency": "active",
+      "partOfSpeech": "Noun",
       "examples": [
         {
-          "de": "Die Nase ist rot.",
-          "en": "The nose is red.",
-          "ne": "नाक रातो छ।"
+          "de": "Gehen Sie geradeaus.",
+          "en": "Go straight ahead.",
+          "ne": "सीधा जानुहोस्।"
         }
       ]
     },
     {
-      "word": "Mund",
-      "en": "Mouth",
-      "ne": "मुख",
-      "article": "der",
-      "plural": "Münder",
-      "ipa": "/mʊnt/",
-      "frequency": "active",
+      "word": "links",
+      "en": "left",
+      "ne": "देब्रे",
+      "partOfSpeech": "Adverb",
       "examples": [
         {
-          "de": "Öffnen Sie den Mund!",
-          "en": "Open your mouth!",
-          "ne": "मुख खोल्नुहोस्!"
+          "de": "Biegen Sie links ab.",
+          "en": "Turn left.",
+          "ne": "देब्रे मोड्नुहोस्।"
         }
       ]
     },
     {
-      "word": "Zahn",
-      "en": "Tooth",
-      "ne": "दाँत",
-      "article": "der",
-      "plural": "Zähne",
-      "ipa": "/tsaːn/",
-      "frequency": "active",
+      "word": "rechts",
+      "en": "right",
+      "ne": "दाहिने",
+      "partOfSpeech": "Adverb",
       "examples": [
         {
-          "de": "Ich habe Zahnschmerzen.",
-          "en": "I have a toothache.",
-          "ne": "मेरो दाँत दुखेको छ।"
+          "de": "Biegen Sie rechts ab.",
+          "en": "Turn right.",
+          "ne": "दाहिने मोड्नुहोस्।"
         }
       ]
     },
     {
-      "word": "Hals",
-      "en": "Throat / Neck",
-      "ne": "घाँटी",
-      "article": "der",
-      "plural": "Hälse",
-      "ipa": "/hals/",
-      "frequency": "active",
+      "word": "geradeaus",
+      "en": "straight ahead",
+      "ne": "सीधा",
+      "partOfSpeech": "Adverb",
       "examples": [
         {
-          "de": "Mein Hals ist rot.",
-          "en": "My throat is red.",
-          "ne": "मेरो घाँटी रातो छ।"
+          "de": "Gehen Sie geradeaus.",
+          "en": "Go straight ahead.",
+          "ne": "सीधा जानुहोस्।"
         }
       ]
     },
     {
-      "word": "Arm",
-      "en": "Arm",
-      "ne": "हात (पाखुरा)",
-      "article": "der",
-      "plural": "Arme",
-      "ipa": "/aʁm/",
-      "frequency": "active",
+      "word": "fahren",
+      "en": "to drive / travel",
+      "ne": "यात्रा गर्नु",
+      "partOfSpeech": "Verb",
       "examples": [
         {
-          "de": "Mein rechter Arm tut weh.",
-          "en": "My right arm hurts.",
-          "ne": "मेरो दाहिने हात दुखिरहेको छ।"
+          "de": "Ich fahre nach Berlin.",
+          "en": "I travel to Berlin.",
+          "ne": "म बर्लिन जान्छु।"
         }
       ]
     },
     {
-      "word": "Hand",
-      "en": "Hand",
-      "ne": "हात (हत्केला)",
+      "word": "gehen",
+      "en": "to walk / go",
+      "ne": "हिँड्नु / जानु",
+      "partOfSpeech": "Verb",
+      "examples": [
+        {
+          "de": "Ich gehe zu Fuß.",
+          "en": "I go on foot.",
+          "ne": "म पैदल जान्छु।"
+        }
+      ]
+    },
+    {
+      "word": "nehmen",
+      "en": "to take",
+      "ne": "लिनु / लैजानु",
+      "partOfSpeech": "Verb",
+      "examples": [
+        {
+          "de": "Nehmen Sie die erste Straße rechts.",
+          "en": "Take the first street on the right.",
+          "ne": "पहिलो सडक दाहिनेतिर लिनुहोस्।"
+        }
+      ]
+    },
+    {
+      "word": "abbiegen",
+      "en": "to turn (a corner)",
+      "ne": "मोड्नु",
+      "partOfSpeech": "Verb (sep)",
+      "examples": [
+        {
+          "de": "Biegen Sie an der Kreuzung links ab.",
+          "en": "Turn left at the intersection.",
+          "ne": "चौबाटोमा देब्रे मोड्नुहोस्।"
+        }
+      ]
+    },
+    {
+      "word": "mit",
+      "en": "with / by (transport)",
+      "ne": "सँग / द्वारा",
+      "partOfSpeech": "Preposition",
+      "examples": [
+        {
+          "de": "Ich fahre mit dem Bus.",
+          "en": "I travel by bus.",
+          "ne": "म बसद्वारा जान्छु।"
+        }
+      ]
+    },
+    {
+      "word": "Kreuzung",
+      "en": "Intersection",
+      "ne": "चौबाटो",
       "article": "die",
-      "plural": "Hände",
-      "ipa": "/hant/",
-      "frequency": "active",
+      "partOfSpeech": "Noun",
       "examples": [
         {
-          "de": "Waschen Sie die Hände!",
-          "en": "Wash your hands!",
-          "ne": "हात धुनुहोस्!"
+          "de": "An der Kreuzung geradeaus.",
+          "en": "Straight ahead at the intersection.",
+          "ne": "चौबाटोमा सीधा जानुहोस्।"
         }
       ]
     },
     {
-      "word": "Finger",
-      "en": "Finger",
-      "ne": "औँला",
-      "article": "der",
-      "plural": "Finger",
-      "ipa": "/ˈfɪŋɐ/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Er hat fünf Finger.",
-          "en": "He has five fingers.",
-          "ne": "उहाँका पाँच वटा औँला छन्।"
-        }
-      ]
-    },
-    {
-      "word": "Bauch",
-      "en": "Stomach / Belly",
-      "ne": "पेट",
-      "article": "der",
-      "plural": "Bäuche",
-      "ipa": "/baʊ̯x/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Mein Bauch tut weh.",
-          "en": "My stomach hurts.",
-          "ne": "मेरो पेट दुखिरहेको छ।"
-        }
-      ]
-    },
-    {
-      "word": "Rücken",
-      "en": "Back",
-      "ne": "ढाड / पिठ्युँ",
-      "article": "der",
-      "plural": "Rücken",
-      "ipa": "/ˈʁʏkn̩/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Ich habe Rückenschmerzen.",
-          "en": "I have back pain.",
-          "ne": "मेरो ढाड दुखेको छ।"
-        }
-      ]
-    },
-    {
-      "word": "Bein",
-      "en": "Leg",
-      "ne": "खुट्टा",
-      "article": "das",
-      "plural": "Beine",
-      "ipa": "/baɪ̯n/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Mein Bein ist gebrochen.",
-          "en": "My leg is broken.",
-          "ne": "मेरो खुट्टा भाँच्चिएको छ।"
-        }
-      ]
-    },
-    {
-      "word": "Fuß",
-      "en": "Foot",
-      "ne": "पाइला / गोडा",
-      "article": "der",
-      "plural": "Füße",
-      "ipa": "/fuːs/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Mein Fuß tut weh.",
-          "en": "My foot hurts.",
-          "ne": "मेरो पाइला दुखिरहेको छ।"
-        }
-      ]
-    },
-    {
-      "word": "Schmerz",
-      "en": "Pain",
-      "ne": "दुखाइ",
-      "article": "der",
-      "plural": "Schmerzen",
-      "ipa": "/ʃmɛʁts/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Haben Sie Schmerzen?",
-          "en": "Do you have pain?",
-          "ne": "तपाईंलाई दुखाइ छ?"
-        }
-      ]
-    },
-    {
-      "word": "Kopfschmerzen",
-      "en": "Headache",
-      "ne": "टाउको दुखाइ",
+      "word": "Ampel",
+      "en": "Traffic light",
+      "ne": "ट्राफिक बत्ती",
       "article": "die",
-      "plural": "-",
-      "ipa": "/ˈkɔpf_ʃmɛʁtsn̩/",
-      "frequency": "active",
+      "partOfSpeech": "Noun",
       "examples": [
         {
-          "de": "Ich habe schwere Kopfschmerzen.",
-          "en": "I have a severe headache.",
-          "ne": "मलाई कडा टाउको दुखेको छ।"
+          "de": "An der Ampel nach links.",
+          "en": "At the traffic light, turn left.",
+          "ne": "ट्राफिक बत्तीमा देब्रे मोड्नुहोस्।"
         }
       ]
     },
     {
-      "word": "Bauchschmerzen",
-      "en": "Stomach ache",
-      "ne": "पेट दुखाइ",
-      "article": "die",
-      "plural": "-",
-      "ipa": "/ˈbaʊ̯x_ʃmɛʁtsn̩/",
-      "frequency": "active",
+      "word": "in",
+      "en": "in / into (two-way: acc = into, dat = in)",
+      "ne": "मा / भित्र (दुवै अर्थ: अक्कुसेटिभ = भित्र, डेटिभ = मा)",
+      "partOfSpeech": "Preposition",
       "examples": [
         {
-          "de": "Das Kind hat Bauchschmerzen.",
-          "en": "The child has a stomach ache.",
-          "ne": "बच्चाको पेट दुखेको छ।"
+          "de": "Ich gehe in den Park. / Ich bin im Park.",
+          "en": "I go into the park. / I am in the park.",
+          "ne": "म पार्कमा जान्छु। / म पार्कमा छु।"
         }
       ]
     },
     {
-      "word": "Fieber",
-      "en": "Fever",
-      "ne": "ज्वरो",
-      "article": "das",
-      "plural": "-",
-      "ipa": "/ˈfiːbɐ/",
-      "frequency": "active",
+      "word": "an",
+      "en": "at / on / to (two-way: acc = to, dat = at)",
+      "ne": "मा / तिर (दुवै अर्थ: अक्कुसेटिभ = तिर, डेटिभ = मा)",
+      "partOfSpeech": "Preposition",
       "examples": [
         {
-          "de": "Ich habe 39 Grad Fieber.",
-          "en": "I have 39 degrees fever.",
-          "ne": "मलाई ३९ डिग्री ज्वरो छ।"
+          "de": "Wir fahren an den See. / Wir sind am See.",
+          "en": "We drive to the lake. / We are at the lake.",
+          "ne": "हामी तालमा जान्छौँ। / हामी तालमा छौँ।"
         }
       ]
     },
     {
-      "word": "Grippe",
-      "en": "Flu / Influenza",
-      "ne": "रुघाखोकी / फ्लु",
-      "article": "die",
-      "plural": "Grippen",
-      "ipa": "/ˈɡʁɪpə/",
-      "frequency": "active",
+      "word": "auf",
+      "en": "on / onto (two-way: acc = onto, dat = on)",
+      "ne": "माथि / मा (दुवै अर्थ: अक्कुसेटिभ = माथि, डेटिभ = माथि)",
+      "partOfSpeech": "Preposition",
       "examples": [
         {
-          "de": "Er hat eine schwere Grippe.",
-          "en": "He has a severe flu.",
-          "ne": "उहाँलाई कडा रुघाखोकी लागेको छ।"
+          "de": "Das Buch liegt auf dem Tisch.",
+          "en": "The book is on the table.",
+          "ne": "किताब टेबलमा छ।"
         }
       ]
     },
     {
-      "word": "Husten",
-      "en": "Cough",
-      "ne": "खोकी",
+      "word": "See",
+      "en": "Lake",
+      "ne": "ताल",
       "article": "der",
-      "plural": "-",
-      "ipa": "/ˈhuːstn̩/",
-      "frequency": "active",
+      "partOfSpeech": "Noun",
       "examples": [
         {
-          "de": "Ich habe starken Husten.",
-          "en": "I have a strong cough.",
-          "ne": "मलाई कडा खोकी लागेको छ।"
+          "de": "Im Sommer fahren wir an den See.",
+          "en": "In summer we go to the lake.",
+          "ne": "ग्रीष्ममा हामी तालमा जान्छौँ।"
         }
       ]
     },
     {
-      "word": "Schnupfen",
-      "en": "Runny nose / Cold",
-      "ne": "सिँगान बग्ने रुघा",
+      "word": "Garten",
+      "en": "Garden",
+      "ne": "बगैंचा/बाग",
       "article": "der",
-      "plural": "-",
-      "ipa": "/ˈʃnʊpfn̩/",
-      "frequency": "active",
+      "partOfSpeech": "Noun",
       "examples": [
         {
-          "de": "Im Winter habe ich oft Schnupfen.",
-          "en": "In winter I often have a cold.",
-          "ne": "जाडोमा मलाई प्रायः रुघा लाग्छ।"
-        }
-      ]
-    },
-    {
-      "word": "Medizin / Medikament",
-      "en": "Medicine / Medication",
-      "ne": "औषधि",
-      "plural": "Medikamente",
-      "ipa": "/medikaˈmɛnt/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Nehmen Sie diese Medizin dreimal täglich.",
-          "en": "Take this medicine three times daily.",
-          "ne": "यो औषधि दिनको तीन पटक लिनुहोस्।"
-        }
-      ]
-    },
-    {
-      "word": "Tablette",
-      "en": "Tablet / Pill",
-      "ne": "ट्याब्लेट / चक्की",
-      "article": "die",
-      "plural": "Tabletten",
-      "ipa": "/taˈblɛtə/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Ich nehme eine Tablette gegen Schmerzen.",
-          "en": "I take a tablet for pain.",
-          "ne": "म दुखाइको लागि एउटा चक्की लिन्छु।"
-        }
-      ]
-    },
-    {
-      "word": "Rezept",
-      "en": "Prescription",
-      "ne": "प्रेस्क्रिप्सन / सिफारिस पत्र",
-      "article": "das",
-      "plural": "Rezepte",
-      "ipa": "/ʁeˈtsɛpt/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Der Arzt schreibt ein Rezept.",
-          "en": "The doctor writes a prescription.",
-          "ne": "डाक्टरले सिफारिस पत्र लेख्नुहुन्छ।"
-        }
-      ]
-    },
-    {
-      "word": "Apotheke",
-      "en": "Pharmacy",
-      "ne": "औषधि पसल",
-      "article": "die",
-      "plural": "Apotheken",
-      "ipa": "/apoˈteːkə/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Ich kaufe Medizin in der Apotheke.",
-          "en": "I buy medicine in the pharmacy.",
-          "ne": "म औषधि पसलबाट औषधि किन्छु।"
-        }
-      ]
-    },
-    {
-      "word": "Krankenhaus",
-      "en": "Hospital",
-      "ne": "अस्पताल",
-      "article": "das",
-      "plural": "Krankenhäuser",
-      "ipa": "/ˈkʁaŋkn̩_haʊ̯s/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Er ist im Krankenhaus.",
-          "en": "He is in the hospital.",
-          "ne": "उहाँ अस्पतालमा हुनुहुन्छ।"
-        }
-      ]
-    },
-    {
-      "word": "Notarzt",
-      "en": "Emergency doctor",
-      "ne": "आपतकालीन डाक्टर",
-      "article": "der",
-      "plural": "Notärzte",
-      "ipa": "/ˈnoːt_ʔaʁts/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Rufen Sie den Notarzt!",
-          "en": "Call the emergency doctor!",
-          "ne": "आपतकालीन डाक्टरलाई बोलाउनुहोस्!"
-        }
-      ]
-    },
-    {
-      "word": "Krankenwagen",
-      "en": "Ambulance",
-      "ne": "एम्बुलेन्स",
-      "article": "der",
-      "plural": "Krankenwagen",
-      "ipa": "/ˈkʁaŋkn̩_vaːɡn̩/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Der Krankenwagen kommt sofort.",
-          "en": "The ambulance comes immediately.",
-          "ne": "एम्बुलेन्स तुरुन्तै आउँदैछ।"
-        }
-      ]
-    },
-    {
-      "word": "Termin",
-      "en": "Appointment",
-      "ne": "भेटघाट समय",
-      "article": "der",
-      "plural": "Termine",
-      "ipa": "/tɛʁˈmiːn/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Ich habe einen Termin beim Arzt.",
-          "en": "I have an appointment at the doctor's.",
-          "ne": "मेरो डाक्टरकहाँ भेटघाट समय छ।"
-        }
-      ]
-    },
-    {
-      "word": "weh tun",
-      "en": "to hurt / ache",
-      "ne": "दुख्नु",
-      "plural": "tut weh / tat weh / wehgetan",
-      "ipa": "/ˈveː_tuːn/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Mein Rücken tut weh.",
-          "en": "My back hurts.",
-          "ne": "मेरो ढाड दुखिरहेको छ।"
-        }
-      ]
-    },
-    {
-      "word": "krank",
-      "en": "Sick / Ill",
-      "ne": "बिरामी",
-      "plural": "-",
-      "ipa": "/kʁaŋk/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Ich bin krank und bleibe im Bett.",
-          "en": "I am sick and stay in bed.",
-          "ne": "म बिरामी छु र ओछ्यानमै बस्छु।"
-        }
-      ]
-    },
-    {
-      "word": "gesund",
-      "en": "Healthy",
-      "ne": "स्वस्थ",
-      "plural": "-",
-      "ipa": "/ɡəˈzʊnt/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Gute Besserung! Werde schnell gesund.",
-          "en": "Get well soon! Become healthy quickly.",
-          "ne": "शीघ्र स्वास्थ्य लाभको शुभकामना!"
-        }
-      ]
-    },
-    {
-      "word": "müde",
-      "en": "Tired",
-      "ne": "थकित",
-      "plural": "-",
-      "ipa": "/ˈmyːdə/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Ich bin sehr müde.",
-          "en": "I am very tired.",
-          "ne": "म धेरै थकित छु।"
-        }
-      ]
-    },
-    {
-      "word": "Gute Besserung",
-      "en": "Get well soon!",
-      "ne": "शीघ्र स्वास्थ्य लाभको शुभकामना!",
-      "plural": "-",
-      "ipa": "/ˈɡuːtə bɛsəʁʊŋ/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Gute Besserung, mein Freund!",
-          "en": "Get well soon, my friend!",
-          "ne": "शीघ्र स्वास्थ्य लाभको शुभकामना, मेरो साथी!"
-        }
-      ]
-    },
-    {
-      "word": "Untersuchung",
-      "en": "Medical examination",
-      "ne": "स्वास्थ्य जाँच",
-      "article": "die",
-      "plural": "Untersuchungen",
-      "ipa": "/ʊntɐˈzuːxʊŋ/",
-      "frequency": "passive",
-      "examples": [
-        {
-          "de": "Die Untersuchung dauert 15 Minuten.",
-          "en": "The examination takes 15 minutes.",
-          "ne": "स्वास्थ्य जाँच १५ मिनेटको हुन्छ।"
-        }
-      ]
-    },
-    {
-      "word": "Krankenversicherung",
-      "en": "Health insurance",
-      "ne": "स्वास्थ्य बिमा",
-      "article": "die",
-      "plural": "Krankenversicherungen",
-      "ipa": "/ˈkʁaŋkn̩_fɛɐ̯ˌzɪçəʁʊŋ/",
-      "frequency": "passive",
-      "examples": [
-        {
-          "de": "Haben Sie eine Krankenversicherung?",
-          "en": "Do you have health insurance?",
-          "ne": "तपाईंसँग स्वास्थ्य बिमा छ?"
-        }
-      ]
-    },
-    {
-      "word": "Absage",
-      "en": "Cancellation",
-      "ne": "रद्द",
-      "article": "die",
-      "plural": "Absagen",
-      "ipa": "/ˈap_zaːɡə/",
-      "frequency": "passive",
-      "examples": [
-        {
-          "de": "Ich schicke eine Absage.",
-          "en": "I send a cancellation.",
-          "ne": "म रद्द पत्र पठाउँछु।"
-        }
-      ]
-    },
-    {
-      "word": "Ausruhen",
-      "en": "Rest / Relaxation",
-      "ne": "आराम",
-      "article": "das",
-      "plural": "-",
-      "ipa": "/ˈaʊ̯s_ʁuːən/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Sie brauchen viel Ausruhen.",
-          "en": "You need lots of rest.",
-          "ne": "तपाईंलाई धेरै आराम चाहिन्छ।"
-        }
-      ]
-    },
-    {
-      "word": "Besserung",
-      "en": "Recovery / Improvement",
-      "ne": "सुधार",
-      "article": "die",
-      "plural": "-",
-      "ipa": "/ˈbɛsəʁʊŋ/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Ich wünsche Ihnen gute Besserung.",
-          "en": "I wish you a speedy recovery.",
-          "ne": "म तपाईंको शीघ्र स्वास्थ्य लाभको कामना गर्दछु।"
+          "de": "Die Kinder spielen im Garten.",
+          "en": "The children play in the garden.",
+          "ne": "बालबालिकाहरू बगैंचामा खेल्छन्।"
         }
       ]
     }
@@ -645,34 +295,208 @@
   "grammar": [
     {
       "title": {
-        "en": "The Pain Construction: weh tun (to hurt / ache)",
-        "de": "The Pain Construction: weh tun (to hurt / ache)"
+        "en": "Two-Way Prepositions: Wohin? (Accusative) vs. Wo? (Dative)",
+        "de": "Wechselpräpositionen: Wohin? (Akkusativ) vs. Wo? (Dativ)"
       },
       "notes": [
         {
-          "en": "In German, pain is expressed using the verb weh tun with Dative pronouns (mir, dir, ihm, ihr, Ihnen): German Pain Expression Formula: [BODY PART] + \"tut\" (singular) / \"tun\" (plural) + \"weh\" Examples: • Mein Kopf TUT weh. (Singular: 'Kopf' -> tut) • Meine Augen TUN weh. (Plural: 'Augen' -> tun) • Mein Rücken TUT mir weh. (Literally: My back does pain to me)",
-          "ne": "",
-          "de": ""
+          "en": "The prepositions in, an, auf, über, unter, vor and zwischen are TWO-WAY (Wechselpräpositionen). They take the ACCUSATIVE when you move TOWARD a goal (Wohin? — where to?) and the DATIVE when you are STATIC at a location (Wo? — where at?). Ask the question first, then pick the case.",
+          "ne": "in, an, auf, über, unter, vor र zwischen पूर्वसर्गहरू दुवै अर्थका हुन् (Wechselpräpositionen)। लक्ष्यतिर जान्दा अक्कुसेटिभ (Wohin? — कहाँ जाने?) र कुनै स्थानमा स्थिर हुँदा डेटिभ (Wo? — कहाँ छ?) प्रयोग हुन्छ। पहिले प्रश्न सोध्नुहोस्, त्यसपछि केस छान्नुहोस्।",
+          "de": "Die Präpositionen in, an, auf, über, unter, vor und zwischen sind WECHSELpräpositionen. Sie nehmen den AKKUSATIV bei Bewegung ZU einem Ziel (Wohin?) und den DATIV bei statischer Lage (Wo?). Erst fragen, dann den Fall wählen."
         }
-      ]
+      ],
+      "table": {
+        "columns": [
+          "Preposition",
+          "Case",
+          "Question",
+          "Example",
+          "Meaning"
+        ],
+        "rows": [
+          [
+            "in",
+            "Accusative",
+            "Wohin?",
+            "in den Park / in die Stadt",
+            "into the park / into town"
+          ],
+          [
+            "in",
+            "Dative",
+            "Wo?",
+            "im Park / in der Stadt",
+            "in the park / in town"
+          ],
+          [
+            "an",
+            "Accusative",
+            "Wohin?",
+            "an den See / ans Meer",
+            "to the lake / to the sea"
+          ],
+          [
+            "an",
+            "Dative",
+            "Wo?",
+            "am See / am Meer",
+            "at the lake / at the sea"
+          ],
+          [
+            "auf",
+            "Accusative",
+            "Wohin?",
+            "auf den Tisch",
+            "onto the table"
+          ],
+          [
+            "auf",
+            "Dative",
+            "Wo?",
+            "auf dem Tisch",
+            "on the table"
+          ],
+          [
+            "vor",
+            "Accusative",
+            "Wohin?",
+            "vor das Haus",
+            "in front of the house (to)"
+          ],
+          [
+            "vor",
+            "Dative",
+            "Wo?",
+            "vor dem Haus",
+            "in front of the house (at)"
+          ]
+        ]
+      }
     },
     {
       "title": {
-        "en": "Compound Nouns with -schmerzen",
-        "de": "Compound Nouns with -schmerzen"
+        "en": "Dative Contractions (Kontraktionen) — Dative Only!",
+        "de": "Dative-Kontraktionen — nur im Dativ!"
       },
       "notes": [
         {
-          "en": "Body parts combine with -schmerzen (plural) to form pain nouns: ---",
-          "ne": "",
-          "de": ""
+          "en": "Prepositions contract with the definite article ONLY in the Dative. In the accusative there is no contraction — you always write in and an in full.",
+          "ne": "पूर्वसर्गहरू निश्चित article सँग केवल डेटिभमा मात्र संकुचित हुन्छन्। अक्कुसेटिभमा कुनै संकुचन हुँदैन — in र an पूरा लेख्नुपर्छ।",
+          "de": "Präpositionen kontrahieren mit dem bestimmten Artikel NUR im Dativ. Im Akkusativ gibt es keine Kontraktion — in und an werden immer ausgeschrieben."
+        }
+      ],
+      "table": {
+        "columns": [
+          "Contraction",
+          "= Full Form",
+          "Case",
+          "Example"
+        ],
+        "rows": [
+          [
+            "im",
+            "in + dem",
+            "Dative (masc/neut)",
+            "im Park, im Garten"
+          ],
+          [
+            "am",
+            "an + dem",
+            "Dative (masc/neut)",
+            "am Tisch, am Bahnhof"
+          ],
+          [
+            "vom",
+            "von + dem",
+            "Dative (masc/neut)",
+            "vom Bahnhof"
+          ],
+          [
+            "zum",
+            "zu + dem",
+            "Dative (masc/neut)",
+            "zum Bahnhof, zum Strand"
+          ],
+          [
+            "zur",
+            "zu + der",
+            "Dative (fem)",
+            "zur Schule, zur Arbeit"
+          ],
+          [
+            "ins",
+            "in + das",
+            "Accusative (neut) — NO contraction",
+            "ins Kino"
+          ],
+          [
+            "ans",
+            "an + das",
+            "Accusative (neut) — NO contraction",
+            "ans Meer"
+          ]
+        ]
+      }
+    },
+    {
+      "title": {
+        "en": "Transportation Preposition: mit (+ Dative Case)",
+        "de": "Verkehrspräposition: mit (+ Dativ)"
+      },
+      "notes": [
+        {
+          "en": "The preposition mit ALWAYS triggers the Dative case. Only the article changes: der → dem, das → dem, die → der. The noun itself never changes.",
+          "ne": "पूर्वसर्ग mit ले सधैँ Dative केसको अधिकार गर्छ। केवल article परिवर्तित हुन्छ: der → dem, das → dem, die → der। संज्ञा आफैँ कहिल्यै परिवर्तित हुँदैन।",
+          "de": "Die Präposition mit REGIERT IMMER den Dativ. Nur der Artikel ändert sich: der → dem, das → dem, die → der. Das Nomen selbst ändert sich nie."
+        }
+      ],
+      "table": {
+        "columns": [
+          "Gender",
+          "Noun",
+          "Dative Article",
+          "Full Phrase"
+        ],
+        "rows": [
+          [
+            "Masculine",
+            "der Bus / der Zug",
+            "dem",
+            "mit dem Bus / mit dem Zug"
+          ],
+          [
+            "Neuter",
+            "das Auto / das Taxi",
+            "dem",
+            "mit dem Auto / mit dem Taxi"
+          ],
+          [
+            "Feminine",
+            "die Bahn / die U-Bahn",
+            "der",
+            "mit der Bahn / mit der U-Bahn"
+          ]
+        ]
+      }
+    },
+    {
+      "title": {
+        "en": "Giving & Asking for Directions",
+        "de": "Nach dem Weg fragen & Richtungen geben"
+      },
+      "notes": [
+        {
+          "en": "Formal imperative (Sie-Form) puts the verb FIRST, then 'Sie': Gehen Sie geradeaus! Biegen Sie links ab! Note: 'zu Fuß' for on foot, NOT 'mit Fuß'. fahren = by vehicle, gehen = walking.",
+          "ne": "औपचारिक आदेश (Sie-Form) मा क्रिया पहिले, त्यसपछि 'Sie': Gehen Sie geradeaus! Biegen Sie links ab! ध्यान दिनुहोस्: पैदलका लागि 'zu Fuß', 'mit Fuß' होइन। fahren = सवारी साधनद्वारा, gehen = हिँड्नु।",
+          "de": "Der formelle Imperativ (Sie-Form) stellt das Verb ZUERST, dann 'Sie': Gehen Sie geradeaus! Biegen Sie links ab! Beachte: 'zu Fuß' für zu Fuß gehen, NICHT 'mit Fuß'. fahren = mit Fahrzeug, gehen = zu Fuß."
         }
       ],
       "bullets": [
-        "Kopf + Schmerzen \\(\\rightarrow\\) die Kopfschmerzen (headache)",
-        "Bauch + Schmerzen \\(\\rightarrow\\) die Bauchschmerzen (stomach ache)",
-        "Rücken + Schmerzen \\(\\rightarrow\\) die Rückenschmerzen (back pain)",
-        "Zahn + Schmerzen \\(\\rightarrow\\) die Zahnschmerzen (toothache)"
+        "Asking: Entschuldigung, wie komme ich zum Bahnhof?",
+        "Gehen Sie geradeaus. (\"Go straight ahead.\")",
+        "Biegen Sie links / rechts ab. (\"Turn left / right.\")",
+        "Nehmen Sie die erste Straße rechts. (\"Take the first street on the right.\")",
+        "Walking: Ich gehe ZU FUß. (NOT: mit Fuß!)"
       ]
     }
   ],
@@ -683,208 +507,336 @@
       "de": "Dialog"
     },
     "scenario": {
-      "en": "At the Doctor's Office",
-      "de": "At the Doctor's Office"
+      "en": "Asking for Directions on the Street",
+      "de": "Auf der Straße nach dem Weg fragen"
     },
     "turns": [
       {
-        "speaker": "Arzt:",
-        "de": "Guten Tag, Herr Gurung! Was fehlt Ihnen?"
+        "speaker": "Passant:",
+        "de": "Entschuldigung! Wie komme ich zum Bahnhof?"
       },
       {
-        "speaker": "Patient:",
-        "de": "Guten Tag, Herr Doktor. Mein Kopf tut sehr weh und ich habe Fieber."
+        "speaker": "Einheimischer:",
+        "de": "Das ist nicht weit. Gehen Sie hier geradeaus."
       },
       {
-        "speaker": "Arzt:",
-        "de": "Seit wann haben Sie das?"
+        "speaker": "Passant:",
+        "de": "Und dann?"
       },
       {
-        "speaker": "Patient:",
-        "de": "Seit gestern Abend."
+        "speaker": "Einheimischer:",
+        "de": "Biegen Sie an der Kreuzung links ab. Der Bahnhof ist auf der rechten Seite."
       },
       {
-        "speaker": "Arzt:",
-        "de": "Ich untersuche Sie. Nehmen Sie diese Tabletten drei Tage lang. Sie sollen viel Wasser trinken und im Bett bleiben."
+        "speaker": "Passant:",
+        "de": "Fährt dort auch ein Bus?"
       },
       {
-        "speaker": "Patient:",
-        "de": "Vielen Dank, Herr Doktor!"
+        "speaker": "Einheimischer:",
+        "de": "Ja, Sie können auch mit dem Bus Nummer 5 fahren."
+      },
+      {
+        "speaker": "Passant:",
+        "de": "Vielen Dank für die Hilfe!"
+      },
+      {
+        "speaker": "Einheimischer:",
+        "de": "Gerne! Schöne Reise."
       }
     ]
   },
   "miniGame": {
-    "type": "dialogue_branch",
-    "id": "m14-doctor-sim",
+    "type": "directions_quest",
+    "id": "m14-city-navigator",
     "payload": {
-      "type": "dialogue_branch",
-      "id": "m14-doctor-sim",
-      "title": "Beim Arzt Appointment Simulator",
-      "steps": [
-        {
-          "doctor": "Was fehlt Ihnen?",
-          "options": [
-            {
-              "text": "Mein Bauch tut weh und ich habe Fieber.",
-              "correct": true,
-              "feedback": "Appropriate clinical symptom description."
-            },
-            {
-              "text": "Ich möchte einen Kaffee trinken.",
-              "correct": false,
-              "feedback": "That is a restaurant order, not a medical complaint."
-            }
-          ]
-        }
-      ]
+      "type": "directions_quest",
+      "id": "m14-city-navigator",
+      "scenario": "Wo ist der Bahnhof?",
+      "correct_steps": [
+        "geradeaus gehen",
+        "an der Ampel links abbiegen"
+      ],
+      "transport_phrase": "mit dem Bus"
     }
   },
   "practiceBank": [
     {
       "kind": "MCQ",
-      "prompt": "What verb form fills: \"Meine Ohren ___ (weh tun)\"?",
+      "prompt": "Which article correctly fills: \"Ich fahre mit ___ (der) Bus\"?",
       "options": [
-        "tut",
-        "tun",
-        "tuen",
-        "tunst"
+        "den",
+        "dem",
+        "der",
+        "das"
       ],
-      "answer": "tun"
+      "answer": "dem"
     },
     {
       "kind": "MCQ",
-      "prompt": "How do you wish someone a speedy recovery in German?",
+      "prompt": "How do you say \"I am going on foot\"?",
       "options": [
-        "Guten Tag!",
-        "Gute Besserung!",
-        "Viel Glück!",
-        "Herzlichen Glückwunsch!"
+        "Ich gehe mit Fuß.",
+        "Ich gehe zu Fuß.",
+        "Ich fahre zu Fuß.",
+        "Ich gehe im Fuß."
       ],
-      "answer": "Gute Besserung!"
+      "answer": "Ich gehe zu Fuß."
     },
     {
       "kind": "Fill-in",
-      "prompt": "Mein Kopf _______ (tut/tun) weh. \\(\\rightarrow\\) tut"
+      "prompt": "Ich fahre mit _______ (der Zug). \\(\\rightarrow\\) dem Zug"
     },
     {
       "kind": "Fill-in",
-      "prompt": "Meine Beine _______ (tut/tun) weh. \\(\\rightarrow\\) tun"
+      "prompt": "Sie fährt mit _______ (die U-Bahn). \\(\\rightarrow\\) der U-Bahn"
     },
     {
       "kind": "Fill-in",
-      "prompt": "Ich habe 39 Grad _______ (fever). \\(\\rightarrow\\) Fieber"
+      "prompt": "An der Ampel nach _______ (right) abbiegen. \\(\\rightarrow\\) rechts"
     },
     {
-      "kind": "Compound Noun",
-      "prompt": "Kopf + Schmerzen \\(\\rightarrow\\) Kopfschmerzen"
+      "kind": "Direction Matching",
+      "prompt": "geradeaus \\(\\rightarrow\\) straight ahead"
     },
     {
-      "kind": "Compound Noun",
-      "prompt": "Bauch + Schmerzen \\(\\rightarrow\\) Bauchschmerzen"
+      "kind": "Direction Matching",
+      "prompt": "links \\(\\rightarrow\\) left"
+    },
+    {
+      "kind": "Direction Matching",
+      "prompt": "rechts \\(\\rightarrow\\) right"
     },
     {
       "kind": "Translation DE->EN",
-      "prompt": "\"Gute Besserung!\" \\(\\rightarrow\\) Get well soon!"
+      "prompt": "\"Wo ist die nächste Haltestelle?\" \\(\\rightarrow\\) Where is the nearest bus stop?"
     },
     {
       "kind": "Translation EN->DE",
-      "prompt": "\"My back hurts.\" \\(\\rightarrow\\) Mein Rücken tut weh."
+      "prompt": "\"Turn left at the intersection.\" \\(\\rightarrow\\) Biegen Sie an der Kreuzung nach links ab."
     },
     {
       "kind": "Translation NE->DE",
-      "prompt": "\"शीघ्र स्वास्थ्य लाभको शुभकामना!\" \\(\\rightarrow\\) Gute Besserung!"
+      "prompt": "\"म बसद्वारा जान्छु।\" \\(\\rightarrow\\) Ich fahre mit dem Bus."
     },
     {
       "kind": "Matching",
-      "prompt": "das Rezept \\(\\rightarrow\\) doctor's prescription"
+      "prompt": "der Bahnhof \\(\\rightarrow\\) train station"
     },
     {
       "kind": "Matching",
-      "prompt": "die Apotheke \\(\\rightarrow\\) pharmacy"
+      "prompt": "der Flughafen \\(\\rightarrow\\) airport"
     },
     {
       "kind": "Matching",
-      "prompt": "die Tablette \\(\\rightarrow\\) tablet / pill"
+      "prompt": "das Taxi \\(\\rightarrow\\) taxi"
     },
     {
-      "kind": "Plural Question",
-      "prompt": "What is the plural of das Auge? \\(\\rightarrow\\) die Augen"
-    },
-    {
-      "kind": "Plural Question",
-      "prompt": "What is the plural of die Hand? \\(\\rightarrow\\) die Hände"
+      "kind": "Verb Selection",
+      "prompt": "Walking on foot uses: gehen"
     },
     {
       "kind": "Dictation",
-      "prompt": "Listen & Type: \"Mein Hals tut weh und ich habe Fieber.\""
+      "prompt": "Listen & Type: \"Ich fahre jeden Morgen mit der U-Bahn zur Arbeit.\""
     },
     {
       "kind": "Dictation",
-      "prompt": "Listen & Type: \"Ich brauche ein Rezept vom Arzt.\""
+      "prompt": "Listen & Type: \"Gehen Sie an der Ampel nach rechts.\""
     },
     {
       "kind": "Error Correction",
-      "prompt": "\"Meine Augen tut weh.\" \\(\\rightarrow\\) Meine Augen tun weh."
+      "prompt": "\"Ich fahre mit die S-Bahn.\" \\(\\rightarrow\\) Ich fahre mit der S-Bahn."
     },
     {
       "kind": "Error Correction",
-      "prompt": "\"Ich bin kalt.\" (I feel cold) \\(\\rightarrow\\) Mir ist kalt."
+      "prompt": "\"Ich fahre zu Fuß.\" \\(\\rightarrow\\) Ich gehe zu Fuß."
+    },
+    {
+      "kind": "Error Correction",
+      "prompt": "\"Ich gehe mit Fuß.\" \\(\\rightarrow\\) Ich gehe zu Fuß."
     },
     {
       "kind": "Culture MCQ",
-      "prompt": "In Germany, a doctor's official sick note for work is called:",
+      "prompt": "What does Schwarzfahren mean in Germany?",
       "options": [
-        "Rezept",
-        "Krankschreibung / AU-Bescheinigung",
-        "Quittung",
-        "Fahrkarte"
+        "Driving at night",
+        "Riding public transport without a valid ticket",
+        "Driving a black car",
+        "Cycling in the dark"
       ],
-      "answer": "Krankschreibung / AU-Bescheinigung"
+      "answer": "Riding public transport without a valid ticket"
     },
     {
-      "kind": "Body Part Identification",
-      "prompt": "What is the German word for throat? \\(\\rightarrow\\) der Hals"
+      "kind": "Dative Shift",
+      "prompt": "der Zug + mit \\(\\rightarrow\\) mit dem Zug"
     },
     {
-      "kind": "Body Part Identification",
-      "prompt": "What is the German word for stomach? \\(\\rightarrow\\) der Bauch"
+      "kind": "Dative Shift",
+      "prompt": "die Tram + mit \\(\\rightarrow\\) mit der Tram"
     },
     {
-      "kind": "Listening Gap",
-      "prompt": "\"Ich habe starke _______.\" (Audio: Kopfschmerzen) \\(\\rightarrow\\) Kopfschmerzen"
+      "kind": "Dative Shift",
+      "prompt": "das Taxi + mit \\(\\rightarrow\\) mit dem Taxi"
+    },
+    {
+      "kind": "MCQ",
+      "prompt": "Which case does \"in\" take in \"Ich gehe in den Park\"?",
+      "options": [
+        "Nominative",
+        "Accusative",
+        "Dative",
+        "Genitive"
+      ],
+      "answer": "Accusative"
+    },
+    {
+      "kind": "MCQ",
+      "prompt": "Which case does \"in\" take in \"Ich spiele im Garten\"?",
+      "options": [
+        "Nominative",
+        "Accusative",
+        "Dative",
+        "Genitive"
+      ],
+      "answer": "Dative"
+    },
+    {
+      "kind": "MCQ",
+      "prompt": "What question decides the case after a two-way preposition?",
+      "options": [
+        "Wer?",
+        "Wohin? or Wo?",
+        "Was?",
+        "Warum?"
+      ],
+      "answer": "Wohin? or Wo?"
+    },
+    {
+      "kind": "Wechsel Präposition",
+      "prompt": "Ich gehe ________ den Park. (movement) \\(\\rightarrow\\) in"
+    },
+    {
+      "kind": "Wechsel Präposition",
+      "prompt": "Ich bin ________ Park. (location) \\(\\rightarrow\\) im"
+    },
+    {
+      "kind": "Wechsel Präposition",
+      "prompt": "Wir fahren ________ See. (movement) \\(\\rightarrow\\) an den"
+    },
+    {
+      "kind": "Wechsel Präposition",
+      "prompt": "Die Kinder spielen ________ Garten. (location) \\(\\rightarrow\\) im"
+    },
+    {
+      "kind": "Wechsel Präposition",
+      "prompt": "Das Buch liegt ________ Tisch. (location) \\(\\rightarrow\\) auf dem"
+    },
+    {
+      "kind": "Contraction",
+      "prompt": "in + dem = \\(\\rightarrow\\) im"
+    },
+    {
+      "kind": "Contraction",
+      "prompt": "an + dem = \\(\\rightarrow\\) am"
+    },
+    {
+      "kind": "Contraction",
+      "prompt": "zu + der = \\(\\rightarrow\\) zur"
+    },
+    {
+      "kind": "Contraction",
+      "prompt": "in + das (accusative) = \\(\\rightarrow\\) ins (no contraction of in, but das → ns)"
+    },
+    {
+      "kind": "Error Correction",
+      "prompt": "\"Ich gehe in dem Park.\" \\(\\rightarrow\\) Ich gehe IN DEN Park."
+    },
+    {
+      "kind": "Error Correction",
+      "prompt": "\"Ich bin in den Park.\" (I am in the park) \\(\\rightarrow\\) Ich bin IM Park."
+    },
+    {
+      "kind": "Translation DE->EN",
+      "prompt": "\"Die Kinder spielen im Garten.\" \\(\\rightarrow\\) The children play in the garden."
+    },
+    {
+      "kind": "Translation EN->DE",
+      "prompt": "\"We drive to the lake.\" \\(\\rightarrow\\) Wir fahren an den See."
+    },
+    {
+      "kind": "Translation NE->DE",
+      "prompt": "\"बच्चा बगैंचामा खेल्छन्।\" \\(\\rightarrow\\) Die Kinder spielen im Garten."
+    },
+    {
+      "kind": "Culture MCQ",
+      "prompt": "In German, why does \"in das Kino\" become \"ins Kino\" but \"in dem Park\" become \"im Park\"?",
+      "options": [
+        "Contractions only exist in the accusative",
+        "Contractions only exist in the dative; the accusative keeps in + das",
+        "Both contract the same way, the difference is meaningless",
+        "It is a spelling rule based on the length of the noun"
+      ],
+      "answer": "Contractions only exist in the dative; the accusative keeps in + das"
     },
     {
       "kind": "Sentence Unscramble",
-      "prompt": "[weh / Mein / tut / Rücken] \\(\\rightarrow\\) Mein Rücken tut weh."
+      "prompt": "[im / spiele / Garten / ich] \\(\\rightarrow\\) Ich spiele im Garten."
+    },
+    {
+      "kind": "Sentence Unscramble",
+      "prompt": "[gehe / in / ich / den / Park] \\(\\rightarrow\\) Ich gehe in den Park."
+    },
+    {
+      "kind": "Sentence Unscramble",
+      "prompt": "[mit / Ich / dem / fahre / Bus] \\(\\rightarrow\\) Ich fahre mit dem Bus."
     },
     {
       "kind": "Antonym Match",
-      "prompt": "krank (sick) \\(\\leftrightarrow\\) gesund (healthy)"
+      "prompt": "weit (far) \\(\\leftrightarrow\\) nah / in der Nähe (near)"
     }
   ],
   "traps": [
     {
       "note": {
-        "en": "Trap 1: Confusing tut weh (singular) and tun weh (plural)",
-        "ne": "",
-        "de": ""
+        "en": "Trap 1: Saying \"by foot\" as \"mit Fuß\"",
+        "ne": "पैदल जानुका लागि 'mit Fuß' भन्नु",
+        "de": "\"mit Fuß\" sagen (das bedeutet 'mit dem Fuß')"
       },
-      "wrong": "Falsch: \"Meine Augen tut weh.\" (Augen is plural!).",
-      "right": "Richtig: \"Meine Augen TUN weh.\""
+      "wrong": "Falsch: \"Ich gehe mit Fuß.\"",
+      "right": "Richtig: \"Ich gehe ZU FUß.\""
     },
     {
       "note": {
-        "en": "Trap 2: Saying \"I am cold\" as \"Ich bin kalt\" Saying \"Ich bin kalt\" means \"I am a cold/callous person\". To say you feel cold, use Dative: \"Mir ist kalt.\"",
-        "ne": "",
-        "de": ""
+        "en": "Trap 2: Forgetting the Dative shift with mit",
+        "ne": "mit सँग Dative shift बिर्सनु",
+        "de": "Den Dativ-Wechsel bei 'mit' vergessen"
+      },
+      "wrong": "Falsch: \"Ich fahre mit der Bus.\" (Bus is masculine).",
+      "right": "Richtig: \"Ich fahre mit DEM Bus.\""
+    },
+    {
+      "note": {
+        "en": "Trap 3: Confusing fahren and gehen — gehen = walking on foot (\"Ich gehe zum Supermarkt\"). fahren = traveling by vehicle (\"Ich fahre mit dem Bus\").",
+        "ne": "फन्दा: fahren र gehen बिर्सनु — gehen = पैदल हिँड्नु (\"Ich gehe zum Supermarkt\")। fahren = सवारी साधनद्वारा यात्रा (\"Ich fahre mit dem Bus\")।",
+        "de": "Falle: fahren und gehen verwechseln — gehen = zu Fuß gehen (\"Ich gehe zum Supermarkt\"). fahren = mit Fahrzeug fahren (\"Ich fahre mit dem Bus\")."
       }
     },
     {
       "note": {
-        "en": "Trap 3: Buying antibiotics without prescription In Germany, pharmacies (Apotheken) do NOT sell antibiotics over the counter (rezeptfrei). You MUST have a doctor's prescription (Rezept)!",
-        "ne": "",
-        "de": ""
-      }
+        "en": "Trap 4: Using one case for both meanings of a two-way preposition. 'in den Park' (going in) and 'im Park' (being in) are different cases.",
+        "ne": "फन्दा: दुवै अर्थका लागि एउटै केस प्रयोग गर्नु। 'in den Park' (भित्र जाने) र 'im Park' (भित्र हुनु) फरक केस हुन्।",
+        "de": "Falle: Einen Fall für beide Bedeutungen einer Wechselpräposition verwenden. 'in den Park' (hineingehen) und 'im Park' (darin sein) sind verschiedene Fälle."
+      },
+      "wrong": "Falsch: \"Ich bin in dem Park.\"",
+      "right": "Richtig: \"Ich bin IM Park.\" (Wo? → Dative. Ich gehe IN DEN Park = Wohin? → Accusative.)"
+    },
+    {
+      "note": {
+        "en": "Trap 5: Inventing an accusative contraction. 'im' exists, but there is no 'inden' — the accusative always keeps the preposition in full (in das Kino).",
+        "ne": "फन्दा: अक्कुसेटिभ संकुचन बनाउनु। 'im' छ, तर 'inden' हुँदैन — अक्कुसेटिभमा पूर्वसर्ग पूरा लेखिन्छ (in das Kino)।",
+        "de": "Falle: Eine Akkusativ-Kontraktion erfinden. 'im' gibt es, aber 'inden' nicht — im Akkusativ bleibt die Präposition immer ausgeschrieben (in das Kino)."
+      },
+      "wrong": "Falsch: \"in das Kino\" shortened to \"inden Kino\".",
+      "right": "Richtig: \"INS Kino.\" (in + das → ins, but the preposition 'in' stays written out.)"
     }
   ],
   "culture": {
@@ -893,7 +845,7 @@
       "de": "Kultureller Kontext"
     },
     "body": [
-      "*Sick Note (Krankschreibung / AU-Bescheinigung): If you are sick and cannot work in Germany, you must notify your employer immediately. By day 3 (or day 1 depending on contract), you must submit an official doctor's sick certificate (Arbeitsunfähigkeitsbescheinigung / AU*)."
+      "*Public Transit Etiquette (Fahrkarten entwerten): In many German and Austrian cities, buying a transit ticket is not enough—you must validation-stamp (entwerten) the paper ticket at a small platform machine before boarding! Ticket inspectors (Kontrolleure) issue heavy fines for unvalidated tickets (Schwarzfahren)."
     ]
   }
 }

@@ -1,92 +1,148 @@
 {
   "cefr": "A1.2",
-  "docRoute": "/grammar",
+  "docRoute": "/grammar?tab=akkusativ",
   "objectives": {
     "en": [
-      "Conjugate regular verbs, understand stem-changing verbs, and master the strict Verb-Second (V2) sentence topology rule.",
-      "Why does putting \"Today\" at the beginning of a German sentence flip the subject and verb (\"Heute trinke ich Tee\")?",
-      "Estimated time 50 Minutes · Prerequisites: Units 01–07"
+      "Identify direct objects after transitive verbs, apply the masculine accusative shift (der → den, ein → einen, kein → keinen), and leave feminine, neuter, and plural articles unchanged.",
+      "Estimated time 50 Minutes · Prerequisites: Units 01–07 (Unit 06 conjugation + Unit 07 V2 order)"
     ]
   },
   "lexicon": [
     {
-      "word": "Verb",
-      "en": "Verb",
-      "ne": "क्रियापद",
+      "word": "Wasser",
+      "en": "Water",
+      "ne": "पानी",
       "article": "das",
       "partOfSpeech": "Noun",
       "examples": [
         {
-          "de": "Das Verb steht auf Position 2.",
-          "en": "",
-          "ne": ""
+          "de": "Ein Glas Wasser, bitte.",
+          "en": "A glass of water, please.",
+          "ne": "एक ग्लास पानी, कृपया।"
         }
       ]
     },
     {
-      "word": "Satz",
-      "en": "Sentence",
-      "ne": "वाक्य",
+      "word": "Kaffee",
+      "en": "Coffee",
+      "ne": "कफी",
       "article": "der",
       "partOfSpeech": "Noun",
       "examples": [
         {
-          "de": "Der Satz ist richtig.",
-          "en": "",
-          "ne": ""
+          "de": "Ich trinke gerne Kaffee.",
+          "en": "I like to drink coffee.",
+          "ne": "म कफी पिउन मन पर्छ।"
         }
       ]
     },
     {
-      "word": "Wortstellung",
-      "en": "Word order",
-      "ne": "शब्द क्रम",
+      "word": "Tee",
+      "en": "Tea",
+      "ne": "चिया",
+      "article": "der",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Der Tee ist heiß.",
+          "en": "The tea is hot.",
+          "ne": "चिया तातो छ।"
+        }
+      ]
+    },
+    {
+      "word": "Brot",
+      "en": "Bread",
+      "ne": "पाउरोटी",
+      "article": "das",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Das Brot ist frisch.",
+          "en": "The bread is fresh.",
+          "ne": "पाउरोटी ताजा छ।"
+        }
+      ]
+    },
+    {
+      "word": "Käse",
+      "en": "Cheese",
+      "ne": "चीज",
+      "article": "der",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Der Käse schmeckt gut.",
+          "en": "The cheese tastes good.",
+          "ne": "चीजको स्वाद राम्रो छ।"
+        }
+      ]
+    },
+    {
+      "word": "Apfel",
+      "en": "Apple",
+      "ne": "स्याउ",
+      "article": "der",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Ich esse einen Apfel.",
+          "en": "I eat an apple.",
+          "ne": "म एउटा स्याउ खान्छु।"
+        }
+      ]
+    },
+    {
+      "word": "Suppe",
+      "en": "Soup",
+      "ne": "सूप",
       "article": "die",
       "partOfSpeech": "Noun",
       "examples": [
         {
-          "de": "Die Wortstellung ist wichtig.",
-          "en": "",
-          "ne": ""
+          "de": "Die Suppe ist warm.",
+          "en": "The soup is warm.",
+          "ne": "सूप न्यानो छ।"
         }
       ]
     },
     {
-      "word": "lesen",
-      "en": "to read",
-      "ne": "पढ्नु",
-      "partOfSpeech": "Verb",
+      "word": "Salat",
+      "en": "Salad",
+      "ne": "सलाद",
+      "article": "der",
+      "partOfSpeech": "Noun",
       "examples": [
         {
-          "de": "Ich lese ein Buch.",
-          "en": "",
-          "ne": ""
+          "de": "Ich bestelle einen Salat.",
+          "en": "I order a salad.",
+          "ne": "म सलाद मगाउँछु।"
         }
       ]
     },
     {
-      "word": "sehen",
-      "en": "to see / watch",
-      "ne": "हेर्नु",
+      "word": "bestellen",
+      "en": "to order",
+      "ne": "अर्डर गर्नु",
       "partOfSpeech": "Verb",
       "examples": [
         {
-          "de": "Er sieht fern.",
-          "en": "",
-          "ne": ""
+          "de": "Wir möchten bestellen.",
+          "en": "We would like to order.",
+          "ne": "हामी अर्डर गर्न चाहन्छौँ।"
         }
       ]
     },
     {
-      "word": "fahren",
-      "en": "to drive / travel",
-      "ne": "जानु",
+      "word": "trinken",
+      "en": "to drink",
+      "ne": "पिउनु",
       "partOfSpeech": "Verb",
       "examples": [
         {
-          "de": "Wir fahren nach Berlin.",
-          "en": "",
-          "ne": ""
+          "de": "Was möchten Sie trinken?",
+          "en": "What would you like to drink?",
+          "ne": "तपाईं के पिउन चाहनुहुन्छ?"
         }
       ]
     },
@@ -97,35 +153,9 @@
       "partOfSpeech": "Verb",
       "examples": [
         {
-          "de": "Er isst einen Apfel.",
-          "en": "",
-          "ne": ""
-        }
-      ]
-    },
-    {
-      "word": "schlafen",
-      "en": "to sleep",
-      "ne": "सुत्नु",
-      "partOfSpeech": "Verb",
-      "examples": [
-        {
-          "de": "Das Kind schläft gut.",
-          "en": "",
-          "ne": ""
-        }
-      ]
-    },
-    {
-      "word": "geben",
-      "en": "to give",
-      "ne": "दिनु",
-      "partOfSpeech": "Verb",
-      "examples": [
-        {
-          "de": "Es gibt Fragen.",
-          "en": "",
-          "ne": ""
+          "de": "Was isst du gerne?",
+          "en": "What do you like to eat?",
+          "ne": "तिमीलाई के खान मन पर्छ?"
         }
       ]
     }
@@ -133,65 +163,73 @@
   "grammar": [
     {
       "title": {
-        "en": "Stem-Changing Verbs (du & er/sie/es)",
-        "de": "Stem-Changing Verbs (du & er/sie/es)"
+        "en": "The Accusative Case (Akkusativ) — Direct Object Shift",
+        "de": "Der Akkusativ — Direkter Objekt-Wechsel"
       },
       "notes": [
         {
-          "en": "Vowels change ONLY in 2nd (du) and 3rd (er/sie/es) person singular:",
-          "ne": "",
-          "de": ""
-        }
-      ],
-      "bullets": [
-        "e -> i / ie:",
-        "lesen: ich lese, du liest, er liest, wir lesen",
-        "essen: ich esse, du isst, er isst, wir essen",
-        "a -> ä:",
-        "fahren: ich fahre, du fährst, er fährt, wir fahren",
-        "schlafen: ich schlafe, du schläfst, er schläft, wir schlafen"
-      ]
-    },
-    {
-      "title": {
-        "en": "The Golden V2 Word Order Rule",
-        "de": "The Golden V2 Word Order Rule"
-      },
-      "notes": [
-        {
-          "en": "In main clauses (Hauptsatz), the conjugated verb MUST be in Position 2:",
-          "ne": "",
-          "de": ""
+          "en": "The Accusative case marks the direct object receiving the action of a verb (haben, trinken, essen, bestellen, kaufen). CRITICAL: ONLY MASCULINE ARTICLES SHIFT IN ACCUSATIVE! Feminine, Neuter, and Plural remain identical to Nominative.",
+          "ne": "अक्कुसेटिभ केसले क्रियाको (haben, trinken, essen, bestellen, kaufen) कार्य प्राप्त गर्ने प्रत्यक्ष वस्तुलाई चिन्हित गर्छ। महत्त्वपूर्ण: मात्र पुरुषलिङ्गका (masculine) articles मात्र accusative मा परिवर्तित हुन्छन्! स्त्रीलिङ्ग, नपुंसकलिङ्ग, र बहुवचन nominative जस्तैैै हुन्छन्।",
+          "de": "Der Akkusativ markiert das direkte Objekt, das die Aktion eines Verbs empfängt (haben, trinken, essen, bestellen, kaufen). KRITISCH: NUR MÄNNLICHE ARTIKEL VERÄNDERN SICH IM AKKUSATIV! Feminin, Neutrum und Plural bleiben identisch mit dem Nominativ."
         }
       ],
       "table": {
         "columns": [
-          "Position 1 (Element)",
-          "Position 2 (Conjugated Verb)",
-          "Position 3 (Subject)",
-          "Rest of Sentence"
+          "Gender / Number",
+          "Nominative (Subject)",
+          "Accusative (Direct Object)",
+          "Indefinite Accusative",
+          "Negative Accusative"
         ],
         "rows": [
           [
-            "Ich",
-            "trinke",
-            "-",
-            "heute Tee."
+            "Masculine (der)",
+            "der Tisch",
+            "den Tisch",
+            "einen Tisch",
+            "keinen Tisch"
           ],
           [
-            "Heute",
-            "trinke",
-            "ich",
-            "Tee."
+            "Feminine (die)",
+            "die Suppe",
+            "die Suppe",
+            "eine Suppe",
+            "keine Suppe"
           ],
           [
-            "In Berlin",
-            "wohnt",
-            "meine Schwester",
-            "seit zwei Jahren."
+            "Neuter (das)",
+            "das Wasser",
+            "das Wasser",
+            "ein Wasser",
+            "kein Wasser"
+          ],
+          [
+            "Plural (die)",
+            "die Äpfel",
+            "die Äpfel",
+            "— Äpfel",
+            "keine Äpfel"
           ]
         ]
       }
+    },
+    {
+      "title": {
+        "en": "Accusative Triggers — Verbs Always Taking Direct Objects",
+        "de": "Akkusativ-Auslöser — Verben mit Direktem Objekt"
+      },
+      "notes": [
+        {
+          "en": "These verbs ALWAYS require an accusative direct object: bestellen (to order), trinken (to drink), essen (to eat), haben (to have), kaufen (to buy), brauchen (to need), sehen (to see), möchten (would like).",
+          "ne": "यी क्रियाहरूले सदैँ अक्कुसेटिभ प्रत्यक्ष वस्तु अपेक्षा गर्छन्: bestellen, trinken, essen, haben, kaufen, brauchen, sehen, möchten।",
+          "de": "Diese Verben ERFORDERN IMMER ein akkusativisches Direktobjekt: bestellen, trinken, essen, haben, kaufen, brauchen, sehen, möchten."
+        }
+      ],
+      "bullets": [
+        "Ich habe EINEN Kaffee. (Masculine: der Kaffee → einen)",
+        "Ich esse EIN Brot. (Neuter: das Brot → ein — unchanged)",
+        "Ich bestelle EINE Suppe. (Feminine: die Suppe → eine — unchanged)"
+      ]
     }
   ],
   "dialogue": {
@@ -201,68 +239,254 @@
       "de": "Dialog"
     },
     "scenario": {
-      "en": "Discussing Daily Habits",
-      "de": "Discussing Daily Habits"
+      "en": "Direct Objects in Everyday Sentences",
+      "de": "Direkte Objekte in Alltagssätzen"
     },
     "turns": [
       {
         "speaker": "A:",
-        "de": "Was isst du morgens zum Frühstück?"
+        "de": "Was machst du heute?"
       },
       {
         "speaker": "B:",
-        "de": "Morgens esse ich ein Brot und trinke Kaffee. Und du?"
+        "de": "Ich schreibe einen Brief und trinke einen Kaffee."
       },
       {
         "speaker": "A:",
-        "de": "Ich trinke nur Tee. Was machst du am Abend?"
+        "de": "Was für einen Brief? Hast du Zeit?"
       },
       {
         "speaker": "B:",
-        "de": "Am Abend lese ich ein Buch oder sehe fern."
+        "de": "Ich habe keine Zeit, aber ich habe einen Termin."
       },
       {
         "speaker": "A:",
-        "de": "Liest du gerne Romane?"
+        "de": "Ich brauche auch einen Termin. Hast du ein Formular?"
+      },
+      {
+        "speaker": "B:",
+        "de": "Ja, ich habe ein Formular und einen Stift. Komm, wir gehen."
       }
     ]
   },
   "miniGame": {
-    "type": "v2_order_challenge",
-    "id": "m8-v2-puzzle",
+    "type": "accusative_article_trainer",
+    "id": "m8-accusative-shift-sprint",
     "payload": {
-      "type": "v2_order_challenge",
-      "id": "m8-v2-puzzle",
-      "scrambled_chips": [
-        "heute",
-        "ich",
-        "trinke",
-        "Tee"
+      "type": "accusative_article_trainer",
+      "id": "m8-accusative-shift-sprint",
+      "prompts": [
+        {
+          "sentence": "Ich trinke ________ Kaffee.",
+          "hint": "der Kaffee (masculine) — shift to accusative",
+          "correct_art": "einen",
+          "wrong_arts": [
+            "ein",
+            "eine",
+            "einem"
+          ]
+        },
+        {
+          "sentence": "Ich esse ________ Brot.",
+          "hint": "das Brot (neuter) — NO change",
+          "correct_art": "ein",
+          "wrong_arts": [
+            "einen",
+            "eine",
+            "einem"
+          ]
+        },
+        {
+          "sentence": "Ich bestelle ________ Suppe.",
+          "hint": "die Suppe (feminine) — NO change",
+          "correct_art": "eine",
+          "wrong_arts": [
+            "einen",
+            "ein",
+            "einem"
+          ]
+        },
+        {
+          "sentence": "Er hat ________ Hund.",
+          "hint": "der Hund (masculine) — negative accusative",
+          "correct_art": "keinen",
+          "wrong_arts": [
+            "kein",
+            "keine",
+            "keinem"
+          ]
+        },
+        {
+          "sentence": "Wir kaufen ________ Stuhl.",
+          "hint": "der Stuhl (masculine) — definite accusative",
+          "correct_art": "den",
+          "wrong_arts": [
+            "der",
+            "die",
+            "das"
+          ]
+        }
       ],
-      "correct_sequence": [
-        "Heute",
-        "trinke",
-        "ich",
-        "Tee"
-      ],
-      "explanation": "When 'Heute' takes Position 1, the verb 'trinke' stays in Position 2 and pushes 'ich' to Position 3."
+      "explanation": "Only masculine articles shift in the accusative: der → den, ein → einen, kein → keinen. Feminine, neuter, and plural stay identical to the nominative."
     }
   },
   "practiceBank": [
     {
-      "kind": "Drill",
-      "prompt": "Conjugate fahren: Du ________ (fahren) nach Hause.",
-      "answer": "fährst"
+      "kind": "MCQ",
+      "prompt": "Which article correctly completes: \"Ich bestelle ___ (der) Salat\"?",
+      "options": [
+        "ein",
+        "einen",
+        "eine",
+        "einem"
+      ],
+      "answer": "einen"
     },
     {
-      "kind": "Drill",
-      "prompt": "Reorder V2 sentence: [im Supermarkt] [kaufe] [ich] [ein]",
-      "answer": "Im Supermarkt kaufe ich ein."
+      "kind": "MCQ",
+      "prompt": "What does the waiter mean by \"Zusammen oder getrennt?\"",
+      "options": [
+        "Eat inside or outside?",
+        "Pay together or separately?",
+        "Cash or card?",
+        "Hot or cold?"
+      ],
+      "answer": "Pay together or separately?"
     },
     {
-      "kind": "Drill",
-      "prompt": "Conjugate lesen: Er ________ (lesen) die Zeitung.",
-      "answer": "liest"
+      "kind": "Fill-in",
+      "prompt": "Ich trinke _______ (einen/ein) Tee. \\(\\rightarrow\\) einen"
+    },
+    {
+      "kind": "Fill-in",
+      "prompt": "Sie isst _______ (einen/ein) Brot. \\(\\rightarrow\\) ein"
+    },
+    {
+      "kind": "Fill-in",
+      "prompt": "Er bestellt _______ (eine/einen) Suppe. \\(\\rightarrow\\) eine"
+    },
+    {
+      "kind": "Accusative Shift",
+      "prompt": "der Apfel \\(\\rightarrow\\) Ich esse einen Apfel."
+    },
+    {
+      "kind": "Accusative Shift",
+      "prompt": "das Bier \\(\\rightarrow\\) Ich trinke ein Bier."
+    },
+    {
+      "kind": "Accusative Shift",
+      "prompt": "die Banane \\(\\rightarrow\\) Ich esse eine Banane."
+    },
+    {
+      "kind": "Translation DE->EN",
+      "prompt": "\"Die Rechnung, bitte.\" \\(\\rightarrow\\) The bill, please."
+    },
+    {
+      "kind": "Translation EN->DE",
+      "prompt": "\"I would like a glass of water, please.\" \\(\\rightarrow\\) Ich möchte bitte ein Glas Wasser."
+    },
+    {
+      "kind": "Translation NE->DE",
+      "prompt": "\"खाना धेरै मीठो छ!\" \\(\\rightarrow\\) Das Essen ist sehr lecker!"
+    },
+    {
+      "kind": "Matching",
+      "prompt": "Stimmt so! \\(\\rightarrow\\) Keep the change!"
+    },
+    {
+      "kind": "Matching",
+      "prompt": "das Trinkgeld \\(\\rightarrow\\) tip / gratuity"
+    },
+    {
+      "kind": "Matching",
+      "prompt": "stilles Wasser \\(\\rightarrow\\) flat non-sparkling water"
+    },
+    {
+      "kind": "Polite Phrasing",
+      "prompt": "Which phrase is polite when ordering?",
+      "options": [
+        "Ich will Kaffee",
+        "Ich möchte bitte einen Kaffee",
+        "Gib mir Kaffee",
+        "Kaffee her"
+      ],
+      "answer": "Ich möchte bitte einen Kaffee"
+    },
+    {
+      "kind": "Dictation",
+      "prompt": "Listen & Type: \"Ich möchte bitte einen Kaffee mit Milch.\""
+    },
+    {
+      "kind": "Dictation",
+      "prompt": "Listen & Type: \"Wir möchten bitte zusammen bezahlen.\""
+    },
+    {
+      "kind": "Error Correction",
+      "prompt": "\"Ich möchte ein Salat.\" \\(\\rightarrow\\) Ich möchte einen Salat."
+    },
+    {
+      "kind": "Error Correction",
+      "prompt": "\"Ich trinke eine Kaffee.\" \\(\\rightarrow\\) Ich trinke einen Kaffee."
+    },
+    {
+      "kind": "Culture MCQ",
+      "prompt": "In Germany, if you say \"Stimmt so!\" when handing €20 for a €18 bill, you are:",
+      "options": [
+        "Asking for change",
+        "Leaving a €2 tip and letting them keep the change",
+        "Complaining",
+        "Asking for a receipt"
+      ],
+      "answer": "Leaving a €2 tip and letting them keep the change"
+    },
+    {
+      "kind": "Verb Trigger",
+      "prompt": "Does brauchen take Nominative or Accusative? \\(\\rightarrow\\) Accusative"
+    },
+    {
+      "kind": "Verb Trigger",
+      "prompt": "Does bestellen take Nominative or Accusative? \\(\\rightarrow\\) Accusative"
+    },
+    {
+      "kind": "Listening Gap",
+      "prompt": "\"Ich bestelle einen _______.\" (Audio: Salat) \\(\\rightarrow\\) Salat"
+    },
+    {
+      "kind": "Sentence Unscramble",
+      "prompt": "[einen / Ich / bitte / Tee / möchte] \\(\\rightarrow\\) Ich möchte bitte einen Tee."
+    },
+    {
+      "kind": "Antonym Matching",
+      "prompt": "hungrig \\(\\leftrightarrow\\) satt (full / satisfied)"
+    }
+  ],
+  "traps": [
+    {
+      "note": {
+        "en": "Trap 1: Forgetting the masculine accusative shift",
+        "ne": "पुरुषलिङ्गको अक्कुसेटिभ shift (einen/den) बिर्सनु",
+        "de": "Den maskulinen Akkusativ-Wechsel vergessen"
+      },
+      "wrong": "Falsch: \"Ich schreibe ein Brief.\" / \"Er hat kein Hund.\"",
+      "right": "Richtig: \"Ich schreibe EINEN Brief.\" / \"Er hat KEINEN Hund.\""
+    },
+    {
+      "note": {
+        "en": "Trap 2: Shifting feminine and neuter articles that must NOT change",
+        "ne": "स्त्रीलिङ्ग र नपुंसकलिङ्गका article लाई बदल्नु जुन बदलिनु हुँदैन",
+        "de": "Feminine und neutrale Artikel verschieben, die UNVERÄNDERT bleiben müssen"
+      },
+      "wrong": "Falsch: \"Ich esse einen Apfel… nein: Ich esse ein Brot.\" (das Brot is neuter — stays 'ein')",
+      "right": "Richtig: \"Ich esse EIN Brot.\" / \"Ich trinke EINE Milch.\" (Neuter and feminine NEVER shift.)"
+    },
+    {
+      "note": {
+        "en": "Trap 3: Using an accusative article on the SUBJECT. The subject stays in the nominative — only the direct object shifts.",
+        "ne": "फन्दा: कर्तामा अक्कुसेटिभ article प्रयोग गर्नु। कर्ता Nominative मै रहन्छ — प्रत्यक्ष वस्तु मात्र परिवर्तित हुन्छ।",
+        "de": "Falle: Einen Akkusativartikel auf das SUBJEKT anwenden. Das Subjekt bleibt im Nominativ — nur das Direktobjekt wechselt."
+      },
+      "wrong": "Falsch: \"Einen Kaffee ist lecker.\"",
+      "right": "Richtig: \"DER Kaffee ist lecker.\" (Subject = nominative; object = accusative.)"
     }
   ],
   "culture": {
@@ -271,7 +495,9 @@
       "de": "Kultureller Kontext"
     },
     "body": [
-      "⚠️ *Common Trap (Fettnäpfchen): Saying \"Heute ich trinke Tee\" is WRONG! Inverting Subject and Verb after a time word is mandatory: \"Heute trinke ich Tee\"*."
+      "🚨 CRITICAL RULE: In German, only masculine articles change in the accusative. This is a common source of errors even for advanced speakers, because the temptation to 'regularise' die → den, das → das, or eine → eine feels symmetrical but is wrong.",
+      "Why it happens: The masculine is the only gender whose article differs between nominative and accusative, so a learner who shifts everything by pattern-matching looks consistent but is wrong three times out of four.",
+      "XP Reward: 100 XP | Badge Unlocked: 🎯 Accusative Shift Specialist"
     ]
   }
 }

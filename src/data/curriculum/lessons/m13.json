@@ -1,619 +1,280 @@
 {
   "cefr": "A1.2",
-  "docRoute": "/grammar",
+  "docRoute": "/vocab",
   "objectives": {
     "en": [
-      "Express ability (können), necessity (müssen), wish (wollen/möchten), permission (dürfen), and obligation (sollen)."
+      "Describe clothing, state colors, express size preferences, and use demonstratives (dieser/diese/dieses).",
+      "Estimated time 50 Minutes · Prerequisites: Units 01–12"
     ]
   },
   "lexicon": [
     {
-      "word": "können",
-      "en": "can / to be able to",
-      "ne": "सक्नु",
-      "plural": "kann / konnte / gekonnt",
-      "ipa": "/ˈkœnən/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Ich kann Deutsch sprechen.",
-          "en": "I can speak German.",
-          "ne": "म जर्मन बोल्न सक्छु।"
-        }
-      ]
-    },
-    {
-      "word": "müssen",
-      "en": "must / to have to",
-      "ne": "पर्नु / पर्छ",
-      "plural": "muss / musste / gemusst",
-      "ipa": "/ˈmʏsn̩/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Ich muss heute arbeiten.",
-          "en": "I must work today.",
-          "ne": "म आज काम गर्नु पर्छ।"
-        }
-      ]
-    },
-    {
-      "word": "wollen",
-      "en": "to want to",
-      "ne": "चाहनु",
-      "plural": "will / wollte / gewollt",
-      "ipa": "/ˈvɔlən/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Er will nach Berlin fahren.",
-          "en": "He wants to travel to Berlin.",
-          "ne": "उहाँ बर्लिन जान चाहनुहुन्छ।"
-        }
-      ]
-    },
-    {
-      "word": "möchten",
-      "en": "would like to",
-      "ne": "चाहन्थें",
-      "plural": "möchte / mochtest / möchte",
-      "ipa": "/ˈmœçtn̩/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Ich möchte einen Kaffee trinken.",
-          "en": "I would like to drink a coffee.",
-          "ne": "म कफी पिउन चाहन्छु।"
-        }
-      ]
-    },
-    {
-      "word": "dürfen",
-      "en": "may / to be allowed to",
-      "ne": "अनुमति हुनु",
-      "plural": "darf / durfte / gedurft",
-      "ipa": "/ˈdʏʁfn̩/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Hier darf man nicht rauchen.",
-          "en": "One is not allowed to smoke here.",
-          "ne": "यहाँ धुम्रपान गर्न पाइँदैन।"
-        }
-      ]
-    },
-    {
-      "word": "sollen",
-      "en": "should / to be supposed to",
-      "ne": "गर्नु पर्ने हुनु",
-      "plural": "soll / sollte / gesollt",
-      "ipa": "/ˈzɔlən/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Der Arzt sagt, ich soll schlafen.",
-          "en": "The doctor says I should sleep.",
-          "ne": "डाक्टरले मलाई सुत्न भन्नुभएको छ।"
-        }
-      ]
-    },
-    {
-      "word": "mögen",
-      "en": "to like",
-      "ne": "मन पर्नु",
-      "plural": "mag / mochte / gemocht",
-      "ipa": "/ˈmøːɡn̩/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Ich mag Schokolade.",
-          "en": "I like chocolate.",
-          "ne": "मलाई चकलेट मन पर्छ।"
-        }
-      ]
-    },
-    {
-      "word": "Führerschein",
-      "en": "Driving license",
-      "ne": "सवारी चालक अनुमतिपत्र",
-      "article": "der",
-      "plural": "Führerscheine",
-      "ipa": "/ˈfyːʁɐ_ʃaɪ̯n/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Ich habe einen Führerschein.",
-          "en": "I have a driving license.",
-          "ne": "मसँग सवारी चालक अनुमतिपत्र छ।"
-        }
-      ]
-    },
-    {
-      "word": "Hausaufgabe",
-      "en": "Homework",
-      "ne": "गृहकार्य",
+      "word": "Kleidung",
+      "en": "Clothing",
+      "ne": "लुगा",
       "article": "die",
-      "plural": "Hausaufgaben",
-      "ipa": "/ˈhaʊ̯s_ʔaʊ̯fˌɡaːbə/",
-      "frequency": "active",
+      "partOfSpeech": "Noun",
       "examples": [
         {
-          "de": "Die Schüler müssen Hausaufgaben machen.",
-          "en": "Students must do homework.",
-          "ne": "विद्यार्थीहरूले गृहकार्य गर्नु पर्छ।"
+          "de": "Die Kleidung ist schön.",
+          "en": "The clothing is beautiful.",
+          "ne": "लुगा राम्रो छ।"
         }
       ]
     },
     {
-      "word": "Hilfe",
-      "en": "Help / Assistance",
-      "ne": "सहयोग",
-      "article": "die",
-      "plural": "-",
-      "ipa": "/ˈhɪlfə/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Brauchen Sie Hilfe?",
-          "en": "Do you need help?",
-          "ne": "तपाईंलाई सहयोग चाहिन्छ?"
-        }
-      ]
-    },
-    {
-      "word": "schwimmen",
-      "en": "to swim",
-      "ne": "पौडी खेल्नु",
-      "plural": "schwimmt / schwamm / ist geschwommen",
-      "ipa": "/ˈʃvɪmən/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Kannst du schwimmen?",
-          "en": "Can you swim?",
-          "ne": "के तिमी पौडी खेल्न सक्छौ?"
-        }
-      ]
-    },
-    {
-      "word": "tanzen",
-      "en": "to dance",
-      "ne": "नाच्नु",
-      "plural": "tanzt / tanzte / getanzt",
-      "ipa": "/ˈtantsn̩/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Sie kann sehr gut tanzen.",
-          "en": "She can dance very well.",
-          "ne": "उनी धेरै राम्रो नाच्न सक्छिन्।"
-        }
-      ]
-    },
-    {
-      "word": "singen",
-      "en": "to sing",
-      "ne": "गाउनु",
-      "plural": "singt / sang / gesungen",
-      "ipa": "/ˈzɪŋən/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Er will ein Lied singen.",
-          "en": "He wants to sing a song.",
-          "ne": "उहाँ गीत गाउन चाहनुहुन्छ।"
-        }
-      ]
-    },
-    {
-      "word": "rauchen",
-      "en": "to smoke",
-      "ne": "धुम्रपान गर्नु",
-      "plural": "raucht / rauchte / geraucht",
-      "ipa": "/ˈʁaʊ̯xn̩/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Hier ist Rauchen verboten.",
-          "en": "Smoking is prohibited here.",
-          "ne": "यहाँ धुम्रपान मनाही छ।"
-        }
-      ]
-    },
-    {
-      "word": "parken",
-      "en": "to park",
-      "ne": "गाडी पार्किङ गर्नु",
-      "plural": "parkt / parkte / geparkt",
-      "ipa": "/ˈpaʁkn̩/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Hier darf man nicht parken.",
-          "en": "One is not allowed to park here.",
-          "ne": "यहाँ गाडी पार्किङ गर्न पाइँदैन।"
-        }
-      ]
-    },
-    {
-      "word": "verboten",
-      "en": "Prohibited / Forbidden",
-      "ne": "मनाही गरिएको",
-      "plural": "-",
-      "ipa": "/fɛɐ̯ˈboːtn̩/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Das Parken ist verboten.",
-          "en": "Parking is prohibited.",
-          "ne": "पार्किङ मनाही गरिएको छ।"
-        }
-      ]
-    },
-    {
-      "word": "erlaubt",
-      "en": "Allowed / Permitted",
-      "ne": "अनुमति भएको",
-      "plural": "-",
-      "ipa": "/fɛɐ̯ˈlaʊ̯pt/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Ist das Fotografieren erlaubt?",
-          "en": "Is taking photos allowed?",
-          "ne": "के फोटो खिच्न पाइन्छ?"
-        }
-      ]
-    },
-    {
-      "word": "Termin",
-      "en": "Appointment",
-      "ne": "भेटघाट समय",
-      "article": "der",
-      "plural": "Termine",
-      "ipa": "/tɛʁˈmiːn/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Ich muss einen Termin absagen.",
-          "en": "I must cancel an appointment.",
-          "ne": "मैले भेटघाट समय रद्द गर्नु पर्छ।"
-        }
-      ]
-    },
-    {
-      "word": "Zeit",
-      "en": "Time",
-      "ne": "समय",
-      "article": "die",
-      "plural": "-",
-      "ipa": "/tsaɪ̯t/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Ich habe heute keine Zeit.",
-          "en": "I have no time today.",
-          "ne": "आज मसँग समय छैन।"
-        }
-      ]
-    },
-    {
-      "word": "Lust",
-      "en": "Desire / Inclination",
-      "ne": "इच्छा",
-      "article": "die",
-      "plural": "-",
-      "ipa": "/lʊst/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Hast du Lust auf Kino?",
-          "en": "Do you feel like going to the cinema?",
-          "ne": "के तिमीलाई चलचित्र हेर्न जाने इच्छा छ?"
-        }
-      ]
-    },
-    {
-      "word": "Regenschirm",
-      "en": "Umbrella",
-      "ne": "छाता",
-      "article": "der",
-      "plural": "Regenschirme",
-      "ipa": "/ˈʁeːɡn̩_ʃɪʁm/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Ich muss einen Regenschirm mitnehmen.",
-          "en": "I must take an umbrella along.",
-          "ne": "मैले छाता सँगै लैजानु पर्छ।"
-        }
-      ]
-    },
-    {
-      "word": "Pass",
-      "en": "Passport",
-      "ne": "राहदानी",
-      "article": "der",
-      "plural": "Pässe",
-      "ipa": "/pas/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Ich muss meinen Pass zeigen.",
-          "en": "I must show my passport.",
-          "ne": "मैले मेरो राहदानी देखाउनु पर्छ।"
-        }
-      ]
-    },
-    {
-      "word": "Visum",
-      "en": "Visa",
-      "ne": "भिसा",
+      "word": "Hemd",
+      "en": "Shirt",
+      "ne": "कमिज",
       "article": "das",
-      "plural": "Visa",
-      "ipa": "/ˈviːzʊm/",
-      "frequency": "active",
+      "partOfSpeech": "Noun",
       "examples": [
         {
-          "de": "Für Deutschland brauche ich ein Visum.",
-          "en": "I need a visa for Germany.",
-          "ne": "जर्मनको लागि मलाई भिसा चाहिन्छ।"
+          "de": "Das Hemd ist weiß.",
+          "en": "The shirt is white.",
+          "ne": "कमिज सेतो छ।"
         }
       ]
     },
     {
-      "word": "Regel",
-      "en": "Rule",
-      "ne": "नियम",
+      "word": "Hose",
+      "en": "Trousers / Pants",
+      "ne": "प्यान्ट",
       "article": "die",
-      "plural": "Regeln",
-      "ipa": "/ˈʁeːɡl̩/",
-      "frequency": "active",
+      "partOfSpeech": "Noun",
       "examples": [
         {
-          "de": "Man muss die Regeln beachten.",
-          "en": "One must follow the rules.",
-          "ne": "नियमको पालना गर्नु पर्छ।"
+          "de": "Die Hose ist blau.",
+          "en": "The trousers are blue.",
+          "ne": "प्यान्ट नीलो छ।"
         }
       ]
     },
     {
-      "word": "leise",
-      "en": "Quiet",
-      "ne": "शान्त",
-      "plural": "-",
-      "ipa": "/ˈlaɪ̯zə/",
-      "frequency": "active",
+      "word": "Jacke",
+      "en": "Jacket",
+      "ne": "ज्याकेट",
+      "article": "die",
+      "partOfSpeech": "Noun",
       "examples": [
         {
-          "de": "Im Krankenhaus muss man leise sein.",
-          "en": "In the hospital one must be quiet.",
-          "ne": "अस्पतालमा शान्त हुनु पर्छ।"
+          "de": "Die Jacke ist warm.",
+          "en": "The jacket is warm.",
+          "ne": "ज्याकेट न्यानो छ।"
         }
       ]
     },
     {
-      "word": "schnell",
-      "en": "Fast",
-      "ne": "छिटो",
-      "plural": "-",
-      "ipa": "/ʃnɛl/",
-      "frequency": "active",
+      "word": "Schuh",
+      "en": "Shoe",
+      "ne": "जुत्ता",
+      "article": "der",
+      "partOfSpeech": "Noun",
       "examples": [
         {
-          "de": "Er kann sehr schnell laufen.",
-          "en": "He can run very fast.",
-          "ne": "उहाँ धेरै छिटो दौडन सक्नुहुन्छ।"
+          "de": "Die Schuhe sind neu.",
+          "en": "The shoes are new.",
+          "ne": "जुत्ता नयाँ छन्।"
         }
       ]
     },
     {
-      "word": "perfekt",
-      "en": "Perfect",
-      "ne": "पूर्ण / पर्फेक्ट",
-      "plural": "-",
-      "ipa": "/pɛʁˈfɛkt/",
-      "frequency": "passive",
+      "word": "Farbe",
+      "en": "Color",
+      "ne": "रंग",
+      "article": "die",
+      "partOfSpeech": "Noun",
       "examples": [
         {
-          "de": "Niemand ist perfekt.",
-          "en": "Nobody is perfect.",
-          "ne": "कोही पनि पर्फेक्ट हुँदैन।"
+          "de": "Welche Farbe gefällt dir?",
+          "en": "Which color do you like?",
+          "ne": "केही रंग मन पर्छ?"
         }
       ]
     },
     {
-      "word": "frei",
-      "en": "Free",
-      "ne": "स्वतन्त्र / खाली",
-      "plural": "-",
-      "ipa": "/fʁaɪ̯/",
-      "frequency": "active",
+      "word": "rot",
+      "en": "red",
+      "ne": "रातो",
+      "partOfSpeech": "Adjective",
       "examples": [
         {
-          "de": "Morgen habe ich frei.",
-          "en": "Tomorrow I have the day off.",
-          "ne": "भोलि मेरो बिदा छ।"
+          "de": "Das Hemd ist rot.",
+          "en": "The shirt is red.",
+          "ne": "कमिज रातो छ।"
         }
       ]
     },
     {
-      "word": "krank",
-      "en": "Sick / Ill",
-      "ne": "बिरामी",
-      "plural": "-",
-      "ipa": "/kʁaŋk/",
-      "frequency": "active",
+      "word": "blau",
+      "en": "blue",
+      "ne": "नीलो",
+      "partOfSpeech": "Adjective",
       "examples": [
         {
-          "de": "Er ist krank und muss zu Hause bleiben.",
-          "en": "He is sick and must stay at home.",
-          "ne": "उहाँ बिरामी हुनुहुन्छ र घरमै बस्नु पर्छ।"
+          "de": "Die Hose ist blau.",
+          "en": "The trousers are blue.",
+          "ne": "प्यान्ट नीलो छ।"
         }
       ]
     },
     {
-      "word": "gesund",
-      "en": "Healthy",
-      "ne": "स्वस्थ",
-      "plural": "-",
-      "ipa": "/ɡəˈzʊnt/",
-      "frequency": "active",
+      "word": "grün",
+      "en": "green",
+      "ne": "हरियो",
+      "partOfSpeech": "Adjective",
       "examples": [
         {
-          "de": "Ich will gesund bleiben.",
-          "en": "I want to stay healthy.",
-          "ne": "म स्वस्थ रहन चाहन्छु।"
+          "de": "Der Schrank ist grün.",
+          "en": "The wardrobe is green.",
+          "ne": "अलमारी हरियो छ।"
         }
       ]
     },
     {
-      "word": "bleiben",
-      "en": "to remain / stay",
+      "word": "schwarz",
+      "en": "black",
+      "ne": "कालो",
+      "partOfSpeech": "Adjective",
+      "examples": [
+        {
+          "de": "Die Schuhe sind schwarz.",
+          "en": "The shoes are black.",
+          "ne": "जुत्ता कालो छन्।"
+        }
+      ]
+    },
+    {
+      "word": "weiß",
+      "en": "white",
+      "ne": "सेतो",
+      "partOfSpeech": "Adjective",
+      "examples": [
+        {
+          "de": "Das Hemd ist weiß.",
+          "en": "The shirt is white.",
+          "ne": "कमिज सेतो छ।"
+        }
+      ]
+    },
+    {
+      "word": "dieser",
+      "en": "this (masculine)",
+      "ne": "यो (पुरुष)",
+      "article": "der",
+      "partOfSpeech": "Demonstrative",
+      "examples": [
+        {
+          "de": "Dieser Pullover ist schön.",
+          "en": "This sweater is beautiful.",
+          "ne": "यो स्वेटर राम्रो छ।"
+        }
+      ]
+    },
+    {
+      "word": "diese",
+      "en": "this (feminine)",
+      "ne": "यो (स्त्री)",
+      "article": "die",
+      "partOfSpeech": "Demonstrative",
+      "examples": [
+        {
+          "de": "Diese Hose passt gut.",
+          "en": "These trousers fit well.",
+          "ne": "यी प्यान्ट राम्रो बस्छ।"
+        }
+      ]
+    },
+    {
+      "word": "dieses",
+      "en": "this (neuter)",
+      "ne": "यो (नपुंसक)",
+      "article": "das",
+      "partOfSpeech": "Demonstrative",
+      "examples": [
+        {
+          "de": "Dieses Hemd ist teuer.",
+          "en": "This shirt is expensive.",
+          "ne": "यो कमिज महँगो छ।"
+        }
+      ]
+    },
+    {
+      "word": "Größe",
+      "en": "Size (clothing)",
+      "ne": "साइज",
+      "article": "die",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Welche Größe haben Sie?",
+          "en": "What size do you have?",
+          "ne": "तपाईंको साइज के हो?"
+        }
+      ]
+    },
+    {
+      "word": "anprobieren",
+      "en": "to try on",
+      "ne": "लगाउनु / परीक्षण गर्नु",
+      "partOfSpeech": "Verb (sep)",
+      "examples": [
+        {
+          "de": "Kann ich sie anprobieren?",
+          "en": "Can I try it on?",
+          "ne": "के म यो लगाउन सक्छु?"
+        }
+      ]
+    },
+    {
+      "word": "kosten",
+      "en": "to cost",
+      "ne": "खर्च हुनु",
+      "partOfSpeech": "Verb",
+      "examples": [
+        {
+          "de": "Was kostet die Jacke?",
+          "en": "How much does the jacket cost?",
+          "ne": "ज्याकेटको कति खर्च हुन्छ?"
+        }
+      ]
+    },
+    {
+      "word": "passen",
+      "en": "to fit",
       "ne": "बस्नु",
-      "plural": "bleibt / blieb / ist geblieben",
-      "ipa": "/ˈblaɪ̯bn̩/",
-      "frequency": "active",
+      "partOfSpeech": "Verb",
       "examples": [
         {
-          "de": "Du musst im Bett bleiben.",
-          "en": "You must stay in bed.",
-          "ne": "तिमी ओछ्यानमै बस्नु पर्छ।"
+          "de": "Die Hose passt gut.",
+          "en": "The trousers fit well.",
+          "ne": "प्यान्ट राम्रो बस्छ।"
         }
       ]
     },
     {
-      "word": "mitnehmen",
-      "en": "to take along",
-      "ne": "सँगै लैजानु",
-      "plural": "nimmt mit / nahm mit / mitgenommen",
-      "ipa": "/ˈmɪt_neːmən/",
-      "frequency": "active",
+      "word": "gefallen",
+      "en": "to appeal to / to like (dative)",
+      "ne": "मन पर्नु",
+      "partOfSpeech": "Verb",
       "examples": [
         {
-          "de": "Ich will Geld mitnehmen.",
-          "en": "I want to take money along.",
-          "ne": "म पैसा सँगै लैजान चाहन्छु।"
+          "de": "Mir gefällt diese Jacke.",
+          "en": "I like this jacket.",
+          "ne": "मलाई यो ज्याकेट मन पर्छ।"
         }
       ]
     },
     {
-      "word": "absagen",
-      "en": "to cancel",
-      "ne": "रद्द गर्नु",
-      "plural": "sagt ab / sagte ab / abgesagt",
-      "ipa": "/ˈap_zaːɡn̩/",
-      "frequency": "active",
+      "word": "tragen",
+      "en": "to wear / to carry",
+      "ne": "लगाउनु / बोक्नु",
+      "partOfSpeech": "Verb",
       "examples": [
         {
-          "de": "Ich muss den Termin absagen.",
-          "en": "I must cancel the appointment.",
-          "ne": "मैले भेटघाट समय रद्द गर्नु पर्छ।"
-        }
-      ]
-    },
-    {
-      "word": "verschieben",
-      "en": "to postpone / reschedule",
-      "ne": "सार्नु",
-      "plural": "verschiebt / verschob / verschoben",
-      "ipa": "/fɛɐ̯ˈʃiːbn̩/",
-      "frequency": "passive",
-      "examples": [
-        {
-          "de": "Können wir den Termin verschieben?",
-          "en": "Can we postpone the appointment?",
-          "ne": "के हामी भेटघाट समय सार्न सक्छौँ?"
-        }
-      ]
-    },
-    {
-      "word": "zahlen",
-      "en": "to pay",
-      "ne": "भुक्तानी गर्नु",
-      "plural": "zahlt / zahlte / gezahlt",
-      "ipa": "/ˈtsaːlən/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Wir müssen die Miete zahlen.",
-          "en": "We must pay the rent.",
-          "ne": "हामीले कोठा भाडा तिर्नु पर्छ।"
-        }
-      ]
-    },
-    {
-      "word": "helfen",
-      "en": "to help",
-      "ne": "सहयोग गर्नु",
-      "plural": "hilft / half / geholfen",
-      "ipa": "/ˈhɛlfn̩/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Kannst du mir helfen?",
-          "en": "Can you help me?",
-          "ne": "के तिमी मलाई सहयोग गर्न सक्छौ?"
-        }
-      ]
-    },
-    {
-      "word": "bringen",
-      "en": "to bring",
-      "ne": "ल्याउनु",
-      "plural": "bringt / brachte / gebracht",
-      "ipa": "/ˈbʁɪŋən/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Können Sie mir Wasser bringen?",
-          "en": "Can you bring me water?",
-          "ne": "के तपाईं मलाई पानी ल्याइदिन सक्नुहुन्छ?"
-        }
-      ]
-    },
-    {
-      "word": "versuchen",
-      "en": "to try",
-      "ne": "प्रयास गर्नु",
-      "plural": "versucht / versuchte / versucht",
-      "ipa": "/fɛɐ̯ˈzuːxn̩/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Ich will es versuchen.",
-          "en": "I want to try it.",
-          "ne": "म यसको प्रयास गर्न चाहन्छु।"
-        }
-      ]
-    },
-    {
-      "word": "verstehen",
-      "en": "to understand",
-      "ne": "बुझ्नु",
-      "plural": "versteht / verstand / verstanden",
-      "ipa": "/fɛɐ̯ˈʃteːən/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Ich kann Sie gut verstehen.",
-          "en": "I can understand you well.",
-          "ne": "म तपाईंलाई राम्रोसँग बुझ्न सक्छु।"
-        }
-      ]
-    },
-    {
-      "word": "sprechen",
-      "en": "to speak",
-      "ne": "बोल्नु",
-      "plural": "spricht / sprach / gesprochen",
-      "ipa": "/ˈʃpʁɛçn̩/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Er kann fünf Sprachen sprechen.",
-          "en": "He can speak five languages.",
-          "ne": "उहाँ पाँच भाषा बोल्न सक्नुहुन्छ।"
+          "de": "Welche Größe tragen Sie?",
+          "en": "What size do you wear?",
+          "ne": "तपाईं कति नम्बरको साइज लगाउनुहुन्छ?"
         }
       ]
     }
@@ -621,88 +282,72 @@
   "grammar": [
     {
       "title": {
-        "en": "Modal Verb Conjugation Matrix in Present Tense (Präsens)",
-        "de": "Modal Verb Conjugation Matrix in Present Tense (Präsens)"
+        "en": "Demonstrative Articles (dieser / diese / dieses)",
+        "de": "Demonstrativartikel (dieser / diese / dieses)"
       },
       "notes": [
         {
-          "en": "Modal verbs modify the main verb. Notice that singular forms (ich, du, er/sie/es) undergo a vowel change and ich and er/sie/es share the EXACT SAME UNENDED FORM:",
-          "ne": "",
-          "de": ""
+          "en": "Demonstratives take the same endings as definite articles (der/die/das). In the accusative, only the masculine form changes (dieser → diesen). Feminine, neuter, and plural remain unchanged.",
+          "ne": "Demonstrativeहरू निश्चित articles (der/die/das) जस्तै endings लिन्छन्। Accusative मा मात्र पुरुषलिङ्ग (masculine) रूप परिवर्तित हुन्छ (dieser → diesen)। स्त्रीलिङ्ग, नपुंसकलिङ्ग, र बहुवचन अपरिवर्तित रहन्छन्।",
+          "de": "Demonstrativa nehmen die gleichen Endungen wie bestimmte Artikel (der/die/das). Im Akkusativ ändert sich nur die männliche Form (dieser → diesen). Feminin, Neutrum und Plural bleiben unverändert."
         }
       ],
       "table": {
         "columns": [
-          "Pronoun",
-          "können (can)",
-          "müssen (must)",
-          "wollen (want)",
-          "dürfen (may)",
-          "möchten (would)"
+          "Gender",
+          "Nominative",
+          "Accusative",
+          "Example (Nom)",
+          "Example (Acc)"
         ],
         "rows": [
           [
-            "ich",
-            "ich kann",
-            "ich muss",
-            "ich will",
-            "ich darf",
-            "ich möchte"
+            "Masculine (der)",
+            "dieser",
+            "diesen",
+            "dieser Pullover",
+            "diesen Pullover"
           ],
           [
-            "du",
-            "du kannst",
-            "du musst",
-            "du willst",
-            "du darfst",
-            "du möchtest"
+            "Feminine (die)",
+            "diese",
+            "diese",
+            "diese Hose",
+            "diese Hose"
           ],
           [
-            "er / sie / es",
-            "er kann",
-            "er muss",
-            "er will",
-            "er darf",
-            "er möchte"
+            "Neuter (das)",
+            "dieses",
+            "dieses",
+            "dieses Hemd",
+            "dieses Hemd"
           ],
           [
-            "wir",
-            "wir können",
-            "wir müssen",
-            "wir wollen",
-            "wir dürfen",
-            "wir möchten"
-          ],
-          [
-            "ihr",
-            "ihr könnt",
-            "ihr müsst",
-            "ihr wollt",
-            "ihr dürft",
-            "ihr möchtet"
-          ],
-          [
-            "sie / Sie",
-            "sie können",
-            "sie müssen",
-            "sie wollen",
-            "sie dürfen",
-            "sie möchten"
+            "Plural (die)",
+            "diese",
+            "diese",
+            "diese Schuhe",
+            "diese Schuhe"
           ]
         ]
       }
     },
     {
       "title": {
-        "en": "The Modal Sentence Bracket Architecture (Satzklammer)",
-        "de": "The Modal Sentence Bracket Architecture (Satzklammer)"
+        "en": "Asking About Size & Expressing Preferences",
+        "de": "Nach Größe fragen & Vorlieben äußern"
       },
       "notes": [
         {
-          "en": "When a sentence contains a Modal Verb: 1. The Modal Verb is conjugated and placed in Position 2. 2. The Main Verb moves to the VERY END in INFINITIVE FORM (unconjugated)! Modal Sentence Bracket Structure: ┌──────────────┬──────────────────┬──────────────────────────┬──────────────────────┐ │ Position 1 │ Pos 2 (MODAL) │ Middle Sentence Field │ END (INFINITIVE VERB)│ ├──────────────┼──────────────────┼──────────────────────────┼──────────────────────┤ │ Ich │ KANN │ Deutsch │ sprechen. │ │ Er │ MUSS │ heute arbeiten │ gehen. │ │ Hier │ DARF │ man nicht │ rauchen. │ │ Wir │ WOLLEN │ nach Berlin │ fahren. │ └──────────────┴──────────────────┴──────────────────────────┴──────────────────────┘ ---",
-          "ne": "",
-          "de": ""
+          "en": "Asking size: 'Welche Größe haben Sie?' → 'Ich habe Größe M / 38.' Preference verbs: 'gefallen' takes dative (Mir gefällt...), 'passen' for fit. Adjectives after sein/bleiben/werden take NO ending: 'Das Hemd ist rot' (not 'rote').",
+          "ne": "साइज सोध्ने: 'Welche Größe haben Sie?' → 'Ich habe Größe M / 38.' पसन्दका क्रियाहरू: 'gefallen' ले dative लिन्छ (Mir gefällt...), 'passen' फिटका लागि। sein/bleiben/werden पछिको adjectives ले कुनै ending लिदैनन्: 'Das Hemd ist rot' (नकी 'rote')।",
+          "de": "Größe fragen: 'Welche Größe haben Sie?' → 'Ich habe Größe M / 38.' Präferenzverben: 'gefallen' nimmt Dativ (Mir gefällt...), 'passen' für Passform. Adjektive nach sein/bleiben/werden haben KEINE Endung: 'Das Hemd ist rot' (nicht 'rote')."
         }
+      ],
+      "bullets": [
+        "Welche Größe haben Sie? → Ich habe Größe M / 38.",
+        "Wie gefällt dir diese Jacke? → Sie gefällt mir sehr gut!",
+        "Das Hemd ist rot. (KEIN -e am Adjektiv nach sein!)"
       ]
     }
   ],
@@ -713,195 +358,201 @@
       "de": "Dialog"
     },
     "scenario": {
-      "en": "Planning a Weekend Trip",
-      "de": "Planning a Weekend Trip"
+      "en": "Shopping for Clothes in a Department Store",
+      "de": "Kleidung im Kaufhaus kaufen"
     },
     "turns": [
       {
-        "speaker": "A:",
-        "de": "Hallo Paul! Kannst du am Samstag zum Fußballspiel kommen?"
+        "speaker": "Verkäuferin:",
+        "de": "Guten Tag! Kann ich Ihnen helfen?"
       },
       {
-        "speaker": "B:",
-        "de": "Nein, leider nicht. Ich muss am Samstag für die Prüfung lernen."
+        "speaker": "Kunde:",
+        "de": "Ja, bitte. Ich suche eine Jacke."
       },
       {
-        "speaker": "A:",
-        "de": "Schade! Und am Sonntag? Willst du am Sonntag einen Ausflug machen?"
+        "speaker": "Verkäuferin:",
+        "de": "Wie gefällt Ihnen diese rote Jacke hier?"
       },
       {
-        "speaker": "B:",
-        "de": "Ja, am Sonntag möchte ich gerne mitkommen! Wohin fahren wir?"
+        "speaker": "Kunde:",
+        "de": "Die ist schön. Was kostet sie?"
       },
       {
-        "speaker": "A:",
-        "de": "Wir können an den See fahren."
+        "speaker": "Verkäuferin:",
+        "de": "Sie kostet 79 Euro. Welche Größe tragen Sie?"
+      },
+      {
+        "speaker": "Kunde:",
+        "de": "Ich trage Größe L. Kann ich sie anprobieren?"
+      },
+      {
+        "speaker": "Verkäuferin:",
+        "de": "Ja, gerne! Die Umkleidekabine ist dort drüben."
       }
     ]
   },
   "miniGame": {
-    "type": "grammar_drill",
-    "id": "m13-modal-bracket",
+    "type": "shopping_simulator",
+    "id": "m13-boutique-shop",
     "payload": {
-      "type": "grammar_drill",
-      "id": "m13-modal-bracket",
-      "prompt": "Ich (können) Deutsch (sprechen).",
-      "correct_de": "Ich kann Deutsch sprechen.",
-      "options": [
-        "Ich kann Deutsch sprechen.",
-        "Ich könne Deutsch sprechen.",
-        "Ich kann sprechen Deutsch."
+      "type": "shopping_simulator",
+      "id": "m13-boutique-shop",
+      "items": [
+        {
+          "item_de": "dieser Pullover",
+          "correct_art": "dieser",
+          "color": "blau",
+          "price": 45
+        },
+        {
+          "item_de": "diese Hose",
+          "correct_art": "diese",
+          "color": "schwarz",
+          "price": 50
+        }
       ]
     }
   },
   "practiceBank": [
     {
       "kind": "MCQ",
-      "prompt": "Where does the second verb go when a modal verb is in Position 2?",
+      "prompt": "Fill demonstrative: ________ (this - der) Pullover ist warm.",
       "options": [
-        "Position 1",
-        "Position 3",
-        "After modal",
-        "Very end in infinitive"
+        "Dieser",
+        "Diese",
+        "Dieses",
+        "Diesen"
       ],
-      "answer": "Very end in infinitive"
+      "answer": "Dieser"
     },
     {
       "kind": "MCQ",
-      "prompt": "What is the 3rd person singular (er) form of können?",
+      "prompt": "Fill demonstrative: Ich kaufe ________ (this - die) Hose.",
       "options": [
-        "könnt",
-        "kann",
-        "konnt",
-        "können"
+        "Dieser",
+        "Diese",
+        "Dieses",
+        "Diesen"
       ],
-      "answer": "kann"
+      "answer": "diese"
+    },
+    {
+      "kind": "Translation",
+      "prompt": "Translate: \"The shirt is white and the pants are blue.\"",
+      "answer": "Das Hemd ist weiß und die Hose ist blau."
     },
     {
       "kind": "Fill-in",
-      "prompt": "Er _______ (müssen) heute arbeiten. \\(\\rightarrow\\) muss"
+      "prompt": "________ (this - der) Pullover ist warm. \\(\\rightarrow\\) Dieser"
     },
     {
       "kind": "Fill-in",
-      "prompt": "Ich _______ (können) Deutsch sprechen. \\(\\rightarrow\\) kann"
+      "prompt": "Ich kaufe ________ (this - die) Hose. \\(\\rightarrow\\) diese"
     },
     {
       "kind": "Fill-in",
-      "prompt": "Hier _______ (dürfen) man nicht rauchen. \\(\\rightarrow\\) darf"
+      "prompt": "________ (this - das) Hemd ist teuer. \\(\\rightarrow\\) Dieses"
     },
     {
-      "kind": "Sentence Unscramble",
-      "prompt": "[sprechen / Ich / kann / Deutsch] \\(\\rightarrow\\) Ich kann Deutsch sprechen."
-    },
-    {
-      "kind": "Sentence Unscramble",
-      "prompt": "[parken / hier / Nicht / darf / man] \\(\\rightarrow\\) Hier darf man nicht parken."
-    },
-    {
-      "kind": "Infinitive Placement",
-      "prompt": "\"Er muss morgen nach Berlin _______ (fahren).\" \\(\\rightarrow\\) fahren"
-    },
-    {
-      "kind": "Infinitive Placement",
-      "prompt": "\"Wir wollen ein neues Auto _______ (kaufen).\" \\(\\rightarrow\\) kaufen"
+      "kind": "Accusative Shift",
+      "prompt": "dieser Pullover (Nom) \\(\\rightarrow\\) diesen Pullover (Acc)"
     },
     {
       "kind": "Translation DE->EN",
-      "prompt": "\"Hier darf man nicht rauchen.\" \\(\\rightarrow\\) Smoking is not allowed here."
+      "prompt": "\"Kann ich das anprobieren?\" \\(\\rightarrow\\) Can I try that on?"
     },
     {
       "kind": "Translation EN->DE",
-      "prompt": "\"I must stay at home today.\" \\(\\rightarrow\\) Ich muss heute zu Hause bleiben."
+      "prompt": "\"These shoes are black.\" \\(\\rightarrow\\) Diese Schuhe sind schwarz."
     },
     {
       "kind": "Translation NE->DE",
-      "prompt": "\"म जर्मन बोल्न सक्छु।\" \\(\\rightarrow\\) Ich kann Deutsch sprechen."
+      "prompt": "\"मलाई यो ज्याकेट मन पर्छ।\" \\(\\rightarrow\\) Mir gefällt diese Jacke."
     },
     {
       "kind": "Matching",
-      "prompt": "verboten \\(\\rightarrow\\) forbidden / prohibited"
+      "prompt": "anprobieren \\(\\rightarrow\\) to try on"
     },
     {
       "kind": "Matching",
-      "prompt": "erlaubt \\(\\rightarrow\\) allowed / permitted"
+      "prompt": "passen \\(\\rightarrow\\) to fit"
     },
     {
-      "kind": "Modal Difference",
-      "prompt": "darf nicht \\(\\rightarrow\\) must not / prohibited"
-    },
-    {
-      "kind": "Dictation",
-      "prompt": "Listen & Type: \"Ich muss heute zum Arzt gehen.\""
+      "kind": "Matching",
+      "prompt": "gefallen \\(\\rightarrow\\) to appeal to (dative)"
     },
     {
       "kind": "Dictation",
-      "prompt": "Listen & Type: \"Hier darf man nicht laut sprechen.\""
+      "prompt": "Listen & Type: \"Die Jacke kostet 79 Euro und passt perfekt.\""
+    },
+    {
+      "kind": "Dictation",
+      "prompt": "Listen & Type: \"Mir gefällt dieser rote Pullover sehr gut.\""
     },
     {
       "kind": "Error Correction",
-      "prompt": "\"Er kann Deutsch spricht.\" \\(\\rightarrow\\) Er kann Deutsch sprechen."
+      "prompt": "\"Das Hemd ist rote.\" \\(\\rightarrow\\) Das Hemd ist rot. (No ending after sein!)"
     },
     {
       "kind": "Error Correction",
-      "prompt": "\"Ich musst heute arbeiten.\" \\(\\rightarrow\\) Ich muss heute arbeiten."
+      "prompt": "\"Ich gefalle diese Jacke.\" \\(\\rightarrow\\) Mir gefällt diese Jacke. (gefallen takes dative!)"
     },
     {
       "kind": "Culture MCQ",
-      "prompt": "In Germany, \"Rauchen verboten\" means:",
+      "prompt": "In Germany, when trying clothes, you ask:",
       "options": [
-        "Smoking allowed",
-        "Smoking forbidden",
-        "Free cigarettes",
-        "Entrance"
+        "Kann ich das nehmen?",
+        "Kann ich das anprobieren?",
+        "Kann ich das kaufen?",
+        "Kann ich das sehen?"
       ],
-      "answer": "Smoking forbidden"
+      "answer": "Kann ich das anprobieren?"
     },
     {
-      "kind": "Conjugation",
-      "prompt": "Conjugate wollen for du: du willst"
+      "kind": "Demonstrative Drill",
+      "prompt": "Dieses Hemd (Nom) → Accusative: \\(\\rightarrow\\) Dieses Hemd"
     },
     {
-      "kind": "Conjugation",
-      "prompt": "Conjugate dürfen for ihr: ihr dürft"
+      "kind": "Demonstrative Drill",
+      "prompt": "Dieser Schuh (Nom) → Accusative: \\(\\rightarrow\\) Diesen Schuh"
     },
     {
       "kind": "Listening Gap",
-      "prompt": "\"Ich kann gut _______.\" (Audio: schwimmen) \\(\\rightarrow\\) schwimmen"
+      "prompt": "\"________ Größe tragen Sie?\" (Audio: Welche) \\(\\rightarrow\\) Welche"
     },
     {
       "kind": "Sentence Unscramble",
-      "prompt": "[Hause / bleiben / Ich / muss / zu] \\(\\rightarrow\\) Ich muss zu Hause bleiben."
-    },
-    {
-      "kind": "Form Identity",
-      "prompt": "In modal verbs, which two personal pronouns share the exact same conjugated form? \\(\\rightarrow\\) ich and er/sie/es"
+      "prompt": "[gefällt / mir / diese / Jacke / sehr / gut] \\(\\rightarrow\\) Diese Jacke gefällt mir sehr gut."
     }
   ],
   "traps": [
     {
       "note": {
-        "en": "Trap 1: Conjugating the end verb in a modal sentence",
-        "ne": "",
-        "de": ""
+        "en": "Trap 1: Adding adjective ending after sein/bleiben/werden",
+        "ne": "sein/bleiben/werden पछि adjective मा ending थप्नु",
+        "de": "Adjektivendung nach sein/bleiben/werden hinzufügen"
       },
-      "wrong": "Falsch: \"Ich kann Deutsch spreche.\"",
-      "right": "Richtig: \"Ich kann Deutsch SPRECHEN.\" (End verb MUST be infinitive!)."
+      "wrong": "Falsch: \"Das Hemd ist rote.\"",
+      "right": "Richtig: \"Das Hemd ist rot.\" (KEINE Endung!)"
     },
     {
       "note": {
-        "en": "Trap 2: Adding -t ending to ich or er/sie/es on modals",
-        "ne": "",
-        "de": ""
+        "en": "Trap 2: Using gefallen with nominative (ich) instead of dative (mir)",
+        "ne": "gefallen लाई nominative (ich) सँग प्रयोग गर्नु, dative (mir) वरिएको",
+        "de": "gefallen mit Nominativ (ich) statt Dativ (mir) verwenden"
       },
-      "wrong": "Falsch: \"Er kannt Deutsch.\" / \"Ich musst lernen.\"",
-      "right": "Richtig: \"Er kann Deutsch.\" / \"Ich muss lernen.\""
+      "wrong": "Falsch: \"Ich gefalle diese Jacke.\"",
+      "right": "Richtig: \"Mir gefällt diese Jacke.\""
     },
     {
       "note": {
-        "en": "Trap 3: Confusing müssen (must) and nicht dürfen (must NOT) Ich muss nicht: \"I don't have to\" (optional). Ich darf nicht: \"I am NOT allowed to / forbidden\" (prohibited!).",
-        "ne": "",
-        "de": ""
-      }
+        "en": "Trap 3: Forgetting masculine accusative shift for demonstratives (dieser → diesen)",
+        "ne": "पुरुषलिङ्ग demonstrative को accusative shift (dieser → diesen) बिर्सनु",
+        "de": "Maskulinen Akkusativ-Wechsel bei Demonstrativa vergessen (dieser → diesen)"
+      },
+      "wrong": "Falsch: \"Ich kaufe dieser Pullover.\"",
+      "right": "Richtig: \"Ich kaufe DIESEN Pullover.\""
     }
   ],
   "culture": {
@@ -910,7 +561,8 @@
       "de": "Kultureller Kontext"
     },
     "body": [
-      "*Rules and Regulations (Ordnung muss sein): German culture places high value on rules (Regeln). Signs like \"Rauchen verboten\" (Smoking forbidden) or \"Ruhezeit\"* (Quiet hours) are strictly enforced by authorities and citizens alike."
+      "In German shops, it's polite to ask \"Kann ich das anprobieren?\" before trying clothes. Sales staff use formal 'Sie' — respond with 'Sie' as well.",
+      "German sizing uses EU numbers (36, 38, 40...) or S/M/L/XL. Always good to know your EU size!"
     ]
   }
 }

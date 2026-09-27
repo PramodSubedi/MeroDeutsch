@@ -1,0 +1,326 @@
+{
+  "cefr": "A1.2",
+  "docRoute": "/rapid-fire",
+  "objectives": {
+    "en": [
+      "Consolidate Units 01–15 with five integrated exercise sets covering gender, accusative, conjugation, modals, V2 word order and translation.",
+      "Check your work against a complete DE/EN/NE answer key.",
+      "This module is optional (SUPPORT) and never gates progress."
+    ]
+  },
+  "lexicon": [
+    {
+      "word": "Übung",
+      "en": "Exercise / practice",
+      "ne": "अभ्यास",
+      "article": "die",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Die Übung ist einfach.",
+          "en": "The exercise is easy.",
+          "ne": "अभ्यास सजिलो छ।"
+        }
+      ]
+    },
+    {
+      "word": "Lösung",
+      "en": "Solution / answer",
+      "ne": "समाधान",
+      "article": "die",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Die Lösung steht am Ende.",
+          "en": "The solution is at the end.",
+          "ne": "समाधान अन्त्यमा छ।"
+        }
+      ]
+    },
+    {
+      "word": "Prüfung",
+      "en": "Exam / test",
+      "ne": "परीक्षा",
+      "article": "die",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Die Prüfung ist am Freitag.",
+          "en": "The exam is on Friday.",
+          "ne": "परीक्षा शुक्रबार हुन्छ।"
+        }
+      ]
+    },
+    {
+      "word": "Wiederholen",
+      "en": "to repeat / review",
+      "ne": "दोहोर्‍याउनु",
+      "partOfSpeech": "Verb",
+      "examples": [
+        {
+          "de": "Ich wiederhole alle Grammatikklauseln.",
+          "en": "I repeat all grammar clauses.",
+          "ne": "म सबै व्याकरण खण्ड दोहोर्‍याउँछु।"
+        }
+      ]
+    },
+    {
+      "word": "fehler",
+      "en": "mistake / error",
+      "ne": "गल्ती",
+      "article": "der",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Ich habe nur einen Fehler.",
+          "en": "I only made one mistake.",
+          "ne": "मैले एउटा मात्र गल्ती गरें।"
+        }
+      ]
+    },
+    {
+      "word": "richtig",
+      "en": "correct / right",
+      "ne": "सही",
+      "partOfSpeech": "Adjective",
+      "examples": [
+        {
+          "de": "Die Antwort ist richtig.",
+          "en": "The answer is correct.",
+          "ne": "उत्तर सही छ।"
+        }
+      ]
+    },
+    {
+      "word": "schwer",
+      "en": "difficult",
+      "ne": "गाह्रो",
+      "partOfSpeech": "Adjective",
+      "examples": [
+        {
+          "de": "Der Akkusativ ist nicht schwer.",
+          "en": "The accusative is not difficult.",
+          "ne": "अक्कुसेटिभ गाह्रो छैन।"
+        }
+      ]
+    },
+    {
+      "word": "schaffen",
+      "en": "to manage / to cope",
+      "ne": "सफल हुनु",
+      "partOfSpeech": "Verb",
+      "examples": [
+        {
+          "de": "Ich schaffe die Prüfung!",
+          "en": "I will pass the exam!",
+          "ne": "म परीक्षामा सफल हुन्छु!"
+        }
+      ]
+    }
+  ],
+  "grammar": [
+    {
+      "title": {
+        "en": "How to Use This Module",
+        "de": "Wie man dieses Modul benutzt"
+      },
+      "notes": [
+        {
+          "en": "Work through Exercises 1–5 WITHOUT looking at the answer key. Mark each item, then open the key and score yourself honestly. Below 80% on any exercise means going back to the matching unit, not moving on.",
+          "ne": "उत्तरकुञ्जी हेरेर बिना अभ्यास १–५ पूरा गर्नुहोस्। हरेक प्रश्नको चिन्ह लगाउनुहोस्, त्यसपछि उत्तरकुञ्जी हेरेर आफैँलाई निष्पक्ष अंक दिनुहोस्। कुनै अभ्यासमा ८०% भन्दा कम भए सम्बन्धित इकाइमै फर्कनुहोस्।",
+          "de": "Arbeite die Übungen 1–5 durch, OHNE in den Lösungsschlüssel zu schauen. Markiere jeden Punkt, öffne dann den Schlüssel und bewerte dich ehrlich. Unter 80% in einer Übung heißt: zurück zur passenden Einheit."
+        }
+      ],
+      "table": {
+        "columns": [
+          "Exercise",
+          "Tests",
+          "Go back to",
+          "Scoring"
+        ],
+        "rows": [
+          [
+            "1 — Article & Gender",
+            "Nominative articles, gender",
+            "M04–M05",
+            "10 items"
+          ],
+          [
+            "2 — Accusative",
+            "Masculine shift only",
+            "M08",
+            "5 items"
+          ],
+          [
+            "3 — Conjugation & Modals",
+            "Present tense, stem changes, modals",
+            "M06, M12",
+            "5 items"
+          ],
+          [
+            "4 — V2 Word Order",
+            "Position 2 and inversion",
+            "M07",
+            "5 items"
+          ],
+          [
+            "5 — Translation",
+            "All structures combined",
+            "cumulative",
+            "5 items"
+          ]
+        ]
+      }
+    }
+  ],
+  "dialogue": {
+    "id": "m16-dialogue",
+    "title": {
+      "en": "Dialogue",
+      "de": "Dialog"
+    },
+    "scenario": {
+      "en": "Two Friends Comparing Their A1 Progress",
+      "de": "Zwei Freunde vergleichen ihren A1-Fortschritt"
+    },
+    "turns": [
+      {
+        "speaker": "Anna:",
+        "de": "Hallo Ravi! Wie weit bist du mit Deutsch?"
+      },
+      {
+        "speaker": "Ravi:",
+        "de": "Ich lerne jeden Tag. Heute habe ich zwanzig Wörter gelernt und die Übungen gemacht."
+      },
+      {
+        "speaker": "Anna:",
+        "de": "Sehr gut! Aber hast du die Prüfung bestanden?"
+      },
+      {
+        "speaker": "Ravi:",
+        "de": "Ich habe nur zwei Fehler gemacht. Der Akkusativ war schwer, aber jetzt schaffe ich ihn."
+      },
+      {
+        "speaker": "Anna:",
+        "de": "Das ist toll! Am Wochenende schreiben wir die Endprüfung zusammen."
+      }
+    ]
+  },
+  "miniGame": {
+    "type": "rapidfire_question",
+    "id": "m16-final-sprint",
+    "payload": {
+      "type": "rapidfire_question",
+      "id": "m16-final-sprint",
+      "title": "A1 Completion Sprint",
+      "items": [
+        {
+          "prompt_de": "________ Tisch ist groß.",
+          "correct_art": "Der"
+        },
+        {
+          "prompt_de": "Ich schreibe einen ________.",
+          "correct_art": "Brief"
+        },
+        {
+          "prompt_de": "Du ________ (sehen) den Flughafen.",
+          "correct_art": "siehst"
+        },
+        {
+          "prompt_de": "Morgen fahre ich ________ München.",
+          "correct_art": "nach"
+        },
+        {
+          "prompt_de": "Ich muss heute zur ________.",
+          "correct_art": "Arbeit"
+        }
+      ]
+    }
+  },
+  "practiceBank": [
+    {
+      "kind": "Exercise 1 — Article & Gender Identification",
+      "prompt": "Insert the correct nominative definite article (der, die, das) for each noun: 1) ___ Tisch ist groß. 2) ___ Frau geht zur Arbeit. 3) ___ Kind spielt im Garten. 4) ___ Tür ist offen. 5) ___ Fenster ist geschlossen. 6) ___ Wohnung ist schön. 7) ___ Auto ist rot. 8) ___ Hund bellt. 9) ___ Apfel ist rot. 10) ___ Wetter ist schön."
+    },
+    {
+      "kind": "Exercise 2 — Accusative Case Transformations",
+      "prompt": "Fill in the correct masculine accusative article (einen or den): 1) (der Brief) → Ich schreibe ___ Brief. 2) (der Apfel) → Er isst ___ Apfel. 3) (der Stuhl) → Wir kaufen ___ Stuhl. 4) (der Supermarkt) → Er sieht ___ Supermarkt. 5) (der Hund) → Sie hat ___ Hund."
+    },
+    {
+      "kind": "Exercise 3 — Verb Conjugation & Modals",
+      "prompt": "Fill in the correct conjugated form: 1) Er ___ (lesen – stem-changing) ein Buch. 2) Du ___ (sehen – stem-changing) den Flughafen. 3) In der Nacht ___ (schlafen – stem-changing) ich. 4) Wir ___ (können – modal) Deutsch lernen. 5) Er ___ (müssen – modal) zur Arbeit gehen."
+    },
+    {
+      "kind": "Exercise 4 — V2 Sentence Reordering",
+      "prompt": "Rearrange the scrambled words into a correct V2 main clause: 1) [Montag / ist / heute] 2) [war / Sonntag / gestern] 3) [ist / morgen / Dienstag] 4) [ich / schlafe / in der Nacht] 5) [war / ich / müde / heute Morgen]"
+    },
+    {
+      "kind": "Exercise 5 — Trilingual Translation Challenge",
+      "prompt": "Translate into German: 1) The man is reading a book. 2) I write an email. 3) Today is Monday. 4) I go to work. 5) The child plays in the garden."
+    },
+    {
+      "kind": "ANSWER KEY — Exercise 1",
+      "prompt": "1) Der Tisch ist groß. 2) Die Frau geht zur Arbeit. 3) Das Kind spielt im Garten. 4) Die Tür ist offen. 5) Das Fenster ist geschlossen. 6) Die Wohnung ist schön. 7) Das Auto ist rot. 8) Der Hund bellt. 9) Der Apfel ist rot. 10) Das Wetter ist schön."
+    },
+    {
+      "kind": "ANSWER KEY — Exercise 2",
+      "prompt": "1) Ich schreibe einen Brief (or den Brief). 2) Er isst einen Apfel (or den Apfel). 3) Wir kaufen einen Stuhl (or den Stuhl). 4) Er sieht einen Supermarkt (or den Supermarkt). 5) Sie hat einen Hund (or den Hund)."
+    },
+    {
+      "kind": "ANSWER KEY — Exercise 3",
+      "prompt": "1) Er liest ein Buch. 2) Du siehst den Flughafen. 3) In der Nacht schlafe ich. 4) Wir können Deutsch lernen. 5) Er muss zur Arbeit gehen."
+    },
+    {
+      "kind": "ANSWER KEY — Exercise 4",
+      "prompt": "1) Heute ist Montag. 2) Gestern war Sonntag. 3) Morgen ist Dienstag. 4) In der Nacht schlafe ich. 5) Heute Morgen war ich müde."
+    },
+    {
+      "kind": "ANSWER KEY — Exercise 5 (trilingual)",
+      "prompt": "1) DE: Der Mann liest ein Buch. | EN: The man is reading a book. | NE: मान्छेले एउटा किताब पढ्दैछ। 2) DE: Ich schreibe eine E-Mail. | EN: I write an email. | NE: म एउटा इमेल लेख्छु। 3) DE: Heute ist Montag. | EN: Today is Monday. | NE: आज सोमबार हो। 4) DE: Ich gehe zur Arbeit. | EN: I go to work. | NE: म काममा जान्छु। 5) DE: Das Kind spielt im Garten. | EN: The child plays in the garden. | NE: बच्चा बगैंचामा खेल्छ।"
+    },
+    {
+      "kind": "Scoring Guidance",
+      "prompt": "90–100% → A1 solid, move to A2. 80–89% → re-read the weakest unit. Below 80% on Exercise 2 or 3 → redo that unit's checkpoint before continuing."
+    }
+  ],
+  "traps": [
+    {
+      "note": {
+        "en": "Trap 1: Shifting every article in the accusative. Only masculine shifts — die/das/Plural stay identical.",
+        "ne": "फन्दा: अक्कुसेटिभमा सबै article बदल्नु। पुरुषलिङ्ग मात्र बदल्छ — die/das/बहुवचन उही रहन्छन्।",
+        "de": "Falle: Im Akkusativ jeden Artikel verändern. Nur männlich wechselt — die/das/Plural bleiben identisch."
+      },
+      "wrong": "Falsch: \"Ich trinke einen Tee\" (korrekt) aber \"Ich esse einen Apfel\" … richtig: \"Ich esse EINEN Apfel\"; bei \"das Brot\" bleibt es \"ein Brot\".",
+      "right": "Richtig: Maskulin → einen; Feminin/Neutrum/Plural → unverändert (ein Brot, eine Suppe, die Äpfel)."
+    },
+    {
+      "note": {
+        "en": "Trap 2: Conjugating the end verb after a modal.",
+        "ne": "फन्दा: मोडलपछिको अन्त्य क्रिया संयोजित गर्नु।",
+        "de": "Falle: Das Endverb nach einem Modalverb konjugieren."
+      },
+      "wrong": "Falsch: \"Er muss zur Arbeit gehen.\" (correct) — but \"Er muss zur Arbeit geht.\"",
+      "right": "Richtig: \"Er muss zur Arbeit GEHEN.\" (The end verb stays infinitive.)"
+    },
+    {
+      "note": {
+        "en": "Trap 3: Keeping the subject in Position 1 after a leading time expression.",
+        "ne": "फन्दा: अगाडि समय व्यञ्जन पछि कर्तालाई स्थान १ मा राख्नु।",
+        "de": "Falle: Das Subjekt nach einer vorangestellten Zeitangabe auf Position 1 lassen."
+      },
+      "wrong": "Falsch: \"Heute ich lerne Deutsch.\"",
+      "right": "Richtig: \"Heute lerne ICH Deutsch.\" (Verb stays in Position 2.)"
+    }
+  ],
+  "culture": {
+    "title": {
+      "en": "Cultural context",
+      "de": "Kultureller Kontext"
+    },
+    "body": [
+      "This module is a SUPPORT band — it reviews Units 01–15 and never gates your progress. Skipping it affects nothing.",
+      "Self-assessing honestly matters more than scoring high: the answer key is there to find the gap, not to confirm what you hoped.",
+      "XP Reward: 150 XP | Badge Unlocked: 🎓 A1 Graduate"
+    ]
+  }
+}

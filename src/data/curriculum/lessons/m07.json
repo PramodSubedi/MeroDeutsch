@@ -1,207 +1,198 @@
 {
   "cefr": "A1.2",
-  "docRoute": "/calendar",
+  "docRoute": "/grammar?tab=v2",
   "objectives": {
     "en": [
-      "Express days, months, seasons, clock times, and master the colloquial time inversion rule (08:30 = Halb neun).",
-      "When a German friend invites you at \"Halb neun\", do they mean 8:30 or 9:30? How do you avoid showing up an hour late?",
+      "Build correct German main clauses by placing the conjugated verb in Position 2, and master subject-verb inversion when a time or place expression leads the clause.",
       "Estimated time 50 Minutes · Prerequisites: Units 01–06"
     ]
   },
   "lexicon": [
     {
-      "word": "Uhrzeit",
-      "en": "Clock time",
-      "ne": "समय",
+      "word": "Wortstellung",
+      "en": "Word order",
+      "ne": "शब्द क्रम",
       "article": "die",
       "partOfSpeech": "Noun",
       "examples": [
         {
-          "de": "Wie spät ist es?",
-          "en": "",
-          "ne": ""
+          "de": "Die Wortstellung ist wichtig.",
+          "en": "Word order is important.",
+          "ne": "शब्द क्रम महत्त्वपूर्ण छ।"
         }
       ]
     },
     {
-      "word": "Montag",
-      "en": "Monday",
-      "ne": "सोमबार",
+      "word": "Satz",
+      "en": "Sentence",
+      "ne": "वाक्य",
       "article": "der",
       "partOfSpeech": "Noun",
       "examples": [
         {
-          "de": "Am Montag arbeite ich.",
-          "en": "",
-          "ne": ""
+          "de": "Der Satz ist richtig.",
+          "en": "The sentence is correct.",
+          "ne": "वाक्य मिल्नेको छ।"
         }
       ]
     },
     {
-      "word": "Dienstag",
-      "en": "Tuesday",
-      "ne": "मंगलबार",
+      "word": "Satzbau",
+      "en": "Sentence structure",
+      "ne": "वाक्य संरचना",
       "article": "der",
       "partOfSpeech": "Noun",
       "examples": [
         {
-          "de": "Am Dienstag habe ich frei.",
-          "en": "",
-          "ne": ""
+          "de": "Der Satzbau ist einfach.",
+          "en": "The sentence structure is simple.",
+          "ne": "वाक्य संरचना सरल छ।"
         }
       ]
     },
     {
-      "word": "Mittwoch",
-      "en": "Wednesday",
-      "ne": "बुधबार",
-      "article": "der",
-      "partOfSpeech": "Noun",
-      "examples": [
-        {
-          "de": "Mittwoch ist die Mitte.",
-          "en": "",
-          "ne": ""
-        }
-      ]
-    },
-    {
-      "word": "Donnerstag",
-      "en": "Thursday",
-      "ne": "बिहीबार",
-      "article": "der",
-      "partOfSpeech": "Noun",
-      "examples": [
-        {
-          "de": "Am Donnerstag lerne ich.",
-          "en": "",
-          "ne": ""
-        }
-      ]
-    },
-    {
-      "word": "Freitag",
-      "en": "Friday",
-      "ne": "शुक्रबार",
-      "article": "der",
-      "partOfSpeech": "Noun",
-      "examples": [
-        {
-          "de": "Freitagabend gehe ich aus.",
-          "en": "",
-          "ne": ""
-        }
-      ]
-    },
-    {
-      "word": "Samstag",
-      "en": "Saturday",
-      "ne": "शनिबार",
-      "article": "der",
-      "partOfSpeech": "Noun",
-      "examples": [
-        {
-          "de": "Am Samstag schlafe ich lange.",
-          "en": "",
-          "ne": ""
-        }
-      ]
-    },
-    {
-      "word": "Sonntag",
-      "en": "Sunday",
-      "ne": "आइतबार",
-      "article": "der",
-      "partOfSpeech": "Noun",
-      "examples": [
-        {
-          "de": "Sonntag ist Ruhetag.",
-          "en": "",
-          "ne": ""
-        }
-      ]
-    },
-    {
-      "word": "Monat",
-      "en": "Month",
-      "ne": "महिना",
-      "article": "der",
-      "partOfSpeech": "Noun",
-      "examples": [
-        {
-          "de": "Der Monat Mai ist schön.",
-          "en": "",
-          "ne": ""
-        }
-      ]
-    },
-    {
-      "word": "Jahr",
-      "en": "Year",
-      "ne": "वर्ष",
+      "word": "Verb",
+      "en": "Verb",
+      "ne": "क्रियापद",
       "article": "das",
       "partOfSpeech": "Noun",
       "examples": [
         {
-          "de": "Ein Jahr hat 365 Tage.",
-          "en": "",
-          "ne": ""
+          "de": "Das Verb steht auf Position 2.",
+          "en": "The verb stands in position 2.",
+          "ne": "क्रिया स्थान २ मा हुन्छ।"
         }
       ]
     },
     {
-      "word": "Frühling",
-      "en": "Spring",
-      "ne": "वसन्त",
-      "article": "der",
+      "word": "Subjekt",
+      "en": "Subject",
+      "ne": "कर्ता",
+      "article": "das",
       "partOfSpeech": "Noun",
       "examples": [
         {
-          "de": "Im Frühling blühen Blumen.",
-          "en": "",
-          "ne": ""
+          "de": "Das Subjekt steht auf Position 1 oder 3.",
+          "en": "The subject stands in position 1 or 3.",
+          "ne": "कर्ता स्थान १ वा ३ मा हुन्छ।"
         }
       ]
     },
     {
-      "word": "Sommer",
-      "en": "Summer",
-      "ne": "ग्रीष्म",
-      "article": "der",
+      "word": "Inversion",
+      "en": "Inversion",
+      "ne": "उलटो क्रम",
+      "article": "die",
       "partOfSpeech": "Noun",
       "examples": [
         {
-          "de": "Im Sommer ist es warm.",
-          "en": "",
-          "ne": ""
+          "de": "Heute ist Montag. Das ist eine Inversion.",
+          "en": "Today is Monday. That is an inversion.",
+          "ne": "आज सोमबार हो। यो उलटो क्रम हो।"
         }
       ]
     },
     {
-      "word": "Herbst",
-      "en": "Autumn / Fall",
-      "ne": "शरद",
-      "article": "der",
-      "partOfSpeech": "Noun",
+      "word": "heute",
+      "en": "today",
+      "ne": "आज",
+      "partOfSpeech": "Adverb",
       "examples": [
         {
-          "de": "Im Herbst regnet es.",
-          "en": "",
-          "ne": ""
+          "de": "Heute lerne ich Deutsch.",
+          "en": "Today I learn German.",
+          "ne": "आज म जर्मन सिक्छु।"
         }
       ]
     },
     {
-      "word": "Winter",
-      "en": "Winter",
-      "ne": "हिउँद",
-      "article": "der",
-      "partOfSpeech": "Noun",
+      "word": "morgen",
+      "en": "tomorrow",
+      "ne": "भोलि",
+      "partOfSpeech": "Adverb",
       "examples": [
         {
-          "de": "Im Winter schneit es.",
-          "en": "",
-          "ne": ""
+          "de": "Morgen fahre ich nach München.",
+          "en": "Tomorrow I travel to Munich.",
+          "ne": "भोलि म म्युनिख जान्छु।"
+        }
+      ]
+    },
+    {
+      "word": "gestern",
+      "en": "yesterday",
+      "ne": "हिजो",
+      "partOfSpeech": "Adverb",
+      "examples": [
+        {
+          "de": "Gestern war ich müde.",
+          "en": "Yesterday I was tired.",
+          "ne": "हिजो म थकित थिएँ।"
+        }
+      ]
+    },
+    {
+      "word": "in der Nacht",
+      "en": "at night",
+      "ne": "राति",
+      "partOfSpeech": "Phrase",
+      "examples": [
+        {
+          "de": "In der Nacht schlafe ich.",
+          "en": "At night I sleep.",
+          "ne": "राति म सुत्छु।"
+        }
+      ]
+    },
+    {
+      "word": "am Morgen",
+      "en": "in the morning",
+      "ne": "बिहानपख",
+      "partOfSpeech": "Phrase",
+      "examples": [
+        {
+          "de": "Am Morgen trinke ich Kaffee.",
+          "en": "In the morning I drink coffee.",
+          "ne": "बिहानपख म कफी पिउँछु।"
+        }
+      ]
+    },
+    {
+      "word": "im Park",
+      "en": "in the park",
+      "ne": "पार्कमा",
+      "partOfSpeech": "Phrase",
+      "examples": [
+        {
+          "de": "Im Park spiele ich Fußball.",
+          "en": "In the park I play football.",
+          "ne": "पार्कमा म फुटबल खेल्छु।"
+        }
+      ]
+    },
+    {
+      "word": "in Berlin",
+      "en": "in Berlin",
+      "ne": "बर्लिनमा",
+      "partOfSpeech": "Phrase",
+      "examples": [
+        {
+          "de": "In Berlin wohnt meine Schwester.",
+          "en": "In Berlin my sister lives.",
+          "ne": "बर्लिनमा मेरो दिदि बस्छिन्।"
+        }
+      ]
+    },
+    {
+      "word": "TeKaMoLo",
+      "en": "Time–Cause–Manner–Location adverbial order",
+      "ne": "समय–कारण–तरिका–स्थान क्रम",
+      "partOfSpeech": "Phrase",
+      "examples": [
+        {
+          "de": "Heute fahre ich mit dem Bus in die Stadt.",
+          "en": "Today I take the bus into town.",
+          "ne": "आज म बसले सहरमा जान्छु।"
         }
       ]
     }
@@ -209,34 +200,168 @@
   "grammar": [
     {
       "title": {
-        "en": "1 The Colloquial Clock Inversion Rule (Halb neun)",
-        "de": "1 The Colloquial Clock Inversion Rule (Halb neun)"
+        "en": "The Golden V2 Rule (Die goldene V2-Regel)",
+        "de": "Die goldene V2-Regel"
       },
       "notes": [
         {
-          "en": "GERMAN COLLOQUIAL TIME RULE 08:30 ===> \"Halb neun\" (Halfway TO nine o'clock) 09:30 ===> \"Halb zehn\" (Halfway TO ten o'clock) 08:15 ===> \"Viertel nach acht\" (Quarter past eight) 08:45 ===> \"Viertel vor neun\" (Quarter to nine)",
-          "ne": "",
-          "de": ""
+          "en": "In a main clause (Hauptsatz) the conjugated verb MUST occupy Position 2. It NEVER moves out of Position 2 — only the element before it changes.",
+          "ne": "मुख्य वाक्यमा संयोजित क्रिया अवश्य स्थान २ मा हुनुपर्छ। यो स्थान २ बाट कहिल्यै सर्दैन — अगाडिको तत्व मात्र परिवर्तित हुन्छ।",
+          "de": "Im Hauptsatz steht das konjugierte Verb IMMER auf Position 2. Es verlässt Position 2 NIE — nur das Element davor ändert sich."
         }
-      ]
+      ],
+      "table": {
+        "columns": [
+          "Pos 1 (Any Element)",
+          "Pos 2 (VERB)",
+          "Pos 3 (Subject)",
+          "Pos 4+ (Rest)"
+        ],
+        "rows": [
+          [
+            "Ich",
+            "trinke",
+            "—",
+            "heute Tee."
+          ],
+          [
+            "Heute",
+            "trinke",
+            "ich",
+            "Tee."
+          ],
+          [
+            "In Berlin",
+            "wohnt",
+            "meine Schwester",
+            "seit zwei Jahren."
+          ],
+          [
+            "Gestern",
+            "war",
+            "ich",
+            "müde."
+          ],
+          [
+            "Morgen",
+            "fahre",
+            "ich",
+            "nach München."
+          ],
+          [
+            "Den Apfel",
+            "isst",
+            "er",
+            "gerne."
+          ]
+        ]
+      }
     },
     {
       "title": {
-        "en": "2 Time Prepositions Cheat Sheet: am, im, um",
-        "de": "2 Time Prepositions Cheat Sheet: am, im, um"
+        "en": "Subject–Verb Inversion (Standard vs. Inverted)",
+        "de": "Subjekt–Verb-Inversion (Standard vs. Invertiert)"
       },
       "notes": [
         {
-          "en": "---",
-          "ne": "",
-          "de": ""
+          "en": "If any element other than the subject opens the clause — a time expression, place adverb, or object phrase — the verb STAYS in Position 2 and the subject jumps to Position 3. This is mandatory, not optional.",
+          "ne": "कर्ता बाहेक अर्को कुनै तत्वले वाक्य खोलेमा — समय व्यञ्जन, स्थान, वा कर्म वाक्यांश — क्रिया स्थान २ मै रहन्छ र कर्ता स्थान ३ मा जान्छ। यो अनिवार्य हो, वैकल्पिक होइन।",
+          "de": "Wenn ein anderes Element als das Subjekt den Hauptsatz eröffnet — eine Zeitangabe, ein Ortsadverb oder eine Objektsphrase — bleibt das Verb auf Position 2 und das Subjekt rückt auf Position 3. Das ist Pflicht, nicht Wahl."
         }
       ],
-      "bullets": [
-        "am + Days / Dates / Time of day: am Montag, am Morgen (Exception: in der Nacht)",
-        "im + Months / Seasons: im Juli, im Sommer",
-        "um + Clock times: um 8 Uhr, um 14:30 Uhr"
-      ]
+      "table": {
+        "columns": [
+          "Clause Type",
+          "DE (Deutsch)",
+          "EN (English)",
+          "NE (Nepali)"
+        ],
+        "rows": [
+          [
+            "Standard",
+            "Ich schlafe in der Nacht.",
+            "I sleep at night.",
+            "म राति सुत्छु।"
+          ],
+          [
+            "Inverted",
+            "In der Nacht schlafe ich.",
+            "At night I sleep.",
+            "राति म सुत्छु।"
+          ],
+          [
+            "Standard",
+            "Ich war heute Morgen müde.",
+            "I was tired this morning.",
+            "म आज बिहान थकित थिएँ।"
+          ],
+          [
+            "Inverted",
+            "Heute Morgen war ich müde.",
+            "This morning I was tired.",
+            "आज बिहान म थकित थिएँ।"
+          ],
+          [
+            "Standard",
+            "Wir gehen heute in den Park.",
+            "We are going to the park today.",
+            "हामी आज पार्कमा जान्छौँ।"
+          ],
+          [
+            "Inverted",
+            "Heute gehen wir in den Park.",
+            "Today we are going to the park.",
+            "आज हामी पार्कमा जान्छौँ।"
+          ]
+        ]
+      }
+    },
+    {
+      "title": {
+        "en": "TeKaMoLo Adverbial Order",
+        "de": "TeKaMoLo-Adverbialreihenfolge"
+      },
+      "notes": [
+        {
+          "en": "When several adverbial phrases follow the verb, they are ordered Temporal → Kausal → Modal → Locational (TeKaMoLo).",
+          "ne": "क्रिया पछि धेरै व्यञ्जन वाक्यांश आएमा, क्रम हुन्छ: समय → कारण → तरिका → स्थान (TeKaMoLo)।",
+          "de": "Folgen mehrere Adverbialphrasen nach dem Verb, gilt die Reihenfolge Temporal → Kausal → Modal → Lokal (TeKaMoLo)."
+        }
+      ],
+      "table": {
+        "columns": [
+          "Type",
+          "Question",
+          "Examples",
+          "Position"
+        ],
+        "rows": [
+          [
+            "Temporal (Time)",
+            "Wann?",
+            "heute, gestern, morgens, um 8 Uhr",
+            "First"
+          ],
+          [
+            "Kausal (Reason)",
+            "Warum?",
+            "deshalb, daher, wegen dem Regen",
+            "Second"
+          ],
+          [
+            "Modal (Manner)",
+            "Wie?",
+            "mit dem Bus, schnell, gerne",
+            "Third"
+          ],
+          [
+            "Lokal (Place)",
+            "Wo?",
+            "in Berlin, nach Hause, im Park",
+            "Last"
+          ]
+        ]
+      }
     }
   ],
   "dialogue": {
@@ -246,62 +371,215 @@
       "de": "Dialog"
     },
     "scenario": {
-      "en": "Making an Appointment",
-      "de": "Making an Appointment"
+      "en": "Comparing Daily Routines (Standard vs. Inverted Word Order)",
+      "de": "Tagesablauf vergleichen (Standard vs. invertierte Wortstellung)"
     },
     "turns": [
       {
         "speaker": "A:",
-        "de": "Hallo Sarah! Wann treffen wir uns?"
+        "de": "Wann lernst du Deutsch?"
       },
       {
         "speaker": "B:",
-        "de": "Hast du am Freitag Zeit?"
+        "de": "Ich lerne jeden Abend Deutsch. Und du?"
       },
       {
         "speaker": "A:",
-        "de": "Nein, am Freitag arbeite ich. Geht es am Samstag?"
+        "de": "Am Morgen lerne ich Vokabeln, abends schreibe ich Aufsätze."
       },
       {
         "speaker": "B:",
-        "de": "Ja, Samstag passt gut. Um wie viel Uhr?"
+        "de": "Im Park treffen wir uns oft. Wann fängt dein Kurs an?"
       },
       {
         "speaker": "A:",
-        "de": "Um halb vier (15:30 Uhr) im Café Central?"
+        "de": "Um neun Uhr fängt der Kurs an."
+      },
+      {
+        "speaker": "B:",
+        "de": "Jeden Montag und Mittwoch habe ich Unterricht."
       }
     ]
   },
   "miniGame": {
-    "type": "clock_minigame",
-    "id": "m7-uhrzeit-master",
+    "type": "v2_order_challenge",
+    "id": "m7-v2-unscrambler",
     "payload": {
-      "type": "clock_minigame",
-      "id": "m7-uhrzeit-master",
-      "prompt_de": "Halb zehn",
-      "correct_digital": "09:30",
-      "options": [
-        "09:30",
-        "10:30",
-        "08:30",
-        "09:15"
-      ]
+      "type": "v2_order_challenge",
+      "id": "m7-v2-unscrambler",
+      "scrambled_chips": [
+        "heute",
+        "ich",
+        "lerne",
+        "Deutsch"
+      ],
+      "correct_sequence": [
+        "Heute",
+        "lerne",
+        "ich",
+        "Deutsch"
+      ],
+      "explanation": "When 'Heute' takes Position 1, the verb 'lerne' stays in Position 2 and pushes 'ich' to Position 3."
     }
   },
   "practiceBank": [
     {
-      "kind": "Fill-in",
-      "prompt": "Fill in preposition: ________ Montag habe ich Deutschkurs.",
-      "answer": "Am"
+      "kind": "MCQ",
+      "prompt": "Where does the conjugated verb stand in a German main clause?",
+      "options": [
+        "Position 1",
+        "Position 2",
+        "The very end",
+        "Before the subject"
+      ],
+      "answer": "Position 2"
+    },
+    {
+      "kind": "MCQ",
+      "prompt": "Which sentence applies inversion correctly?",
+      "options": [
+        "Heute ich lerne Deutsch.",
+        "Heute lerne ich Deutsch.",
+        "Ich heute lerne Deutsch.",
+        "Lerne ich heute Deutsch."
+      ],
+      "answer": "Heute lerne ich Deutsch."
     },
     {
       "kind": "Fill-in",
-      "prompt": "Fill in preposition: ________ Sommer fahre ich nach Nepal.",
-      "answer": "Im"
+      "prompt": "In der Nacht ________ (schlafen) ich. \\(\\rightarrow\\) schlafe"
     },
     {
-      "kind": "Drill",
-      "prompt": "Convert digital 07:30 to German phrase: Halb acht"
+      "kind": "Fill-in",
+      "prompt": "Heute Morgen ________ (sein) ich müde. \\(\\rightarrow\\) war"
+    },
+    {
+      "kind": "Sentence Unscramble",
+      "prompt": "[ Montag / ist / heute ] \\(\\rightarrow\\) Heute ist Montag."
+    },
+    {
+      "kind": "Sentence Unscramble",
+      "prompt": "[ war / Sonntag / gestern ] \\(\\rightarrow\\) Gestern war Sonntag."
+    },
+    {
+      "kind": "Sentence Unscramble",
+      "prompt": "[ ist / morgen / Dienstag ] \\(\\rightarrow\\) Morgen ist Dienstag."
+    },
+    {
+      "kind": "Sentence Unscramble",
+      "prompt": "[ ich / schlafe / in der Nacht ] \\(\\rightarrow\\) In der Nacht schlafe ich."
+    },
+    {
+      "kind": "Sentence Unscramble",
+      "prompt": "[ war / ich / müde / heute Morgen ] \\(\\rightarrow\\) Heute Morgen war ich müde."
+    },
+    {
+      "kind": "V2 Slot",
+      "prompt": "In Berlin ________ (wohnen) meine Schwester."
+    },
+    {
+      "kind": "V2 Slot",
+      "prompt": "Den Apfel ________ (essen) er gerne."
+    },
+    {
+      "kind": "TeKaMoLo",
+      "prompt": "Which comes first after the verb: \"heute\" or \"in die Stadt\"? \\(\\rightarrow\\) heute"
+    },
+    {
+      "kind": "TeKaMoLo",
+      "prompt": "Which comes last after the verb: \"mit dem Bus\" or \"nach Hause\"? \\(\\rightarrow\\) nach Hause"
+    },
+    {
+      "kind": "Translation DE->EN",
+      "prompt": "\"Heute geht er zur Arbeit.\" \\(\\rightarrow\\) Today he goes to work."
+    },
+    {
+      "kind": "Translation EN->DE",
+      "prompt": "\"This morning I was tired.\" \\(\\rightarrow\\) Heute Morgen war ich müde."
+    },
+    {
+      "kind": "Translation NE->DE",
+      "prompt": "\"आज सोमबार हो।\" \\(\\rightarrow\\) Heute ist Montag."
+    },
+    {
+      "kind": "Matching",
+      "prompt": "heute \\(\\rightarrow\\) today"
+    },
+    {
+      "kind": "Matching",
+      "prompt": "gestern \\(\\rightarrow\\) yesterday"
+    },
+    {
+      "kind": "Matching",
+      "prompt": "morgen \\(\\rightarrow\\) tomorrow"
+    },
+    {
+      "kind": "Dictation",
+      "prompt": "Listen & Type: \"Heute lerne ich zwanzig neue Wörter.\""
+    },
+    {
+      "kind": "Dictation",
+      "prompt": "Listen & Type: \"Im Park spielen die Kinder Fußball.\""
+    },
+    {
+      "kind": "Error Correction",
+      "prompt": "\"Heute ich trinke Tee.\" \\(\\rightarrow\\) Heute trinke ich Tee."
+    },
+    {
+      "kind": "Error Correction",
+      "prompt": "\"In der Nacht ich schlafe.\" \\(\\rightarrow\\) In der Nacht schlafe ich."
+    },
+    {
+      "kind": "Error Correction",
+      "prompt": "\"Ich heute trinke Tee.\" \\(\\rightarrow\\) Heute trinke ich Tee."
+    },
+    {
+      "kind": "Culture MCQ",
+      "prompt": "Why does a time expression at the start of a German sentence feel natural, while the English 'Today I drink tea' needs no change?",
+      "options": [
+        "German allows free word order, so the verb can go anywhere",
+        "German has no free word order — the verb is locked to Position 2, so the subject must shift",
+        "German requires the subject to always come first",
+        "Time expressions must always come at the end of a German sentence"
+      ],
+      "answer": "German has no free word order — the verb is locked to Position 2, so the subject must shift"
+    },
+    {
+      "kind": "Sentence Unscramble",
+      "prompt": "[ Deutsch / lerne / heute / ich ] \\(\\rightarrow\\) Heute lerne ich Deutsch."
+    },
+    {
+      "kind": "Subordinate Contrast",
+      "prompt": "In a weil-clause, the conjugated verb goes to the: \\(\\rightarrow\\) end"
+    }
+  ],
+  "traps": [
+    {
+      "note": {
+        "en": "Trap 1: Keeping the subject in Position 1 after a time or place expression",
+        "ne": "समय वा स्थान व्यञ्जनपछि कर्तालाई स्थान १ मै राख्नु",
+        "de": "Das Subjekt nach einer Zeit- oder Ortsangabe auf Position 1 lassen"
+      },
+      "wrong": "Falsch: \"Heute ich trinke Tee.\"",
+      "right": "Richtig: \"Heute TRINKE ICH Tee.\" (Verb stays in Pos 2, subject moves to Pos 3.)"
+    },
+    {
+      "note": {
+        "en": "Trap 2: Believing German has English-style free word order. It does not — only non-finite parts (prefixes, infinitives) travel to the end.",
+        "ne": "फन्दा: जर्मनलाई अंग्रेजीजस्तै मुक्त शब्दक्रम भएको ठान्नु। होइन — अनन्त रूपका भागहरू (उपसर्ग, अनन्त रूप) मात्र अन्त्यमा जान्छन्।",
+        "de": "Falle: Glauben, Deutsch habe wie Englisch freie Wortstellung. Nein — nur die non-finiten Teile (Präfix, Infinitiv) rücken ans Ende."
+      },
+      "wrong": "Falsch: \"Ich trinke heute Tee.\" is fine, and so is \"Ich heute Tee trinke.\"",
+      "right": "Richtig: \"Ich trinke heute Tee.\" (correct) — \"Ich heute Tee trinke.\" does NOT exist in German."
+    },
+    {
+      "note": {
+        "en": "Trap 3: Applying the V2 rule to subordinate clauses. After weil, dass, or wenn, the conjugated verb goes to the very END, not Position 2.",
+        "ne": "फन्दा: उपवाक्यमा पनि V2 नियम लागू गर्नु। weil, dass, वा wenn पछि संयोजित क्रिया अन्त्यमा जान्छ, स्थान २ मा होइन।",
+        "de": "Falle: Die V2-Regel auf Nebensätze anwenden. Nach weil, dass oder wenn geht das konjugierte Verb ans GANZE ENDE, nicht auf Position 2."
+      },
+      "wrong": "Falsch: \"..., weil ich lerne Deutsch.\"",
+      "right": "Richtig: \"..., weil ich Deutsch lerne.\" (Verb-final in subordinate clauses.)"
     }
   ],
   "culture": {
@@ -310,9 +588,9 @@
       "de": "Kultureller Kontext"
     },
     "body": [
-      "⚠️ *Common Trap (Fettnäpfchen): \"Halb acht\" is 7:30*, NOT 8:30!",
-      "🧠 Memory Hook: Am for Alle Tage (am Montag). Im for Im Monat (im Juli). Um for Uhrzeit (um 8 Uhr).",
-      "🇩🇪 *Cultural Insight (Kulturtipp): Punctuality (Pünktlichkeit*) is paramount. Arrive 5 minutes before the agreed time!"
+      "⚠️ Common Trap (Fettnäpfchen): Saying \"Heute ich trinke Tee\" is WRONG! Inverting subject and verb after a time word is mandatory: \"Heute trinke ich Tee\".",
+      "V2 is not a style choice in German — it is a grammatical requirement. There is no colloquial way to put the subject back on position 1 after a time expression.",
+      "XP Reward: 100 XP | Badge Unlocked: 🧭 Word Order Navigator"
     ]
   }
 }

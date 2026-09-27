@@ -17,9 +17,9 @@
     "de": "Gesundheitsprobleme beschreiben, über Hobbys/Wetter sprechen, Vergangenes mit Perfekt erzählen."
   },
   "nodes": [
-    { "id": "m15-learn", "type": "learn", "label": { "en": "Hobby, Weather & Health", "de": "Hobby, Wetter & Gesundheit" }, "to": "/stories", "xp": 10 },
-    { "id": "m15-practice", "type": "practice", "label": { "en": "Weekend Blitz", "de": "Wochenend-Blitz" }, "to": "/rapid-fire", "xp": 20 },
-    { "id": "m15-checkpoint", "type": "checkpoint", "label": { "en": "Module 15 Checkpoint", "de": "Modul 15 Prüfung" }, "to": "/checkpoint/14", "xp": 50 }
+    { "id": "m15-learn", "kind": "learn", "label": { "en": "Hobby, Weather & Health", "de": "Hobby, Wetter & Gesundheit" }, "to": "/stories", "xp": 10 },
+    { "id": "m15-practice", "kind": "practice", "label": { "en": "Weekend Blitz", "de": "Wochenend-Blitz" }, "to": "/rapid-fire", "xp": 20 },
+    { "id": "m15-checkpoint", "kind": "checkpoint", "label": { "en": "Module 15 Checkpoint", "de": "Modul 15 Prüfung" } }
   ],
   "checkpoint": {
     "moduleType": "a1-checkpoint",

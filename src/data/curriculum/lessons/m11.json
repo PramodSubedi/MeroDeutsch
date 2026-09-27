@@ -1,200 +1,206 @@
 {
   "cefr": "A1.2",
-  "docRoute": "/vocab",
+  "docRoute": "/calendar",
   "objectives": {
     "en": [
-      "Describe clothing, state colors, express size preferences, and use demonstratives (dieser/diese/dieses)."
+      "State weekdays, months, seasons, clock times, and master temporal prepositions (am, im, um) and colloquial clock inversion (halb neun = 8:30).",
+      "Estimated time 50 Minutes · Prerequisites: Units 01–10"
     ]
   },
   "lexicon": [
     {
-      "word": "Kleidung",
-      "en": "Clothing",
-      "ne": "लुगा",
+      "word": "Uhrzeit",
+      "en": "Clock time",
+      "ne": "समय",
       "article": "die",
       "partOfSpeech": "Noun",
       "examples": [
         {
-          "de": "Die Kleidung ist schön.",
-          "en": "",
-          "ne": ""
+          "de": "Wie spät ist es?",
+          "en": "What time is it?",
+          "ne": "कति बज्यो?"
         }
       ]
     },
     {
-      "word": "Hemd",
-      "en": "Shirt",
-      "ne": "कमिज",
-      "article": "das",
-      "partOfSpeech": "Noun",
-      "examples": [
-        {
-          "de": "Das Hemd ist weiß.",
-          "en": "",
-          "ne": ""
-        }
-      ]
-    },
-    {
-      "word": "Hose",
-      "en": "Trousers",
-      "ne": "प्यान्ट",
-      "article": "die",
-      "partOfSpeech": "Noun",
-      "examples": [
-        {
-          "de": "Die Hose ist blau.",
-          "en": "",
-          "ne": ""
-        }
-      ]
-    },
-    {
-      "word": "Jacke",
-      "en": "Jacket",
-      "ne": "ज्याकेट",
-      "article": "die",
-      "partOfSpeech": "Noun",
-      "examples": [
-        {
-          "de": "Die Jacke ist warm.",
-          "en": "",
-          "ne": ""
-        }
-      ]
-    },
-    {
-      "word": "Schuh",
-      "en": "Shoe",
-      "ne": "जुत्ता",
+      "word": "Montag",
+      "en": "Monday",
+      "ne": "सोमबार",
       "article": "der",
       "partOfSpeech": "Noun",
       "examples": [
         {
-          "de": "Die Schuhe sind neu.",
-          "en": "",
-          "ne": ""
+          "de": "Am Montag arbeite ich.",
+          "en": "On Monday I work.",
+          "ne": "सोमबार म काम गर्छु।"
         }
       ]
     },
     {
-      "word": "Farbe",
-      "en": "Color",
-      "ne": "रंग",
-      "article": "die",
+      "word": "Dienstag",
+      "en": "Tuesday",
+      "ne": "मंगलबार",
+      "article": "der",
       "partOfSpeech": "Noun",
       "examples": [
         {
-          "de": "Welche Farbe gefällt dir?",
-          "en": "",
-          "ne": ""
+          "de": "Am Dienstag habe ich frei.",
+          "en": "On Tuesday I have off.",
+          "ne": "मंगलबार म बिदामा छु।"
         }
       ]
     },
     {
-      "word": "rot",
-      "en": "red",
-      "ne": "रातो",
-      "partOfSpeech": "Adjective",
-      "examples": [
-        {
-          "de": "Das Hemd ist rot.",
-          "en": "",
-          "ne": ""
-        }
-      ]
-    },
-    {
-      "word": "blau",
-      "en": "blue",
-      "ne": "नीलो",
-      "partOfSpeech": "Adjective",
-      "examples": [
-        {
-          "de": "Die Hose ist blau.",
-          "en": "",
-          "ne": ""
-        }
-      ]
-    },
-    {
-      "word": "grün",
-      "en": "green",
-      "ne": "हरियो",
-      "partOfSpeech": "Adjective",
-      "examples": [
-        {
-          "de": "Der Schrank ist grün.",
-          "en": "",
-          "ne": ""
-        }
-      ]
-    },
-    {
-      "word": "schwarz",
-      "en": "black",
-      "ne": "कालो",
-      "partOfSpeech": "Adjective",
-      "examples": [
-        {
-          "de": "Die Schuhe sind schwarz.",
-          "en": "",
-          "ne": ""
-        }
-      ]
-    },
-    {
-      "word": "weiß",
-      "en": "white",
-      "ne": "सेतो",
-      "partOfSpeech": "Adjective",
-      "examples": [
-        {
-          "de": "Das Hemd ist weiß.",
-          "en": "",
-          "ne": ""
-        }
-      ]
-    },
-    {
-      "word": "dieser",
-      "en": "this (masculine)",
-      "ne": "यो",
+      "word": "Mittwoch",
+      "en": "Wednesday",
+      "ne": "बुधबार",
       "article": "der",
-      "partOfSpeech": "Demonstrative",
+      "partOfSpeech": "Noun",
       "examples": [
         {
-          "de": "Dieser Pullover ist schön.",
-          "en": "",
-          "ne": ""
+          "de": "Mittwoch ist die Mitte.",
+          "en": "Wednesday is the middle.",
+          "ne": "बुधबार बिचमा पर्छ।"
         }
       ]
     },
     {
-      "word": "diese",
-      "en": "this (feminine)",
-      "ne": "यो",
-      "article": "die",
-      "partOfSpeech": "Demonstrative",
+      "word": "Donnerstag",
+      "en": "Thursday",
+      "ne": "बिहीबार",
+      "article": "der",
+      "partOfSpeech": "Noun",
       "examples": [
         {
-          "de": "Diese Hose passt gut.",
-          "en": "",
-          "ne": ""
+          "de": "Am Donnerstag lerne ich.",
+          "en": "On Thursday I learn.",
+          "ne": "बिहीबार म सिक्छु।"
         }
       ]
     },
     {
-      "word": "dieses",
-      "en": "this (neuter)",
-      "ne": "यो",
+      "word": "Freitag",
+      "en": "Friday",
+      "ne": "शुक्रबार",
+      "article": "der",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Freitagabend gehe ich aus.",
+          "en": "Friday evening I go out.",
+          "ne": "शुक्रबार साँझ म बाहिर जान्छु।"
+        }
+      ]
+    },
+    {
+      "word": "Samstag",
+      "en": "Saturday",
+      "ne": "शनिबार",
+      "article": "der",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Am Samstag schlafe ich lange.",
+          "en": "On Saturday I sleep long.",
+          "ne": "शनिबार म लामो सुत्छु।"
+        }
+      ]
+    },
+    {
+      "word": "Sonntag",
+      "en": "Sunday",
+      "ne": "आइतबार",
+      "article": "der",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Sonntag ist Ruhetag.",
+          "en": "Sunday is rest day.",
+          "ne": "आइतबार बिदाको दिन हो।"
+        }
+      ]
+    },
+    {
+      "word": "Monat",
+      "en": "Month",
+      "ne": "महिना",
+      "article": "der",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Der Monat Mai ist schön.",
+          "en": "The month of May is beautiful.",
+          "ne": "महिना मे राम्रो छ।"
+        }
+      ]
+    },
+    {
+      "word": "Jahr",
+      "en": "Year",
+      "ne": "वर्ष",
       "article": "das",
-      "partOfSpeech": "Demonstrative",
+      "partOfSpeech": "Noun",
       "examples": [
         {
-          "de": "Dieses Hemd ist teuer.",
-          "en": "",
-          "ne": ""
+          "de": "Ein Jahr hat 365 Tage.",
+          "en": "A year has 365 days.",
+          "ne": "एउटा वर्षमा ३६५ दिन हुन्छन्।"
+        }
+      ]
+    },
+    {
+      "word": "Frühling",
+      "en": "Spring",
+      "ne": "वसन्त",
+      "article": "der",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Im Frühling blühen Blumen.",
+          "en": "In spring flowers bloom.",
+          "ne": "वसन्तमा फूल फुल्छन्।"
+        }
+      ]
+    },
+    {
+      "word": "Sommer",
+      "en": "Summer",
+      "ne": "ग्रीष्म",
+      "article": "der",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Im Sommer ist es warm.",
+          "en": "In summer it is warm.",
+          "ne": "ग्रीष्ममा न्यानो हुन्छ।"
+        }
+      ]
+    },
+    {
+      "word": "Herbst",
+      "en": "Autumn / Fall",
+      "ne": "शरद",
+      "article": "der",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Im Herbst regnet es.",
+          "en": "In autumn it rains.",
+          "ne": "शरदमा पानी पर्छ।"
+        }
+      ]
+    },
+    {
+      "word": "Winter",
+      "en": "Winter",
+      "ne": "हिउँद",
+      "article": "der",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Im Winter schneit es.",
+          "en": "In winter it snows.",
+          "ne": "हिउँदमा हिउँ पर्छ।"
         }
       ]
     }
@@ -202,31 +208,97 @@
   "grammar": [
     {
       "title": {
-        "en": "Demonstrative Articles (dieser / diese / dieses)",
-        "de": "Demonstrative Articles (dieser / diese / dieses)"
+        "en": "Temporal Prepositions: am, im, um",
+        "de": "Temporale Präpositionen: am, im, um"
       },
       "notes": [
         {
-          "en": "Demonstratives take the same endings as definite articles (der/die/das):",
-          "ne": "",
-          "de": ""
+          "en": "Temporal prepositions govern the Dative case. Use am for days, dates, and parts of day; im for months, seasons, and years; um for exact clock times. Exception: 'in der Nacht' (not 'am Nacht').",
+          "ne": "कालसम्बन्धी पूर्वसर्गहरू Dative केसको अधिकार गर्छन्। दिन, मिति, र दिनको भागका लागि 'am'; महिना, मौसम, र वर्षका लागि 'im'; र सही घडिको समयका लागि 'um' प्रयोग गर्नुहोस्। अपवाद: 'in der Nacht' (नकी 'am Nacht')।",
+          "de": "Temporale Präpositionen regieren den Dativ. Verwende am für Tage, Daten und Tageszeiten; im für Monate, Jahreszeiten und Jahre; um für genaue Uhrzeiten. Ausnahme: 'in der Nacht' (nicht 'am Nacht')."
         }
       ],
-      "bullets": [
-        "Masculine (der): dieser Pullover (Nominative) -> diesen Pullover (Accusative)",
-        "Feminine (die): diese Hose (Nominative & Accusative)",
-        "Neuter (das): dieses Hemd (Nominative & Accusative)"
-      ]
+      "table": {
+        "columns": [
+          "Preposition",
+          "Case",
+          "Used With",
+          "Examples"
+        ],
+        "rows": [
+          [
+            "am",
+            "Dative",
+            "Days, dates, parts of day",
+            "am Montag, am 15. Mai, am Morgen"
+          ],
+          [
+            "im",
+            "Dative",
+            "Months, seasons, years",
+            "im Juli, im Sommer, im Jahr 2026"
+          ],
+          [
+            "um",
+            "Accusative",
+            "Exact clock times",
+            "um 8 Uhr, um 14:30 Uhr"
+          ],
+          [
+            "in der",
+            "Dative",
+            "Night (exception)",
+            "in der Nacht"
+          ]
+        ]
+      }
     },
     {
       "title": {
-        "en": "Asking About Size & Preference",
-        "de": "Asking About Size & Preference"
+        "en": "Colloquial vs Formal Clock (Umgangssprachliche vs Formale Uhrzeit)",
+        "de": "Umgangssprachliche vs Formale Uhrzeit"
       },
-      "bullets": [
-        "Welche Größe haben Sie? -> Ich habe Größe M / 38.",
-        "Wie gefällt dir diese Jacke? -> Sie gefällt mir sehr gut!"
-      ]
+      "notes": [
+        {
+          "en": "German colloquial clock uses 'half TO the next hour' logic: 08:30 = 'halb neun' (half before nine), NOT 'halb acht'. This is a critical trap for learners!",
+          "ne": "जर्मन बोलचालको घडिले 'अर्को घन्टाको आधा' तर्क प्रयोग गर्छ: 08:30 = 'halb neun' (नौ अगाडिको आधा), नकी 'halb acht'। यो सिक्नेहरूका लागि एक महत्त्वपूर्ण फन्दो हो!",
+          "de": "Die deutsche Umgangsuhrzeit nutzt die Logik 'halb VOR der nächsten Stunde': 08:30 = 'halb neun' (halb vor neun), NICHT 'halb acht'. Das ist eine kritische Falle für Lernende!"
+        }
+      ],
+      "table": {
+        "columns": [
+          "Digital",
+          "Colloquial",
+          "Formal"
+        ],
+        "rows": [
+          [
+            "08:00",
+            "acht Uhr",
+            "acht Uhr"
+          ],
+          [
+            "08:15",
+            "viertel nach acht",
+            "acht Uhr fünfzehn"
+          ],
+          [
+            "08:30",
+            "halb neun",
+            "acht Uhr dreißig"
+          ],
+          [
+            "08:45",
+            "viertel vor neun",
+            "acht Uhr fünfundvierzig"
+          ],
+          [
+            "09:30",
+            "halb zehn",
+            "neun Uhr dreißig"
+          ]
+        ]
+      }
     }
   ],
   "dialogue": {
@@ -236,73 +308,187 @@
       "de": "Dialog"
     },
     "scenario": {
-      "en": "Shopping for Clothes in a Department Store",
-      "de": "Shopping for Clothes in a Department Store"
+      "en": "Making an Appointment",
+      "de": "Einen Termin vereinbaren"
     },
     "turns": [
       {
-        "speaker": "Verkäuferin:",
-        "de": "Guten Tag! Kann ich Ihnen helfen?"
+        "speaker": "A:",
+        "de": "Hallo Sarah! Wann treffen wir uns?"
       },
       {
-        "speaker": "Kunde:",
-        "de": "Ja, bitte. Ich suche eine Jacke."
+        "speaker": "B:",
+        "de": "Hast du am Freitag Zeit?"
       },
       {
-        "speaker": "Verkäuferin:",
-        "de": "Wie gefällt Ihnen diese rote Jacke hier?"
+        "speaker": "A:",
+        "de": "Nein, am Freitag arbeite ich. Geht es am Samstag?"
       },
       {
-        "speaker": "Kunde:",
-        "de": "Die ist schön. Was kostet sie?"
+        "speaker": "B:",
+        "de": "Ja, Samstag passt gut. Um wie viel Uhr?"
       },
       {
-        "speaker": "Verkäuferin:",
-        "de": "Sie kostet 79 Euro. Welche Größe tragen Sie?"
+        "speaker": "A:",
+        "de": "Um halb vier (15:30 Uhr) im Café Central?"
       },
       {
-        "speaker": "Kunde:",
-        "de": "Ich trage Größe L. Kann ich sie anprobieren?"
+        "speaker": "B:",
+        "de": "Perfekt! Bis Samstag um halb vier."
       }
     ]
   },
   "miniGame": {
-    "type": "shopping_simulator",
-    "id": "m11-boutique-shop",
+    "type": "clock_minigame",
+    "id": "m11-uhrzeit-master",
     "payload": {
-      "type": "shopping_simulator",
-      "id": "m11-boutique-shop",
-      "items": [
-        {
-          "item_de": "dieser Pullover",
-          "correct_art": "dieser",
-          "color": "blau",
-          "price": 45
-        },
-        {
-          "item_de": "diese Hose",
-          "correct_art": "diese",
-          "color": "schwarz",
-          "price": 50
-        }
+      "type": "clock_minigame",
+      "id": "m11-uhrzeit-master",
+      "prompt_de": "Halb zehn",
+      "correct_digital": "09:30",
+      "options": [
+        "09:30",
+        "10:30",
+        "08:30",
+        "09:15"
       ]
     }
   },
   "practiceBank": [
     {
-      "kind": "Drill",
-      "prompt": "Fill demonstrative: ________ (this - der) Pullover ist warm.",
-      "answer": "Dieser"
+      "kind": "MCQ",
+      "prompt": "Which preposition fits: \"________ Montag habe ich Deutschkurs.\"?",
+      "options": [
+        "Am",
+        "Im",
+        "Um",
+        "In"
+      ],
+      "answer": "Am"
     },
     {
-      "kind": "Drill",
-      "prompt": "Fill demonstrative: Ich kaufe ________ (this - die) Hose.",
-      "answer": "diese"
+      "kind": "MCQ",
+      "prompt": "What does 'halb acht' mean in German colloquial time?",
+      "options": [
+        "8:30",
+        "7:30",
+        "8:15",
+        "7:15"
+      ],
+      "answer": "7:30"
     },
     {
-      "kind": "Translation",
-      "prompt": "Translate: \"The shirt is white and the pants are blue.\"",
-      "answer": "Das Hemd ist weiß und die Hose ist blau."
+      "kind": "Fill-in",
+      "prompt": "________ Montag habe ich Deutschkurs. \\(\\rightarrow\\) Am"
+    },
+    {
+      "kind": "Fill-in",
+      "prompt": "________ Sommer fahre ich nach Nepal. \\(\\rightarrow\\) Im"
+    },
+    {
+      "kind": "Fill-in",
+      "prompt": "Convert digital 07:30 to German colloquial phrase: \\(\\rightarrow\\) Halb acht"
+    },
+    {
+      "kind": "Translation DE->EN",
+      "prompt": "\"Am Montag arbeite ich.\" \\(\\rightarrow\\) On Monday I work."
+    },
+    {
+      "kind": "Translation EN->DE",
+      "prompt": "\"I have time on Tuesday.\" \\(\\rightarrow\\) Am Dienstag habe ich Zeit."
+    },
+    {
+      "kind": "Translation NE->DE",
+      "prompt": "\"म ग्रीष्ममा नेपाल जान्छु।\" \\(\\rightarrow\\) Im Sommer fahre ich nach Nepal."
+    },
+    {
+      "kind": "Matching",
+      "prompt": "am Morgen \\(\\rightarrow\\) in the morning"
+    },
+    {
+      "kind": "Matching",
+      "prompt": "im Juli \\(\\rightarrow\\) in July"
+    },
+    {
+      "kind": "Matching",
+      "prompt": "um 8 Uhr \\(\\rightarrow\\) at 8 o'clock"
+    },
+    {
+      "kind": "Dictation",
+      "prompt": "Listen & Type: \"Am Freitag arbeite ich, aber am Samstag habe ich frei.\""
+    },
+    {
+      "kind": "Dictation",
+      "prompt": "Listen & Type: \"Wir treffen uns um halb vier im Café.\""
+    },
+    {
+      "kind": "Error Correction",
+      "prompt": "\"Ich gehe in Montag zur Arbeit.\" \\(\\rightarrow\\) Ich gehe AM Montag zur Arbeit."
+    },
+    {
+      "kind": "Error Correction",
+      "prompt": "\"Halb acht ist 8:30.\" \\(\\rightarrow\\) Halb acht ist 7:30 (halb NEUN ist 8:30)."
+    },
+    {
+      "kind": "Culture MCQ",
+      "prompt": "In German culture, punctuality (Pünktlichkeit) means:",
+      "options": [
+        "Arriving exactly on time",
+        "Arriving 5 minutes early",
+        "Arriving up to 15 minutes late",
+        "Not caring about time"
+      ],
+      "answer": "Arriving 5 minutes early"
+    },
+    {
+      "kind": "Clock Conversion",
+      "prompt": "08:45 in colloquial German \\(\\rightarrow\\) Viertel vor neun"
+    },
+    {
+      "kind": "Clock Conversion",
+      "prompt": "09:30 in colloquial German \\(\\rightarrow\\) Halb zehn"
+    },
+    {
+      "kind": "Listening Gap",
+      "prompt": "\"Wir treffen uns _______ halb vier.\" (Audio: um) \\(\\rightarrow\\) um"
+    },
+    {
+      "kind": "Sentence Unscramble",
+      "prompt": "[am / ich / Montag / lerne / Deutsch] \\(\\rightarrow\\) Am Montag lerne ich Deutsch."
     }
-  ]
+  ],
+  "traps": [
+    {
+      "note": {
+        "en": "TRAP: 'Halb acht' = 7:30, NOT 8:30! 'Halb' means half TO the next hour!",
+        "ne": "फन्दा: 'Halb acht' = 7:30, नकी 8:30! 'Halb' भनेको अर्को घन्टाको आधा हुन्छ!",
+        "de": "FALLE: 'Halb acht' = 7:30, NICHT 8:30! 'Halb' bedeutet halb VOR der nächsten Stunde!"
+      }
+    },
+    {
+      "note": {
+        "en": "Memory hook: Am für Alle Tage (am Montag). Im für Im Monat (im Juli). Um für Uhrzeit (um 8 Uhr).",
+        "ne": "स्मृति सहयोग: Am = Alle Tage (am Montag)। Im = Im Monat (im Juli)। Um = Uhrzeit (um 8 Uhr)।",
+        "de": "Eselsbrücke: Am für Alle Tage (am Montag). Im für Im Monat (im Juli). Um für Uhrzeit (um 8 Uhr)."
+      }
+    },
+    {
+      "note": {
+        "en": "Cultural: Pünktlichkeit is paramount — arrive 5 minutes early!",
+        "ne": "सांस्कृतिक: Pünktlichkeit (समय पालना) सर्वोच्च प्राथमिकता हो — ५ मिनेट अगाडि पुग्नुहोस्!",
+        "de": "Kulturell: Pünktlichkeit ist oberste Pflicht — 5 Minuten eher da sein!"
+      }
+    }
+  ],
+  "culture": {
+    "title": {
+      "en": "Cultural context",
+      "de": "Kultureller Kontext"
+    },
+    "body": [
+      "⚠️ TRAP: 'Halb acht' = 7:30, NOT 8:30! 'Halb' means half TO the next hour!",
+      "Memory hook: Am für Alle Tage (am Montag). Im für Im Monat (im Juli). Um für Uhrzeit (um 8 Uhr).",
+      "Cultural: Pünktlichkeit is paramount — arrive 5 minutes early!"
+    ]
+  }
 }

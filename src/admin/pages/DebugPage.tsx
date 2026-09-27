@@ -24,6 +24,7 @@ import { theme } from '../../config/theme';
 import { buildModeUrl, resolveAppUrl } from '../../lib/debugModeLink';
 import { DEBUG_MODES, debugModeLabel, type DebugMode } from '../../lib/debugMode';
 import { useAdminAuth } from '../hooks/useAdminAuth';
+import { A1_UNIT_COUNT } from '../../data/a1Path';
 
 /**
  * Paths worth checking per mode — where a tier or identity bug would show.
@@ -44,7 +45,7 @@ const MODE_PATHS: Record<DebugMode, string[]> = {
 function pathLabel(path: string): string {
   if (path === '/') return 'Home';
   if (path === '/learn') return 'Level grid';
-  if (path === '/learn/a1') return 'A1 · 15 units';
+  if (path === '/learn/a1') return `A1 · ${A1_UNIT_COUNT} units`;
   return path;
 }
 

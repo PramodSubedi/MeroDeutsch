@@ -1,636 +1,265 @@
 {
   "cefr": "A1.2",
-  "docRoute": "/roleplay",
+  "docRoute": "/grammar",
   "objectives": {
     "en": [
-      "Ask for directions in a city, describe means of transport, and use Dative prepositions with transportation (mit dem / mit der)."
+      "State profession, use modal verbs for ability/obligation/permission/wishes, build modal sentence brackets (Satzklammer).",
+      "Estimated time 50 Minutes · Prerequisites: Units 01–11"
     ]
   },
   "lexicon": [
     {
-      "word": "Stadt",
-      "en": "City / Town",
-      "ne": "शहर",
-      "article": "die",
-      "plural": "Städte",
-      "ipa": "/ʃtat/",
-      "frequency": "active",
+      "word": "können",
+      "en": "can / to be able to",
+      "ne": "सक्नु",
+      "partOfSpeech": "Modal Verb",
       "examples": [
         {
-          "de": "Berlin ist eine große Stadt.",
-          "en": "Berlin is a big city.",
-          "ne": "बर्लिन एउटा ठूलो शहर हो।"
+          "de": "Ich kann Deutsch sprechen.",
+          "en": "I can speak German.",
+          "ne": "म जर्मन बोल्न सक्छु।"
         }
       ]
     },
     {
-      "word": "Bahnhof",
-      "en": "Train station",
-      "ne": "रेल स्टेशन",
+      "word": "müssen",
+      "en": "must / to have to",
+      "ne": "पर्छ",
+      "partOfSpeech": "Modal Verb",
+      "examples": [
+        {
+          "de": "Ich muss heute arbeiten.",
+          "en": "I must work today.",
+          "ne": "म आज काम गर्नु पर्छ।"
+        }
+      ]
+    },
+    {
+      "word": "wollen",
+      "en": "to want",
+      "ne": "चाहनु",
+      "partOfSpeech": "Modal Verb",
+      "examples": [
+        {
+          "de": "Er will nach Deutschland fliegen.",
+          "en": "He wants to fly to Germany.",
+          "ne": "उहाँ जर्मनी उड्न चाहनुहुन्छ।"
+        }
+      ]
+    },
+    {
+      "word": "möchten",
+      "en": "would like",
+      "ne": "इच्छा हुनु",
+      "partOfSpeech": "Modal Verb",
+      "examples": [
+        {
+          "de": "Ich möchte einen Kaffee.",
+          "en": "I would like a coffee.",
+          "ne": "म कफी चाहन्छु।"
+        }
+      ]
+    },
+    {
+      "word": "dürfen",
+      "en": "may / to be allowed to",
+      "ne": "अनुमति पाउनु",
+      "partOfSpeech": "Modal Verb",
+      "examples": [
+        {
+          "de": "Hier darf man nicht rauchen.",
+          "en": "One is not allowed to smoke here.",
+          "ne": "यहाँ धुम्रपान गर्न पाइँदैन।"
+        }
+      ]
+    },
+    {
+      "word": "sollen",
+      "en": "should",
+      "ne": "उचित हुनु",
+      "partOfSpeech": "Modal Verb",
+      "examples": [
+        {
+          "de": "Der Arzt sagt, ich soll schlafen.",
+          "en": "The doctor says I should sleep.",
+          "ne": "डाक्टरले मलाई सुत्न भन्नुभएको छ।"
+        }
+      ]
+    },
+    {
+      "word": "Lehrer",
+      "en": "Teacher (male)",
+      "ne": "शिक्षक (पुरुष)",
       "article": "der",
-      "plural": "Bahnhöfe",
-      "ipa": "/ˈbaːn_hoːf/",
-      "frequency": "active",
+      "partOfSpeech": "Noun",
       "examples": [
         {
-          "de": "Wo ist der Bahnhof?",
-          "en": "Where is the train station?",
-          "ne": "रेल स्टेशन कहाँ छ?"
+          "de": "Ich arbeite als Lehrer.",
+          "en": "I work as a teacher.",
+          "ne": "म शिक्षकको रूपमा काम गर्छु।"
         }
       ]
     },
     {
-      "word": "Flughafen",
-      "en": "Airport",
-      "ne": "विमानस्थल",
+      "word": "Lehrerin",
+      "en": "Teacher (female)",
+      "ne": "शिक्षक (महिला)",
+      "article": "die",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Sie ist Lehrerin.",
+          "en": "She is a teacher.",
+          "ne": "उनी शिक्षक हुनुहुन्छ।"
+        }
+      ]
+    },
+    {
+      "word": "Arzt",
+      "en": "Doctor (male)",
+      "ne": "डाक्टर (पुरुष)",
       "article": "der",
-      "plural": "Flughäfen",
-      "ipa": "/ˈfluːk_haːfn̩/",
-      "frequency": "active",
+      "partOfSpeech": "Noun",
       "examples": [
         {
-          "de": "Der Bus fährt zum Flughafen.",
-          "en": "The bus drives to the airport.",
-          "ne": "बस विमानस्थलतर्फ जान्छ।"
+          "de": "Er ist Arzt.",
+          "en": "He is a doctor.",
+          "ne": "उहाँ डाक्टर हुनुहुन्छ।"
         }
       ]
     },
     {
-      "word": "Haltestelle",
-      "en": "Bus/Tram stop",
-      "ne": "बस बिसौनी",
+      "word": "Ärztin",
+      "en": "Doctor (female)",
+      "ne": "डाक्टर (महिला)",
       "article": "die",
-      "plural": "Haltestellen",
-      "ipa": "/ˈhal tə_ʃtɛlə/",
-      "frequency": "active",
+      "partOfSpeech": "Noun",
       "examples": [
         {
-          "de": "Die Haltestelle ist da drüben.",
-          "en": "The bus stop is over there.",
-          "ne": "बस बिसौनी उतातिर छ।"
+          "de": "Sie ist Ärztin.",
+          "en": "She is a doctor.",
+          "ne": "उनी डाक्टर हुनुहुन्छन्।"
         }
       ]
     },
     {
-      "word": "Zug",
-      "en": "Train",
-      "ne": "रेल",
+      "word": "Student",
+      "en": "Student (male)",
+      "ne": "विद्यार्थी (पुरुष)",
       "article": "der",
-      "plural": "Züge",
-      "ipa": "/tsuːk/",
-      "frequency": "active",
+      "partOfSpeech": "Noun",
       "examples": [
         {
-          "de": "Der Zug kommt pünktlich an.",
-          "en": "The train arrives on time.",
-          "ne": "रेल समयमै आइपुग्छ।"
+          "de": "Ich bin Student.",
+          "en": "I am a student.",
+          "ne": "म विद्यार्थी छु।"
         }
       ]
     },
     {
-      "word": "Bus",
-      "en": "Bus",
-      "ne": "बस",
+      "word": "Studentin",
+      "en": "Student (female)",
+      "ne": "विद्यार्थी (महिला)",
+      "article": "die",
+      "partOfSpeech": "Noun",
+      "examples": [
+        {
+          "de": "Sie ist Studentin.",
+          "en": "She is a student.",
+          "ne": "उनी विद्यार्थी हुनुहुन्छन्।"
+        }
+      ]
+    },
+    {
+      "word": "Ingenieur",
+      "en": "Engineer (male)",
+      "ne": "इन्जिनियर (पुरुष)",
       "article": "der",
-      "plural": "Busse",
-      "ipa": "/bʊs/",
-      "frequency": "active",
+      "partOfSpeech": "Noun",
       "examples": [
         {
-          "de": "Ich fahre mit dem Bus.",
-          "en": "I travel by bus.",
-          "ne": "म बसमा जान्छु।"
+          "de": "Er arbeitet als Ingenieur.",
+          "en": "He works as an engineer.",
+          "ne": "उहाँ इन्जिनियरको रूपमा काम गर्छन्।"
         }
       ]
     },
     {
-      "word": "U-Bahn",
-      "en": "Underground / Subway",
-      "ne": "भूमिगत रेल",
+      "word": "Ingenieurin",
+      "en": "Engineer (female)",
+      "ne": "इन्जिनियर (महिला)",
       "article": "die",
-      "plural": "U-Bahnen",
-      "ipa": "/ˈuː_baːn/",
-      "frequency": "active",
+      "partOfSpeech": "Noun",
       "examples": [
         {
-          "de": "Die U-Bahn ist sehr schnell.",
-          "en": "The subway is very fast.",
-          "ne": "भूमिगत रेल धेरै छिटो हुन्छ।"
+          "de": "Sie ist Ingenieurin.",
+          "en": "She is an engineer.",
+          "ne": "उनी इन्जिनियर हुनुहुन्छन्।"
         }
       ]
     },
     {
-      "word": "S-Bahn",
-      "en": "Suburban train",
-      "ne": "उपनगरीय रेल",
-      "article": "die",
-      "plural": "S-Bahnen",
-      "ipa": "/ˈɛs_baːn/",
-      "frequency": "active",
+      "word": "arbeiten",
+      "en": "to work",
+      "ne": "काम गर्नु",
+      "partOfSpeech": "Verb",
       "examples": [
         {
-          "de": "Wir nehmen die S-Bahn.",
-          "en": "We take the suburban train.",
-          "ne": "हामी उपनगरीय रेल लिन्छौँ।"
+          "de": "Ich muss heute arbeiten.",
+          "en": "I have to work today.",
+          "ne": "म आज काम गर्नु पर्छ।"
         }
       ]
     },
     {
-      "word": "Straßenbahn / Tram",
-      "en": "Tram / Streetcar",
-      "ne": "ट्राम",
-      "article": "die",
-      "plural": "Straßenbahnen",
-      "ipa": "/ˈʃtʁaːsn̩_baːn/",
-      "frequency": "active",
+      "word": "lernen",
+      "en": "to learn / study",
+      "ne": "सिक्नु / पढ्नु",
+      "partOfSpeech": "Verb",
       "examples": [
         {
-          "de": "Die Tram hält am Platz.",
-          "en": "The tram stops at the square.",
-          "ne": "ट्राम चोकमा रोकिन्छ।"
+          "de": "Ich kann gut Deutsch lernen.",
+          "en": "I can learn German well.",
+          "ne": "म जर्मन राम्रोसँग सिक्न सक्छु।"
         }
       ]
     },
     {
-      "word": "Taxi",
-      "en": "Taxi",
-      "ne": "ट्याक्सी",
-      "article": "das",
-      "plural": "Taxis",
-      "ipa": "/ˈtaksi/",
-      "frequency": "active",
+      "word": "kommen",
+      "en": "to come",
+      "ne": "आउनु",
+      "partOfSpeech": "Verb",
       "examples": [
         {
-          "de": "Ein Taxi ist teuer.",
-          "en": "A taxi is expensive.",
-          "ne": "ट्याक्सी महँगो हुन्छ।"
-        }
-      ]
-    },
-    {
-      "word": "Fahrrad",
-      "en": "Bicycle",
-      "ne": "साइकल",
-      "article": "das",
-      "plural": "Fahrräder",
-      "ipa": "/ˈfaːɐ̯_ʁaːt/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Er fährt mit dem Fahrrad.",
-          "en": "He rides a bicycle.",
-          "ne": "उहाँ साइकलमा जानुहुन्छ।"
-        }
-      ]
-    },
-    {
-      "word": "Auto",
-      "en": "Car",
-      "ne": "गाडी",
-      "article": "das",
-      "plural": "Autos",
-      "ipa": "/ˈaʊ̯to/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Das Auto steht auf dem Parkplatz.",
-          "en": "The car is in the parking lot.",
-          "ne": "गाडी पार्किङमा छ।"
-        }
-      ]
-    },
-    {
-      "word": "Ticket / Fahrkarte",
-      "en": "Transit ticket",
-      "ne": "यात्रा टिकट",
-      "article": "die",
-      "plural": "Tickets / Fahrkarten",
-      "ipa": "/ˈfaːɐ̯_kaʁtə/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Eine Fahrkarte nach München, bitte.",
-          "en": "A ticket to Munich, please.",
-          "ne": "म्युनिखको लागि एउटा टिकट, कृपया।"
-        }
-      ]
-    },
-    {
-      "word": "Gleis",
-      "en": "Railway platform",
-      "ne": "प्लेटफर्म",
-      "article": "das",
-      "plural": "Gleise",
-      "ipa": "/ɡlaɪ̯s/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Der Zug fährt von Gleis 4 ab.",
-          "en": "The train departs from platform 4.",
-          "ne": "रेल प्लेटफर्म ४ बाट प्रस्थान गर्छ।"
-        }
-      ]
-    },
-    {
-      "word": "Straße",
-      "en": "Street",
-      "ne": "सडक",
-      "article": "die",
-      "plural": "Straßen",
-      "ipa": "/ˈʃtʁaːsə/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Die Straße ist lang.",
-          "en": "The street is long.",
-          "ne": "सडक लामो छ।"
-        }
-      ]
-    },
-    {
-      "word": "Platz",
-      "en": "Square / Plaza",
-      "ne": "चोक",
-      "article": "der",
-      "plural": "Plätze",
-      "ipa": "/plats/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Der Alexanderplatz ist im Zentrum.",
-          "en": "Alexanderplatz is in the center.",
-          "ne": "अलेक्ज्यान्डर चोक केन्द्रमा छ।"
-        }
-      ]
-    },
-    {
-      "word": "Weg",
-      "en": "Path / Way",
-      "ne": "बाटो",
-      "article": "der",
-      "plural": "Wege",
-      "ipa": "/veːk/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Kennen Sie den Weg zum Hotel?",
-          "en": "Do you know the way to the hotel?",
-          "ne": "के तपाईंलाई होटल जाने बाटो थाहा छ?"
-        }
-      ]
-    },
-    {
-      "word": "Zentrum / Stadtmitte",
-      "en": "City center / Downtown",
-      "ne": "शहरको केन्द्र",
-      "plural": "Zentren",
-      "ipa": "/ˈtsɛntʁʊm/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Das Hotel ist im Zentrum.",
-          "en": "The hotel is in the center.",
-          "ne": "होटल शहरको केन्द्रमा छ।"
-        }
-      ]
-    },
-    {
-      "word": "Bank",
-      "en": "Bank",
-      "ne": "बैंक",
-      "article": "die",
-      "plural": "Banken",
-      "ipa": "/baŋk/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Wo ist die nächste Bank?",
-          "en": "Where is the nearest bank?",
-          "ne": "नजिकैको बैंक कहाँ छ?"
-        }
-      ]
-    },
-    {
-      "word": "Post",
-      "en": "Post office",
-      "ne": "हुलाक",
-      "article": "die",
-      "plural": "-",
-      "ipa": "/pɔst/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Die Post ist am Platz.",
-          "en": "The post office is at the square.",
-          "ne": "हुलाक चोकमा छ।"
-        }
-      ]
-    },
-    {
-      "word": "Apotheke",
-      "en": "Pharmacy / Chemist",
-      "ne": "औषधि पसल",
-      "article": "die",
-      "plural": "Apotheken",
-      "ipa": "/apoˈteːkə/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Ich brauche Medizin aus der Apotheke.",
-          "en": "I need medicine from the pharmacy.",
-          "ne": "मलाई औषधि पसलबाट औषधि चाहिन्छ।"
-        }
-      ]
-    },
-    {
-      "word": "Supermarkt",
-      "en": "Supermarket",
-      "ne": "सुपरमार्केट",
-      "article": "der",
-      "plural": "Supermärkte",
-      "ipa": "/ˈzuːpɐ_maʁkt/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Der Supermarkt schließt um 20 Uhr.",
-          "en": "The supermarket closes at 8 PM.",
-          "ne": "सुपरमार्केट आठ बजे बन्द हुन्छ।"
-        }
-      ]
-    },
-    {
-      "word": "Hotel",
-      "en": "Hotel",
-      "ne": "होटल",
-      "article": "das",
-      "plural": "Hotels",
-      "ipa": "/hoˈtɛl/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Das Hotel liegt nahe am Bahnhof.",
-          "en": "The hotel is near the station.",
-          "ne": "होटल रेल स्टेशन नजिकै छ।"
-        }
-      ]
-    },
-    {
-      "word": "geradeaus",
-      "en": "Straight ahead",
-      "ne": "सीधा",
-      "plural": "-",
-      "ipa": "/ɡəˈʁaːdə_ʔaʊ̯s/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Gehen Sie immer geradeaus!",
-          "en": "Go straight ahead!",
-          "ne": "सीधा जानुहोस्!"
-        }
-      ]
-    },
-    {
-      "word": "links",
-      "en": "Left",
-      "ne": "देब्रे",
-      "plural": "-",
-      "ipa": "/lɪŋks/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Biegen Sie nach links ab!",
-          "en": "Turn left!",
-          "ne": "देब्रे मोड्नुहोस्!"
-        }
-      ]
-    },
-    {
-      "word": "rechts",
-      "en": "Right",
-      "ne": "दाहिने",
-      "plural": "-",
-      "ipa": "/ʁɛçts/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Die Apotheke ist auf der rechten Seite.",
-          "en": "The pharmacy is on the right side.",
-          "ne": "औषधि पसल दाहिनेतर्फ छ।"
-        }
-      ]
-    },
-    {
-      "word": "Ecke",
-      "en": "Corner",
-      "ne": "कुना",
-      "article": "die",
-      "plural": "Ecken",
-      "ipa": "/ˈɛkə/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "An der Ecke nach rechts.",
-          "en": "Turn right at the corner.",
-          "ne": "कुनामा दाहिने मोड्नुहोस्।"
-        }
-      ]
-    },
-    {
-      "word": "Kreuzung",
-      "en": "Intersection / Crossroad",
-      "ne": "चौबाटो",
-      "article": "die",
-      "plural": "Kreuzungen",
-      "ipa": "/ˈkʁɔɪ̯tsʊŋ/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "An der Kreuzung geradeaus.",
-          "en": "Straight ahead at the intersection.",
-          "ne": "चौबाटोमा सीधा जानुहोस्।"
-        }
-      ]
-    },
-    {
-      "word": "Ampel",
-      "en": "Traffic light",
-      "ne": "ट्राफिक बत्ती",
-      "article": "die",
-      "plural": "Ampeln",
-      "ipa": "/ˈampl̩/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "An der Ampel nach links.",
-          "en": "Turn left at the traffic light.",
-          "ne": "ट्राफिक बत्तीमा देब्रे मोड्नुहोस्।"
-        }
-      ]
-    },
-    {
-      "word": "nahe / in der Nähe",
-      "en": "Near / Nearby",
-      "ne": "नजिकै",
-      "plural": "-",
-      "ipa": "/ˈnɛːə/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Das Hotel ist in der Nähe.",
-          "en": "The hotel is nearby.",
-          "ne": "होटल नजिकै छ।"
-        }
-      ]
-    },
-    {
-      "word": "weit",
-      "en": "Far",
-      "ne": "टाढा",
-      "plural": "-",
-      "ipa": "/vaɪ̯t/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Ist der Bahnhof weit von hier?",
-          "en": "Is the station far from here?",
-          "ne": "के रेल स्टेशन यहाँबाट टाढा छ?"
+          "de": "Kannst du am Samstag kommen?",
+          "en": "Can you come on Saturday?",
+          "ne": "के तिमी शनिबार आउन सक्छौ?"
         }
       ]
     },
     {
       "word": "fahren",
-      "en": "to drive / ride / travel",
-      "ne": "जान्नु (सवारी साधन)",
-      "plural": "fährt / fuhr / ist gefahren",
-      "ipa": "/ˈfaːʁən/",
-      "frequency": "active",
+      "en": "to drive / travel",
+      "ne": "यात्रा गर्नु",
+      "partOfSpeech": "Verb",
       "examples": [
         {
-          "de": "Ich fahre mit der U-Bahn.",
-          "en": "I travel by subway.",
-          "ne": "म भूमिगत रेलमा जान्छु।"
+          "de": "Wir wollen nach Berlin fahren.",
+          "en": "We want to travel to Berlin.",
+          "ne": "हामी बर्लिन जान चाहन्छौँ।"
         }
       ]
     },
     {
-      "word": "gehen",
-      "en": "to walk / go",
-      "ne": "हिँड्नु / जान्नु",
-      "plural": "geht / ging / ist gegangen",
-      "ipa": "/ˈɡeːən/",
-      "frequency": "active",
+      "word": "mitkommen",
+      "en": "to come along",
+      "ne": "सँगै आउनु",
+      "partOfSpeech": "Verb (sep)",
       "examples": [
         {
-          "de": "Wir gehen zu Fuß.",
-          "en": "We go on foot.",
-          "ne": "हामी पैदल जान्छौँ।"
-        }
-      ]
-    },
-    {
-      "word": "abbiegen",
-      "en": "to turn (direction)",
-      "ne": "मोड्नु",
-      "plural": "biegt ab / bieg ab / ist abgebogen",
-      "ipa": "/ˈap_biːɡn̩/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Biegen Sie nach links ab.",
-          "en": "Turn left.",
-          "ne": "देब्रे मोड्नुहोस्।"
-        }
-      ]
-    },
-    {
-      "word": "suchen",
-      "en": "to search",
-      "ne": "खोज्नु",
-      "plural": "sucht / suchte / gesucht",
-      "ipa": "/ˈzuːxn̩/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Ich suche den Bahnhof.",
-          "en": "I am looking for the train station.",
-          "ne": "म रेल स्टेशन खोज्दैछु।"
-        }
-      ]
-    },
-    {
-      "word": "finden",
-      "en": "to find",
-      "ne": "भेट्टाउनु",
-      "plural": "findet / fand / gefunden",
-      "ipa": "/ˈfɪndn̩/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Sie finden das Hotel auf der linken Seite.",
-          "en": "You will find the hotel on the left side.",
-          "ne": "तपाईंले होटल देब्रेतर्फ भेट्टाउनुहुनेछ।"
-        }
-      ]
-    },
-    {
-      "word": "mit",
-      "en": "With / By (transport)",
-      "ne": "द्वारा / सँग",
-      "plural": "-",
-      "ipa": "/mɪt/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Ich fahre mit dem Bus.",
-          "en": "I travel by bus.",
-          "ne": "म बसद्वारा जान्छु।"
-        }
-      ]
-    },
-    {
-      "word": "zu Fuß",
-      "en": "On foot",
-      "ne": "पैदल",
-      "plural": "-",
-      "ipa": "/tsuː fuːs/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Ich gehe zu Fuß.",
-          "en": "I walk on foot.",
-          "ne": "म पैदल जान्छु।"
-        }
-      ]
-    },
-    {
-      "word": "Nähe",
-      "en": "Proximity / Vicinity",
-      "ne": "आसपास",
-      "article": "die",
-      "plural": "-",
-      "ipa": "/ˈnɛːə/",
-      "frequency": "active",
-      "examples": [
-        {
-          "de": "Gibt es ein Cafe in der Nähe?",
-          "en": "Is there a cafe nearby?",
-          "ne": "आसपास कुनै क्याफे छ?"
-        }
-      ]
-    },
-    {
-      "word": "Auskunft",
-      "en": "Information counter",
-      "ne": "सोधपुछ कक्ष",
-      "article": "die",
-      "plural": "Auskünfte",
-      "ipa": "/ˈaʊ̯s_kʊnft/",
-      "frequency": "passive",
-      "examples": [
-        {
-          "de": "Fragen Sie an der Auskunft!",
-          "en": "Ask at the information counter!",
-          "ne": "सोधपुछ कक्षमा सोध्नुहोस्!"
+          "de": "Möchtest du mitkommen?",
+          "en": "Would you like to come along?",
+          "ne": "के तिमी सँगै आउन चाहन्छौ?"
         }
       ]
     }
@@ -638,34 +267,189 @@
   "grammar": [
     {
       "title": {
-        "en": "Transportation Preposition: mit (+ Dative Case)",
-        "de": "Transportation Preposition: mit (+ Dative Case)"
+        "en": "Modal Verb Conjugation (Present Tense)",
+        "de": "Modalverb-Konjugation (Präsens)"
       },
       "notes": [
         {
-          "en": "The preposition mit ALWAYS triggers the Dative case:",
-          "ne": "",
-          "de": ""
+          "en": "Modal verbs drop umlauts in singular forms (ich, du, er/sie/es) and have matching 1st & 3rd person singular forms (ich and er/sie/es share the SAME form with NO ending).",
+          "ne": "मोडल क्रियाहरू एकवचनमा (ich, du, er/sie/es) umlauts बिर्साउँछन् र १ र ३ पुरुष एकवचन (ich र er/sie/es) को रूपै मिल्छ (कुनै ending छैन)।",
+          "de": "Modalverben verlieren Umlaute in Singularformen (ich, du, er/sie/es) und haben identische 1. & 3. Person Singular (ich und er/sie/es teilen die GLEICHE Form OHNE Endung)."
         }
       ],
-      "bullets": [
-        "Masculine (der Bus/Zug): mit dem Bus / mit dem Zug",
-        "Neuter (das Auto/Taxi): mit dem Auto / mit dem Taxi",
-        "Feminine (die Bahn/U-Bahn): mit der Bahn / mit der U-Bahn"
-      ]
+      "table": {
+        "columns": [
+          "Pronoun",
+          "können (can)",
+          "müssen (must)",
+          "wollen (want)",
+          "dürfen (may)",
+          "sollen (should)",
+          "möchten (would like)"
+        ],
+        "rows": [
+          [
+            "ich",
+            "kann",
+            "muss",
+            "will",
+            "darf",
+            "soll",
+            "möchte"
+          ],
+          [
+            "du",
+            "kannst",
+            "musst",
+            "willst",
+            "darfst",
+            "sollst",
+            "möchtest"
+          ],
+          [
+            "er / sie / es",
+            "kann",
+            "muss",
+            "will",
+            "darf",
+            "soll",
+            "möchte"
+          ],
+          [
+            "wir",
+            "können",
+            "müssen",
+            "wollen",
+            "dürfen",
+            "sollen",
+            "möchten"
+          ],
+          [
+            "ihr",
+            "könnt",
+            "müsst",
+            "wollt",
+            "dürft",
+            "sollt",
+            "möchtet"
+          ],
+          [
+            "sie / Sie",
+            "können",
+            "müssen",
+            "wollen",
+            "dürfen",
+            "sollen",
+            "möchten"
+          ]
+        ]
+      }
     },
     {
       "title": {
-        "en": "Giving & Asking for Directions",
-        "de": "Giving & Asking for Directions"
+        "en": "Modal Sentence Bracket (Satzklammer)",
+        "de": "Modalsatzklammer"
       },
-      "bullets": [
-        "Asking: Entschuldigung, wie komme ich zum Bahnhof?",
-        "Commands (Imperative Formal):",
-        "Gehen Sie geradeaus. (\"Go straight ahead.\")",
-        "Biegen Sie links / rechts ab. (\"Turn left / right.\")",
-        "Nehmen Sie die erste Straße rechts. (\"Take the first street on the right.\")"
-      ]
+      "notes": [
+        {
+          "en": "The conjugated modal verb sits in Position 2, while the main verb goes to the VERY END in INFINITIVE form. This creates a 'bracket' structure around the middle elements.",
+          "ne": "संयोजित मोडल क्रिया स्थान २ मा बस्छ, जब्कि मुख्य क्रिया अनन्त रूपमा (INFINITIVE) अहिलेको अन्त्यमा जान्छ। यो मध्यका तत्वहरू चहिँ 'ब्र्याकेट' संरचना निर्माण गर्छ।",
+          "de": "Das konjugierte Modalverb steht an Position 2, während das Hauptverb am ALLERENDE im INFINITIV steht. Dies erzeugt eine 'Klammer'-Struktur um die Mittelemente."
+        }
+      ],
+      "table": {
+        "columns": [
+          "Pos 1",
+          "Pos 2 (Modal)",
+          "Middle",
+          "END (Infinitive)"
+        ],
+        "rows": [
+          [
+            "Ich",
+            "kann",
+            "schon gut Deutsch",
+            "sprechen."
+          ],
+          [
+            "Er",
+            "muss",
+            "heute lange",
+            "arbeiten."
+          ],
+          [
+            "Darf",
+            "man",
+            "hier",
+            "parken?"
+          ],
+          [
+            "Wir",
+            "wollen",
+            "nach Berlin",
+            "fahren."
+          ],
+          [
+            "Möchtest",
+            "du",
+            "einen Kaffee",
+            "trinken?"
+          ]
+        ]
+      }
+    },
+    {
+      "title": {
+        "en": "Stating Professions (Berufe angeben)",
+        "de": "Berufe angeben"
+      },
+      "notes": [
+        {
+          "en": "Female professions: add -in to masculine (Lehrer → Lehrerin, Arzt → Ärztin), plural -innen. NO article before job titles with sein/werden: Ich bin Lehrer (NOT: Ich bin ein Lehrer). Use 'als' for titles: Ich arbeite als Lehrer. Use 'bei' + Dative for companies: Ich arbeite bei Siemens.",
+          "ne": "महिला व्यवसाय: पुरुषमा -in थप्नुहोस् (Lehrer → Lehrerin, Arzt → Ärztin), बहुवचन -innen। sein/werden सँग व्यवसायका शीर्षकमा कुनै article छैन: Ich bin Lehrer (नकी: Ich bin ein Lehrer)। शीर्षकका लागि 'als' प्रयोग गर्नुहोस्: Ich arbeite als Lehrer। कम्पनीका लागि 'bei' + Dative: Ich arbeite bei Siemens।",
+          "de": "Weibliche Berufe: -in an männliche Form (Lehrer → Lehrerin, Arzt → Ärztin), Plural -innen. KEIN Artikel vor Berufsbezeichnungen mit sein/werden: Ich bin Lehrer (NICHT: Ich bin ein Lehrer). 'als' für Titel: Ich arbeite als Lehrer. 'bei' + Dativ für Firmen: Ich arbeite bei Siemens."
+        }
+      ],
+      "table": {
+        "columns": [
+          "Masculine",
+          "Feminine",
+          "Plural Feminine",
+          "Meaning"
+        ],
+        "rows": [
+          [
+            "der Lehrer",
+            "die Lehrerin",
+            "die Lehrerinnen",
+            "teacher"
+          ],
+          [
+            "der Arzt",
+            "die Ärztin",
+            "die Ärztinnen",
+            "doctor"
+          ],
+          [
+            "der Student",
+            "die Studentin",
+            "die Studentinnen",
+            "student"
+          ],
+          [
+            "der Ingenieur",
+            "die Ingenieurin",
+            "die Ingenieurinnen",
+            "engineer"
+          ],
+          [
+            "der Verkäufer",
+            "die Verkäuferin",
+            "die Verkäuferinnen",
+            "salesperson"
+          ]
+        ]
+      }
     }
   ],
   "dialogue": {
@@ -675,201 +459,194 @@
       "de": "Dialog"
     },
     "scenario": {
-      "en": "Asking for Directions on the Street",
-      "de": "Asking for Directions on the Street"
+      "en": "Planning a Weekend Trip",
+      "de": "Wochenendausflug planen"
     },
     "turns": [
       {
-        "speaker": "Passant:",
-        "de": "Entschuldigung! Wie komme ich zum Bahnhof?"
+        "speaker": "A:",
+        "de": "Hallo Paul! Kannst du am Samstag zum Fußballspiel kommen?"
       },
       {
-        "speaker": "Einheimischer:",
-        "de": "Das ist nicht weit. Gehen Sie hier geradeaus."
+        "speaker": "B:",
+        "de": "Nein, leider nicht. Ich muss am Samstag für die Prüfung lernen."
       },
       {
-        "speaker": "Passant:",
-        "de": "Und dann?"
+        "speaker": "A:",
+        "de": "Schade! Und am Sonntag? Willst du am Sonntag einen Ausflug machen?"
       },
       {
-        "speaker": "Einheimischer:",
-        "de": "Biegen Sie an der Kreuzung links ab. Der Bahnhof ist auf der rechten Seite."
+        "speaker": "B:",
+        "de": "Ja, am Sonntag möchte ich gerne mitkommen! Wohin fahren wir?"
       },
       {
-        "speaker": "Passant:",
-        "de": "Fährt dort auch ein Bus?"
-      },
-      {
-        "speaker": "Einheimischer:",
-        "de": "Ja, Sie können auch mit dem Bus Nummer 5 fahren."
-      },
-      {
-        "speaker": "Passant:",
-        "de": "Vielen Dank für die Hilfe!"
+        "speaker": "A:",
+        "de": "Wir können an den See fahren."
       }
     ]
   },
   "miniGame": {
-    "type": "directions_quest",
-    "id": "m12-city-navigator",
+    "type": "grammar_drill",
+    "id": "m12-modal-bracket",
     "payload": {
-      "type": "directions_quest",
-      "id": "m12-city-navigator",
-      "scenario": "Wo ist der Bahnhof?",
-      "correct_steps": [
-        "geradeaus gehen",
-        "an der Ampel links abbiegen"
-      ],
-      "transport_phrase": "mit dem Bus"
+      "type": "grammar_drill",
+      "id": "m12-modal-bracket",
+      "prompt": "Ich (können) Deutsch (sprechen).",
+      "correct_de": "Ich kann Deutsch sprechen.",
+      "options": [
+        "Ich kann Deutsch sprechen.",
+        "Ich könne Deutsch sprechen.",
+        "Ich kann sprechen Deutsch."
+      ]
     }
   },
   "practiceBank": [
     {
       "kind": "MCQ",
-      "prompt": "Which article correctly fills: \"Ich fahre mit ___ (der) Bus\"?",
+      "prompt": "Where does the second verb go when a modal verb is in Position 2?",
       "options": [
-        "den",
-        "dem",
-        "der",
-        "das"
+        "Position 1",
+        "Position 3",
+        "After modal",
+        "Very end in infinitive"
       ],
-      "answer": "dem"
+      "answer": "Very end in infinitive"
     },
     {
       "kind": "MCQ",
-      "prompt": "How do you say \"I am going on foot\"?",
+      "prompt": "What is the 3rd person singular (er) form of können?",
       "options": [
-        "Ich gehe mit Fuß.",
-        "Ich gehe zu Fuß.",
-        "Ich fahre zu Fuß.",
-        "Ich gehe im Fuß."
+        "könnt",
+        "kann",
+        "konnt",
+        "können"
       ],
-      "answer": "Ich gehe zu Fuß."
+      "answer": "kann"
     },
     {
       "kind": "Fill-in",
-      "prompt": "Sie fährt mit _______ (die) U-Bahn. \\(\\rightarrow\\) der"
+      "prompt": "Er _______ (müssen) heute arbeiten. \\(\\rightarrow\\) muss"
     },
     {
       "kind": "Fill-in",
-      "prompt": "Er fährt mit _______ (das) Auto. \\(\\rightarrow\\) dem"
+      "prompt": "Ich _______ (können) Deutsch sprechen. \\(\\rightarrow\\) kann"
     },
     {
       "kind": "Fill-in",
-      "prompt": "An der Ampel nach _______ (right) abbiegen. \\(\\rightarrow\\) rechts"
-    },
-    {
-      "kind": "Direction Matching",
-      "prompt": "geradeaus \\(\\rightarrow\\) straight ahead"
-    },
-    {
-      "kind": "Direction Matching",
-      "prompt": "links \\(\\rightarrow\\) left"
-    },
-    {
-      "kind": "Direction Matching",
-      "prompt": "rechts \\(\\rightarrow\\) right"
-    },
-    {
-      "kind": "Translation DE->EN",
-      "prompt": "\"Wo ist die nächste Haltestelle?\" \\(\\rightarrow\\) Where is the nearest bus stop?"
-    },
-    {
-      "kind": "Translation EN->DE",
-      "prompt": "\"Turn left at the intersection.\" \\(\\rightarrow\\) Biegen Sie an der Kreuzung nach links ab."
-    },
-    {
-      "kind": "Translation NE->DE",
-      "prompt": "\"म बसद्वारा जान्छु।\" \\(\\rightarrow\\) Ich fahre mit dem Bus."
-    },
-    {
-      "kind": "Matching",
-      "prompt": "der Bahnhof \\(\\rightarrow\\) train station"
-    },
-    {
-      "kind": "Matching",
-      "prompt": "die Apotheke \\(\\rightarrow\\) pharmacy"
-    },
-    {
-      "kind": "Matching",
-      "prompt": "das Gleis \\(\\rightarrow\\) railway platform"
-    },
-    {
-      "kind": "Verb Selection",
-      "prompt": "Walking on foot uses: gehen"
-    },
-    {
-      "kind": "Dictation",
-      "prompt": "Listen & Type: \"Ich fahre jeden Morgen mit der U-Bahn zur Arbeit.\""
-    },
-    {
-      "kind": "Dictation",
-      "prompt": "Listen & Type: \"Gehen Sie an der Ampel nach rechts.\""
-    },
-    {
-      "kind": "Error Correction",
-      "prompt": "\"Ich fahre mit die S-Bahn.\" \\(\\rightarrow\\) Ich fahre mit der S-Bahn."
-    },
-    {
-      "kind": "Error Correction",
-      "prompt": "\"Ich fahre zu Fuß.\" \\(\\rightarrow\\) Ich gehe zu Fuß."
-    },
-    {
-      "kind": "Culture MCQ",
-      "prompt": "What does Schwarzfahren mean in Germany?",
-      "options": [
-        "Driving at night",
-        "Riding public transport without a valid ticket",
-        "Driving a black car",
-        "Cycling in the dark"
-      ],
-      "answer": "Riding public transport without a valid ticket"
-    },
-    {
-      "kind": "Dative Shift",
-      "prompt": "der Zug + mit \\(\\rightarrow\\) mit dem Zug"
-    },
-    {
-      "kind": "Dative Shift",
-      "prompt": "die Tram + mit \\(\\rightarrow\\) mit der Tram"
-    },
-    {
-      "kind": "Listening Gap",
-      "prompt": "\"Der Zug fährt von _______ 4 ab.\" (Audio: Gleis) \\(\\rightarrow\\) Gleis"
+      "prompt": "Hier _______ (dürfen) man nicht rauchen. \\(\\rightarrow\\) darf"
     },
     {
       "kind": "Sentence Unscramble",
-      "prompt": "[mit / Ich / dem / fahre / Bus] \\(\\rightarrow\\) Ich fahre mit dem Bus."
+      "prompt": "[sprechen / Ich / kann / Deutsch] \\(\\rightarrow\\) Ich kann Deutsch sprechen."
     },
     {
-      "kind": "Antonym Match",
-      "prompt": "weit (far) \\(\\leftrightarrow\\) nah / in der Nähe (near)"
+      "kind": "Sentence Unscramble",
+      "prompt": "[parken / hier / Nicht / darf / man] \\(\\rightarrow\\) Hier darf man nicht parken."
+    },
+    {
+      "kind": "Infinitive Placement",
+      "prompt": "\"Er muss morgen nach Berlin _______ (fahren).\" \\(\\rightarrow\\) fahren"
+    },
+    {
+      "kind": "Infinitive Placement",
+      "prompt": "\"Wir wollen ein neues Auto _______ (kaufen).\" \\(\\rightarrow\\) kaufen"
+    },
+    {
+      "kind": "Translation DE->EN",
+      "prompt": "\"Hier darf man nicht rauchen.\" \\(\\rightarrow\\) Smoking is not allowed here."
+    },
+    {
+      "kind": "Translation EN->DE",
+      "prompt": "\"I must stay at home today.\" \\(\\rightarrow\\) Ich muss heute zu Hause bleiben."
+    },
+    {
+      "kind": "Translation NE->DE",
+      "prompt": "\"म जर्मन बोल्न सक्छु।\" \\(\\rightarrow\\) Ich kann Deutsch sprechen."
+    },
+    {
+      "kind": "Matching",
+      "prompt": "verboten \\(\\rightarrow\\) forbidden / prohibited"
+    },
+    {
+      "kind": "Matching",
+      "prompt": "erlaubt \\(\\rightarrow\\) allowed / permitted"
+    },
+    {
+      "kind": "Modal Difference",
+      "prompt": "darf nicht \\(\\rightarrow\\) must not / prohibited"
+    },
+    {
+      "kind": "Dictation",
+      "prompt": "Listen & Type: \"Ich muss heute zum Arzt gehen.\""
+    },
+    {
+      "kind": "Dictation",
+      "prompt": "Listen & Type: \"Hier darf man nicht laut sprechen.\""
+    },
+    {
+      "kind": "Error Correction",
+      "prompt": "\"Er kann Deutsch spricht.\" \\(\\rightarrow\\) Er kann Deutsch sprechen."
+    },
+    {
+      "kind": "Error Correction",
+      "prompt": "\"Ich musst heute arbeiten.\" \\(\\rightarrow\\) Ich muss heute arbeiten."
+    },
+    {
+      "kind": "Culture MCQ",
+      "prompt": "In Germany, \"Rauchen verboten\" means:",
+      "options": [
+        "Smoking allowed",
+        "Smoking forbidden",
+        "Free cigarettes",
+        "Entrance"
+      ],
+      "answer": "Smoking forbidden"
+    },
+    {
+      "kind": "Conjugation",
+      "prompt": "Conjugate wollen for du: du willst"
+    },
+    {
+      "kind": "Conjugation",
+      "prompt": "Conjugate dürfen for ihr: ihr dürft"
+    },
+    {
+      "kind": "Listening Gap",
+      "prompt": "\"Ich kann gut _______.\" (Audio: schwimmen) \\(\\rightarrow\\) schwimmen"
+    },
+    {
+      "kind": "Sentence Unscramble",
+      "prompt": "[Hause / bleiben / Ich / muss / zu] \\(\\rightarrow\\) Ich muss zu Hause bleiben."
+    },
+    {
+      "kind": "Form Identity",
+      "prompt": "In modal verbs, which two personal pronouns share the exact same conjugated form? \\(\\rightarrow\\) ich and er/sie/es"
     }
   ],
   "traps": [
     {
       "note": {
-        "en": "Trap 1: Saying \"by foot\" as \"mit Fuß\"",
-        "ne": "",
-        "de": ""
+        "en": "Trap 1: Conjugating the end verb in a modal sentence",
+        "ne": "मोडल वाक्यमा अन्त्यको क्रियालाई संयोजित गर्नु",
+        "de": "Das Endverb im Modalsatz konjugieren"
       },
-      "wrong": "Falsch: \"Ich gehe mit Fuß.\"",
-      "right": "Richtig: \"Ich gehe ZU FUß.\""
+      "wrong": "Falsch: \"Ich kann Deutsch spreche.\"",
+      "right": "Richtig: \"Ich kann Deutsch SPRECHEN.\" (End verb MUST be infinitive!)."
     },
     {
       "note": {
-        "en": "Trap 2: Forgetting Dative shift with mit",
-        "ne": "",
-        "de": ""
+        "en": "Trap 2: Adding -t ending to ich or er/sie/es on modals",
+        "ne": "मोडलहरूमा ich वा er/sie/es मा -t ending थप्नु",
+        "de": "-t Endung zu ich oder er/sie/es bei Modalverben hinzufügen"
       },
-      "wrong": "Falsch: \"Ich fahre mit der Bus.\" (Bus is masculine).",
-      "right": "Richtig: \"Ich fahre mit DEM Bus.\""
+      "wrong": "Falsch: \"Er kannt Deutsch.\" / \"Ich musst lernen.\"",
+      "right": "Richtig: \"Er kann Deutsch.\" / \"Ich muss lernen.\""
     },
     {
       "note": {
-        "en": "Trap 3: Confusing fahren and gehen gehen = walking on foot (\"Ich gehe zum Supermarkt\"). fahren = traveling by vehicle (\"Ich fahre mit dem Bus\").",
-        "ne": "",
-        "de": ""
+        "en": "Trap 3: Confusing müssen (must) and nicht dürfen (must NOT) — Ich muss nicht: \"I don't have to\" (optional). Ich darf nicht: \"I am NOT allowed to / forbidden\" (prohibited!).",
+        "ne": "müssen (पर्छ) र nicht dürfen (पर्न हुँदैन) बीच भ्रम — Ich muss nicht: \"मैले गर्नु पर्दैन\" (वैकल्पिक)। Ich darf nicht: \"मैले गर्न अनुमति छैन / मनाही\" (निषिद्ध!)।",
+        "de": "müssen (müssen) und nicht dürfen (nicht dürfen) verwechseln — Ich muss nicht: \"Ich muss nicht\" (optional). Ich darf nicht: \"Ich darf nicht\" (verboten!)."
       }
     }
   ],
@@ -879,7 +656,7 @@
       "de": "Kultureller Kontext"
     },
     "body": [
-      "*Public Transit Etiquette (Fahrkarten entwerten): In many German and Austrian cities, buying a transit ticket is not enough—you must validation-stamp (entwerten) the paper ticket at a small platform machine before boarding! Ticket inspectors (Kontrolleure) issue heavy fines for unvalidated tickets (Schwarzfahren*)."
+      "*Rules and Regulations (Ordnung muss sein): German culture places high value on rules (Regeln). Signs like \"Rauchen verboten\" (Smoking forbidden) or \"Ruhezeit\" (Quiet hours) are strictly enforced by authorities and citizens alike."
     ]
   }
 }

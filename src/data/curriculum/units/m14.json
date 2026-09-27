@@ -9,17 +9,17 @@
     "de": "Stadtnavigation, Verkehr & Dativ-Präpositionen"
   },
   "theme": {
-    "en": "Places, directions, transport (mit + Dative), formal imperatives, prepositions (nach/zu/in)",
-    "de": "Orte, Richtungen, Verkehr (mit + Dativ), formale Imperative, Präpositionen (nach/zu/in)"
+    "en": "Places, directions, transport (mit + Dative), two-way prepositions (in/an: Wohin? acc vs. Wo? dat), contractions, formal imperatives",
+    "de": "Orte, Richtungen, Verkehr (mit + Dativ), Wechselpräpositionen (in/an: Wohin? Akk. vs. Wo? Dat.), Kontraktionen, formale Imperative"
   },
   "goal": {
-    "en": "Ask/give directions, describe transport using mit + Dative, use formal imperatives for navigation.",
-    "de": "Nach Weg fragen/geben, Verkehrsmittel mit mit + Dativ beschreiben, formale Imperative für Navigation nutzen."
+    "en": "Ask/give directions, describe transport using mit + Dative, distinguish two-way preposition cases (Wohin? accusative vs. Wo? dative), use formal imperatives for navigation.",
+    "de": "Nach Weg fragen/geben, Verkehrsmittel mit mit + Dativ beschreiben, Wechselpräpositionsfälle unterscheiden (Wohin? Akkusativ vs. Wo? Dativ), formale Imperative für Navigation nutzen."
   },
   "nodes": [
-    { "id": "m14-learn", "type": "learn", "label": { "en": "Directions", "de": "Richtungen" }, "to": "/roleplay?scene=directions", "xp": 10 },
-    { "id": "m14-practice", "type": "practice", "label": { "en": "City & Travel", "de": "Stadt & Reisen" }, "to": "/vocab-trainer?category=city-travel", "xp": 20 },
-    { "id": "m14-checkpoint", "type": "checkpoint", "label": { "en": "Module 14 Checkpoint", "de": "Modul 14 Prüfung" }, "to": "/checkpoint/13", "xp": 50 }
+    { "id": "m14-learn", "kind": "learn", "label": { "en": "Directions", "de": "Richtungen" }, "to": "/roleplay?scene=directions", "xp": 10 },
+    { "id": "m14-practice", "kind": "practice", "label": { "en": "City & Travel", "de": "Stadt & Reisen" }, "to": "/vocab-trainer?category=city-travel", "xp": 20 },
+    { "id": "m14-checkpoint", "kind": "checkpoint", "label": { "en": "Module 14 Checkpoint", "de": "Modul 14 Prüfung" } }
   ],
   "checkpoint": {
     "moduleType": "a1-checkpoint",
@@ -32,11 +32,49 @@
     "grammarNotes": [
       "Transport preposition 'mit' ALWAYS triggers Dative: mit dem Bus, mit der U-Bahn, mit dem Auto",
       "Directional prepositions: nach + cities/countries (nach Berlin), zu + specific places/people (zum Bahnhof), in + buildings (ins Kaufhaus)",
+      "TWO-WAY prepositions (Wechselpräpositionen) in/an/auf/über/unter/vor/zwischen take ACCUSATIVE for movement toward a goal (Wohin?) and DATIVE for static location (Wo?)",
+      "Test the case with the question: Wohin? → Accusative (in den Park). Wo? → Dative (im Park).",
+      "Contractions only form in Dative: im = in + dem, am = an + dem, vom = von + dem, zum = zu + dem, zur = zu + der. There is NO accusative contraction (ins and ans stay written out).",
       "Formal imperative (Sie-Form): verb first, then 'Sie' — 'Gehen Sie geradeaus!', 'Biegen Sie links ab!'",
       "Walking on foot: 'zu Fuß' (NOT 'mit Fuß')",
       "fahren vs gehen: fahren = by vehicle, gehen = walking"
     ],
     "ruleTables": [
+      {
+        "title": {
+          "en": "Wechselpräpositionen: Accusative vs Dative (Wohin? / Wo?)",
+          "de": "Wechselpräpositionen: Akkusativ vs Dativ (Wohin? / Wo?)"
+        },
+        "columns": ["Preposition", "Case", "Question", "Example", "Meaning"],
+        "rows": [
+          ["in", "Accusative", "Wohin?", "in den Park / in die Stadt", "into the park / into town"],
+          ["in", "Dative", "Wo?", "im Park / in der Stadt", "in the park / in town"],
+          ["an", "Accusative", "Wohin?", "an den See / ans Meer", "to the lake / to the sea"],
+          ["an", "Dative", "Wo?", "am See / am Meer", "at the lake / at the sea"],
+          ["auf", "Accusative", "Wohin?", "auf den Tisch", "onto the table"],
+          ["auf", "Dative", "Wo?", "auf dem Tisch", "on the table"],
+          ["vor", "Accusative", "Wohin?", "vor das Haus", "in front of the house (to)"],
+          ["vor", "Dative", "Wo?", "vor dem Haus", "in front of the house (at)"],
+          ["zwischen", "Accusative", "Wohin?", "zwischen die Bäume", "between the trees (to)"],
+          ["zwischen", "Dative", "Wo?", "zwischen den Bäumen", "between the trees (at)"]
+        ]
+      },
+      {
+        "title": {
+          "en": "Dative Contractions (nur im Dativ!)",
+          "de": "Dative-Kontraktionen (nur im Dativ!)"
+        },
+        "columns": ["Contraction", "= Full Form", "Case", "Example"],
+        "rows": [
+          ["im", "in + dem", "Dative (masc/neut)", "im Park, im Garten"],
+          ["am", "an + dem", "Dative (masc/neut)", "am Tisch, am Bahnhof"],
+          ["vom", "von + dem", "Dative (masc/neut)", "vom Bahnhof"],
+          ["zum", "zu + dem", "Dative (masc/neut)", "zum Bahnhof, zum Strand"],
+          ["zur", "zu + der", "Dative (fem)", "zur Schule, zur Arbeit"],
+          ["ins", "in + das", "Accusative (neut) — NO contraction", "ins Kino"],
+          ["ans", "an + das", "Accusative (neut) — NO contraction", "ans Meer"]
+        ]
+      },
       {
         "title": {
           "en": "Transport: mit + Dative",
@@ -79,6 +117,9 @@
       "⚠️ TRAP: 'Ich gehe mit Fuß' is WRONG — correct: 'Ich gehe ZU FUß'",
       "⚠️ TRAP: 'Ich fahre mit die S-Bahn' — mit takes DATIVE: 'mit DER S-Bahn'",
       "⚠️ TRAP: 'fahren' vs 'gehen' — gehen = walking on foot, fahren = by vehicle",
+      "🚨 WOHIN or WO? Ask the question first: 'Wohin?' → Accusative (Ich gehe IN DEN Park). 'Wo?' → Dative (Ich bin IM Park).",
+      "🚨 TRAP: 'in den Park' is NOT the same as 'im Park' — one is movement, the other is location.",
+      "Contractions exist ONLY in Dative (im, am, vom, zum, zur). In the accusative you always write in and an in full (ins Kino, ans Meer).",
       "Cultural: 'Schwarzfahren' (riding without valid ticket) = heavy fine! Validate tickets (entwerten).",
       "Ticket validation: Stamp paper tickets at platform machine BEFORE boarding."
     ],

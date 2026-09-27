@@ -19,9 +19,10 @@ import m12 from './units/m12.json';
 import m13 from './units/m13.json';
 import m14 from './units/m14.json';
 import m15 from './units/m15.json';
+import m16 from './units/m16.json';
 
 import type { CurriculumUnitFile } from './schema';
 
 export const UNIT_FILES: readonly CurriculumUnitFile[] = [
-  m01, m02, m03, m04, m05, m06, m07, m08, m09, m10, m11, m12, m13, m14, m15,
+  m01, m02, m03, m04, m05, m06, m07, m08, m09, m10, m11, m12, m13, m14, m15, m16,
 ] as unknown as readonly CurriculumUnitFile[];
