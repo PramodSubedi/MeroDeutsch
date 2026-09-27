@@ -104,6 +104,12 @@ export function IntegrityPage() {
     void load();
   }, [load]);
 
+  // The headline number is the CANDIDATE count, not a confirmed-defect count.
+  // Live investigation found that at least 2 of the 47 are correct rows
+  // ("Fahrkarte -> ticket", "schlecht -> bad" - they only trip the detector
+  // because the English word collides with an unrelated German headword).
+  // Calling the whole set "affected" overstates it, so the label says
+  // "candidates" and the page header points at the note below.
   const errorCount = findings.filter((f) => f.severity === 'error').length;
   const affected = findings.filter((f) => f.severity === 'error').reduce((s, f) => s + f.count, 0);
   const share = totalVocab > 0 ? ((affected / totalVocab) * 100).toFixed(1) : '0.0';
@@ -143,14 +149,14 @@ export function IntegrityPage() {
           value={String(errorCount)}
           hint="kinds of error"
           loading={loading}
-          tone={errorCount > 0 ? 'bad' : 'good'}
+          tone={errorCount > 0 ? 'warn' : 'good'}
         />
         <KpiCard
-          label="Rows affected"
+          label="Rows to review"
           value={String(affected)}
           hint={`${share}% of the table`}
           loading={loading}
-          tone={affected > 0 ? 'bad' : 'good'}
+          tone={affected > 0 ? 'warn' : 'good'}
         />
         <KpiCard
           label="Findings"
@@ -160,6 +166,33 @@ export function IntegrityPage() {
           tone={errorCount > 0 ? 'warn' : 'good'}
         />
       </section>
+
+      {affected > 0 && (
+        <aside className="rounded-lg border border-ink-200 bg-ink-50 p-4 text-meta text-ink-700 dark:border-ink-800 dark:bg-ink-800/40 dark:text-ink-200">
+          <h2 className="text-section font-bold text-ink-900 dark:text-ink-50">
+            These are candidates for review, not confirmed defects
+          </h2>
+          <ul className="mt-2 list-inside list-disc space-y-1">
+            <li>
+              The check flags a row whose <code className="font-mono">translation_en</code> matches
+              another German headword. That is a <em>heuristic</em>, and it has known false positives:
+              <code className="font-mono">Fahrkarte &rarr; ticket</code> and{' '}
+              <code className="font-mono">schlecht &rarr; bad</code> are <strong>correct</strong> — they
+              trip it only because &ldquo;ticket&rdquo; and &ldquo;bad&rdquo; are also German words elsewhere
+              in the table.
+            </li>
+            <li>
+              A constant row-offset misalignment was tested for and <strong>rejected</strong>: a fixed
+              shift cannot produce the repeated bogus values that were actually observed.
+            </li>
+            <li>
+              So there is no automatic repair. Every corrected value must be entered by a human, per
+              row, and the <code className="font-mono">vocab.repair</code> action rejects the entire
+              batch if any single entry is invalid.
+            </li>
+          </ul>
+        </aside>
+      )}
 
       {loading && findings.length === 0 ? (
         <p className="py-10 text-center text-body text-ink-500 dark:text-ink-400">Running checks…</p>
