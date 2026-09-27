@@ -21,6 +21,8 @@ import {
   Activity,
   BookOpen,
   LayoutDashboard,
+  ListChecks,
+  ShieldAlert,
   LogOut,
   Menu,
   Moon,
@@ -58,8 +60,10 @@ interface NavItem {
 const NAV_ITEMS: readonly NavItem[] = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/users', label: 'Users', icon: Users },
+  { to: '/review-queue', label: 'Review queue', icon: ListChecks },
   { to: '/curriculum', label: 'Curriculum', icon: BookOpen },
   { to: '/vocabulary', label: 'Vocabulary', icon: Type },
+  { to: '/integrity', label: 'Integrity', icon: ShieldAlert },
   { to: '/analytics', label: 'Analytics', icon: Activity },
   { to: '/system', label: 'System', icon: SettingsIcon },
   // The QA simulator reaches into the learner app, so it is listed with the

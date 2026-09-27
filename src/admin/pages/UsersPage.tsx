@@ -24,6 +24,7 @@ import type { Virtualizer } from '@tanstack/react-virtual';
 import { AlertTriangle, ArrowDownUp, RefreshCw, Search } from 'lucide-react';
 import { theme } from '../../config/theme';
 import { KpiCard } from '../components/KpiCard';
+import { UserDetailDrawer } from '../components/UserDetailDrawer';
 import { fetchUsers, type AdminUserRow } from '../data/users';
 import {
   DEFAULT_FILTERS,
@@ -98,6 +99,15 @@ export function UsersPage() {
   const [filters, setFilters] = useState<UserFilters>(DEFAULT_FILTERS);
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
+  // Which learner the 360 drawer is showing. The name is kept alongside the id
+  // so the header can render it during the deep fetch, instead of "User".
+  const [openId, setOpenId] = useState<string | null>(null);
+  const [openName, setOpenName] = useState<string | null>(null);
+  const openUser = useCallback((userId: string, name: string | null) => {
+    setOpenId(userId);
+    setOpenName(name);
+  }, []);
+
   const load = useCallback(async () => {
     setLoading(true);
     const result = await fetchUsers();
@@ -152,7 +162,8 @@ export function UsersPage() {
           <p className={theme.type.kicker}>People</p>
           <h1 className={theme.page.heading}>Users</h1>
           <p className={theme.page.description}>
-            Read-only. Plan, role and suspension are protected by database triggers and need a
+            Read-only. Select any row for the full 360 view — progress, activity, spine state and
+            review queue. Plan, role and suspension are protected by database triggers and need a
             service-role function to change.
           </p>
         </div>
@@ -197,6 +208,16 @@ export function UsersPage() {
         totalRows={rows.length}
         scrollRef={scrollRef}
         virtualizer={virtualizer}
+        onOpen={openUser}
+      />
+
+      <UserDetailDrawer
+        userId={openId}
+        fallbackName={openName}
+        onClose={() => {
+          setOpenId(null);
+          setOpenName(null);
+        }}
       />
     </div>
   );
@@ -359,6 +380,7 @@ function UsersTable({
   totalRows,
   scrollRef,
   virtualizer,
+  onOpen,
 }: {
   rows: AdminUserRow[];
   loading: boolean;
@@ -370,6 +392,7 @@ function UsersTable({
    * `ReactVirtualizer<HTMLDivElement, Element>` the call site actually produces.
    */
   virtualizer: Virtualizer<HTMLDivElement, Element>;
+  onOpen: (userId: string, name: string | null) => void;
 }) {
   return (
     <section className="overflow-hidden rounded-lg border border-ink-200 bg-white dark:border-ink-800 dark:bg-ink-900">
@@ -407,7 +430,20 @@ function UsersTable({
               return (
                 <div
                   key={u.id}
-                  className={`${GRID} absolute left-0 w-full items-center border-b border-ink-100 px-4 dark:border-ink-800/60`}
+                  role="button"
+                  tabIndex={0}
+                  // Keyboard parity: a div-as-button that only responds to
+                  // click is unreachable for a keyboard or screen-reader user,
+                  // and this is the only way into the 360 view.
+                  onClick={() => onOpen(u.id, u.username)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      onOpen(u.id, u.username);
+                    }
+                  }}
+                  aria-label={`Open details for ${u.username ?? u.id}`}
+                  className={`${GRID} absolute left-0 w-full cursor-pointer items-center border-b border-ink-100 px-4 hover:bg-ink-50 focus-visible:bg-ink-50 focus-visible:outline-none dark:border-ink-800/60 dark:hover:bg-ink-800/40 dark:focus-visible:bg-ink-800/40`}
                   style={{ height: ROW_HEIGHT, transform: `translateY(${item.start}px)` }}
                 >
                   <div className="flex min-w-0 items-center gap-2">

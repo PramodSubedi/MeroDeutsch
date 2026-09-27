@@ -24,7 +24,9 @@ import { DashboardPage } from './pages/DashboardPage';
 import { DebugPage } from './pages/DebugPage';
 import { UsersPage } from './pages/UsersPage';
 import { SystemPage } from './pages/SystemPage';
+import { ReviewQueuePage } from './pages/ReviewQueuePage';
 import { CurriculumPage } from './pages/CurriculumPage';
+import { IntegrityPage } from './pages/IntegrityPage';
 import { VocabularyPage } from './pages/VocabularyPage';
 import { AnalyticsPage } from './pages/AnalyticsPage';
 import { useAdminAuth } from './hooks/useAdminAuth';
@@ -165,7 +167,9 @@ export function AdminApp() {
         <Route index element={<DashboardPage />} />
         <Route path="debug" element={<DebugPage />} />
         <Route path="users" element={<UsersPage />} />
+        <Route path="review-queue" element={<ReviewQueuePage />} />
         <Route path="curriculum" element={<CurriculumPage />} />
+        <Route path="integrity" element={<IntegrityPage />} />
         <Route path="vocabulary" element={<VocabularyPage />} />
         <Route path="analytics" element={<AnalyticsPage />} />
         <Route path="system" element={<SystemPage />} />
