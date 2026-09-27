@@ -29,6 +29,10 @@
     ]
   },
   "pedagogy": {
+    "grammarNote": {
+      "en": "The modal takes Position 2 and the main verb stays infinitive at the very end: Ich kann Deutsch sprechen.",
+      "de": "Das Modalverb steht auf Position 2, das Hauptverb bleibt im Infinitiv am Satzende: Ich kann Deutsch sprechen."
+    },
     "grammarNotes": [
       "Female professions: add -in to masculine (Lehrer → Lehrerin, Arzt → Ärztin), plural -innen",
       "Stating profession: 'als' for titles (Ich arbeite als Lehrer), 'bei' + Dative for companies (Ich arbeite bei Siemens)",
@@ -87,17 +91,7 @@
       "⚠️ TRAP: 'Ich muss nicht' = I don't have to (optional). 'Ich darf nicht' = I'm NOT allowed (forbidden)!",
       "Job titles: Drop 'ein' — 'Ich bin Student' not 'Ich bin ein Student'",
       "Modal order: können > müssen > wollen > dürfen > sollen > möchten (frequency)"
-    ],
-    "honorifics": {
-      "du": {
-        "en": "Informal: 'Was willst du machen?'",
-        "de": "Informell: 'Was willst du machen?'"
-      },
-      "Sie": {
-        "en": "Formal: 'Was möchten Sie machen?'",
-        "de": "Formell: 'Was möchten Sie machen?'"
-      }
-    }
+    ]
   },
   "vocabCategories": ["professions", "action-verbs", "modal-verbs"],
   "grammarCategories": ["modal-verbs", "professions", "sentence-bracket"],

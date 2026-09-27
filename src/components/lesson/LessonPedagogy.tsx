@@ -56,14 +56,21 @@ export function LessonPedagogy({ pedagogy }: { pedagogy?: UnitPedagogy }) {
   const suffixNote = pick(pedagogy.suffixNote, isDE);
 
   // One section, and only if there is genuinely something in it.
+  //
+  // The table blocks are tested on `rows.length`, NOT on the object being
+  // truthy. A bare `{}` or an object missing `rows` is truthy in JS, so the old
+  // truthiness test let units 6-16 render `<HonorificsTable title={undefined}
+  // rows={undefined} />`, and that component's first `title.de` threw — a hard
+  // white-screen on 11 of 16 lesson notes pages. The renderers are now guarded
+  // too, but the decision belongs here where the data enters.
   const hasAnything =
     grammarNote ||
     genderLegend ||
     umlautCallout ||
     suffixNote ||
-    pedagogy.honorifics ||
-    pedagogy.grammarComparison ||
-    pedagogy.ruleTable;
+    (pedagogy.honorifics?.rows?.length ?? 0) > 0 ||
+    (pedagogy.grammarComparison?.rows?.length ?? 0) > 0 ||
+    (pedagogy.ruleTable?.rows?.length ?? 0) > 0;
   if (!hasAnything) return null;
 
   return (
@@ -79,26 +86,26 @@ export function LessonPedagogy({ pedagogy }: { pedagogy?: UnitPedagogy }) {
         {genderLegend ? <Note>{genderLegend}</Note> : null}
       </div>
 
-      {pedagogy.ruleTable && (
+      {pedagogy.ruleTable?.rows?.length ? (
         <div className="mt-4">
           <GrammarRuleTable title={pedagogy.ruleTable.title} rows={pedagogy.ruleTable.rows} />
         </div>
-      )}
+      ) : null}
 
-      {pedagogy.honorifics && (
+      {pedagogy.honorifics?.rows?.length ? (
         <div className="mt-4">
           <HonorificsTable title={pedagogy.honorifics.title} rows={pedagogy.honorifics.rows} />
         </div>
-      )}
+      ) : null}
 
-      {pedagogy.grammarComparison && (
+      {pedagogy.grammarComparison?.rows?.length ? (
         <div className="mt-4">
           <GrammarComparisonTable
             title={pedagogy.grammarComparison.title}
             rows={pedagogy.grammarComparison.rows}
           />
         </div>
-      )}
+      ) : null}
     </section>
   );
 }

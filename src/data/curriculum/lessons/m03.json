@@ -204,6 +204,10 @@
   },
   "miniGame": {
     "type": "spelling_word",
+    "title": {
+      "en": "Audio Spelling Bee",
+      "de": "Audio-Buchstabierbiene"
+    },
     "id": "m3-spelling-bee",
     "payload": {
       "type": "spelling_word",

@@ -19,10 +19,17 @@ export function HonorificsTable({ title, rows }: HonorificsTableProps) {
   const isDE = langMode === 'german';
   const showHelpers = !isDE;
 
+  // Defensive: this table is fed straight from authored `pedagogy.honorifics`,
+  // and a truthy-but-empty object there used to reach this component as
+  // `title={undefined} rows={undefined}` and white-screen the whole lesson page
+  // on the first `title.de`. Missing study aid is fine; a crash is not.
+  const heading = title ? (isDE ? title.de : title.en) : '';
+  if (!rows?.length) return null;
+
   return (
     <div className="mt-3 overflow-x-auto rounded-lg bg-white p-4 shadow-sm dark:bg-ink-900">
       <div className="mb-2 text-meta font-semibold uppercase tracking-wider text-ink-500 dark:text-ink-400">
-        {isDE ? title.de : title.en}
+        {heading}
       </div>
       <table className="w-full border-collapse text-body">
         <thead>

@@ -140,22 +140,41 @@ function unitById(id: string): A1Unit | undefined {
  * No module outside this file consumes them and no UI reads them directly (the
  * spine renders `unit.pedagogy`), so they exist to keep this module's export
  * surface stable.
+ *
+ * OWNERSHIP WAS REMAPPED FOR v4.0. These aliases were written against the old
+ * 15-unit order, where M07 was the calendar, M10 the accusative, M12 the city
+ * and M13 the modals. The corrected pedagogical sequence moved all four, so an
+ * alias that was not remapped would have resolved to a unit about something else
+ * entirely — the kind of error that is invisible because the fallback is `[]`.
+ * The owner is now the unit that actually teaches the structure.
+ *
+ * Most of these still resolve to `[]` in practice: the tables those units
+ * authored are multi-column (`columns` + raw cell strings) and do not fit the
+ * 3-field `RuleRow` shape, so they live in `pedagogy.ruleTables` and are
+ * invisible to this alias. `scripts/curriculum/validate.ts` reports that
+ * mismatch rather than letting it pass silently.
  */
 export const HONORIFICS: HonorificRow[] = unitById('m01')?.pedagogy?.honorifics?.rows ?? [];
-/** Trilingual word-order bridge — owned by M08 (verbs & V2 word order). */
+/** Trilingual word-order bridge — owned by M07 (V2 word order). */
 export const WORD_ORDER_TABLE: ComparisonRow[] =
-  unitById('m08')?.pedagogy?.grammarComparison?.rows ?? [];
-/** Modal sentence-bracket bridge — owned by M13 (modal verbs). */
+  unitById('m07')?.pedagogy?.grammarComparison?.rows ?? [];
+/** Modal sentence-bracket bridge — owned by M12 (professions & modal verbs). */
 export const MODAL_VERB_FINAL_PANEL: ComparisonRow[] =
-  unitById('m13')?.pedagogy?.grammarComparison?.rows ?? [];
-/** um / am / im — owned by M07 (calendar & time). */
-export const UM_AM_IM_RULES: RuleRow[] = unitById('m07')?.pedagogy?.ruleTable?.rows ?? [];
-/** der → den — owned by M10 (food & the accusative). */
-export const ACCUSATIVE_RULES: RuleRow[] = unitById('m10')?.pedagogy?.ruleTable?.rows ?? [];
-/** nach / zu / in — owned by M12 (city & transport). */
-export const DIRECTIONAL_RULES: RuleRow[] = unitById('m12')?.pedagogy?.ruleTable?.rows ?? [];
-/** haben/sein + Partizip II — owned by M15 (hobbies & Perfekt). */
+  unitById('m12')?.pedagogy?.grammarComparison?.rows ?? [];
+/** um / am / im — owned by M11 (time, calendar & clock inversion). */
+export const UM_AM_IM_RULES: RuleRow[] = unitById('m11')?.pedagogy?.ruleTable?.rows ?? [];
+/** der → den — owned by M08 (accusative case & direct objects). */
+export const ACCUSATIVE_RULES: RuleRow[] = unitById('m08')?.pedagogy?.ruleTable?.rows ?? [];
+/** nach / zu / in / mit — owned by M14 (city navigation & dative prepositions). */
+export const DIRECTIONAL_RULES: RuleRow[] = unitById('m14')?.pedagogy?.ruleTable?.rows ?? [];
+/** haben/sein + Partizip II — owned by M15 (health, hobbies, weather & Perfekt). */
 export const PERFEKT_RULES: RuleRow[] = unitById('m15')?.pedagogy?.ruleTable?.rows ?? [];
+/**
+ * The A1 mastery checklist behind the /grammar `review` tab — owned by M16
+ * (comprehensive practice). Unlike the aliases above this one IS populated:
+ * M16 authors it directly in the `ruleTable` shape.
+ */
+export const A1_REVIEW_RULES: RuleRow[] = unitById('m16')?.pedagogy?.ruleTable?.rows ?? [];
 
 /**
  * Unused legacy constant, kept because it is part of this module's export

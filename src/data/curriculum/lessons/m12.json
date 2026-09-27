@@ -487,6 +487,10 @@
   },
   "miniGame": {
     "type": "grammar_drill",
+    "title": {
+      "en": "Modal Bracket Builder",
+      "de": "Modal-Klammer-Bauer"
+    },
     "id": "m12-modal-bracket",
     "payload": {
       "type": "grammar_drill",

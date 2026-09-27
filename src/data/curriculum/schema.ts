@@ -344,7 +344,13 @@ export interface PracticeItem {
 export interface MiniGameSpec {
   type: string;
   id: string;
-  title?: string;
+  /**
+   * Human-readable name for the exercise. This is the ONLY prose
+   * `MiniGameCard` can show — the payload is never rendered — so without it the
+   * card on every lesson read as a bare technical slug. Accepts a plain string
+   * or a localised label; `MiniGameCard` falls back across EN/DE either way.
+   */
+  title?: string | LocalizedLabel;
   /** The document's own JSON payload, verbatim. */
   payload: unknown;
 }

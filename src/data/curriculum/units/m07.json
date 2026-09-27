@@ -29,6 +29,10 @@
     ]
   },
   "pedagogy": {
+    "grammarNote": {
+      "en": "The conjugated verb is pinned to Position 2. Put a time or place phrase first and the SUBJECT moves to Position 3 — never the verb.",
+      "de": "Das konjugierte Verb steht fest auf Position 2. Steht zuerst eine Zeit- oder Ortsangabe, rückt das SUBJEKT auf Position 3 — niemals das Verb."
+    },
     "grammarNotes": [
       "Main clause (Hauptsatz): conjugated verb ALWAYS in Position 2",
       "Position 1 can be: Subject, Time, Place, Object, or Adverb",
@@ -69,17 +73,7 @@
       "The verb NEVER moves from Position 2 in a main clause — this is the GOLDEN RULE!",
       "Inversion is MANDATORY: 'Heute lerne ich' NOT 'Heute ich lerne'",
       "Subordinate clauses (weil, dass, wenn) push verb to the END — different rule!"
-    ],
-    "honorifics": {
-      "du": {
-        "en": "Informal inversion: 'Heute lernst du'",
-        "de": "Informelle Inversion: 'Heute lernst du'"
-      },
-      "Sie": {
-        "en": "Formal inversion: 'Heute lernen Sie'",
-        "de": "Formelle Inversion: 'Heute lernen Sie'"
-      }
-    }
+    ]
   },
   "vocabCategories": ["v2-order", "action-verbs", "nature-time"],
   "grammarCategories": ["v2-word-order", "inversion", "tekamolo"],

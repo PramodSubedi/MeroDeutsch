@@ -29,6 +29,10 @@
     ]
   },
   "pedagogy": {
+    "grammarNote": {
+      "en": "Two-way prepositions ask one question: Wohin? → accusative (in den Park), Wo? → dative (im Park). Contractions only happen in the dative.",
+      "de": "Wechselpräpositionen stellen eine Frage: Wohin? → Akkusativ (in den Park), Wo? → Dativ (im Park). Kontraktionen nur im Dativ."
+    },
     "grammarNotes": [
       "Transport preposition 'mit' ALWAYS triggers Dative: mit dem Bus, mit der U-Bahn, mit dem Auto",
       "Directional prepositions: nach + cities/countries (nach Berlin), zu + specific places/people (zum Bahnhof), in + buildings (ins Kaufhaus)",
@@ -122,17 +126,7 @@
       "Contractions exist ONLY in Dative (im, am, vom, zum, zur). In the accusative you always write in and an in full (ins Kino, ans Meer).",
       "Cultural: 'Schwarzfahren' (riding without valid ticket) = heavy fine! Validate tickets (entwerten).",
       "Ticket validation: Stamp paper tickets at platform machine BEFORE boarding."
-    ],
-    "honorifics": {
-      "du": {
-        "en": "Casual directions: 'Geh geradeaus, dann links.'",
-        "de": "Locker: 'Geh geradeaus, dann links.'"
-      },
-      "Sie": {
-        "en": "Formal: 'Gehen Sie geradeaus, dann biegen Sie links ab.'",
-        "de": "Formell: 'Gehen Sie geradeaus, dann biegen Sie links ab.'"
-      }
-    }
+    ]
   },
   "vocabCategories": ["city-travel", "travel", "travel-questions", "action-verbs"],
   "grammarCategories": ["dative-prepositions", "imperative", "prepositions", "transport"],

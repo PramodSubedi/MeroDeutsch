@@ -66,10 +66,10 @@ function Objectives({ lesson, isDE }: { lesson: UnitLessonContent; isDE: boolean
     <Section title={isDE ? 'Lernziele' : 'Learning objectives'}>
       <ul className="space-y-1.5">
         {objectives.en.map((item, i) => (
-          <li key={i} className="flex gap-2 text-body text-ink-700 dark:text-ink-200">
-            <span className={theme.gender.der.text}>▸</span>
-            <span>{item}</span>
-          </li>
+                <li key={i} className="flex gap-2 break-words text-body text-ink-700 dark:text-ink-200">
+                  <span className={theme.gender.der.text}>▸</span>
+                  <span className="min-w-0 break-words">{item}</span>
+                </li>
         ))}
       </ul>
     </Section>
@@ -195,9 +195,9 @@ function GrammarBlockView({ block, isDE }: { block: GrammarBlock; isDE: boolean 
       {block.bullets?.length ? (
         <ul className="mt-3 space-y-1.5">
           {block.bullets.map((bullet, i) => (
-            <li key={i} className="flex gap-2 text-body text-ink-700 dark:text-ink-200">
+            <li key={i} className="flex gap-2 break-words text-body text-ink-700 dark:text-ink-200">
               <span className={theme.gender.der.text}>•</span>
-              <span>{bullet}</span>
+              <span className="min-w-0 break-words">{bullet}</span>
             </li>
           ))}
         </ul>
@@ -259,19 +259,19 @@ function TrapsBlock({ traps, isDE }: { traps: TrapItem[]; isDE: boolean }) {
             className="rounded-lg border border-danger-200 bg-danger-50/40 p-3 dark:border-danger-900 dark:bg-danger-950/20"
           >
             {trap.wrong ? (
-              <p className="text-body text-danger-700 dark:text-danger-300">
+              <p className="break-words text-body text-danger-700 dark:text-danger-300">
                 <span className="font-semibold">✗ </span>
                 {trap.wrong}
               </p>
             ) : null}
             {trap.right ? (
-              <p className="mt-1 text-body text-success-700 dark:text-success-300">
+              <p className="mt-1 break-words text-body text-success-700 dark:text-success-300">
                 <span className="font-semibold">✓ </span>
                 {trap.right}
               </p>
             ) : null}
             {pick(trap.note, isDE) ? (
-              <p className="mt-1.5 text-meta text-ink-600 dark:text-ink-300">
+              <p className="mt-1.5 break-words text-meta text-ink-600 dark:text-ink-300">
                 {pick(trap.note, isDE)}
               </p>
             ) : null}
@@ -290,7 +290,7 @@ function CultureBlock({ lesson, isDE }: { lesson: UnitLessonContent; isDE: boole
       <div className="rounded-lg border border-ink-200 bg-ink-50/60 p-4 dark:border-ink-800 dark:bg-ink-800/40">
         <ul className="space-y-2">
           {culture.body.map((line, i) => (
-            <li key={i} className="text-body text-ink-700 dark:text-ink-200">
+            <li key={i} className="break-words text-body text-ink-700 dark:text-ink-200">
               {line}
             </li>
           ))}
@@ -325,6 +325,19 @@ function DialogueBlock({ dialogue, isDE }: { dialogue: DialogueScript; isDE: boo
   );
 }
 
+/**
+ * Authored prompts mark a "becomes" arrow as the escaped-LaTeX `\(\rightarrow\)`,
+ * which JSON decodes to a literal `\(` … `\)` and used to reach the screen as
+ * visible backslashes. Every occurrence is markup, never content, so it is
+ * rewritten to a plain "→" in one place instead of in ~150 data rows.
+ *
+ * `\(x\)` → `x`, so a rule like "Ich esse ___ Apfel. \(\rightarrow\) einen" reads
+ * "Ich esse ___ Apfel. → einen".
+ */
+function cleanPrompt(text: string): string {
+  return text.replace(/\\?\(([^()]*?)\\?\)/g, '$1').replace(/→/g, '→');
+}
+
 function PracticeBank({ items, isDE }: { items: PracticeItem[]; isDE: boolean }) {
   if (items.length === 0) return null;
   return (
@@ -338,17 +351,17 @@ function PracticeBank({ items, isDE }: { items: PracticeItem[]; isDE: boolean })
             {/* Native <details> so the answer stays hidden until asked for, with
                 no state, no layout jump and full keyboard support. */}
             <details className="rounded-lg border border-ink-200 bg-white p-3 dark:border-ink-800 dark:bg-ink-900">
-              <summary className="cursor-pointer text-body text-ink-800 dark:text-ink-100">
+              <summary className="cursor-pointer break-words text-body text-ink-800 dark:text-ink-100">
                 <span className="mr-2 text-micro font-semibold uppercase text-ink-400">
                   {item.kind}
                 </span>
-                {item.prompt}
+                {cleanPrompt(item.prompt)}
               </summary>
               <div className="mt-2 space-y-2 border-t border-ink-200 pt-2 dark:border-ink-800">
                 {item.options?.length ? (
                   <ul className="space-y-1">
                     {item.options.map((option, o) => (
-                      <li key={o} className="text-body text-ink-700 dark:text-ink-200">
+                      <li key={o} className="break-words text-body text-ink-700 dark:text-ink-200">
                         <span className="mr-2 text-micro uppercase text-ink-400">
                           {String.fromCharCode(65 + o)}
                         </span>
@@ -358,8 +371,8 @@ function PracticeBank({ items, isDE }: { items: PracticeItem[]; isDE: boolean })
                   </ul>
                 ) : null}
                 {item.answer ? (
-                  <p className="text-body font-semibold text-success-700 dark:text-success-300">
-                    {item.answer}
+                  <p className="break-words text-body font-semibold text-success-700 dark:text-success-300">
+                    {cleanPrompt(item.answer)}
                   </p>
                 ) : null}
               </div>
@@ -372,12 +385,24 @@ function PracticeBank({ items, isDE }: { items: PracticeItem[]; isDE: boolean })
 }
 
 function MiniGameCard({ spec, isDE }: { spec: MiniGameSpec; isDE: boolean }) {
+  // `title` is authored either as a plain string or as a localised label, so
+  // normalise before picking. Without this the card shows only the technical
+  // `type` slug and the id.
+  const title =
+    typeof spec.title === 'string'
+      ? spec.title
+      : spec.title
+        ? isDE
+          ? spec.title.de || spec.title.en
+          : spec.title.en || spec.title.de
+        : '';
+
   return (
     <Section title={isDE ? 'Interaktive Übung' : 'Interactive exercise'}>
       <div className="rounded-lg border border-ink-200 bg-ink-50/60 p-4 dark:border-ink-800 dark:bg-ink-800/40">
-        <p className="font-mono text-meta text-accent-700 dark:text-accent-300">{spec.type}</p>
-        {spec.title ? <p className="mt-1 text-body text-ink-800 dark:text-ink-100">{spec.title}</p> : null}
-        {spec.id ? <p className="mt-0.5 text-micro text-ink-500 dark:text-ink-400">{spec.id}</p> : null}
+        <p className="break-words font-mono text-meta text-accent-700 dark:text-accent-300">{spec.type}</p>
+        {title ? <p className="mt-1 break-words text-body text-ink-800 dark:text-ink-100">{title}</p> : null}
+        {spec.id ? <p className="mt-0.5 break-words text-micro text-ink-500 dark:text-ink-400">{spec.id}</p> : null}
       </div>
     </Section>
   );

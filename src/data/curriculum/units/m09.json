@@ -30,6 +30,10 @@
     ]
   },
   "pedagogy": {
+    "grammarNote": {
+      "en": "A separable verb splits in a main clause: the conjugated stem takes Position 2 and the prefix goes to the very end.",
+      "de": "Ein trennbares Verb trennt sich im Hauptsatz: der konjugierte Stamm auf Position 2, die Vorsilbe ans Satzende."
+    },
     "grammarNotes": [
       "Separable verbs = prefix + base verb (auf|stehen, ein|kaufen, an|rufen)",
       "In main clauses: base verb conjugates to Position 2, prefix jumps to VERY END (Satzklammer)",
@@ -77,8 +81,7 @@
       "Prefix goes to the VERY END — not just after the verb, but after ALL other elements!",
       "Stress test: inseparable = stress on ROOT (verSTEHen); separable = stress on PREFIX (AUFstehen)",
       "Question form: 'Räumst du dein Zimmer AUF?' — prefix still at end!"
-    ],
-    "honorifics": {}
+    ]
   },
   "vocabCategories": ["daily-routine", "action-verbs", "action-verbs"],
   "grammarCategories": ["separable-verbs", "word-order", "prefix"],

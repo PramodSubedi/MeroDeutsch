@@ -29,6 +29,10 @@
     ]
   },
   "pedagogy": {
+    "grammarNote": {
+      "en": "The perfect tense is the spoken past: conjugated haben or sein in Position 2, then Partizip II at the end. Only motion and change of state take sein.",
+      "de": "Das Perfekt ist die gesprochene Vergangenheit: konjugiertes haben oder sein auf Position 2, dann Partizip II am Ende. Nur Bewegung und Zustandswechsel nehmen sein."
+    },
     "grammarNotes": [
       "HEALTH: Two ways to express pain — compound nouns (Ich habe Kopfschmerzen) or weh tun (Der Kopf tut mir weh). Singular body part = 'tut', plural = 'tun'",
       "HEALTH: 'Mir ist kalt' (I feel cold) NOT 'Ich bin kalt' (I'm a cold person). Dative for sensations!",
@@ -107,17 +111,7 @@
       "⚠️ PERFEKT TRAP: 'Ich gelernt gestern Deutsch' — auxiliary in Pos 2, Partizip at END: 'Ich HABE gestern Deutsch GELERNT'",
       "⚠️ PERFEKT TRAP: Forgetting 'ge-' prefix on regular verbs: machen → gemacht (not 'macht')",
       "Cultural: 'Gute Besserung!' = Get well sick note (Krankschreibung/AU-Bescheinigung) required by day 3 in Germany"
-    ],
-    "honorifics": {
-      "du": {
-        "en": "With friends: 'Wie geht's dir? Was hast du gemacht?'",
-        "de": "Mit Freunden: 'Wie geht's dir? Was hast du gemacht?'"
-      },
-      "Sie": {
-        "en": "With doctor: 'Was fehlt Ihnen? Nehmen Sie diese Tabletten.'",
-        "de": "Beim Arzt: 'Was fehlt Ihnen? Nehmen Sie diese Tabletten.'"
-      }
-    }
+    ]
   },
   "vocabCategories": ["body-health", "doctor-shopping-phrases", "hobby-verbs", "weather-wishes", "perfekt"],
   "grammarCategories": ["dative", "perfekt", "health", "past-tense"],

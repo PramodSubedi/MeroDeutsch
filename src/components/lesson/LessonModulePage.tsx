@@ -157,6 +157,7 @@ function GrammarTab({ lesson, isDE }: { lesson: UnitLessonContent; isDE: boolean
           key={i}
           title={block.title?.de || block.title?.en || (isDE ? 'Regel' : 'Rule')}
           description={isDE ? 'Grammatikmechanik dieser Lektion.' : 'Grammar mechanics for this lesson.'}
+          bare
         >
           <div className="space-y-3">
             {(block.notes ?? [])
@@ -386,6 +387,7 @@ export function LessonModulePage() {
             <SectionGrid
               title={isDE ? 'Lernziele' : 'Learning objectives'}
               description={isDE ? 'Was du am Ende kannst.' : 'What you will be able to do.'}
+              bare
             >
               <ul className="space-y-1.5">
                 {lesson.objectives.en.map((item, i) => (
@@ -417,6 +419,7 @@ export function LessonModulePage() {
                   ? 'Alle Wörter dieser Lektion.'
                   : 'Every word in this lesson.'
             }
+            bare
           >
             <div className="grid gap-3 sm:grid-cols-2">
               {primary.map((entry, i) => (
@@ -442,8 +445,9 @@ export function LessonModulePage() {
                   : `Passive — recognise only (${secondary.length})`
               }
               description={
-                isDE ? 'Diese Wörter lernst du zum Verstehen.' : 'These words are for understanding.'
+                isDE ? 'Diese Wörter lernst du zum Verstehen.'                 : 'These words are for understanding.'
               }
+              bare
             >
               <div className="grid gap-3 sm:grid-cols-2">
                 {secondary.map((entry, i) => (

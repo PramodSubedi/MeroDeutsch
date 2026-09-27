@@ -394,6 +394,10 @@
   },
   "miniGame": {
     "type": "shopping_simulator",
+    "title": {
+      "en": "Boutique Purchase Challenge",
+      "de": "Boutique-Einkaufs-Challenge"
+    },
     "id": "m13-boutique-shop",
     "payload": {
       "type": "shopping_simulator",

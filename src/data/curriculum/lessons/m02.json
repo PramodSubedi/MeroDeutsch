@@ -355,6 +355,10 @@
   },
   "miniGame": {
     "type": "number_conversion",
+    "title": {
+      "en": "Number & Price Conversion",
+      "de": "Zahlen- und Preis-Umwandlung"
+    },
     "id": "m2-num-price-blitz",
     "payload": {
       "type": "number_conversion",

@@ -29,12 +29,16 @@ export function GrammarRuleTable({ title, rows }: GrammarRuleTableProps) {
   const isDE = langMode === 'german';
   const showHelpers = !isDE;
 
-  if (!rows.length) return null;
+  // Defensive: `rows` comes from authored `pedagogy.ruleTable`. `rows.length` on
+  // an undefined value throws, so a malformed unit used to take down the lesson
+  // page rather than just skipping a study aid.
+  if (!rows?.length) return null;
+  const heading = title ? (isDE ? title.de : title.en) : '';
 
   return (
     <div className="mt-4 overflow-x-auto rounded-lg bg-white p-4 shadow-sm dark:bg-ink-900">
       <div className="mb-3 text-meta font-semibold uppercase tracking-wider text-ink-500 dark:text-ink-400">
-        {isDE ? title.de : title.en}
+        {heading}
       </div>
       <table className="w-full border-collapse text-body">
         <thead>

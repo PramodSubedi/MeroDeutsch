@@ -28,6 +28,10 @@
     ]
   },
   "pedagogy": {
+    "grammarNote": {
+      "en": "Ordering is where the accusative earns its keep: \"Ich möchte einen Salat und ein Wasser\" — masculine einen, neuter ein.",
+      "de": "Beim Bestellen zeigt sich der Akkusativ: „Ich möchte einen Salat und ein Wasser\" — maskulin einen, neutrum ein."
+    },
     "grammarNotes": [
       "Polite ordering: 'Ich möchte bitte...' (NOT 'Ich will...')",
       "Apply accusative to food: masculine items shift (der Kaffee → einen Kaffee)",
@@ -56,17 +60,7 @@
       "⚠️ TRAP: 'Ich möchte ein Kaffee' is WRONG — Kaffee is masculine → 'einen Kaffee'!",
       "Polite: 'Ich möchte bitte...' / Rude: 'Ich will...' / 'Gib mir...'",
       "Tip (Trinkgeld): Tell waiter total when paying (€18.50 bill → hand €20, say 'Stimmt so')"
-    ],
-    "honorifics": {
-      "du": {
-        "en": "With friends: 'Was möchtest du essen?'",
-        "de": "Mit Freunden: 'Was möchtest du essen?'"
-      },
-      "Sie": {
-        "en": "With waiter: 'Was möchten Sie bestellen?'",
-        "de": "Mit Kellner: 'Was möchten Sie bestellen?'"
-      }
-    }
+    ]
   },
   "vocabCategories": ["food-drink", "restaurant", "taste-texture-adjectives"],
   "grammarCategories": ["accusative", "modal-verbs"],

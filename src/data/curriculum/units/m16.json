@@ -18,10 +18,14 @@
   },
   "nodes": [
     { "id": "m16-learn", "kind": "learn", "label": { "en": "Review Map", "de": "Wiederholungskarte" }, "to": "/grammar", "xp": 10 },
-    { "id": "m16-practice", "kind": "practice", "label": { "en": "Final Practice Set", "de": "Abschlussübung" }, "to": "/rapid-fire?mode=final-review", "xp": 30 },
+    { "id": "m16-practice", "kind": "practice", "label": { "en": "Final Practice Set", "de": "Abschlussübung" }, "to": "/rapid-fire?mode=mixed", "xp": 30 },
     { "id": "m16-bonus", "kind": "bonus", "label": { "en": "A1 Mastery Checklist", "de": "A1-Beherrschungs-Checkliste" }, "to": "/grammar?tab=review", "xp": 15 }
   ],
   "pedagogy": {
+    "grammarNote": {
+      "en": "Check yourself honestly against the answer key — a low score is information about where to go back to, not a verdict.",
+      "de": "Prüfe dich ehrlich mit dem Lösungsschlüssel — ein niedriger Wert sagt dir, wohin du zurückmusst, er ist kein Urteil."
+    },
     "grammarNotes": [
       "This module is a SUPPORT band: it reviews Units 01–15 and never gates progress, so it cannot lock a learner out of completion.",
       "Exercise 1 targets gender + nominative article (Units 04–05).",
@@ -31,37 +35,33 @@
       "Exercise 5 targets end-to-end translation across all structures (cumulative).",
       "Every answer key entry is given in DE, EN and NE so the learner can self-check without a tutor."
     ],
-    "ruleTables": [
-      {
-        "title": {
-          "en": "A1 Mastery Checklist",
-          "de": "A1-Beherrschungs-Checkliste"
-        },
-        "columns": ["Structure", "Unit", "Can you…", "Self-rating"],
-        "rows": [
-          ["Gender + Nominative", "M04–M05", "Give the article for any noun (der/die/das)", "☐"],
-          ["kein / keine", "M05", "Negate a noun phrase in the nominative", "☐"],
-          ["Present conjugation", "M06", "Conjugate any regular verb for all 6 persons", "☐"],
-          ["Stem changes", "M06", "Apply e→ie, e→i, a→ä in du/er only", "☐"],
-          ["V2 word order", "M07", "Place the conjugated verb in Position 2", "☐"],
-          ["Inversion", "M07", "Shift the subject to Position 3 after a time/place phrase", "☐"],
-          ["Accusative", "M08", "Shift only masculine articles (der→den, ein→einen, kein→keinen)", "☐"],
-          ["Separable verbs", "M09", "Send the prefix to the clause end", "☐"],
-          ["Modals", "M12", "Put the infinitive at the end after a modal", "☐"],
-          ["Demonstratives", "M13", "Match dieser/diese/dieses to gender", "☐"],
-          ["Dative prepositions", "M14", "Use mit + dem/der for transport", "☐"],
-          ["Two-way prepositions", "M14", "Choose acc (Wohin?) vs. dat (Wo?)", "☐"],
-          ["Perfekt", "M15", "Pick haben/sein and form Partizip II", "☐"]
-        ]
-      }
-    ],
+    "ruleTable": {
+      "title": {
+        "en": "A1 Mastery Checklist",
+        "de": "A1-Beherrschungs-Checkliste"
+      },
+      "rows": [
+        { "label": { "en": "Gender + Nominative", "de": "Genus + Nominativ" }, "usage": { "en": "Give the article for any noun (der/die/das)", "de": "Gib jedem Nomen den richtigen Artikel (der/die/das)" }, "example": { "en": "M04–M05", "de": "M04–M05" } },
+        { "label": { "en": "kein / keine", "de": "kein / keine" }, "usage": { "en": "Negate a noun phrase in the nominative", "de": "Verneine eine Nominalphrase im Nominativ" }, "example": { "en": "M05", "de": "M05" } },
+        { "label": { "en": "Present conjugation", "de": "Präsenskonjugation" }, "usage": { "en": "Conjugate any regular verb for all 6 persons", "de": "Konjugiere ein regelmäßiges Verb in allen 6 Personen" }, "example": { "en": "M06", "de": "M06" } },
+        { "label": { "en": "Stem changes", "de": "Stammveränderungen" }, "usage": { "en": "Apply e→ie, e→i, a→ä in du/er only", "de": "Wende e→ie, e→i, a→ä nur in du/er an" }, "example": { "en": "M06", "de": "M06" } },
+        { "label": { "en": "V2 word order", "de": "V2-Wortstellung" }, "usage": { "en": "Place the conjugated verb in Position 2", "de": "Setze das konjugierte Verb auf Position 2" }, "example": { "en": "M07", "de": "M07" } },
+        { "label": { "en": "Inversion", "de": "Inversion" }, "usage": { "en": "Shift the subject to Position 3 after a time/place phrase", "de": "Rücke das Subjekt nach einer Zeit-/Ortsangabe auf Position 3" }, "example": { "en": "M07", "de": "M07" } },
+        { "label": { "en": "Accusative", "de": "Akkusativ" }, "usage": { "en": "Shift only masculine articles (der→den, ein→einen, kein→keinen)", "de": "Wechsle nur maskuline Artikel (der→den, ein→einen, kein→keinen)" }, "example": { "en": "M08", "de": "M08" } },
+        { "label": { "en": "Separable verbs", "de": "Trennbare Verben" }, "usage": { "en": "Send the prefix to the clause end", "de": "Schicke die Vorsilbe an das Satzende" }, "example": { "en": "M09", "de": "M09" } },
+        { "label": { "en": "Modals", "de": "Modalverben" }, "usage": { "en": "Put the infinitive at the end after a modal", "de": "Setze den Infinitiv nach dem Modalverb ans Ende" }, "example": { "en": "M12", "de": "M12" } },
+        { "label": { "en": "Demonstratives", "de": "Demonstrativartikel" }, "usage": { "en": "Match dieser/diese/dieses to gender", "de": "Ordne dieser/diese/dieses dem Genus zu" }, "example": { "en": "M13", "de": "M13" } },
+        { "label": { "en": "Dative prepositions", "de": "Dativpräpositionen" }, "usage": { "en": "Use mit + dem/der for transport", "de": "Benutze mit + dem/der für den Verkehr" }, "example": { "en": "M14", "de": "M14" } },
+        { "label": { "en": "Two-way prepositions", "de": "Wechselpräpositionen" }, "usage": { "en": "Choose acc (Wohin?) vs. dat (Wo?)", "de": "Wähle Akk. (Wohin?) vs. Dat. (Wo?)" }, "example": { "en": "M14", "de": "M14" } },
+        { "label": { "en": "Perfekt", "de": "Perfekt" }, "usage": { "en": "Pick haben/sein and form Partizip II", "de": "Wähle haben/sein und bilde Partizip II" }, "example": { "en": "M15", "de": "M15" } }
+      ]
+    },
     "callouts": [
       "This module is optional (SUPPORT). Skipping it does not affect your progress or any unlock.",
       "Do the exercises BEFORE opening the answer key — the value is in the attempt, not the reading.",
       "If you score below 80% on any exercise, go back to that unit: Exercise 1→M05, 2→M08, 3→M06/M12, 4→M07, 5→cumulative.",
       "The answer key is trilingual (DE/EN/NE) — check the German first, then your own translation against the English."
-    ],
-    "honorifics": {}
+    ]
   },
   "vocabCategories": ["conjugation", "v2-order", "modal-verbs", "dative-prepositions", "perfekt"],
   "grammarCategories": ["accusative", "v2-word-order", "modal-verbs", "prepositions", "perfekt"],

@@ -208,6 +208,10 @@
   },
   "miniGame": {
     "type": "rapidfire_question",
+    "title": {
+      "en": "A1 Completion Sprint",
+      "de": "A1-Abschluss-Sprint"
+    },
     "id": "m16-final-sprint",
     "payload": {
       "type": "rapidfire_question",

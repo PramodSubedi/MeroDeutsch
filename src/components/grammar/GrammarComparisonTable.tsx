@@ -26,10 +26,15 @@ export function GrammarComparisonTable({ title, rows }: GrammarComparisonTablePr
 
   const showHelpers = !isDE; // hide EN/NE in Nur-DE mode
 
+  // Defensive: authored `pedagogy.grammarComparison`. A truthy-but-empty object
+  // would reach `title.de` as undefined and crash the page; skip it instead.
+  if (!rows?.length) return null;
+  const heading = title ? (isDE ? title.de : title.en) : '';
+
   return (
     <div className="mt-4 overflow-x-auto rounded-lg bg-white p-4 shadow-sm dark:bg-ink-900">
       <div className="mb-3 text-meta font-semibold uppercase tracking-wider text-ink-500 dark:text-ink-400">
-        {isDE ? title.de : title.en}
+        {heading}
       </div>
       <table className="w-full border-collapse text-body">
         <thead>

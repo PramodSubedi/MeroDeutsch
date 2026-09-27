@@ -730,6 +730,10 @@
   },
   "miniGame": {
     "type": "cloze_drill",
+    "title": {
+      "en": "Family Tree Matcher",
+      "de": "Familienbaum-Zuordnung"
+    },
     "id": "m4-family-possessives",
     "payload": {
       "type": "cloze_drill",

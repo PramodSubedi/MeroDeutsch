@@ -648,16 +648,51 @@
       },
       "notes": [
         {
-          "en": "In German, the direct object receiving the action of a verb takes the Accusative Case. Accusative Article Shift Matrix: ┌────────────┬───────────────────┬───────────────────┬───────────────────┐ │ Gender │ Nominative │ Accusative (Def) │ Accusative Indef. │ ├────────────┼───────────────────┼───────────────────┼───────────────────┤ │ Masculine │ der Tisch │ DEN Tisch │ EINEN Tisch │ │ Feminine │ die Suppe │ DIE Suppe │ EINE Suppe │ │ Neuter │ das Brot │ DAS Brot │ EIN Brot │ │ Plural │ die Äpfel │ DIE Äpfel │ - Äpfel │ └────────────┴───────────────────┴───────────────────┴───────────────────┘ Verbs that ALWAYS take Accusative direct objects: bestellen (to order), trinken (to drink), essen (to eat), haben (to have), kaufen (to buy), brauchen (to need), sehen (to see), möchten (would like). Examples: ---",
-          "ne": "",
-          "de": ""
+          "en": "In German, the direct object receiving the action of a verb takes the Accusative Case. Read the matrix across: only the masculine column changes; feminine, neuter and plural are identical in both cases.",
+          "ne": "जर्मनमा क्रियाको कार्य प्राप्त गर्ने प्रत्यक्ष वस्तु अक्कुसेटिभ केसमा हुन्छ। म्याट्रिक्स horizontally हेर्नुहोस्: पुरुषलिङ्ग मात्र बदल्छ; स्त्रीलिङ्ग, नपुंसकलिङ्ग र बहुवचन दुवै केसमा उही।",
+          "de": "Im Deutschen steht das Direktobjekt, das die Aktion eines Verbs empfängt, im Akkusativ. Die Matrix von links nach rechts lesen: nur die männliche Spalte wechselt; Feminin, Neutrum und Plural sind in beiden Fällen identisch."
         }
       ],
+      "table": {
+        "columns": [
+          "Gender",
+          "Nominative",
+          "Accusative (Definite)",
+          "Accusative (Indefinite)"
+        ],
+        "rows": [
+          [
+            "Masculine",
+            "der Tisch",
+            "DEN Tisch",
+            "EINEN Tisch"
+          ],
+          [
+            "Feminine",
+            "die Suppe",
+            "DIE Suppe",
+            "EINE Suppe"
+          ],
+          [
+            "Neuter",
+            "das Brot",
+            "DAS Brot",
+            "EIN Brot"
+          ],
+          [
+            "Plural",
+            "die Äpfel",
+            "DIE Äpfel",
+            "— Äpfel"
+          ]
+        ]
+      },
       "callout": "🚨 CRITICAL ACCUSATIVE RULE: ONLY *Masculine (der) articles shift in Accusative! Feminine (die), Neuter (das), and Plural (die*) remain 100% UNCHANGED!",
       "bullets": [
-        "Ich habe EINEN Kaffee. (Masculine: der Kaffee \\(\\rightarrow\\) einen).",
-        "Ich esse EIN Brot. (Neuter: das Brot \\(\\rightarrow\\) ein - unchanged).",
-        "Ich bestelle EINE Suppe. (Feminine: die Suppe \\(\\rightarrow\\) eine - unchanged)."
+        "Verbs that ALWAYS take an accusative direct object: bestellen (to order), trinken (to drink), essen (to eat), haben (to have), kaufen (to buy), brauchen (to need), sehen (to see), möchten (would like).",
+        "Ich habe EINEN Kaffee. (Masculine: der Kaffee → einen).",
+        "Ich esse EIN Brot. (Neuter: das Brot → ein - unchanged).",
+        "Ich bestelle EINE Suppe. (Feminine: die Suppe → eine - unchanged)."
       ]
     },
     {
@@ -718,6 +753,10 @@
   },
   "miniGame": {
     "type": "restaurant_roleplay",
+    "title": {
+      "en": "Restaurant Ordering Simulator",
+      "de": "Restaurant-Bestellsimulator"
+    },
     "id": "m10-restaurant-sim",
     "payload": {
       "type": "restaurant_roleplay",

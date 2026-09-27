@@ -18,7 +18,7 @@
   },
   "nodes": [
     { "id": "m11-learn", "kind": "learn", "label": { "en": "Calendar & Time", "de": "Kalender & Zeit" }, "to": "/calendar", "xp": 10 },
-    { "id": "m11-practice", "kind": "practice", "label": { "en": "Calendar Blitz", "de": "Kalender-Blitz" }, "to": "/rapid-fire?mode=calendar-translation", "xp": 20 },
+    { "id": "m11-practice", "kind": "practice", "label": { "en": "Time & Date Blitz", "de": "Zeit-&-Datum-Blitz" }, "to": "/rapid-fire?mode=vocabulary-translation", "xp": 20 },
     { "id": "m11-checkpoint", "kind": "checkpoint", "label": { "en": "Module 11 Checkpoint", "de": "Modul 11 Prüfung" } }
   ],
   "checkpoint": {
@@ -29,6 +29,10 @@
     ]
   },
   "pedagogy": {
+    "grammarNote": {
+      "en": "am = days, im = months and seasons, um = clock times. And halb acht is 7:30, not 8:30.",
+      "de": "am = Tage, im = Monate und Jahreszeiten, um = Uhrzeiten. Und halb acht heißt 7:30, nicht 8:30."
+    },
     "grammarNotes": [
       "Temporal prepositions: am + days/dates/times of day, im + months/seasons, um + clock times",
       "Exception: 'in der Nacht' (not 'am Nacht')",
@@ -68,8 +72,7 @@
       "⚠️ TRAP: 'Halb acht' = 7:30, NOT 8:30! 'Halb' means half TO the next hour!",
       "Memory hook: Am für Alle Tage (am Montag). Im für Im Monat (im Juli). Um für Uhrzeit (um 8 Uhr).",
       "Cultural: Pünktlichkeit is paramount — arrive 5 minutes early!"
-    ],
-    "honorifics": {}
+    ]
   },
   "vocabCategories": ["nature-time", "travel-questions", "travel"],
   "grammarCategories": ["temporal-prepositions", "prepositions", "time"],

@@ -1,7 +1,7 @@
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { useLang } from '../hooks/useLang';
 import { useA1Path } from '../hooks/useA1Path';
-import { A1_CURRICULUM } from '../data/a1Path';
+import { A1_CURRICULUM, A1_UNIT_COUNT } from '../data/a1Path';
 import { ANCHORS, anchorHref } from '../lib/anchors';
 import { useReviewQueue } from '../hooks/useReviewQueue';
 import { usePageTitle } from '../hooks/usePageTitle';
@@ -43,7 +43,7 @@ import { theme } from '../config/theme';
  *   Signed-in, free  the SAME six modules as a DESIGNED roadmap
  *                    (`LearningPath variant="path"`) — numbered in teaching
  *                    order, last module ringed — plus the Premium upsell.
- *   Premium          the A1 campaign spine: 15 modules, 80% checkpoint gates,
+ *   Premium          the A1 campaign spine: every module, 80% checkpoint gates,
  *                    the guided/self-guided toggle and "you are here".
  *
  * Per the A1 campaign plan the Premium branch is the linear band spine ONLY —
@@ -254,11 +254,11 @@ export function ContinueLearningPage() {
           <p className="mt-2 text-body text-ink-500 dark:text-ink-400">
             {isDE
               ? isSelf
-                ? 'Dein A1-Kurs — alle 15 Module offen, in 5 Etappen.'
-                : 'Dein linearer A1-Kurs — 15 Module in 5 Etappen.'
+                ? `Dein A1-Kurs — alle ${A1_UNIT_COUNT} Module offen, in 5 Etappen.`
+                : `Dein linearer A1-Kurs — ${A1_UNIT_COUNT} Module in 5 Etappen.`
               : isSelf
-                ? 'Your A1 course — all 15 modules open, across 5 stages.'
-                : 'Your linear A1 course — 15 modules across 5 stages.'}
+                ? `Your A1 course — all ${A1_UNIT_COUNT} modules open, across 5 stages.`
+                : `Your linear A1 course — ${A1_UNIT_COUNT} modules across 5 stages.`}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
@@ -297,8 +297,8 @@ export function ContinueLearningPage() {
             <p className="mt-1 text-meta text-ink-500 dark:text-ink-400">
               {isSelf
                 ? isDE
-                  ? 'Alle 15 Module sind offen. Prüfungen zählen weiterhin, sperren aber nichts.'
-                  : 'All 15 modules are open. Checkpoints still count, but they lock nothing.'
+                  ? `Alle ${A1_UNIT_COUNT} Module sind offen. Prüfungen zählen weiterhin, sperren aber nichts.`
+                  : `All ${A1_UNIT_COUNT} modules are open. Checkpoints still count, but they lock nothing.`
                 : isDE
                   ? 'Jedes Modul wird nach der vorherigen Prüfung (≥80 %) freigeschaltet.'
                   : 'Each module unlocks after the previous checkpoint (≥80%).'}

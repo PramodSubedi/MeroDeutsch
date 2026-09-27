@@ -1,15 +1,23 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { BookText, Check, RefreshCw, Layout, Globe, GitBranch, Shuffle, Scale, Split } from 'lucide-react';
+import { BookText, Check, ListChecks, RefreshCw, Layout, Globe, GitBranch, Shuffle, Scale, Split } from 'lucide-react';
 import { useLang } from '../hooks/useLang';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { useAnswerReporter } from '../hooks/useExerciseSession';
 import { TabGroup } from '../components/TabGroup';
 import { theme } from '../config/theme';
+import {
+  DEFAULT_GRAMMAR_TAB,
+  TABS_WITHOUT_DRILLS,
+  isGrammarTab,
+  type GrammarTab,
+} from '../config/grammarTabs';
 import { curriculumService } from '../services';
 import type { GrammarDrill } from '../types/curriculum';
 import { A1_INSEPARABLE_PREFIXES } from '../data/a1Verbs';
+import { A1_REVIEW_RULES } from '../data/a1Path';
 import { GrammarFlowchart, NOMINATIVE_ACCUSATIVE_FLOW } from '../components/exercises/GrammarFlowchart';
+import { GrammarRuleTable } from '../components/grammar/GrammarRuleTable';
 
 const CASES = [
   { label: 'Nominativ', de: 'Wer? (subject)', en: 'The subject of the sentence' },
@@ -24,19 +32,17 @@ export function GrammarPage() {
   const reportResult = useAnswerReporter();
   // ?tab= deep-link support — /learn spine bonus chips link here with
   // ?tab=modals / ?tab=stem. Unknown params fall back to the first tab.
+  // The tab list lives in config/grammarTabs so the curriculum validator can
+  // check authored node routes against it.
   const [searchParams, setSearchParams] = useSearchParams();
-  const GRAMMAR_TABS = ['sein', 'haben', 'weakVerb', 'conjugation', 'stem', 'v2', 'modals', 'prefix', 'cases', 'accusative', 'bridge'] as const;
-  type GrammarTab = (typeof GRAMMAR_TABS)[number];
   const paramTab = searchParams.get('tab');
   const [tab, setTabState] = useState<GrammarTab>(
-    (GRAMMAR_TABS as readonly string[]).includes(paramTab ?? '')
-      ? (paramTab as GrammarTab)
-      : 'sein'
+    isGrammarTab(paramTab) ? paramTab : DEFAULT_GRAMMAR_TAB
   );
   const setTab = (next: string) => {
-    const safe = ((GRAMMAR_TABS as readonly string[]).includes(next) ? next : 'sein') as GrammarTab;
+    const safe = (isGrammarTab(next) ? next : DEFAULT_GRAMMAR_TAB) as GrammarTab;
     setTabState(safe);
-    setSearchParams(safe === 'sein' ? {} : { tab: safe }, { replace: true });
+    setSearchParams(safe === DEFAULT_GRAMMAR_TAB ? {} : { tab: safe }, { replace: true });
   };
   const [answersByTab, setAnswersByTab] = useState<Record<string, Record<number, string>>>({});
   const answers = answersByTab[tab] ?? {};
@@ -49,7 +55,7 @@ export function GrammarPage() {
   useEffect(() => {
     let cancelled = false;
     setDrillsFailed(false);
-    if (tab === 'bridge' || tab === 'accusative') {
+    if (TABS_WITHOUT_DRILLS.includes(tab)) {
       setDrills([]);
       setDrillsLoading(false);
     } else {
@@ -111,6 +117,7 @@ export function GrammarPage() {
           { id: 'cases', label: isDE ? 'Fälle' : 'Cases', icon: Layout },
           { id: 'accusative', label: isDE ? 'Nominativ → Akkusativ' : 'Nom → Acc', icon: GitBranch },
           { id: 'bridge', label: isDE ? 'Grammatik-Brücke' : 'Grammar Bridge', icon: Globe },
+          { id: 'review', label: isDE ? 'A1-Checkliste' : 'A1 Checklist', icon: ListChecks },
         ]}
         activeTab={tab}
         onTabChange={(newTab) => { setTab(String(newTab)); }}
@@ -231,6 +238,31 @@ export function GrammarPage() {
       )}
 
       {/* ===== NEW: V2 Word Order Reference Panel (for Unit 07) ===== */}
+      {tab === 'review' && (
+        <div className={`${theme.panel.surface} mb-6`}>
+          <h2 className="text-lg font-semibold">
+            {isDE ? 'A1-Beherrschungs-Checkliste' : 'A1 Mastery Checklist'}
+          </h2>
+          <p className="mt-1 text-body text-ink-500 dark:text-ink-400">
+            {isDE
+              ? 'Wenn du eine Zeile nicht sicher kannst, geh zu der genannten Einheit zurück. Die Module M16 führen alle fünf Übungen mit vollständigem DE/EN/NE-Lösungsschlüssel zusammen.'
+              : 'If a row is not solid, go back to the unit named in it. Module M16 brings all five practice sets together with a full DE/EN/NE answer key.'}
+          </p>
+          {A1_REVIEW_RULES.length > 0 ? (
+            <div className="mt-4">
+              <GrammarRuleTable
+                title={{ en: 'What you should be able to do', de: 'Was du können solltest' }}
+                rows={A1_REVIEW_RULES}
+              />
+            </div>
+          ) : (
+            <p className="mt-4 text-body text-ink-500 dark:text-ink-400">
+              {isDE ? 'Die Checkliste ist noch nicht importiert.' : 'The checklist has not been imported yet.'}
+            </p>
+          )}
+        </div>
+      )}
+
       {tab === 'v2' && (
         <div className={`${theme.panel.surface} mb-6`}>
           <h2 className="text-lg font-semibold">
@@ -502,7 +534,7 @@ export function GrammarPage() {
         </div>
       )}
 
-      {tab !== 'bridge' && tab !== 'accusative' && (
+      {!TABS_WITHOUT_DRILLS.includes(tab) && (
         drillsLoading ? (
           <p role="status" aria-live="polite" className="mt-4 text-body text-ink-500 dark:text-ink-400">
             {isDE ? 'Übungen werden geladen…' : 'Loading drills…'}

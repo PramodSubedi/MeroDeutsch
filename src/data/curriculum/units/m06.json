@@ -28,6 +28,10 @@
     ]
   },
   "pedagogy": {
+    "grammarNote": {
+      "en": "Take the -en off the infinitive, then add the personal ending: ich lerne, du lernst, er lernt, wir lernen.",
+      "de": "Nimm das -en vom Infinitiv und hänge die Personalendung an: ich lerne, du lernst, er lernt, wir lernen."
+    },
     "grammarNotes": [
       "Regular verbs: remove -en, add -e/-st/-t/-en/-t/-en",
       "Stem-changing verbs (e→i/ie, a→ä) affect ONLY du and er/sie/es",
@@ -84,17 +88,7 @@
       "Stem vowel NEVER changes for ich, wir, ihr, sie/Sie — only du and er/sie/es!",
       "essen: du isst (not esst), er isst (not esst) — double-s spelling!",
       "sein and haben are the two most important verbs — memorize them completely"
-    ],
-    "honorifics": {
-      "du": {
-        "en": "Informal: friends, family, children",
-        "de": "Freunde, Familie, Kinder"
-      },
-      "Sie": {
-        "en": "Formal: strangers, teachers, doctors, elders",
-        "de": "Fremde, Lehrer, Ärzte, Ältere"
-      }
-    }
+    ]
   },
   "vocabCategories": ["conjugation", "action-verbs"],
   "grammarCategories": ["conjugation", "stem-change", "irregular-verbs"],

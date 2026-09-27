@@ -759,6 +759,10 @@
   },
   "miniGame": {
     "type": "article_trainer",
+    "title": {
+      "en": "Article Sprint: der, die, das",
+      "de": "Artikel-Sprint: der, die, das"
+    },
     "id": "m5-gender-sprint",
     "payload": {
       "type": "article_trainer",

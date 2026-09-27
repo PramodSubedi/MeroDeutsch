@@ -440,6 +440,89 @@
     },
     {
       "title": {
+        "en": "Directional Prepositions",
+        "de": "Richtungspräpositionen"
+      },
+      "notes": [
+        {
+          "en": "Three prepositions carry almost every direction question. Note that nach and zu take the DATIVE even for movement, while in takes the ACCUSATIVE — the opposite of the two-way rule you just learned.",
+          "ne": "तीन पूर्वसर्गले लगभग सबै दिशा प्रश्न बोक्छन्। nach र zu ले गतिमान हुँदा पनि डेटिभ लिन्छन्, जबकि in ले अक्कुसेटिभ — तपाईंले सिकेको दुवै-अर्थ नियमको उल्टो।",
+          "de": "Drei Präpositionen tragen fast jede Richtungsfrage. Achtung: nach und zu nehmen auch bei Bewegung den DATIV, in dagegen den AKKUSATIV — das Gegenteil der gerade gelernten Wechselpräpositions-Regel."
+        }
+      ],
+      "table": {
+        "columns": [
+          "Preposition",
+          "Case",
+          "Usage",
+          "Examples"
+        ],
+        "rows": [
+          [
+            "nach",
+            "Dative",
+            "Cities, countries, directions",
+            "nach Berlin, nach links, nach Hause"
+          ],
+          [
+            "zu / zum / zur",
+            "Dative",
+            "Specific places, people",
+            "zum Bahnhof, zur Schule, zum Arzt"
+          ],
+          [
+            "in / ins",
+            "Accusative",
+            "Into buildings",
+            "ins Kaufhaus, ins Kino, in die Apotheke"
+          ]
+        ]
+      }
+    },
+    {
+      "title": {
+        "en": "Formal Imperatives for Directions",
+        "de": "Formale Imperative für Richtungen"
+      },
+      "notes": [
+        {
+          "en": "In the formal register the imperative puts the verb FIRST and 'Sie' second — the reverse of normal V2 order. Learn the frame, then fill in the verb.",
+          "ne": "औपचारिक ढाँचामा imperative ले क्रिया पहिले र 'Sie' दोस्रो — सामान्य V2 क्रमको उल्टो। ढाँचा सम्झनुहोस्, त्यसपछि क्रिया राख्नुहोस्।",
+          "de": "Im formalen Register steht im Imperativ das Verb ZUERST und 'Sie' danach — die Umkehr der normalen V2-Stellung. Merke den Rahmen, dann setze das Verb ein."
+        }
+      ],
+      "table": {
+        "columns": [
+          "German",
+          "English",
+          "Structure"
+        ],
+        "rows": [
+          [
+            "Gehen Sie geradeaus!",
+            "Go straight ahead!",
+            "Verb + Sie + Adverb"
+          ],
+          [
+            "Biegen Sie links ab!",
+            "Turn left!",
+            "Verb + Sie + Prep + ab"
+          ],
+          [
+            "Nehmen Sie die erste Straße rechts!",
+            "Take the first street right!",
+            "Verb + Sie + Object"
+          ],
+          [
+            "Fahren Sie mit der U-Bahn!",
+            "Take the subway!",
+            "Verb + Sie + mit + Dative"
+          ]
+        ]
+      }
+    },
+    {
+      "title": {
         "en": "Transportation Preposition: mit (+ Dative Case)",
         "de": "Verkehrspräposition: mit (+ Dativ)"
       },
@@ -547,6 +630,10 @@
   },
   "miniGame": {
     "type": "directions_quest",
+    "title": {
+      "en": "City Navigator Quest",
+      "de": "Stadtnavigator-Suche"
+    },
     "id": "m14-city-navigator",
     "payload": {
       "type": "directions_quest",

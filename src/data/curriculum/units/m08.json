@@ -29,6 +29,10 @@
     ]
   },
   "pedagogy": {
+    "grammarNote": {
+      "en": "Only the masculine shifts in the accusative: der → den, ein → einen, kein → keinen. Feminine, neuter and plural stay exactly as they are.",
+      "de": "Nur das Maskulinum wechselt im Akkusativ: der → den, ein → einen, kein → keinen. Feminin, Neutrum und Plural bleiben unverändert."
+    },
     "grammarNotes": [
       "Direct object = receiver of action (Wen oder was?)",
       "ONLY masculine articles change: der→den, ein→einen, kein→keinen",
@@ -54,8 +58,7 @@
       "🚨 CRITICAL: ONLY masculine (der) shifts in accusative! Feminine, neuter, plural = NO CHANGE!",
       "Verbs that ALWAYS take accusative objects: bestellen, trinken, essen, haben, kaufen, brauchen, sehen, möchten",
       "Example: Ich habe EINEN Kaffee (masc). Ich esse EIN Brot (neut). Ich bestelle EINE Suppe (fem)."
-    ],
-    "honorifics": {}
+    ]
   },
   "vocabCategories": ["food-drink", "action-verbs"],
   "grammarCategories": ["accusative", "cases"],

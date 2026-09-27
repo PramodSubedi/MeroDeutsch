@@ -29,6 +29,10 @@
     ]
   },
   "pedagogy": {
+    "grammarNote": {
+      "en": "Demonstratives take the gender of the noun: dieser (der), diese (die), dieses (das) — and after sein they never take an ending.",
+      "de": "Demonstrativa richten sich nach dem Genus: dieser (der), diese (die), dieses (das) — und nach sein nie mit Endung."
+    },
     "grammarNotes": [
       "Demonstratives take same endings as definite articles: dieser (der), diese (die), dieses (das)",
       "Accusative shift for masculine: dieser → diesen (feminine/neuter/plural unchanged)",
@@ -56,17 +60,7 @@
       "Masculine accusative: dieser → diesen (like der → den)",
       "After 'sein/bleiben/werden': adjective has NO ending — 'Das Hemd ist rot' (not 'rote')",
       "Gefallen takes dative: 'Mir gefällt diese Jacke' (not 'Ich gefalle')"
-    ],
-    "honorifics": {
-      "du": {
-        "en": "Shopping with friends: 'Wie findest du diese Hose?'",
-        "de": "Mit Freunden: 'Wie findest du diese Hose?'"
-      },
-      "Sie": {
-        "en": "With salesperson: 'Wie gefällt Ihnen diese Jacke?'",
-        "de": "Mit Verkäufer: 'Wie gefällt Ihnen diese Jacke?'"
-      }
-    }
+    ]
   },
   "vocabCategories": ["clothing", "colors", "describing-adjectives", "taste-texture-adjectives"],
   "grammarCategories": ["demonstrative", "adjectives", "preferences"],

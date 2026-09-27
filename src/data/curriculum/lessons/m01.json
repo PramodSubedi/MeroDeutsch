@@ -333,6 +333,10 @@
   },
   "miniGame": {
     "type": "dialogue_branch",
+    "title": {
+      "en": "Passport Control Simulator",
+      "de": "Passkontroll-Simulator"
+    },
     "id": "m1-dlg-passport-control",
     "payload": {
       "type": "dialogue_branch",

@@ -340,6 +340,10 @@
   },
   "miniGame": {
     "type": "clock_minigame",
+    "title": {
+      "en": "Clock Master",
+      "de": "Uhrzeit-Meister"
+    },
     "id": "m11-uhrzeit-master",
     "payload": {
       "type": "clock_minigame",

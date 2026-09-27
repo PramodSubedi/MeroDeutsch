@@ -623,15 +623,55 @@
     {
       "title": {
         "en": "Mechanics of Separable Verbs (Trennbare Verben)",
-        "de": "Mechanics of Separable Verbs (Trennbare Verben)"
+        "de": "Mechanics of Separable Verben (Trennbare Verben)"
       },
       "notes": [
         {
-          "en": "Separable verbs consist of a prefix + base verb. In main sentences (Präsens): 1. The base verb is conjugated and placed in Position 2. 2. The prefix detaches and moves to the VERY END of the sentence (Satzklammer / Sentence Bracket). German Sentence Bracket Structure (Satzklammer): ┌──────────────┬──────────────┬──────────────────────────┬──────────────┐ │ Position 1 │ Pos 2 (VERB) │ Middle Sentence Field │ END (PREFIX) │ ├──────────────┼──────────────┼──────────────────────────┼──────────────┤ │ Ich │ stehe │ jeden Morgen um 6 Uhr │ auf. │ │ Wir │ kaufen │ im Supermarkt │ ein. │ │ Er │ ruft │ seine Mutter │ an. │ │ Das Fest │ fängt │ um 20 Uhr │ an. │ └──────────────┴──────────────┴──────────────────────────┴──────────────┘",
-          "ne": "",
-          "de": ""
+          "en": "A separable verb is a prefix plus a base verb. In a main clause the base verb is conjugated and takes Position 2, and the prefix detaches and travels to the very end of the sentence. This is the Satzklammer, the sentence bracket.",
+          "ne": "ट्रण्डरने क्रिया पूर्वसर्ग र आधारभूत क्रियाबाट बन्छ। मुख्य वाक्यमा आधारभूत क्रिया संयोजित हुन्छ र स्थान २ मा जान्छ, र पूर्वसर्ग अन्त्यमा चल्छ। यहीलाई Satzklammer (वाक्य कोष्ठक) भनिन्छ।",
+          "de": "Ein trennbares Verb ist ein Präfix plus ein Basisverb. Im Hauptsatz wird das Basisverb konjugiert und steht auf Position 2, während das Präfix sich löst und ganz ans Satzende geht. Das ist die Satzklammer, der Satz-Klammer."
         }
-      ]
+      ],
+      "table": {
+        "columns": [
+          "Pos 1",
+          "Pos 2 (Verb)",
+          "Middle",
+          "END (Prefix)"
+        ],
+        "rows": [
+          [
+            "Ich",
+            "stehe",
+            "jeden Morgen um 6 Uhr",
+            "auf."
+          ],
+          [
+            "Wir",
+            "kaufen",
+            "heute im Supermarkt",
+            "ein."
+          ],
+          [
+            "Er",
+            "ruft",
+            "seine Mutter",
+            "an."
+          ],
+          [
+            "Das Fest",
+            "fängt",
+            "um 20 Uhr",
+            "an."
+          ],
+          [
+            "Räumst",
+            "du",
+            "bitte dein Zimmer",
+            "auf?"
+          ]
+        ]
+      }
     },
     {
       "title": {
@@ -640,11 +680,99 @@
       },
       "notes": [
         {
-          "en": "The following prefixes ALWAYS detach in main sentences: auf-, ab-, an-, aus-, ein-, mit-, fern-, vor-, zurück-. ---",
-          "ne": "",
-          "de": ""
+          "en": "The following prefixes ALWAYS detach in main sentences: auf-, ab-, an-, aus-, ein-, mit-, fern-, vor-, zurück-.",
+          "ne": "निम्न पूर्वसर्गहरू मुख्य वाक्यमा सधैँ छुट्टिन्छन्: auf-, ab-, an-, aus-, ein-, mit-, fern-, vor-, zurück-।",
+          "de": "Die folgenden Präfixe trennen sich im Hauptsatz IMMER: auf-, ab-, an-, aus-, ein-, mit-, fern-, vor-, zurück-."
+        },
+        {
+          "en": "Inseparable prefixes (ver-, be-, ge-, ent-, er-, emp-, miss-, zer-) NEVER split — du räumst auf, but du verstehst (not *verstehst auf*).",
+          "ne": "नटुट्ने पूर्वसर्गहरू (ver-, be-, ge-, ent-, er-, emp-, miss-, zer-) कहिल्यै छुट्टिँदैनन् — du räumst auf, तर du verstehst (verstehst auf होइन)।",
+          "de": "Nicht trennbare Präfixe (ver-, be-, ge-, ent-, er-, emp-, miss-, zer-) trennen sich NIE — du räumst auf, aber du verstehst (nicht *verstehst auf*)."
         }
       ]
+    },
+    {
+      "title": {
+        "en": "Key Separable Verbs for Daily Routines",
+        "de": "Wichtige trennbare Verben für Tagesabläufe"
+      },
+      "notes": [
+        {
+          "en": "These ten verbs carry most everyday routine sentences. Read each row as: full verb, where the prefix detaches, meaning, and a worked example.",
+          "ne": "यी दस क्रियाले दैनिक जीवनका धेरै वाक्य बोक्छन्।",
+          "de": "Diese zehn Verben tragen die meisten Alltagssätze. Jede Zeile liest sich als: Vollverb, wo sich das Präfix löst, Bedeutung, Beispielsatz."
+        }
+      ],
+      "table": {
+        "columns": [
+          "Verb",
+          "Prefix | Base",
+          "Meaning",
+          "Example"
+        ],
+        "rows": [
+          [
+            "aufstehen",
+            "auf | stehen",
+            "to get up",
+            "Ich stehe um 7 Uhr auf."
+          ],
+          [
+            "einkaufen",
+            "ein | kaufen",
+            "to shop",
+            "Am Samstag kaufe ich ein."
+          ],
+          [
+            "anrufen",
+            "an | rufen",
+            "to call",
+            "Ich rufe dich an."
+          ],
+          [
+            "fernsehen",
+            "fern | sehen",
+            "to watch TV",
+            "Wir sehen abends fern."
+          ],
+          [
+            "ankommen",
+            "an | kommen",
+            "to arrive",
+            "Der Zug kommt um 14 Uhr an."
+          ],
+          [
+            "abfahren",
+            "ab | fahren",
+            "to depart",
+            "Der Bus fährt um 8 Uhr ab."
+          ],
+          [
+            "anfangen",
+            "an | fangen",
+            "to begin",
+            "Der Kurs fängt um 9 Uhr an."
+          ],
+          [
+            "ausmachen",
+            "aus | machen",
+            "to turn off",
+            "Er macht das Licht aus."
+          ],
+          [
+            "anmachen",
+            "an | machen",
+            "to turn on",
+            "Mach bitte die Heizung an."
+          ],
+          [
+            "aufhören",
+            "auf | hören",
+            "to stop",
+            "Der Regen hört auf."
+          ]
+        ]
+      }
     }
   ],
   "dialogue": {
@@ -682,6 +810,10 @@
   },
   "miniGame": {
     "type": "cloze_drill",
+    "title": {
+      "en": "Prefix Bracket Snap",
+      "de": "Vorsilben-Klammer-Schnapp"
+    },
     "id": "m9-prefix-bracket",
     "payload": {
       "type": "cloze_drill",

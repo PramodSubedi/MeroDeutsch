@@ -633,9 +633,9 @@
       },
       "notes": [
         {
-          "en": "The Present Perfect (Perfekt) is used in spoken German for past events. It consists of two parts: Auxiliary Verb (haben or sein) in Pos 2 + Past Participle (Partizip II) at Very End.",
-          "ne": "",
-          "de": ""
+          "en": "The Present Perfect (Perfekt) is used in spoken German for past events. It consists of two parts: Auxiliary Verb (haben or sein) in Position 2 + Past Participle (Partizip II) at the very end.",
+          "ne": "वोलचालको जर्मनमा अतीतका घटनाका लागि Present Perfect (Perfekt) प्रयोग हुन्छ। यसमा दुई भाग हुन्छन्: सहायक क्रिया (haben वा sein) स्थान २ मा + भूतकाल सहभागी (Partizip II) अन्त्यमा।",
+          "de": "Das Perfekt ist die gesprochene deutsche Vergangenheit. Es besteht aus zwei Teilen: Hilfsverb (haben oder sein) auf Position 2 + Partizip II ganz am Ende."
         }
       ]
     },
@@ -646,10 +646,30 @@
       },
       "bullets": [
         "Use sein for verbs of motion or change of state: kommen, fahren, gehen.",
-        "Ich bin gestern nach Berlin gefahren.",
-        "Use haben for all other verbs (transitive / stationary): machen, kaufen, lernen, spielen.",
-        "Ich habe am Wochenende Fußball gespielt."
-      ]
+        "Use haben for all other verbs (transitive / stationary): machen, kaufen, lernen, spielen."
+      ],
+      "table": {
+        "columns": [
+          "Auxiliary",
+          "When",
+          "Verbs",
+          "Example"
+        ],
+        "rows": [
+          [
+            "sein",
+            "motion or change of state",
+            "kommen, fahren, gehen, schlafen",
+            "Ich bin gestern nach Berlin gefahren."
+          ],
+          [
+            "haben",
+            "everything else (transitive / stationary)",
+            "machen, kaufen, lernen, spielen",
+            "Ich habe am Wochenende Fußball gespielt."
+          ]
+        ]
+      }
     },
     {
       "title": {
@@ -657,8 +677,79 @@
         "de": "Regular Partizip II Rule: ge- + stem + -t"
       },
       "bullets": [
-        "machen -> gemacht | lernen -> gelernt | kaufen -> gekauft"
+        "machen → gemacht | lernen → gelernt | kaufen → gekauft"
       ]
+    },
+    {
+      "title": {
+        "en": "Key Irregular Partizip II Forms",
+        "de": "Wichtige unregelmäßige Partizip-II-Formen"
+      },
+      "notes": [
+        {
+          "en": "Verbs with a vowel change or an ending in -eln/-ern do NOT take the -t. Learn these as whole words — the stem change is what makes them irregular.",
+          "ne": "स्वर परिवर्तन भएका वा -eln/-ern मा अन्त्य भएका क्रियामा -t थिएदैन। यी पूरै शब्दका रूपमा सम्झनुहोस् — विस्तारै नै यी अनियमित हुन्।",
+          "de": "Verben mit Vokalwechsel oder Endung auf -eln/-ern bekommen KEIN -t. Lerne diese als ganze Wörter — der Stammwechsel macht sie unregelmäßig."
+        }
+      ],
+      "table": {
+        "columns": [
+          "Infinitive",
+          "Partizip II",
+          "Auxiliary",
+          "Example"
+        ],
+        "rows": [
+          [
+            "gehen",
+            "gegangen",
+            "sein",
+            "Ich bin zu Hause gegangen."
+          ],
+          [
+            "fahren",
+            "gefahren",
+            "sein",
+            "Wir sind nach Berlin gefahren."
+          ],
+          [
+            "kommen",
+            "gekommen",
+            "sein",
+            "Sie ist angekommen."
+          ],
+          [
+            "schlafen",
+            "geschlafen",
+            "sein",
+            "Er hat geschlafen."
+          ],
+          [
+            "essen",
+            "gegessen",
+            "haben",
+            "Ich habe gegessen."
+          ],
+          [
+            "trinken",
+            "getrunken",
+            "haben",
+            "Ich habe Kaffee getrunken."
+          ],
+          [
+            "lesen",
+            "gelesen",
+            "haben",
+            "Ich habe einen Brief gelesen."
+          ],
+          [
+            "schreiben",
+            "geschrieben",
+            "haben",
+            "Ich habe eine E-Mail geschrieben."
+          ]
+        ]
+      }
     }
   ],
   "dialogue": {
@@ -696,6 +787,10 @@
   },
   "miniGame": {
     "type": "micro_story",
+    "title": {
+      "en": "A1 Completion Sprint",
+      "de": "A1-Abschluss-Sprint"
+    },
     "id": "m15-weekend-perfekt",
     "payload": {
       "type": "micro_story",

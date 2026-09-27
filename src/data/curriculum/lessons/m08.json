@@ -1,6 +1,6 @@
 {
   "cefr": "A1.2",
-  "docRoute": "/grammar?tab=akkusativ",
+  "docRoute": "/grammar?tab=accusative",
   "objectives": {
     "en": [
       "Identify direct objects after transitive verbs, apply the masculine accusative shift (der → den, ein → einen, kein → keinen), and leave feminine, neuter, and plural articles unchanged.",
@@ -271,6 +271,10 @@
   },
   "miniGame": {
     "type": "accusative_article_trainer",
+    "title": {
+      "en": "Accusative Shift Sprint",
+      "de": "Akkusativ-Wechsel-Sprint"
+    },
     "id": "m8-accusative-shift-sprint",
     "payload": {
       "type": "accusative_article_trainer",

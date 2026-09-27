@@ -403,6 +403,10 @@
   },
   "miniGame": {
     "type": "v2_order_challenge",
+    "title": {
+      "en": "V2 Word Order Unscrambler",
+      "de": "V2-Wortstellungs-Puzzle"
+    },
     "id": "m7-v2-unscrambler",
     "payload": {
       "type": "v2_order_challenge",
