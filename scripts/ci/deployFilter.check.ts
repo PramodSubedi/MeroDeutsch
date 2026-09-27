@@ -232,6 +232,7 @@ interface Route {
   src?: string;
   dest?: string;
   handle?: string;
+  status?: number;
   has?: { type: string; value: string }[];
 }
 
@@ -282,10 +283,30 @@ check(
   JSON.stringify(rewrites[rootRule]?.has),
 );
 
+// Declared up front: the ordering assertions below all compare against these
+// three indices, and a `const` used before its declaration is a runtime
+// ReferenceError rather than a compile error.
+const adminSpa = rewrites.findIndex((r) => r.src === '/(.*)' && r.dest === '/admin.html');
+const learnerCatchAll = rewrites.findIndex((r) => r.src === '/(.*)' && r.dest === '/index.html');
+const swRule = rewrites.find((r) => r.src === '/sw.js');
+
+check('a /sw.js rule exists', !!swRule, 'missing');
+check('the /sw.js rule is host-gated', !!swRule?.has?.some((h) => h.type === 'host' && h.value === ADMIN_HOST));
+// It must be a REAL 404. An earlier version rewrote to a non-existent path,
+// which fell through to the SPA catch-all and returned 200 text/html — so the
+// "deny" served a document instead of refusing, and the browser happily
+// installed a learner service worker on the admin origin. `status` cannot fall
+// through to a later rule, which is exactly the property needed here.
+check('the /sw.js rule uses status, not dest', swRule?.status === 404 && swRule?.dest === undefined, JSON.stringify(swRule));
+check(
+  'the /sw.js rule is ordered BEFORE the SPA catch-all',
+  !!swRule && rewrites.indexOf(swRule) < adminSpa,
+  `sw at ${swRule ? rewrites.indexOf(swRule) : -1}, catch-all at ${adminSpa}`,
+);
+
 // The SPA catch-all must sit AFTER the filesystem handler, or every hashed
 // asset under /assets/ would be rewritten to admin.html and the page would
 // load no JavaScript at all.
-const adminSpa = rewrites.findIndex((r) => r.src === '/(.*)' && r.dest === '/admin.html');
 check('an admin SPA catch-all exists', adminSpa >= 0, `index ${adminSpa}`);
 check(
   'the SPA catch-all is ordered AFTER the filesystem handler',
@@ -293,7 +314,6 @@ check(
   `catch-all at ${adminSpa}, filesystem at ${fsIndex}`,
 );
 
-const learnerCatchAll = rewrites.findIndex((r) => r.src === '/(.*)' && r.dest === '/index.html');
 check('a learner catch-all exists', learnerCatchAll >= 0);
 check(
   'the admin catch-all is ordered BEFORE the learner catch-all',

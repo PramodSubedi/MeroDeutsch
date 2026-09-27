@@ -4,7 +4,7 @@
     { "src": "/admin.html", "dest": "/admin.html" },
     {
       "src": "/sw.js",
-      "dest": "/__sw_not_served_on_admin__",
+      "status": 404,
       "has": [{ "type": "host", "value": "admin.merodeutsch.pramods.com.np" }]
     },
     {
