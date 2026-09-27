@@ -23,6 +23,7 @@
  * overdue mean" is exactly how a dashboard and a drawer start disagreeing.
  */
 import { supabase } from '../../lib/supabase';
+import { csvLine } from './csv';
 import { dueState, leitnerBand, type DueState, type LeitnerBand } from './userDetail';
 
 export interface QueueItem {
@@ -187,13 +188,12 @@ export const DEFAULT_QUEUE_FILTERS: QueueFilters = {
   due: 'all',
 };
 
-/** Escape a CSV cell. Leading `=`/`+`/`-`/`@` are prefixed so a value cannot
- *  be interpreted as a formula when the export is opened in a spreadsheet. */
-export function csvCell(value: unknown): string {
-  const s = value === null || value === undefined ? '' : String(value);
-  const safe = /^[=+\-@\t\r]/.test(s) ? `'${s}` : s;
-  return /[",\n]/.test(safe) ? `"${safe.replace(/"/g, '""')}"` : safe;
-}
+/**
+ * Re-exported from `./csv` so existing importers keep working while there is
+ * exactly ONE implementation. Two divergent encoders is how a formula-injection
+ * fix ends up applied to one export and not the other.
+ */
+export { csvCell, csvLine, csvDocument } from './csv';
 
 export function toCsv(items: (QueueItem & { due: DueState; overdueDays: number })[]): string {
   const header = [
@@ -204,13 +204,11 @@ export function toCsv(items: (QueueItem & { due: DueState; overdueDays: number }
   const lines = [header.join(',')];
   for (const it of items) {
     lines.push(
-      [
+      csvLine([
         it.itemKey, it.moduleType, it.username, it.userId, it.due, it.overdueDays,
         it.dueAt, it.boxLevel, it.intervalDays, it.errorCount, it.errorTag,
         it.lastResult, it.userAnswer, it.correctAnswer,
-      ]
-        .map(csvCell)
-        .join(','),
+      ])
     );
   }
   return lines.join('\n');

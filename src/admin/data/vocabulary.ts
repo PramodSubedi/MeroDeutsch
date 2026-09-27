@@ -18,6 +18,7 @@
  * write at all.
  */
 import { supabase } from '../../lib/supabase';
+import { csvLine } from './csv';
 
 export type VocabSource = 'vocabulary' | 'content_items';
 
@@ -169,11 +170,14 @@ export async function fetchVocabulary(): Promise<VocabResult> {
 }
 
 /**
- * RFC 4180 CSV. Every field is quoted, so a German quote or a comma inside a
- * translation cannot shift a column for whoever imports it next.
+ * RFC 4180 CSV.
+ *
+ * Uses the shared `csvCell`, which additionally neutralises formula injection.
+ * The previous local escaper only doubled quotes, which does NOT stop a cell
+ * beginning with `=` from executing when the export is opened in a spreadsheet
+ * — and this table holds imported text, so that input is not trusted.
  */
 export function toCsv(rows: VocabRow[]): string {
-  const escape = (v: string | null): string => `"${(v ?? '').replace(/"/g, '""')}"`;
   const header = [
     'source', 'id', 'word', 'article', 'pos', 'level',
     'tags', 'translation_en', 'translation_np', 'example_de',
@@ -181,18 +185,18 @@ export function toCsv(rows: VocabRow[]): string {
   const lines = [header.join(',')];
   for (const r of rows) {
     lines.push(
-      [
-        escape(r.source),
-        escape(r.id),
-        escape(r.word),
-        escape(r.article),
-        escape(r.partOfSpeech),
-        escape(r.level),
-        escape(r.tags.join(' ')),
-        escape(r.translationEn),
-        escape(r.translationNp),
-        escape(r.exampleDe),
-      ].join(',')
+      csvLine([
+        r.source,
+        r.id,
+        r.word,
+        r.article,
+        r.partOfSpeech,
+        r.level,
+        r.tags.join(' '),
+        r.translationEn,
+        r.translationNp,
+        r.exampleDe,
+      ])
     );
   }
   return lines.join('\n');

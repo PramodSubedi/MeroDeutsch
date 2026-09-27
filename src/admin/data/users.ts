@@ -24,6 +24,7 @@
  * strictly read paths; ban / promote / grant-premium need an Edge Function.
  */
 import { supabase } from '../../lib/supabase';
+import { csvLine } from './csv';
 import type { AdminProfile } from '../../lib/adminRole';
 
 const ADMIN_USER_COLUMNS =
@@ -58,6 +59,57 @@ export interface AdminUserRow {
 export interface UsersResult {
   rows: AdminUserRow[];
   errors: string[];
+}
+
+/**
+ * CSV export of the CURRENTLY FILTERED users.
+ *
+ * Two deliberate choices:
+ *
+ * 1. It exports the rows passed in, not the whole table. An admin who has
+ *    filtered to "banned accounts" and then exports should get exactly that —
+ *    exporting the unfiltered set because the function re-queried would be a
+ *    quiet way to hand over data the operator did not ask for.
+ *
+ * 2. `full_name` is USER-SUPPLIED text and `username` may be too, so every cell
+ *    goes through the shared encoder. A learner who signed up as
+ *    `=HYPERLINK("http://evil","click")` would otherwise execute when the file
+ *    is opened. Quoting alone does not prevent that; the leading apostrophe
+ *    does.
+ */
+export function usersToCsv(rows: AdminUserRow[]): string {
+  const header = [
+    'id', 'username', 'full_name', 'plan', 'role', 'banned_at', 'created_at',
+    'total_xp', 'level', 'current_streak', 'longest_streak', 'last_activity_date',
+    'active_days', 'last_active_at', 'unlocked_unit_index', 'path_mode',
+    'queue_size', 'queue_errors',
+  ];
+  const lines = [header.join(',')];
+  for (const r of rows) {
+    lines.push(
+      csvLine([
+        r.id,
+        r.username,
+        r.fullName,
+        r.plan,
+        r.role,
+        r.bannedAt,
+        r.createdAt,
+        r.totalXp,
+        r.level,
+        r.currentStreak,
+        r.longestStreak,
+        r.lastActivityDate,
+        r.activeDays,
+        r.lastActiveAt,
+        r.unlockedUnitIndex,
+        r.pathMode,
+        r.queueSize,
+        r.queueErrors,
+      ])
+    );
+  }
+  return lines.join('\n');
 }
 
 /** Group a `{ user_id, ... }` table into a Map for O(1) per-user lookup. */

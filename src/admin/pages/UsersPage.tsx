@@ -21,11 +21,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import type { Virtualizer } from '@tanstack/react-virtual';
-import { AlertTriangle, ArrowDownUp, RefreshCw, Search } from 'lucide-react';
+import { AlertTriangle, ArrowDownUp, Download, RefreshCw, Search } from 'lucide-react';
 import { theme } from '../../config/theme';
 import { KpiCard } from '../components/KpiCard';
 import { UserDetailDrawer } from '../components/UserDetailDrawer';
-import { fetchUsers, type AdminUserRow } from '../data/users';
+import { downloadTextFile } from '../data/csv';
+import { fetchUsers, usersToCsv, type AdminUserRow } from '../data/users';
 import {
   DEFAULT_FILTERS,
   facetCounts,
@@ -167,15 +168,29 @@ export function UsersPage() {
             service-role function to change.
           </p>
         </div>
-        <button
-          type="button"
-          onClick={() => void load()}
-          className={theme.button.secondary}
-          disabled={loading}
-        >
-          <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} aria-hidden="true" />
-          {loading ? 'Loading…' : 'Refresh'}
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            // Exports the CURRENTLY SORTED + FILTERED set, not the whole table.
+            // Re-querying here would quietly hand over rows the operator had
+            // filtered out.
+            onClick={() => downloadTextFile('users.csv', usersToCsv(sorted), 'text/csv;charset=utf-8')}
+            className={theme.button.secondary}
+            disabled={loading || sorted.length === 0}
+          >
+            <Download className="h-4 w-4" aria-hidden="true" />
+            CSV ({sorted.length})
+          </button>
+          <button
+            type="button"
+            onClick={() => void load()}
+            className={theme.button.secondary}
+            disabled={loading}
+          >
+            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} aria-hidden="true" />
+            {loading ? 'Loading…' : 'Refresh'}
+          </button>
+        </div>
       </header>
 
       {errors.length > 0 && <ErrorsPanel errors={errors} />}
