@@ -1,18 +1,24 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "rewrites": [
-    { "source": "/admin.html", "destination": "/admin.html" },
+  "routes": [
+    { "src": "/admin.html", "dest": "/admin.html" },
     {
-      "source": "/(.*)",
-      "destination": "/admin.html",
+      "src": "/sw.js",
+      "dest": "/__sw_not_served_on_admin__",
       "has": [{ "type": "host", "value": "admin.merodeutsch.pramods.com.np" }]
     },
     {
-      "source": "/sw.js",
-      "destination": "/__sw_not_served_on_admin__",
+      "src": "/",
+      "dest": "/admin.html",
       "has": [{ "type": "host", "value": "admin.merodeutsch.pramods.com.np" }]
     },
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "handle": "filesystem" },
+    {
+      "src": "/(.*)",
+      "dest": "/admin.html",
+      "has": [{ "type": "host", "value": "admin.merodeutsch.pramods.com.np" }]
+    },
+    { "src": "/(.*)", "dest": "/index.html" }
   ],
   "headers": [
     {

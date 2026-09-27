@@ -228,7 +228,17 @@ console.log('\n=== 11. vercel.json MUST MATCH VERCEL\'S SCHEMA ===');
 // two projects correctly separated.
 const vercelPath = resolve(import.meta.dirname ?? __dirname, '..', '..', 'vercel.json');
 const vercelRaw = readFileSync(vercelPath, 'utf8');
+interface Route {
+  src?: string;
+  dest?: string;
+  handle?: string;
+  has?: { type: string; value: string }[];
+}
+
 const vercel = JSON.parse(vercelRaw) as Record<string, unknown>;
+
+/** The admin host every host-gated rule must name. */
+const ADMIN_HOST = 'admin.merodeutsch.pramods.com.np';
 
 /** Properties the Vercel vercel.json schema actually defines. */
 const VERCEL_SCHEMA_PROPERTIES = new Set([
@@ -244,32 +254,62 @@ check(
   `unexpected: ${extra.join(', ')}`,
 );
 
-const rewrites = vercel.rewrites as { source: string; destination: string; has?: { type: string; value: string }[] }[];
-check('rewrites array is present', Array.isArray(rewrites));
-check('rewrites is non-empty', rewrites.length > 0);
+const rewrites = (vercel.routes ?? vercel.rewrites) as Route[];
+check('a routing array is present', Array.isArray(rewrites));
+check('routing is non-empty', rewrites.length > 0);
+check('the config uses `routes`, not `rewrites`', Array.isArray(vercel.routes));
 
-// Host-gated rules must name the ADMIN host. A rule that lost its `has` clause
-// would silently apply to the learner project, and an unconditional
-// `X-Robots-Tag: noindex` on the catch-all would deindex the entire product.
-const ADMIN_HOST = 'admin.merodeutsch.pramods.com.np';
-const hostGated = rewrites.filter((r) => r.has?.some((h) => h.type === 'host'));
-check('at least one rewrite is host-gated', hostGated.length >= 1, `found ${hostGated.length}`);
+// The failure this whole section was rewritten for: with `rewrites`, the root
+// path `/` was served from the FILESYSTEM (Vercel resolves `/` to the static
+// index.html) before any rewrite was evaluated, so `admin.` returned the
+// LEARNER app at `/` while every deep link correctly served the control
+// centre. `routes` lets the root rule sit above `{ handle: "filesystem" }`.
+//
+// Asserted explicitly: if someone reverts to `rewrites`, this fails locally
+// instead of in production.
+const rootRule = rewrites.findIndex((r) => r.src === '/' && r.dest === '/admin.html');
+const fsIndex = rewrites.findIndex((r) => r.handle === 'filesystem');
+check('an explicit ROOT rule → /admin.html exists', rootRule >= 0, `index ${rootRule}`);
+check('a filesystem handler exists', fsIndex >= 0, `index ${fsIndex}`);
 check(
-  'every host-gated rewrite targets the admin host',
-  hostGated.every((r) => r.has?.some((h) => h.value === ADMIN_HOST)),
-  JSON.stringify(hostGated.map((r) => r.has?.[0]?.value)),
+  'the ROOT rule is ordered BEFORE the filesystem handler',
+  rootRule >= 0 && fsIndex >= 0 && rootRule < fsIndex,
+  `root at ${rootRule}, filesystem at ${fsIndex}`,
+);
+check(
+  'the root rule is host-gated (else the learner root would serve the admin shell)',
+  !!rewrites[rootRule]?.has?.some((h) => h.type === 'host' && h.value === ADMIN_HOST),
+  JSON.stringify(rewrites[rootRule]?.has),
 );
 
-// The admin catch-all MUST come before the learner catch-all, or the learner
-// catch-all eats every admin path and the control centre serves the app.
-const adminCatchAll = rewrites.findIndex((r) => r.destination === '/admin.html' && r.source === '/(.*)');
-const learnerCatchAll = rewrites.findIndex((r) => r.destination === '/index.html');
-check('admin catch-all is present', adminCatchAll >= 0);
-check('learner catch-all is present', learnerCatchAll >= 0);
+// The SPA catch-all must sit AFTER the filesystem handler, or every hashed
+// asset under /assets/ would be rewritten to admin.html and the page would
+// load no JavaScript at all.
+const adminSpa = rewrites.findIndex((r) => r.src === '/(.*)' && r.dest === '/admin.html');
+check('an admin SPA catch-all exists', adminSpa >= 0, `index ${adminSpa}`);
 check(
-  'admin catch-all is ordered BEFORE the learner catch-all',
-  adminCatchAll >= 0 && learnerCatchAll >= 0 && adminCatchAll < learnerCatchAll,
-  `admin at ${adminCatchAll}, learner at ${learnerCatchAll}`,
+  'the SPA catch-all is ordered AFTER the filesystem handler',
+  adminSpa > fsIndex,
+  `catch-all at ${adminSpa}, filesystem at ${fsIndex}`,
+);
+
+const learnerCatchAll = rewrites.findIndex((r) => r.src === '/(.*)' && r.dest === '/index.html');
+check('a learner catch-all exists', learnerCatchAll >= 0);
+check(
+  'the admin catch-all is ordered BEFORE the learner catch-all',
+  adminSpa >= 0 && learnerCatchAll >= 0 && adminSpa < learnerCatchAll,
+  `admin at ${adminSpa}, learner at ${learnerCatchAll}`,
+);
+check('the learner catch-all is LAST (it is the fallback)', learnerCatchAll === rewrites.length - 1);
+
+// Host-gated rules must name the ADMIN host. A rule that lost its `has` clause
+// would silently apply to the learner project.
+const hostGated = rewrites.filter((r) => r.has?.some((h) => h.type === 'host'));
+check('at least one rule is host-gated', hostGated.length >= 1, `found ${hostGated.length}`);
+check(
+  'every host-gated rule targets the admin host',
+  hostGated.every((r) => r.has?.some((h) => h.value === ADMIN_HOST)),
+  JSON.stringify(hostGated.map((r) => r.has?.[0]?.value)),
 );
 
 // The learner SW must be revalidated, or a deploy can be masked by a cached
