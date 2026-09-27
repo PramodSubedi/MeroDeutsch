@@ -17,9 +17,9 @@
     "de": "Kleidung kaufen, Farben/Größen beschreiben, Demonstrativartikel richtig nutzen, Vorlieben äußern."
   },
   "nodes": [
-    { "id": "m13-learn", "type": "learn", "label": { "en": "Clothes & Colors", "de": "Kleidung & Farben" }, "to": "/vocab-trainer?category=clothing", "xp": 10 },
-    { "id": "m13-practice", "type": "practice", "label": { "en": "Shopping Roleplay", "de": "Einkaufs-Rollenspiel" }, "to": "/roleplay?scene=cloth", "xp": 20 },
-    { "id": "m13-checkpoint", "type": "checkpoint", "label": { "en": "Module 13 Checkpoint", "de": "Modul 13 Prüfung" }, "to": "/checkpoint/12", "xp": 50 }
+    { "id": "m13-learn", "kind": "learn", "label": { "en": "Clothes & Colors", "de": "Kleidung & Farben" }, "to": "/vocab-trainer?category=clothing", "xp": 10 },
+    { "id": "m13-practice", "kind": "practice", "label": { "en": "Shopping Roleplay", "de": "Einkaufs-Rollenspiel" }, "to": "/roleplay?scene=cloth", "xp": 20 },
+    { "id": "m13-checkpoint", "kind": "checkpoint", "label": { "en": "Module 13 Checkpoint", "de": "Modul 13 Prüfung" } }
   ],
   "checkpoint": {
     "moduleType": "a1-checkpoint",

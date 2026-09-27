@@ -17,9 +17,9 @@
     "de": "Beruf angeben, Modalverben für Fähigkeit/Pflicht/Erlaubnis/Wünsche nutzen, Modalsatzklammern bilden."
   },
   "nodes": [
-    { "id": "m12-learn", "type": "learn", "label": { "en": "Modal Verbs", "de": "Modalverben" }, "to": "/grammar?tab=modals", "xp": 10 },
-    { "id": "m12-practice", "type": "practice", "label": { "en": "Tic-Tac-Toe", "de": "Tic-Tac-Toe" }, "to": "/games?game=tictactoe", "xp": 20 },
-    { "id": "m12-checkpoint", "type": "checkpoint", "label": { "en": "Module 12 Checkpoint", "de": "Modul 12 Prüfung" }, "to": "/checkpoint/11", "xp": 50 }
+    { "id": "m12-learn", "kind": "learn", "label": { "en": "Modal Verbs", "de": "Modalverben" }, "to": "/grammar?tab=modals", "xp": 10 },
+    { "id": "m12-practice", "kind": "practice", "label": { "en": "Tic-Tac-Toe", "de": "Tic-Tac-Toe" }, "to": "/games?game=tictactoe", "xp": 20 },
+    { "id": "m12-checkpoint", "kind": "checkpoint", "label": { "en": "Module 12 Checkpoint", "de": "Modul 12 Prüfung" } }
   ],
   "checkpoint": {
     "moduleType": "a1-checkpoint",
