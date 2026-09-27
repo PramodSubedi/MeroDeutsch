@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { migrateLocalStorageToDexie } from '../lib/db';
+import { getDebugMode, setDebugMode, subscribeDebugMode, type DebugMode } from '../lib/debugMode';
 import type { AuthUser, MigrationResult } from '../types';
 import type { Session, User } from '@supabase/supabase-js';
 
@@ -22,6 +23,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [migrationResult, setMigrationResult] = useState<MigrationResult | null>(null);
+  // The QA simulator's mode, held in STATE rather than read inside `useMemo`.
+  // Reading it inline would compute the override once and then never recompute,
+  // so flipping to `guest` would leave every consumer showing the old identity
+  // until something unrelated forced a re-render.
+  const [debugMode, setDebugModeState] = useState<DebugMode>(() => getDebugMode());
+
+  // Keep the mode live: same-tab subscribers plus `storage` events from other
+  // tabs of this origin.
+  useEffect(() => {
+    setDebugModeState(getDebugMode());
+    const sync = () => setDebugModeState(getDebugMode());
+    const unsubscribe = subscribeDebugMode(sync);
+    window.addEventListener('storage', sync);
+    window.addEventListener('mero-debug-mode', sync);
+    return () => {
+      unsubscribe();
+      window.removeEventListener('storage', sync);
+      window.removeEventListener('mero-debug-mode', sync);
+    };
+  }, []);
 
   // Map Supabase User to our AuthUser type
   const mapUser = (sbUser: User | null): AuthUser | null => {
@@ -93,6 +114,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     if (error) throw error;
+
+    // A REAL sign-in is proof that the visitor is not a guest, so any leftover
+    // guest simulation is now stale and must be cleared.
+    //
+    // WHY: the guest override lives in per-origin localStorage and survives
+    // reloads. If an admin left the simulator on `guest` — via the navbar, the
+    // bridge, or a `?adminmode=guest` link — then later reloaded the app
+    // normally, `isAuthenticated` stayed forced to false and every sign-in
+    // silently appeared to do nothing. Clearing here means sign-in can ALWAYS
+    // break out of a stuck simulation, so the tool can never leave someone
+    // locked out of their own account.
+    if (getDebugMode() === 'guest') {
+      setDebugMode('real');
+    }
   }, []);
 
   const logout = useCallback(async () => {
@@ -101,16 +136,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const value = useMemo(
-    () => ({
-      user,
-      isAuthenticated: Boolean(session),
-      isLoading,
-      register,
-      login,
-      logout,
-      migrationResult,
-    }),
-    [session, user, isLoading, register, login, logout, migrationResult]
+    () => {
+      // ── QA simulator integration (the only change in this file) ──────────
+      // In `guest` mode the app must behave as if nobody is signed in. `user`
+      // is nulled as well as flipping the flag, because ~14 components branch
+      // on `user` and several MORE resolve a per-user storage scope from
+      // `user?.userId` (see `scopedKey`, `useA1Path`, `useProgress`). Flipping
+      // `isAuthenticated` alone would leave the UI signed-out while progress,
+      // XP and streak writes still landed in the REAL account's bucket — the
+      // exact failure a simulator exists to prevent.
+      //
+      // The real session is deliberately left intact underneath: it is still in
+      // `session`, Supabase still holds it, and returning to `real` restores
+      // everything with no re-login. That is what makes this a view override
+      // rather than a sign-out.
+      const isGuestSimulation = debugMode === 'guest';
+      const effectiveUser = isGuestSimulation ? null : user;
+
+      return {
+        user: effectiveUser,
+        isAuthenticated: Boolean(session) && !isGuestSimulation,
+        isLoading,
+        register,
+        login,
+        logout,
+        migrationResult,
+      };
+    },
+    [session, user, isLoading, debugMode, register, login, logout, migrationResult]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

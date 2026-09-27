@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, Navigate, useParams } from 'react-router-dom';
 import { useLang } from '../hooks/useLang';
 import { useA1Path } from '../hooks/useA1Path';
 import { A1_CURRICULUM } from '../data/a1Path';
@@ -12,12 +12,32 @@ import { LearningPath } from '../components/learning/LearningPath';
 import { UpgradeToSpine } from '../components/path/UpgradeToSpine';
 import { UnitSpine } from '../components/path/UnitSpine';
 import { PathModeToggle } from '../components/path/PathModeToggle';
+import { CefrComingSoonPanel } from '../components/path/CefrComingSoonPanel';
+import {
+  CEFR_LEVELS_ROUTE,
+  getCefrLevel,
+  isCefrLevelAvailable,
+  parseCefrLevel,
+} from '../data/cefrLevels';
 import { PracticeToolsGrid } from '../components/PracticeToolsGrid';
 import { theme } from '../config/theme';
 
 /**
- * Dedicated Learning Hub at /learn. TIER-SPLIT.
+ * A single CEFR LEVEL's page — `/learn/:levelId` (A1 today, A2/B1 as they
+ * arrive). The chooser lives one level up at `/learn` (CefrLevelIndexPage);
+ * this page is where you actually study.
  *
+ * THE LEVEL IS A ROUTE, NOT A FLAG
+ *   `:levelId` comes from the router, so Back/forward and a pasted link both
+ *   work, and each level is free to become its own screen. An unknown segment
+ *   REDIRECTS to the grid rather than rendering A1 under a URL that claims
+ *   otherwise — a wrong deep link should land somewhere real, not lie.
+ *
+ *   Nothing about the A1 experience changed: the tier split below, the spine,
+ *   the 80% gate, the retry rule, the soft lock. Only the URL moved, and the
+ *   links that mean "back to the path" now point at A1_PATH_ROUTE.
+ *
+ * THE TIER SPLIT (unchanged, inside A1)
  *   Guest            the flat module grid (`LearningPath variant="grid"`) —
  *                    "learn what you like", no rank, no position.
  *   Signed-in, free  the SAME six modules as a DESIGNED roadmap
@@ -36,18 +56,34 @@ import { theme } from '../config/theme';
  * chip, so the free roadmap is a real destination rather than a teaser.
  */
 export function ContinueLearningPage() {
-  usePageTitle('Learn');
+  const { levelId: levelIdParam } = useParams<{ levelId: string }>();
+  // Null for a level that does not exist. Resolved BEFORE the title so a bad
+  // link never flashes this level's content on its way to the grid.
+  const levelId = parseCefrLevel(levelIdParam);
+  usePageTitle(levelId ? `Learn · ${getCefrLevel(levelId).code}` : 'Learn');
   const { langMode } = useLang();
   const { isAuthenticated } = useAuth();
-  // Tier gate. The A1 campaign spine is the Premium curriculum; everyone else
-  // gets the learning-components path. `isLoading` is checked before branching
-  // so the page never flashes the free path at someone who is actually
-  // Premium for the ~100ms the plan read takes.
+  const isDE = langMode === 'german';
+
   const { isPremium, isLoading: planLoading } = usePremium();
   const { getLastModule } = useLastModule();
   const { getPushNode, checkpointBestByUnit, pathMode } = useA1Path();
   const { dueQueue } = useReviewQueue();
-  const isDE = langMode === 'german';
+
+  // Unknown / malformed level. `replace` so Back does not bounce the learner
+  // straight back into the broken URL they arrived with.
+  //
+  // This MUST sit below every hook in the component. It used to be the first
+  // statement, which meant the four hooks below it were skipped on this render
+  // path — and since `:levelId` can go from unknown to valid WITHOUT a remount
+  // (the redirect swaps the param in place), React then saw more hooks than the
+  // previous render and threw "Rendered more hooks than during the previous
+  // render", hard-crashing the learn page. `usePageTitle` above is already
+  // null-safe for the same reason.
+  if (!levelId) return <Navigate to={CEFR_LEVELS_ROUTE} replace />;
+
+  const level = getCefrLevel(levelId);
+  const levelAvailable = isCefrLevelAvailable(levelId);
   // Drives every copy decision on this page: which module strip, which resume
   // label, and whether the header can honestly call the course "linear".
   const isSelf = pathMode === 'self';
@@ -67,10 +103,14 @@ export function ContinueLearningPage() {
   // /dashboard#review-queue whenever anything was due, which meant standing on
   // the spine threw you OUT of the spine — the one page whose entire job is
   // "here is your next step in the course". Due reviews are still surfaced, as
-  // a secondary chip, but the primary action on /learn is the next node.
-  const resumePath = nextNode?.to ?? '/learn';
-  const resumeLabelEn = nextNode ? `Next: ${nextNode.label.en}` : 'Go to path';
-  const resumeLabelDe = nextNode ? `Weiter: ${nextNode.label.de}` : 'Zum Lernpfad';
+  // a secondary chip, but the primary action here is the next node.
+  //
+  // No push node means the whole level is finished, so the honest target is the
+  // LEVEL GRID ("here is what else there is") — not this same page, which a
+  // self-link would make a dead button.
+  const resumePath = nextNode?.to ?? CEFR_LEVELS_ROUTE;
+  const resumeLabelEn = nextNode ? `Next: ${nextNode.label.en}` : 'All levels';
+  const resumeLabelDe = nextNode ? `Weiter: ${nextNode.label.de}` : 'Alle Niveaus';
 
   // "You are here" — the band the push node lives in, plus its gate best score.
   const youAreHere = (() => {
@@ -91,6 +131,34 @@ export function ContinueLearningPage() {
   // path at someone who is actually Premium. Matches PremiumGate's rule.
   if (planLoading) return null;
 
+  // ── COMING-SOON LEVEL (A2 / B1) ─────────────────────────────────────────
+  // Checked BEFORE the tier split, and deliberately tier-independent: A2 is not
+  // free-or-premium, it simply does not exist yet, so gating that screen on the
+  // plan would imply A2 is one plan away when it is a curriculum away. The
+  // "All levels" back link stays (so A1 is always one click from here) and the
+  // only actions are two routes that already exist: A1 and /feedback.
+  if (!levelAvailable) {
+    return (
+      <div className={theme.page.container}>
+        <header className="mb-5">
+          <Link
+            to={CEFR_LEVELS_ROUTE}
+            className="inline-flex items-center gap-1 text-body text-accent-600 hover:text-accent-800 dark:text-accent-300 dark:hover:text-accent-200"
+          >
+            ← {isDE ? 'Alle Niveaus' : 'All levels'}
+          </Link>
+          <p className={`${theme.type.kicker} mt-3`}>
+            {isDE ? `${level.code} · Dein Kurs` : `${level.code} · Your course`}
+          </p>
+          <h1 className={`${theme.type.display} mt-1`}>
+            {isDE ? 'Lernpfad' : 'Learning Path'}
+          </h1>
+        </header>
+        <CefrComingSoonPanel level={level} />
+      </div>
+    );
+  }
+
   // ── FREE TIER: guests + signed-in free ──────────────────────────────────
   // Same page, same routes, same quick-practice row — only the learning
   // surface differs. Guests get the flat grid ("learn what you like");
@@ -102,12 +170,14 @@ export function ContinueLearningPage() {
         <header className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <Link
-              to="/home"
+              to={CEFR_LEVELS_ROUTE}
               className="inline-flex items-center gap-1 text-body text-accent-600 hover:text-accent-800 dark:text-accent-300 dark:hover:text-accent-200"
             >
-              ← {isDE ? 'Zurück zur Startseite' : 'Back to Home'}
+              ← {isDE ? 'Alle Niveaus' : 'All levels'}
             </Link>
-            <p className={`${theme.type.kicker} mt-3`}>{isDE ? 'A1 · Dein Kurs' : 'A1 · Your course'}</p>
+            <p className={`${theme.type.kicker} mt-3`}>
+              {isDE ? `${level.code} · Dein Kurs` : `${level.code} · Your course`}
+            </p>
             <h1 className={`${theme.type.display} mt-1`}>
               {isDE ? 'Lernpfad' : 'Learning Path'}
             </h1>
@@ -167,13 +237,17 @@ export function ContinueLearningPage() {
       <header className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <Link
-            to="/home"
+            to={CEFR_LEVELS_ROUTE}
             className="inline-flex items-center gap-1 text-body text-accent-600 hover:text-accent-800 dark:text-accent-300 dark:hover:text-accent-200"
           >
-            ← {isDE ? 'Zurück zur Startseite' : 'Back to Home'}
+            ← {isDE ? 'Alle Niveaus' : 'All levels'}
           </Link>
-          {/* Editorial voice: kicker names the stage, display names the thing. */}
-          <p className={`${theme.type.kicker} mt-3`}>{isDE ? 'A1 · Dein Kurs' : 'A1 · Your course'}</p>
+          {/* Editorial voice: kicker names the stage, display names the thing.
+              The code comes from the registry, not a literal, so the header
+              cannot say "A1" on a page that is actually showing something else. */}
+          <p className={`${theme.type.kicker} mt-3`}>
+            {isDE ? `${level.code} · Dein Kurs` : `${level.code} · Your course`}
+          </p>
           <h1 className={`${theme.type.display} mt-1`}>
             {isDE ? 'Lernpfad' : 'Learning Path'}
           </h1>

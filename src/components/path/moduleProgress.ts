@@ -84,3 +84,90 @@ export function phaseStateWord(phase: A1UnitPhase, passed: boolean, isDE: boolea
       return isDE ? 'Offen' : 'Open';
   }
 }
+
+/* ── whole-level rollup (the /learn level grid + the level switcher) ──────── */
+
+/**
+ * One number for a whole level, used by the /learn level grid and the level
+ * switcher on a level page. Both surfaces need the same three facts — how many
+ * modules are finished, what share that is, and what colour the ring should be
+ * — so they call this instead of each keeping their own tally.
+ */
+export interface CefrLevelProgress {
+  /** Modules at 100% (learn nodes + checkpoint), per the rule above. */
+  done: number;
+  /** Modules in the level. */
+  total: number;
+  /**
+   * Share of STEPS, 0..100. The finer-grained figure: it moves after a single
+   * lesson, where the module count does not.
+   */
+  pct: number;
+  /**
+   * Share of MODULES, 0..100 — the same unit as `done / total`.
+   *
+   * Both numbers exist because they disagree by design, and a surface that
+   * shows one next to the other must pick the matching pair: a 33% steps ring
+   * beside "0 / 15 modules done" reads as a broken widget, not as two truths.
+   * The level grid pairs this with `done / total`; the A1 spine keeps its own
+   * per-module step rings, which have no count beside them.
+   */
+  modulePct: number;
+  /**
+   * The ring's colour family, taken from the learner's real position: the
+   * phase of the first module that is not yet finished, or 'done'. Reusing
+   * `getUnitPhase` is the point — the grid's ring then means exactly what the
+   * same-coloured ring means on the spine.
+   */
+  phase: A1UnitPhase;
+}
+
+/**
+ * Roll a level's modules up into a single progress figure.
+ *
+ * The per-module maths is NOT reimplemented: every module goes through
+ * `computeModuleProgress`, which is the function the spine's own rings are
+ * drawn from. A grid that disagreed with the roadmap it links to would be
+ * worse than no figure at all.
+ */
+export function summarizeLevelProgress(
+  units: A1Unit[],
+  isNodeComplete: (node: PathNode) => boolean,
+  isCheckpointComplete: (unitIndex: number) => boolean,
+  getUnitPhase: (unitIndex: number) => A1UnitPhase,
+): CefrLevelProgress {
+  let done = 0;
+  let stepsDone = 0;
+  let stepsTotal = 0;
+  let firstIncomplete: A1Unit | undefined;
+
+  for (const unit of units) {
+    const { done: d, total } = computeModuleProgress(
+      unit,
+      isNodeComplete,
+      isCheckpointComplete,
+    );
+    stepsDone += d;
+    stepsTotal += total;
+    // A module counts as finished only at 100%, so a learner sees the figure
+    // jump by one whole module at a time instead of creeping up on a
+    // half-finished lesson.
+    if (total > 0 && d === total) done += 1;
+    else if (!firstIncomplete) firstIncomplete = unit;
+  }
+
+  return {
+    done,
+    total: units.length,
+    // Share of STEPS, not of modules: with 15 modules that is far more
+    // responsive in the first few lessons than a module count that sits on 0.
+    pct: stepsTotal > 0 ? Math.round((stepsDone / stepsTotal) * 100) : 0,
+    modulePct: units.length > 0 ? Math.round((done / units.length) * 100) : 0,
+    phase:
+      done === units.length
+        ? 'done'
+        : firstIncomplete
+          ? getUnitPhase(firstIncomplete.index)
+          : 'available',
+  };
+}

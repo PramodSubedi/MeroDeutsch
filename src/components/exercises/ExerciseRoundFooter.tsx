@@ -10,6 +10,7 @@
 
 import { theme } from '../../config/theme';
 import { useLang } from '../../hooks/useLang';
+import { WhyButton } from '../chat/WhyButton';
 
 /** The subset of ExerciseSession this footer needs (structural typing). */
 interface RoundSessionView {
@@ -69,11 +70,18 @@ export function ExerciseRoundFooter({
         )}
       </div>
       {showSummary && finished && (
-        <p className="mt-3 text-center text-body font-semibold text-ink-600 dark:text-ink-300">
-          {isDE
-            ? `Runde beendet — ${session.score}/${session.total} richtig.`
-            : `Round complete — ${session.score}/${session.total} correct.`}
-        </p>
+        <>
+          <p className="mt-3 text-center text-body font-semibold text-ink-600 dark:text-ink-300">
+            {isDE
+              ? `Runde beendet — ${session.score}/${session.total} richtig.`
+              : `Round complete — ${session.score}/${session.total} correct.`}
+          </p>
+          {/* Ask the companion to explain a mistake. Only offered when the
+              learner actually missed something, and only rendered at all when
+              the review queue is non-empty (WhyButton returns null otherwise),
+              so a perfect round never shows a button that would do nothing. */}
+          {session.score < session.total && <WhyButton className="mx-auto mt-3" />}
+        </>
       )}
     </div>
   );

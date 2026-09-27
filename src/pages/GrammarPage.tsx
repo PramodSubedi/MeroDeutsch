@@ -25,7 +25,7 @@ export function GrammarPage() {
   // ?tab= deep-link support — /learn spine bonus chips link here with
   // ?tab=modals / ?tab=stem. Unknown params fall back to the first tab.
   const [searchParams, setSearchParams] = useSearchParams();
-  const GRAMMAR_TABS = ['sein', 'haben', 'weakVerb', 'stem', 'modals', 'prefix', 'cases', 'accusative', 'bridge'] as const;
+  const GRAMMAR_TABS = ['sein', 'haben', 'weakVerb', 'conjugation', 'stem', 'v2', 'modals', 'prefix', 'cases', 'accusative', 'bridge'] as const;
   type GrammarTab = (typeof GRAMMAR_TABS)[number];
   const paramTab = searchParams.get('tab');
   const [tab, setTabState] = useState<GrammarTab>(
@@ -103,7 +103,9 @@ export function GrammarPage() {
           { id: 'sein', label: 'sein', icon: BookText },
           { id: 'haben', label: 'haben', icon: Check },
           { id: 'weakVerb', label: 'machen', icon: RefreshCw },
+          { id: 'conjugation', label: isDE ? 'Konjugation' : 'Conjugation', icon: RefreshCw },
           { id: 'stem', label: isDE ? 'Stammwechsel' : 'Stem change', icon: Shuffle },
+          { id: 'v2', label: isDE ? 'V2-Wortstellung' : 'V2 Word Order', icon: GitBranch },
           { id: 'modals', label: isDE ? 'Modalverben' : 'Modals', icon: Scale },
           { id: 'prefix', label: isDE ? 'Vorsilben' : 'Prefixes', icon: Split },
           { id: 'cases', label: isDE ? 'Fälle' : 'Cases', icon: Layout },
@@ -124,6 +126,195 @@ export function GrammarPage() {
                 <div className="mt-1 text-ink-600 dark:text-ink-300">{isDE ? c.de : c.en}</div>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* ===== NEW: Conjugation Reference Panel (for Unit 06) ===== */}
+      {tab === 'conjugation' && (
+        <div className={`${theme.panel.surface} mb-6`}>
+          <h2 className="text-lg font-semibold">
+            {isDE ? 'Präsens-Konjugation: Regular & Irregular Verben' : 'Present Tense Conjugation: Regular & Irregular Verbs'}
+          </h2>
+          <p className="mt-1 text-body text-ink-500 dark:text-ink-400">
+            {isDE
+              ? 'Regelmäßige Verben folgen einem festen Endungsmuster. Unregelmäßige Verben (sein, haben) müssen auswendig gelernt werden.'
+              : 'Regular verbs follow a fixed ending pattern. Irregular verbs (sein, haben) must be memorized.'}
+          </p>
+          
+          {/* Regular verb endings table */}
+          <div className="mt-4 overflow-x-auto">
+            <table className="min-w-full text-sm">
+              <thead>
+                <tr className="border-b border-accent-200 dark:border-accent-700">
+                  <th className="text-left p-2 font-bold text-ink-700 dark:text-ink-300">Pronoun</th>
+                  <th className="text-left p-2 font-bold text-ink-700 dark:text-ink-300">Ending</th>
+                  <th className="text-left p-2 font-bold text-ink-700 dark:text-ink-300">{isDE ? 'wohnen (to live)' : 'wohnen (to live)'}</th>
+                  <th className="text-left p-2 font-bold text-ink-700 dark:text-ink-300">{isDE ? 'lernen (to learn)' : 'lernen (to learn)'}</th>
+                  <th className="text-left p-2 font-bold text-ink-700 dark:text-ink-300">{isDE ? 'machen (to do/make)' : 'machen (to do/make)'}</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-accent-100 dark:divide-accent-800">
+                <tr><td className="p-2 font-semibold">ich</td><td className="p-2">-e</td><td className="p-2 font-mono">wohne</td><td className="p-2 font-mono">lerne</td><td className="p-2 font-mono">mache</td></tr>
+                <tr className="bg-accent-50/50 dark:bg-accent-950/30"><td className="p-2 font-semibold">du</td><td className="p-2">-st</td><td className="p-2 font-mono">wohnst</td><td className="p-2 font-mono">lernst</td><td className="p-2 font-mono">machst</td></tr>
+                <tr><td className="p-2 font-semibold">er/sie/es</td><td className="p-2">-t</td><td className="p-2 font-mono">wohnt</td><td className="p-2 font-mono">lernt</td><td className="p-2 font-mono">macht</td></tr>
+                <tr className="bg-accent-50/50 dark:bg-accent-950/30"><td className="p-2 font-semibold">wir</td><td className="p-2">-en</td><td className="p-2 font-mono">wohnen</td><td className="p-2 font-mono">lernen</td><td className="p-2 font-mono">machen</td></tr>
+                <tr><td className="p-2 font-semibold">ihr</td><td className="p-2">-t</td><td className="p-2 font-mono">wohnt</td><td className="p-2 font-mono">lernt</td><td className="p-2 font-mono">macht</td></tr>
+                <tr className="bg-accent-50/50 dark:bg-accent-950/30"><td className="p-2 font-semibold">sie/Sie</td><td className="p-2">-en</td><td className="p-2 font-mono">wohnen</td><td className="p-2 font-mono">lernen</td><td className="p-2 font-mono">machen</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          {/* Irregular verbs: sein & haben */}
+          <div className="mt-6 grid gap-4 md:grid-cols-2">
+            <div className="rounded-md border border-warning-200 bg-warning-50/50 p-4 dark:border-warning-800 dark:bg-warning-950/30">
+              <h3 className="font-bold text-warning-700 dark:text-warning-400">sein (to be) — HIGHLY IRREGULAR</h3>
+              <div className="mt-2 text-sm font-mono space-y-1">
+                <div>ich <span className="font-bold text-accent-700 dark:text-accent-300">bin</span></div>
+                <div>du <span className="font-bold text-accent-700 dark:text-accent-300">bist</span></div>
+                <div>er/sie/es <span className="font-bold text-accent-700 dark:text-accent-300">ist</span></div>
+                <div>wir <span className="font-bold text-accent-700 dark:text-accent-300">sind</span></div>
+                <div>ihr <span className="font-bold text-accent-700 dark:text-accent-300">seid</span></div>
+                <div>sie/Sie <span className="font-bold text-accent-700 dark:text-accent-300">sind</span></div>
+              </div>
+            </div>
+            <div className="rounded-md border border-warning-200 bg-warning-50/50 p-4 dark:border-warning-800 dark:bg-warning-950/30">
+              <h3 className="font-bold text-warning-700 dark:text-warning-400">haben (to have) — IRREGULAR du/er</h3>
+              <div className="mt-2 text-sm font-mono space-y-1">
+                <div>ich <span className="font-bold text-accent-700 dark:text-accent-300">habe</span></div>
+                <div>du <span className="font-bold text-accent-700 dark:text-accent-300">hast</span> (not habst)</div>
+                <div>er/sie/es <span className="font-bold text-accent-700 dark:text-accent-300">hat</span> (not habt)</div>
+                <div>wir <span className="font-bold text-accent-700 dark:text-accent-300">haben</span></div>
+                <div>ihr <span className="font-bold text-accent-700 dark:text-accent-300">habt</span></div>
+                <div>sie/Sie <span className="font-bold text-accent-700 dark:text-accent-300">haben</span></div>
+              </div>
+            </div>
+          </div>
+
+          {/* Stem-changing verbs reference */}
+          <div className="mt-6">
+            <h3 className="font-bold text-ink-700 dark:text-ink-300">
+              {isDE ? 'Stammwechsel-Verben (Vokalwechsel bei du/er)' : 'Stem-Changing Verbs (vowel shift for du/er)'}
+            </h3>
+            <p className="mt-1 text-body text-ink-500 dark:text-ink-400">
+              {isDE
+                ? 'Diese Verben ändern ihren Stammvokal NUR in der 2. und 3. Person Singular:'
+                : 'These verbs change their stem vowel ONLY in 2nd/3rd person singular:'}
+            </p>
+            <div className="mt-3 grid gap-3 sm:grid-cols-3">
+              {[
+                { group: 'e → i', demo: ['geben', 'gibst', 'gibt'], ex: 'er gibt' },
+                { group: 'e → ie', demo: ['lesen', 'liest', 'liest'], ex: 'sie liest' },
+                { group: 'a → ä', demo: ['fahren', 'fährst', 'fährt'], ex: 'er fährt' },
+              ].map((g) => (
+                <div key={g.group} className="rounded-md border border-accent-100 bg-accent-50/60 p-4 text-body dark:border-accent-900/40 dark:bg-accent-950/30">
+                  <div className="font-bold text-accent-700 dark:text-accent-300">{g.group}</div>
+                  <div className="mt-2 text-ink-700 dark:text-ink-200">
+                    {g.demo[0]} →{' '}
+                    <span className="font-bold text-accent-700 dark:text-accent-300">{g.demo[1]}</span>
+                    {' / '}
+                    <span className="font-bold text-accent-700 dark:text-accent-300">{g.demo[2]}</span>
+                  </div>
+                  <div className="mt-1 text-meta text-ink-500 dark:text-ink-400">
+                    {isDE ? `Beispiel: ${g.ex}` : `Example: ${g.ex}`}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <p className="mt-2 text-meta text-ink-500 dark:text-ink-400">
+              {isDE
+                ? 'Nur du / er / sie / es — wir, ihr, sie/Sie bleiben regelmäßig.'
+                : 'Only du / er / sie / es — wir, ihr, sie/Sie stay regular.'}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* ===== NEW: V2 Word Order Reference Panel (for Unit 07) ===== */}
+      {tab === 'v2' && (
+        <div className={`${theme.panel.surface} mb-6`}>
+          <h2 className="text-lg font-semibold">
+            {isDE ? 'V2-Wortstellung: Das Verb auf Position 2' : 'V2 Word Order: Verb in Position 2'}
+          </h2>
+          <p className="mt-1 text-body text-ink-500 dark:text-ink-400">
+            {isDE
+              ? 'Im deutschen Hauptsatz steht das konjugierte Verb IMMER auf Position 2. Was auch immer Position 1 einnimmt (Subjekt, Zeit, Ort), das Verb bleibt auf Position 2.'
+              : 'In German main clauses, the conjugated verb is ALWAYS in Position 2. Whatever occupies Position 1 (subject, time, place), the verb stays in Position 2.'}
+          </p>
+
+          {/* V2 Position Table */}
+          <div className="mt-4 overflow-x-auto">
+            <table className="min-w-full text-sm">
+              <thead>
+                <tr className="border-b border-accent-200 dark:border-accent-700">
+                  <th className="text-left p-2 font-bold text-ink-700 dark:text-ink-300">Pos 1</th>
+                  <th className="text-left p-2 font-bold text-ink-700 dark:text-ink-300">Pos 2 (VERB)</th>
+                  <th className="text-left p-2 font-bold text-ink-700 dark:text-ink-300">Pos 3 (Subject)</th>
+                  <th className="text-left p-2 font-bold text-ink-700 dark:text-ink-300">Rest</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-accent-100 dark:divide-accent-800">
+                <tr className="bg-success-50/50 dark:bg-success-950/20"><td className="p-2 font-bold">Ich</td><td className="p-2 font-bold text-success-700 dark:text-success-400">trinke</td><td className="p-2">—</td><td className="p-2">heute Tee.</td></tr>
+                <tr><td className="p-2 font-bold">Heute</td><td className="p-2 font-bold text-success-700 dark:text-success-400">trinke</td><td className="p-2 font-bold">ich</td><td className="p-2">Tee.</td></tr>
+                <tr className="bg-accent-50/50 dark:bg-accent-950/30"><td className="p-2 font-bold">In Berlin</td><td className="p-2 font-bold text-success-700 dark:text-success-400">wohnt</td><td className="p-2 font-bold">meine Schwester</td><td className="p-2">seit zwei Jahren.</td></tr>
+                <tr><td className="p-2 font-bold">Gestern</td><td className="p-2 font-bold text-success-700 dark:text-success-400">war</td><td className="p-2 font-bold">ich</td><td className="p-2">müde.</td></tr>
+                <tr className="bg-accent-50/50 dark:bg-accent-950/30"><td className="p-2 font-bold">Morgen</td><td className="p-2 font-bold text-success-700 dark:text-success-400">fahre</td><td className="p-2 font-bold">ich</td><td className="p-2">nach München.</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          {/* Inversion Rule Explanation */}
+          <div className="mt-6 p-4 rounded-md border border-success-200 bg-success-50/50 dark:border-success-800 dark:bg-success-950/20">
+            <h3 className="font-bold text-success-700 dark:text-success-400">
+              {isDE ? 'Inversionsregel: Zeit/Ort vorne = Subjekt rutscht nach Pos 3' : 'Inversion Rule: Time/Place first = Subject slides to Pos 3'}
+            </h3>
+            <div className="mt-3 grid gap-3 sm:grid-cols-2">
+              <div>
+                <p className="font-semibold text-ink-700 dark:text-ink-300">{isDE ? 'Standard (Subjekt zuerst):' : 'Standard (Subject first):'}</p>
+                <p className="mt-1 font-mono text-accent-700 dark:text-accent-300">Ich lerne heute Deutsch.</p>
+                <p className="mt-1 text-meta text-ink-500">Pos 1: Ich | Pos 2: lerne | Pos 3: heute Deutsch</p>
+              </div>
+              <div>
+                <p className="font-semibold text-ink-700 dark:text-ink-300">{isDE ? 'Invertiert (Zeit zuerst):' : 'Inverted (Time first):'}</p>
+                <p className="mt-1 font-mono text-success-700 dark:text-success-400">Heute lerne ich Deutsch.</p>
+                <p className="mt-1 text-meta text-ink-500">Pos 1: Heute | Pos 2: lerne | Pos 3: ich | Pos 4: Deutsch</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Trilingual Comparison */}
+          <div className="mt-6">
+            <h3 className="font-bold text-ink-700 dark:text-ink-300">
+              {isDE ? 'Trilingualer Vergleich' : 'Trilingual Comparison'}
+            </h3>
+            <div className="mt-3 overflow-x-auto">
+              <table className="min-w-full text-sm">
+                <thead>
+                  <tr className="border-b border-accent-200 dark:border-accent-700">
+                    <th className="text-left p-2 font-bold">Deutsch</th>
+                    <th className="text-left p-2 font-bold">English</th>
+                    <th className="text-left p-2 font-bold">Nepali</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-accent-100 dark:divide-accent-800">
+                  <tr><td className="p-2 font-mono">Heute ist Montag.</td><td className="p-2">Today is Monday.</td><td className="p-2">आज सोमबार हो।</td></tr>
+                  <tr className="bg-accent-50/50"><td className="p-2 font-mono">Gestern war Sonntag.</td><td className="p-2">Yesterday was Sunday.</td><td className="p-2">हिजो आइतबार थियो।</td></tr>
+                  <tr><td className="p-2 font-mono">Morgen ist Dienstag.</td><td className="p-2">Tomorrow is Tuesday.</td><td className="p-2">भोली मंगलबार हो।</td></tr>
+                  <tr className="bg-accent-50/50"><td className="p-2 font-mono">In der Nacht schlafe ich.</td><td className="p-2">At night I sleep.</td><td className="p-2">राति म सुत्छु।</td></tr>
+                  <tr><td className="p-2 font-mono">Heute Morgen war ich müde.</td><td className="p-2">This morning I was tired.</td><td className="p-2">आज बिहान म थकित थिएँ।</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Common Trap */}
+          <div className="mt-4 p-3 rounded-md border border-danger-200 bg-danger-50/50 dark:border-danger-800 dark:bg-danger-950/30">
+            <p className="font-bold text-danger-700 dark:text-danger-400">⚠️ {isDE ? 'Fettnäpfchen' : 'Trap'}: {isDE ? '"Heute ich lerne" ist FALSCH!' : '"Today I learn" is WRONG in German!'}</p>
+            <p className="mt-1 text-body text-ink-700 dark:text-ink-300">
+              {isDE
+                ? 'Richtig: "Heute lerne ich." — Das Verb MUSS auf Position 2 bleiben!'
+                : 'Correct: "Heute lerne ich." — The verb MUST stay in Position 2!'}
+            </p>
           </div>
         </div>
       )}

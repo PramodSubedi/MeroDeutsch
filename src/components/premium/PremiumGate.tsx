@@ -30,6 +30,7 @@ import { useLang } from '../../hooks/useLang';
 import { usePremium } from '../../hooks/usePremium';
 import { useAuth } from '../../hooks/useAuth';
 import { theme } from '../../config/theme';
+import { A1_PATH_ROUTE } from '../../data/cefrLevels';
 
 export function PremiumGate({ children }: { children: ReactNode }) {
   const { langMode } = useLang();
@@ -70,7 +71,7 @@ export function PremiumGate({ children }: { children: ReactNode }) {
                 {isDE ? 'Anmelden' : 'Sign in'}
               </Link>
             )}
-            <Link to="/learn" className={`${theme.button.secondary} inline-flex min-h-[44px]`}>
+            <Link to={A1_PATH_ROUTE} className={`${theme.button.secondary} inline-flex min-h-[44px]`}>
               {isDE ? 'Zurück zum Lernpfad' : 'Back to the learning path'}
             </Link>
           </div>

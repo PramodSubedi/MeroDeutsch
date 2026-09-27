@@ -224,6 +224,46 @@ const M: MigrationSpec[] = [
     seed: { 'uhrzeit-item': 21, 'conversation-def': 25, 'conversation-vocab': 219 },
     note: 'canonical version',
   },
+  // 021 is the last spec. The four admin migrations below are recorded here so
+  // the drift check actually covers them: without specs, a migration file that
+  // silently failed to apply would report as neither applied nor missing, and
+  // the summary would stay green.
+  {
+    file: '20260929000000_add_profiles_role_and_banned.sql',
+    checks: [
+      { kind: 'column', table: 'profiles', name: 'role' },
+      { kind: 'column', table: 'profiles', name: 'banned_at' },
+      { kind: 'function', name: 'is_active_admin', args: '' },
+      { kind: 'function', name: 'protect_profile_privilege', args: '' },
+    ],
+  },
+  {
+    file: '20260929010000_admin_tables.sql',
+    checks: [
+      { kind: 'table', name: 'curriculum_versions' },
+      { kind: 'table', name: 'admin_audit_log' },
+      { kind: 'table', name: 'app_config' },
+    ],
+  },
+  {
+    // NOTE: `admin_table_counts` also carries the anon revoke, so a fresh replay
+    // of this ONE file is self-consistent. It used to assert clean and FAIL on a
+    // fresh database, because the function was granted to PUBLIC (which `anon`
+    // belongs to) and only a later migration revoked it by name.
+    file: '20260929020000_admin_table_counts.sql',
+    checks: [{ kind: 'function', name: 'admin_table_counts', args: '' }],
+  },
+  {
+    // The guard functions must exist AND be SECURITY INVOKER. `prosecdef` is not
+    // expressible as a check kind, so this spec only proves presence; the
+    // definer/invoker assertion lives inside the migration itself, where it
+    // fails loudly on apply.
+    file: '20260929025000_fix_privilege_guard_use_session_user.sql',
+    checks: [
+      { kind: 'function', name: 'protect_profile_privilege', args: '' },
+      { kind: 'function', name: 'protect_profile_plan', args: '' },
+    ],
+  },
   {
     file: '021_review_queue_error_tag.sql',
     checks: [{ kind: 'column', table: 'review_queue', name: 'error_tag' }],

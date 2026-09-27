@@ -37,6 +37,7 @@ import { MultipleChoice } from '../components/exercises/MultipleChoice';
 import { theme } from '../config/theme';
 import { GenderBadge } from '../components/ui/GenderBadge';
 import { hasSpecificHint } from '../data/hints';
+import { A1_PATH_ROUTE } from '../data/cefrLevels';
 import type { AlphabetItem, ArticleItem, CalendarItem, GreetingItem, NumberItem, VocabEntry } from '../types';
 import type { GrammarDrill } from '../types/curriculum';
 
@@ -254,6 +255,29 @@ function buildQuestions(
         );
         break;
       }
+      case 'word-order': {
+        // The `wordOrder` pool, read through the same grammar-drill loader —
+        // same content_type, so no new service method and no new fetch path.
+        // Every option is a full sentence, so the learner judges the whole
+        // arrangement instead of spotting a missing word. TTS safety (C6): the
+        // prompt is the English instruction and the German sentences are NOT
+        // spoken until after the answer is locked, because two of the three
+        // options are grammatical-looking decoys.
+        const drills = data.grammar.wordOrder ?? [];
+        pick(drills, spec.count, (g) => `wordorder:${g.prompt}:${g.correct}`).forEach((g) =>
+          out.push({
+            key: `wordorder:${unitIndex}:${g.prompt}:${g.correct}`,
+            prompt: g.prompt,
+            speakPrompt: g.prompt,
+            speakAfter: g.correct,
+            options: [...g.options],
+            correctAnswer: g.correct,
+            source: 'word-order',
+            hintReason: 'wordOrder',
+          })
+        );
+        break;
+      }
       case 'calendar-translation':
         pick(data.calendar, spec.count, (c) => `calendar:${c.de}`).forEach((c) =>
           out.push({
@@ -378,7 +402,7 @@ function CheckpointNoGate({ isDE, code }: { isDE: boolean; code: string }) {
             ? 'Dieses Modul hat keine Pflichtprüfung – es ist optionale Unterstützung.'
             : 'This module has no checkpoint — it is optional support content, no gate required.'}
         </p>
-        <Link to="/learn" className={`${theme.button.primary} mt-5`}>
+        <Link to={A1_PATH_ROUTE} className={`${theme.button.primary} mt-5`}>
           {isDE ? 'Zurück zum Lernpfad' : 'Back to learning path'}
         </Link>
       </div>
@@ -631,7 +655,7 @@ export function A1CheckpointPage() {
                 ? `Dieses Band ist gesperrt. Bestehe Pforte ${prevCode}, um dieses Band freizuschalten.`
                 : `This band is locked. Pass Gate ${prevCode} to unlock it.`}
             </p>
-            <Link to="/learn" className={`${theme.button.primary} mt-4 inline-flex min-h-[44px]`}>
+            <Link to={A1_PATH_ROUTE} className={`${theme.button.primary} mt-4 inline-flex min-h-[44px]`}>
               {isDE ? 'Zurück zum Lernpfad' : 'Back to learning path'}
             </Link>
           </div>
@@ -696,7 +720,7 @@ export function A1CheckpointPage() {
           >
             {isDE ? 'Puffer starten' : 'Start checkpoint'}
           </button>
-          <Link to="/learn" className={`${theme.button.secondary} mt-3 w-full text-center`}>
+          <Link to={A1_PATH_ROUTE} className={`${theme.button.secondary} mt-3 w-full text-center`}>
             {isDE ? 'Zurück zum Lernpfad' : 'Back to learning path'}
           </Link>
         </div>
@@ -758,7 +782,7 @@ export function A1CheckpointPage() {
             <button type="button" onClick={retry} className={`${theme.button.primary} w-full`}>
               {isDE ? 'Erneut versuchen' : 'Retry'}
             </button>
-            <Link to="/learn" className={`${theme.button.secondary} w-full text-center`}>
+            <Link to={A1_PATH_ROUTE} className={`${theme.button.secondary} w-full text-center`}>
               {isDE ? 'Zurück zum Lernpfad' : 'Back to map'}
             </Link>
           </div>
@@ -830,7 +854,7 @@ export function A1CheckpointPage() {
       />
       {/* Footer with Back + engine-driven Next/Finish */}
       <div className="mx-auto mt-3 flex max-w-3xl justify-between gap-2 px-1">
-        <Link to="/learn" className={theme.button.secondary}>
+        <Link to={A1_PATH_ROUTE} className={theme.button.secondary}>
           {isDE ? 'Zurück' : 'Back'}
         </Link>
         {session.locked && (

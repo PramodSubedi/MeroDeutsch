@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, lazy, Suspense } from 'react';
 import { Menu, Volume2, VolumeX } from 'lucide-react';
 import { theme } from '../config/theme';
 import { getModuleRoutes } from '../config/modules';
@@ -25,6 +25,16 @@ import { LanguageToggle } from './LanguageToggle';
 import { LevelUpModal } from './LevelUpModal';
 import { useMilestoneToast } from '../hooks/useMilestoneToast';
 import { A1PathVisitTracker } from './path/A1PathVisitTracker';
+
+/**
+ * The AI companion is a SECONDARY surface, but a static import would pull
+ * `marked` + `zustand` into the main chunk and charge every visitor ~50 kB for
+ * a feature most never open. Lazy + a null fallback keeps it out of the
+ * critical path; the launcher simply appears a moment later.
+ */
+const ChatSidebar = lazy(() =>
+  import('./chat/ChatSidebar').then((m) => ({ default: m.ChatSidebar })),
+);
 import { subscribeDailySessionActive } from '../lib/dailySessionSignal';
 
 /**
@@ -307,6 +317,13 @@ export function Layout() {
       {/* Footer rides the content column with the header + main (ml inset) */}
       <Footer className={railInset} />
       <BottomNav />
+
+      {/* AI learning companion ("Mero"). Renders nothing outside
+          learn/practice/checkpoint routes, and starts COLLAPSED so it never
+          interrupts an active quiz (see ChatSidebar's own route guard). */}
+      <Suspense fallback={null}>
+        <ChatSidebar />
+      </Suspense>
     </div>
   );
 }

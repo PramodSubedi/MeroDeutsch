@@ -1877,6 +1877,874 @@
         "sort": 3
       },
       {
+        "id": "grammar-modals-4",
+        "payload": {
+          "prompt": "Ihr ___ jetzt gehen. (müssen)",
+          "options": [
+            "müsst",
+            "musst",
+            "müssen"
+          ],
+          "correct": "müsst",
+          "category": "modals"
+        },
+        "sort": 4
+      },
+      {
+        "id": "grammar-modals-5",
+        "payload": {
+          "prompt": "Sie ___ gut sprechen. (können)",
+          "options": [
+            "können",
+            "könnt",
+            "kann"
+          ],
+          "correct": "können",
+          "category": "modals"
+        },
+        "sort": 5
+      },
+      {
+        "id": "grammar-modals-6",
+        "payload": {
+          "prompt": "Ich ___ nicht kommen. (wollen)",
+          "options": [
+            "will",
+            "wollen",
+            "willst"
+          ],
+          "correct": "will",
+          "category": "modals"
+        },
+        "sort": 6
+      },
+      {
+        "id": "grammar-modals-7",
+        "payload": {
+          "prompt": "Du ___ das machen. (sollen)",
+          "options": [
+            "sollst",
+            "soll",
+            "sollen"
+          ],
+          "correct": "sollst",
+          "category": "modals"
+        },
+        "sort": 7
+      },
+      {
+        "id": "grammar-modals-8",
+        "payload": {
+          "prompt": "Er ___ ein Gespräch führen. (können)",
+          "options": [
+            "kann",
+            "könnt",
+            "können"
+          ],
+          "correct": "kann",
+          "category": "modals"
+        },
+        "sort": 8
+      },
+      {
+        "id": "grammar-modals-9",
+        "payload": {
+          "prompt": "Wir ___ hier bleiben. (müssen)",
+          "options": [
+            "müssen",
+            "müsst",
+            "muss"
+          ],
+          "correct": "müssen",
+          "category": "modals"
+        },
+        "sort": 9
+      },
+      {
+        "id": "grammar-v2-0",
+        "payload": {
+          "prompt": "Heute ___ ich Deutsch. (lernen)",
+          "options": [
+            "lerne",
+            "lernst",
+            "lernt"
+          ],
+          "correct": "lerne",
+          "category": "v2"
+        },
+        "sort": 0
+      },
+      {
+        "id": "grammar-v2-1",
+        "payload": {
+          "prompt": "In der Nacht ___ ich. (schlafen)",
+          "options": [
+            "schlafe",
+            "schläft",
+            "schlafen"
+          ],
+          "correct": "schlafe",
+          "category": "v2"
+        },
+        "sort": 1
+      },
+      {
+        "id": "grammar-v2-2",
+        "payload": {
+          "prompt": "Morgen ___ wir nach Berlin. (fahren)",
+          "options": [
+            "fahren",
+            "fahrt",
+            "fährt"
+          ],
+          "correct": "fahren",
+          "category": "v2"
+        },
+        "sort": 2
+      },
+      {
+        "id": "grammar-v2-3",
+        "payload": {
+          "prompt": "___ ist Montag. (today)",
+          "options": [
+            "Heute",
+            "Ich",
+            "Montag"
+          ],
+          "correct": "Heute",
+          "category": "v2"
+        },
+        "sort": 3
+      },
+      {
+        "id": "grammar-v2-4",
+        "payload": {
+          "prompt": "___ trinke ich Kaffee. (tomorrow)",
+          "options": [
+            "Morgen",
+            "Ich",
+            "Kaffee"
+          ],
+          "correct": "Morgen",
+          "category": "v2"
+        },
+        "sort": 4
+      },
+      {
+        "id": "grammar-v2-5",
+        "payload": {
+          "prompt": "Am Montag ___ er zur Schule. (gehen)",
+          "options": [
+            "geht",
+            "gehe",
+            "gehst"
+          ],
+          "correct": "geht",
+          "category": "v2"
+        },
+        "sort": 5
+      },
+      {
+        "id": "grammar-accusative-0",
+        "payload": {
+          "prompt": "Ich schreibe ___ Brief.",
+          "options": [
+            "einen",
+            "ein",
+            "keinen"
+          ],
+          "correct": "einen",
+          "category": "accusative"
+        },
+        "sort": 0
+      },
+      {
+        "id": "grammar-accusative-1",
+        "payload": {
+          "prompt": "Ich trinke ___ Kaffee.",
+          "options": [
+            "einen",
+            "ein",
+            "der"
+          ],
+          "correct": "einen",
+          "category": "accusative"
+        },
+        "sort": 1
+      },
+      {
+        "id": "grammar-accusative-2",
+        "payload": {
+          "prompt": "Ich kaufe ___ Apfel.",
+          "options": [
+            "einen",
+            "ein",
+            "keine"
+          ],
+          "correct": "einen",
+          "category": "accusative"
+        },
+        "sort": 2
+      },
+      {
+        "id": "grammar-accusative-3",
+        "payload": {
+          "prompt": "Ich habe ___ Hund.",
+          "options": [
+            "keinen",
+            "kein",
+            "eine"
+          ],
+          "correct": "keinen",
+          "category": "accusative"
+        },
+        "sort": 3
+      },
+      {
+        "id": "grammar-accusative-4",
+        "payload": {
+          "prompt": "Ich lese ___ Buch.",
+          "options": [
+            "ein",
+            "einen",
+            "keine"
+          ],
+          "correct": "ein",
+          "category": "accusative"
+        },
+        "sort": 4
+      },
+      {
+        "id": "grammar-accusative-5",
+        "payload": {
+          "prompt": "Ich trinke ___ Wasser.",
+          "options": [
+            "kein",
+            "einen",
+            "eine"
+          ],
+          "correct": "kein",
+          "category": "accusative"
+        },
+        "sort": 5
+      },
+      {
+        "id": "grammar-accusative-6",
+        "payload": {
+          "prompt": "Ich schreibe ___ E-Mail.",
+          "options": [
+            "eine",
+            "einen",
+            "ein"
+          ],
+          "correct": "eine",
+          "category": "accusative"
+        },
+        "sort": 6
+      },
+      {
+        "id": "grammar-accusative-7",
+        "payload": {
+          "prompt": "Ich mag ___ Salat.",
+          "options": [
+            "einen",
+            "ein",
+            "kein"
+          ],
+          "correct": "einen",
+          "category": "accusative"
+        },
+        "sort": 7
+      },
+      {
+        "id": "grammar-kein-0",
+        "payload": {
+          "prompt": "Ich habe ___ Tisch.",
+          "options": [
+            "keinen",
+            "kein",
+            "nicht"
+          ],
+          "correct": "keinen",
+          "category": "kein"
+        },
+        "sort": 0
+      },
+      {
+        "id": "grammar-kein-1",
+        "payload": {
+          "prompt": "Ich habe ___ Zeit.",
+          "options": [
+            "keine",
+            "kein",
+            "nicht"
+          ],
+          "correct": "keine",
+          "category": "kein"
+        },
+        "sort": 1
+      },
+      {
+        "id": "grammar-kein-2",
+        "payload": {
+          "prompt": "Ich habe ___ Geld.",
+          "options": [
+            "kein",
+            "keine",
+            "nicht"
+          ],
+          "correct": "kein",
+          "category": "kein"
+        },
+        "sort": 2
+      },
+      {
+        "id": "grammar-kein-3",
+        "payload": {
+          "prompt": "Das ist ___ Apfel.",
+          "options": [
+            "kein",
+            "keinen",
+            "nicht"
+          ],
+          "correct": "kein",
+          "category": "kein"
+        },
+        "sort": 3
+      },
+      {
+        "id": "grammar-kein-4",
+        "payload": {
+          "prompt": "Der Tisch ist ___ groß.",
+          "options": [
+            "nicht",
+            "kein",
+            "keine"
+          ],
+          "correct": "nicht",
+          "category": "kein"
+        },
+        "sort": 4
+      },
+      {
+        "id": "grammar-kein-5",
+        "payload": {
+          "prompt": "Ich ___ nicht Auto fahren. (können)",
+          "options": [
+            "kann",
+            "kein",
+            "keine"
+          ],
+          "correct": "kann",
+          "category": "kein"
+        },
+        "sort": 5
+      },
+      {
+        "id": "grammar-possessive-0",
+        "payload": {
+          "prompt": "___ Vater heißt Hari.",
+          "options": [
+            "Mein",
+            "Meine",
+            "Meins"
+          ],
+          "correct": "Mein",
+          "category": "possessive"
+        },
+        "sort": 0
+      },
+      {
+        "id": "grammar-possessive-1",
+        "payload": {
+          "prompt": "___ Mutter kocht gut.",
+          "options": [
+            "Meine",
+            "Mein",
+            "Meins"
+          ],
+          "correct": "Meine",
+          "category": "possessive"
+        },
+        "sort": 1
+      },
+      {
+        "id": "grammar-possessive-2",
+        "payload": {
+          "prompt": "___ Kinder spielen im Garten.",
+          "options": [
+            "Meine",
+            "Mein",
+            "Meinen"
+          ],
+          "correct": "Meine",
+          "category": "possessive"
+        },
+        "sort": 2
+      },
+      {
+        "id": "grammar-possessive-3",
+        "payload": {
+          "prompt": "___ Bruder ist Lehrer.",
+          "options": [
+            "Mein",
+            "Meine",
+            "Meinen"
+          ],
+          "correct": "Mein",
+          "category": "possessive"
+        },
+        "sort": 3
+      },
+      {
+        "id": "grammar-possessive-4",
+        "payload": {
+          "prompt": "Wie heißt ___ Name?",
+          "options": [
+            "Ihr",
+            "Ihre",
+            "ihr"
+          ],
+          "correct": "Ihr",
+          "category": "possessive"
+        },
+        "sort": 4
+      },
+      {
+        "id": "grammar-possessive-5",
+        "payload": {
+          "prompt": "___ Hund heißt Bello.",
+          "options": [
+            "Mein",
+            "Meine",
+            "Meinen"
+          ],
+          "correct": "Mein",
+          "category": "possessive"
+        },
+        "sort": 5
+      },
+      {
+        "id": "grammar-demonstrative-0",
+        "payload": {
+          "prompt": "___ Pullover ist blau.",
+          "options": [
+            "Dieser",
+            "Diese",
+            "Dieses"
+          ],
+          "correct": "Dieser",
+          "category": "demonstrative"
+        },
+        "sort": 0
+      },
+      {
+        "id": "grammar-demonstrative-1",
+        "payload": {
+          "prompt": "___ Jacke ist schön.",
+          "options": [
+            "Diese",
+            "Dieser",
+            "Dieses"
+          ],
+          "correct": "Diese",
+          "category": "demonstrative"
+        },
+        "sort": 1
+      },
+      {
+        "id": "grammar-demonstrative-2",
+        "payload": {
+          "prompt": "___ Hemd ist weiß.",
+          "options": [
+            "Dieses",
+            "Dieser",
+            "Diese"
+          ],
+          "correct": "Dieses",
+          "category": "demonstrative"
+        },
+        "sort": 2
+      },
+      {
+        "id": "grammar-demonstrative-3",
+        "payload": {
+          "prompt": "Ich nehme ___ Saal.",
+          "options": [
+            "diesen",
+            "dieser",
+            "diese"
+          ],
+          "correct": "diesen",
+          "category": "demonstrative"
+        },
+        "sort": 3
+      },
+      {
+        "id": "grammar-demonstrative-4",
+        "payload": {
+          "prompt": "___ Schuhe sind neu.",
+          "options": [
+            "Diese",
+            "Dieser",
+            "Dieses"
+          ],
+          "correct": "Diese",
+          "category": "demonstrative"
+        },
+        "sort": 4
+      },
+      {
+        "id": "grammar-demonstrative-5",
+        "payload": {
+          "prompt": "___ Buch ist interessant.",
+          "options": [
+            "Dieses",
+            "Diese",
+            "Dieser"
+          ],
+          "correct": "Dieses",
+          "category": "demonstrative"
+        },
+        "sort": 5
+      },
+      {
+        "id": "grammar-wordOrder-0",
+        "payload": {
+          "prompt": "Which sentence is correct?",
+          "options": [
+            "Heute lerne ich Deutsch.",
+            "Ich lerne heute Deutsch.",
+            "Heute ich lerne Deutsch."
+          ],
+          "correct": "Heute lerne ich Deutsch.",
+          "category": "wordOrder"
+        },
+        "sort": 0
+      },
+      {
+        "id": "grammar-wordOrder-1",
+        "payload": {
+          "prompt": "Which sentence is correct?",
+          "options": [
+            "Morgen fahren wir nach Berlin.",
+            "Morgen wir fahren nach Berlin.",
+            "Fahren wir morgen nach Berlin."
+          ],
+          "correct": "Morgen fahren wir nach Berlin.",
+          "category": "wordOrder"
+        },
+        "sort": 1
+      },
+      {
+        "id": "grammar-wordOrder-2",
+        "payload": {
+          "prompt": "Which sentence is correct?",
+          "options": [
+            "In der Nacht schlafe ich.",
+            "In der Nacht ich schlafe.",
+            "Ich schlafe in der Nacht."
+          ],
+          "correct": "In der Nacht schlafe ich.",
+          "category": "wordOrder"
+        },
+        "sort": 2
+      },
+      {
+        "id": "grammar-wordOrder-3",
+        "payload": {
+          "prompt": "Which sentence is correct?",
+          "options": [
+            "Am Montag geht er zur Schule.",
+            "Am Montag er geht zur Schule.",
+            "Geht er am Montag zur Schule."
+          ],
+          "correct": "Am Montag geht er zur Schule.",
+          "category": "wordOrder"
+        },
+        "sort": 3
+      },
+      {
+        "id": "grammar-wordOrder-4",
+        "payload": {
+          "prompt": "Which sentence is correct?",
+          "options": [
+            "Heute trinke ich Kaffee.",
+            "Heute ich trinke Kaffee.",
+            "Ich trinke heute Kaffee."
+          ],
+          "correct": "Heute trinke ich Kaffee.",
+          "category": "wordOrder"
+        },
+        "sort": 4
+      },
+      {
+        "id": "grammar-wordOrder-5",
+        "payload": {
+          "prompt": "Which sentence is correct?",
+          "options": [
+            "Im Sommer fahren wir ans Meer.",
+            "Im Sommer wir fahren ans Meer.",
+            "Fahren wir im Sommer ans Meer."
+          ],
+          "correct": "Im Sommer fahren wir ans Meer.",
+          "category": "wordOrder"
+        },
+        "sort": 5
+      },
+      {
+        "id": "grammar-dative-0",
+        "payload": {
+          "prompt": "Ich fahre ___ Bus. (mit)",
+          "options": [
+            "mit dem",
+            "mit der",
+            "mit den"
+          ],
+          "correct": "mit dem",
+          "category": "dative"
+        },
+        "sort": 0
+      },
+      {
+        "id": "grammar-dative-1",
+        "payload": {
+          "prompt": "Wir treffen uns ___ Bahnhof. (an)",
+          "options": [
+            "am",
+            "an dem",
+            "auf dem"
+          ],
+          "correct": "am",
+          "category": "dative"
+        },
+        "sort": 1
+      },
+      {
+        "id": "grammar-dative-2",
+        "payload": {
+          "prompt": "Sie arbeitet ___ Computer. (an)",
+          "options": [
+            "am",
+            "an der",
+            "im"
+          ],
+          "correct": "am",
+          "category": "dative"
+        },
+        "sort": 2
+      },
+      {
+        "id": "grammar-dative-3",
+        "payload": {
+          "prompt": "Das Kind spielt ___ Garten. (in)",
+          "options": [
+            "im",
+            "in dem",
+            "in den"
+          ],
+          "correct": "im",
+          "category": "dative"
+        },
+        "sort": 3
+      },
+      {
+        "id": "grammar-dative-4",
+        "payload": {
+          "prompt": "Ich gehe ___ Arbeit. (zu)",
+          "options": [
+            "zur",
+            "zu der",
+            "zum"
+          ],
+          "correct": "zur",
+          "category": "dative"
+        },
+        "sort": 4
+      },
+      {
+        "id": "grammar-dative-5",
+        "payload": {
+          "prompt": "Er geht ___ Strand. (zu)",
+          "options": [
+            "zum",
+            "zur",
+            "zu dem"
+          ],
+          "correct": "zum",
+          "category": "dative"
+        },
+        "sort": 5
+      },
+      {
+        "id": "grammar-dative-6",
+        "payload": {
+          "prompt": "Die Kinder gehen ___ Schule. (zu)",
+          "options": [
+            "zur",
+            "zum",
+            "zu den"
+          ],
+          "correct": "zur",
+          "category": "dative"
+        },
+        "sort": 6
+      },
+      {
+        "id": "grammar-dative-7",
+        "payload": {
+          "prompt": "Wie geht es ___? (to me)",
+          "options": [
+            "dir",
+            "Sie",
+            "ihnen"
+          ],
+          "correct": "dir",
+          "category": "dative"
+        },
+        "sort": 7
+      },
+      {
+        "id": "grammar-dative-8",
+        "payload": {
+          "prompt": "Ich gebe ___ Bruder das Buch.",
+          "options": [
+            "meinem",
+            "mein",
+            "meine"
+          ],
+          "correct": "meinem",
+          "category": "dative"
+        },
+        "sort": 8
+      },
+      {
+        "id": "grammar-dative-9",
+        "payload": {
+          "prompt": "Wir trinken ___ Tee. (mit)",
+          "options": [
+            "mit dem",
+            "mit der",
+            "mit das"
+          ],
+          "correct": "mit dem",
+          "category": "dative"
+        },
+        "sort": 9
+      },
+      {
+        "id": "grammar-prepositions-0",
+        "payload": {
+          "prompt": "Ich gehe ___ Park. (in — movement)",
+          "options": [
+            "in den",
+            "im",
+            "in dem"
+          ],
+          "correct": "in den",
+          "category": "prepositions"
+        },
+        "sort": 0
+      },
+      {
+        "id": "grammar-prepositions-1",
+        "payload": {
+          "prompt": "Ich bin ___ Park. (in — location)",
+          "options": [
+            "im",
+            "in den",
+            "in das"
+          ],
+          "correct": "im",
+          "category": "prepositions"
+        },
+        "sort": 1
+      },
+      {
+        "id": "grammar-prepositions-2",
+        "payload": {
+          "prompt": "Die Flasche steht ___ Tisch. (an — location)",
+          "options": [
+            "auf dem",
+            "auf den",
+            "in dem"
+          ],
+          "correct": "auf dem",
+          "category": "prepositions"
+        },
+        "sort": 2
+      },
+      {
+        "id": "grammar-prepositions-3",
+        "payload": {
+          "prompt": "Er stellt die Flasche ___ Tisch. (an — movement)",
+          "options": [
+            "auf den",
+            "auf dem",
+            "im"
+          ],
+          "correct": "auf den",
+          "category": "prepositions"
+        },
+        "sort": 3
+      },
+      {
+        "id": "grammar-prepositions-4",
+        "payload": {
+          "prompt": "in + das =",
+          "options": [
+            "im",
+            "am",
+            "zum"
+          ],
+          "correct": "im",
+          "category": "prepositions"
+        },
+        "sort": 4
+      },
+      {
+        "id": "grammar-prepositions-5",
+        "payload": {
+          "prompt": "zu + das =",
+          "options": [
+            "zum",
+            "zur",
+            "im"
+          ],
+          "correct": "zum",
+          "category": "prepositions"
+        },
+        "sort": 5
+      },
+      {
+        "id": "grammar-prepositions-6",
+        "payload": {
+          "prompt": "zu + die =",
+          "options": [
+            "zur",
+            "zum",
+            "am"
+          ],
+          "correct": "zur",
+          "category": "prepositions"
+        },
+        "sort": 6
+      },
+      {
+        "id": "grammar-prepositions-7",
+        "payload": {
+          "prompt": "an + dem =",
+          "options": [
+            "am",
+            "im",
+            "ans"
+          ],
+          "correct": "am",
+          "category": "prepositions"
+        },
+        "sort": 7
+      },
+      {
         "id": "grammar-prefix-0",
         "payload": {
           "prompt": "___ (aufstehen) — trennbar oder untrennbar?",

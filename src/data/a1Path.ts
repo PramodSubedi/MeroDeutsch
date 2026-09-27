@@ -374,6 +374,45 @@ export function isModuleNodeId(id: string): boolean {
   return /^m\d{2}-/.test(id) || id === M15_MIGRATION_MARKER;
 }
 
+/* ── v4.0 pedagogical reorder ────────────────────────────────────────────── */
+
+/**
+ * THIRD migration: v3 module ORDER -> v4.0 order. Same shape as the two above.
+ *
+ * What changed and why (the v4.0 "zero-dependency" correction):
+ *   · Conjugation + V2 moved to slot 6, BEFORE the accusative at slot 9. In the
+ *     v3 order the learner met `Ich trinke einen Kaffee` style sentences only
+ *     at the very end, so the case was the first thing they were asked to
+ *     apply to a verb form they had not met.
+ *   · Time (am / im / um) moved from slot 7 to slot 10, i.e. AFTER the
+ *     accusative. Those are dative contractions; they were being drilled three
+ *     units before the case system existed.
+ *
+ * `completedNodeIds` is deliberately NOT remapped. Node ids are `mNN-…` and
+ * stay bound to their unit — only `order` moved — so a learner keeps every
+ * lesson they finished. What DOES move is everything keyed by unit INDEX:
+ * `checkpointBestByUnit`, `attemptsByUnit` and `unlockedUnitIndex`.
+ *
+ * Read the table as: OLD index -> NEW index.
+ *   0-4 unchanged · 5(m06)->6 · 6(m07)->9 · 7(m08)->5 · 8(m09)->7
+ *   9(m10)->8 · 10(m11)->11 · 11(m12)->12 · 12(m13)->10 · 13-14 unchanged
+ * The same eight units that move are exactly the eight whose scores move with
+ * them, so a pass earned on m08 (Verbs) is a pass on new slot 6.
+ */
+export const V3_TO_V4_UNIT_INDEX: readonly number[] = [0, 1, 2, 3, 4, 6, 9, 5, 7, 8, 11, 12, 10, 13, 14];
+
+export function remapV3UnitIndex(oldIndex: number): number {
+  const i = Math.max(0, Math.min(oldIndex, V3_TO_V4_UNIT_INDEX.length - 1));
+  return V3_TO_V4_UNIT_INDEX[i] ?? 0;
+}
+
+/**
+ * Marker injected into `completedNodeIds` exactly once so the v3→v4 reorder is
+ * idempotent, on the same terms as `BAND_MIGRATION_MARKER` and
+ * `M15_MIGRATION_MARKER`. Not a real node id; path lookups ignore it.
+ */
+export const V4_ORDER_MARKER = 'a1-path-v4-order';
+
 /**
  * The cluster a module belongs to (0..4). Returns 0 for an unknown index rather
  * than throwing, so a stale saved index can never crash the spine.

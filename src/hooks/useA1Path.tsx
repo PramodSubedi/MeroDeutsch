@@ -58,6 +58,8 @@ import {
   BAND_MIGRATION_MARKER,
   CHECKPOINT_PASS_THRESHOLD,
   M15_MIGRATION_MARKER,
+  V3_TO_V4_UNIT_INDEX,
+  V4_ORDER_MARKER,
   getNextGatedBandIndex,
   isBandNodeId,
   isLegacyPathNodeId,
@@ -65,6 +67,7 @@ import {
   isSixBandNodeId,
   remapBandToModuleIndex,
   remapLegacyUnitIndex,
+  remapV3UnitIndex,
   type PathMode,
   type PathNode,
 } from '../data/a1Path';
@@ -231,6 +234,42 @@ function normalizeState(raw: Partial<A1PathState>): A1PathState {
     completedNodeIds.push(M15_MIGRATION_MARKER);
   }
 
+  // ── v3 order -> v4.0 order ───────────────────────────────────────────────
+  // Fires for EVERY existing learner on first load after the reorder, because
+  // none of them can be carrying the new marker yet.
+  //
+  // Unlike the 5->6->15 migrations this one is a pure REORDER: every unit still
+  // exists with the same id and the same content, so `completedNodeIds` is left
+  // completely alone (see V3_TO_V4_UNIT_INDEX). What moves is the three
+  // index-keyed maps.
+  //
+  // `missedItemKeys` are cleared on remap rather than carried across: Phase 1
+  // changed those units' decks (m07 gained `prepositions`, m10 moved to its own
+  // `accusative` pool, m12 gained `dative`), so the recorded misses point at
+  // items the retry can no longer find. `best` and `attempts` survive, so the
+  // learner keeps their score history and attempt count.
+  if (!completedNodeIds.includes(V4_ORDER_MARKER)) {
+    unlockedRaw = remapV3UnitIndex(unlockedRaw);
+
+    const remapKeyed = <T,>(src: Record<number, T>): Record<number, T> => {
+      const out: Record<number, T> = {};
+      for (const [k, v] of Object.entries(src)) {
+        const oldIdx = Number(k);
+        if (!Number.isFinite(oldIdx) || oldIdx < 0 || oldIdx >= V3_TO_V4_UNIT_INDEX.length) continue;
+        out[remapV3UnitIndex(oldIdx)] = v;
+      }
+      return out;
+    };
+
+    const remappedAttempts = remapKeyed(attemptsRaw);
+    for (const record of Object.values(remappedAttempts)) {
+      record.missedItemKeys = [];
+    }
+    attemptsRaw = remappedAttempts;
+    bestRaw = remapKeyed(bestRaw);
+    completedNodeIds.push(V4_ORDER_MARKER);
+  }
+
   return {
     completedNodeIds,
     unlockedUnitIndex: Math.max(0, Math.min(unlockedRaw, A1_UNIT_COUNT - 1)),
@@ -391,10 +430,22 @@ export function A1PathProvider({ children }: A1PathProviderProps) {
         }
       }
 
-      // Persist the migration marker back so the band remap is idempotent —
-      // the very next hydrate sees a new-band id and skips the remap. This is
-      // a no-op for non-migrated (fresh / already-band) states.
-      if (next.completedNodeIds.includes(BAND_MIGRATION_MARKER)) {
+      // Persist the migration markers back so every remap is idempotent — the
+      // very next hydrate sees the marker and skips the work. This is a no-op for
+      // fresh and already-migrated states.
+      //
+      // Checked against ALL THREE markers, not just the band one. It used to
+      // check `BAND_MIGRATION_MARKER` alone, so a state that had already passed
+      // through the 5->6 step was never written back after the 6->15 remap: the
+      // remap re-ran on every single load and the Dexie row kept the old indices
+      // forever. The remapped values still reached Supabase (a separate effect
+      // pushes `state` once hydrated), which is why it went unnoticed — guests,
+      // who have no cloud row, simply re-migrated on every visit.
+      if (
+        next.completedNodeIds.includes(BAND_MIGRATION_MARKER) ||
+        next.completedNodeIds.includes(M15_MIGRATION_MARKER) ||
+        next.completedNodeIds.includes(V4_ORDER_MARKER)
+      ) {
         void persistToDexie(userId, next);
       }
 

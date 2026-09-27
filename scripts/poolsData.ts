@@ -223,11 +223,146 @@ export const GRAMMAR_DRILLS: Record<string, GrammarDrillSeed[]> = {
     { prompt: 'du ___ (laufen)', options: ['läufst', 'lauft', 'laufst'], correct: 'läufst' },
   ],
   // Modal verbs (Band F bonus chip /grammar?tab=modals deep-link target).
+  // Grown 4 -> 10: Module 13 draws 6 items without replacement, so a 4-item
+  // pool forced the deck to cycle and show repeats inside one sitting. Every
+  // modal is now drilled in more than one person so the verb slot is drilled
+  // too (the real beginner error is the ending, not the modal).
   modals: [
     { prompt: 'Ich ___ gut schwimmen. (können)', options: ['kann', 'kannst', 'könne'], correct: 'kann' },
     { prompt: 'Du ___ heute Hausaufgaben machen. (müssen)', options: ['musst', 'müsst', 'müsse'], correct: 'musst' },
     { prompt: 'Er ___ ein Auto kaufen. (wollen)', options: ['will', 'willst', 'wollen'], correct: 'will' },
     { prompt: 'Wir ___ hier nicht rauchen. (dürfen)', options: ['dürfen', 'darft', 'dürft'], correct: 'dürfen' },
+    { prompt: 'Ihr ___ jetzt gehen. (müssen)', options: ['müsst', 'musst', 'müssen'], correct: 'müsst' },
+    { prompt: 'Sie ___ gut sprechen. (können)', options: ['können', 'könnt', 'kann'], correct: 'können' },
+    { prompt: 'Ich ___ nicht kommen. (wollen)', options: ['will', 'wollen', 'willst'], correct: 'will' },
+    { prompt: 'Du ___ das machen. (sollen)', options: ['sollst', 'soll', 'sollen'], correct: 'sollst' },
+    { prompt: 'Er ___ ein Gespräch führen. (können)', options: ['kann', 'könnt', 'können'], correct: 'kann' },
+    { prompt: 'Wir ___ hier bleiben. (müssen)', options: ['müssen', 'müsst', 'muss'], correct: 'müssen' },
+  ],
+  // Verb-Second inversion (Module 8). The unit teaches "the verb is always
+  // second, so an opener in position 1 pushes the subject to position 3" —
+  // that rule had no drill at all before, so it was taught and never checked.
+  // Each prompt shows the opener and leaves only the verb.
+  v2: [
+    { prompt: 'Heute ___ ich Deutsch. (lernen)', options: ['lerne', 'lernst', 'lernt'], correct: 'lerne' },
+    { prompt: 'In der Nacht ___ ich. (schlafen)', options: ['schlafe', 'schläft', 'schlafen'], correct: 'schlafe' },
+    { prompt: 'Morgen ___ wir nach Berlin. (fahren)', options: ['fahren', 'fahrt', 'fährt'], correct: 'fahren' },
+    { prompt: '___ ist Montag. (today)', options: ['Heute', 'Ich', 'Montag'], correct: 'Heute' },
+    { prompt: '___ trinke ich Kaffee. (tomorrow)', options: ['Morgen', 'Ich', 'Kaffee'], correct: 'Morgen' },
+    { prompt: 'Am Montag ___ er zur Schule. (gehen)', options: ['geht', 'gehe', 'gehst'], correct: 'geht' },
+  ],
+  // ACCUSATIVE as its own pool (Module 10). Deliberately separate from `cases`:
+  // Module 4 used to draw the same five `cases` items Module 10 drew, so passing
+  // Module 4 previewed Module 10's quiz. Distinct ids, distinct items.
+  accusative: [
+    { prompt: 'Ich schreibe ___ Brief.', options: ['einen', 'ein', 'keinen'], correct: 'einen' },
+    { prompt: 'Ich trinke ___ Kaffee.', options: ['einen', 'ein', 'der'], correct: 'einen' },
+    { prompt: 'Ich kaufe ___ Apfel.', options: ['einen', 'ein', 'keine'], correct: 'einen' },
+    { prompt: 'Ich habe ___ Hund.', options: ['keinen', 'kein', 'eine'], correct: 'keinen' },
+    { prompt: 'Ich lese ___ Buch.', options: ['ein', 'einen', 'keine'], correct: 'ein' },
+    { prompt: 'Ich trinke ___ Wasser.', options: ['kein', 'einen', 'eine'], correct: 'kein' },
+    { prompt: 'Ich schreibe ___ E-Mail.', options: ['eine', 'einen', 'ein'], correct: 'eine' },
+    { prompt: 'Ich mag ___ Salat.', options: ['einen', 'ein', 'kein'], correct: 'einen' },
+  ],
+  // NEGATION (Module 5). `kein` stands where a noun with no article stands;
+  // `nicht` negates the verb, the adjective or a whole clause. The two are
+  // swapped by beginners constantly, so each is drilled in the other's slot.
+  kein: [
+    { prompt: 'Ich habe ___ Tisch.', options: ['keinen', 'kein', 'nicht'], correct: 'keinen' },
+    { prompt: 'Ich habe ___ Zeit.', options: ['keine', 'kein', 'nicht'], correct: 'keine' },
+    { prompt: 'Ich habe ___ Geld.', options: ['kein', 'keine', 'nicht'], correct: 'kein' },
+    { prompt: 'Das ist ___ Apfel.', options: ['kein', 'keinen', 'nicht'], correct: 'kein' },
+    { prompt: 'Der Tisch ist ___ groß.', options: ['nicht', 'kein', 'keine'], correct: 'nicht' },
+    { prompt: 'Ich ___ nicht Auto fahren. (können)', options: ['kann', 'kein', 'keine'], correct: 'kann' },
+  ],
+  // Possessive determiners (Module 4). -e on feminine AND plural, and the
+  // capitalised Ihr for formal "your" — the thing a learner copies in lower case.
+  possessive: [
+    { prompt: '___ Vater heißt Hari.', options: ['Mein', 'Meine', 'Meins'], correct: 'Mein' },
+    { prompt: '___ Mutter kocht gut.', options: ['Meine', 'Mein', 'Meins'], correct: 'Meine' },
+    { prompt: '___ Kinder spielen im Garten.', options: ['Meine', 'Mein', 'Meinen'], correct: 'Meine' },
+    { prompt: '___ Bruder ist Lehrer.', options: ['Mein', 'Meine', 'Meinen'], correct: 'Mein' },
+    { prompt: 'Wie heißt ___ Name?', options: ['Ihr', 'Ihre', 'ihr'], correct: 'Ihr' },
+    { prompt: '___ Hund heißt Bello.', options: ['Mein', 'Meine', 'Meinen'], correct: 'Mein' },
+  ],
+  // Demonstrative determiners (Module 11). dieser / diese / dieses in the
+  // nominative, plus the -en accusative plural that shop sentences need.
+  demonstrative: [
+    { prompt: '___ Pullover ist blau.', options: ['Dieser', 'Diese', 'Dieses'], correct: 'Dieser' },
+    { prompt: '___ Jacke ist schön.', options: ['Diese', 'Dieser', 'Dieses'], correct: 'Diese' },
+    { prompt: '___ Hemd ist weiß.', options: ['Dieses', 'Dieser', 'Diese'], correct: 'Dieses' },
+    { prompt: 'Ich nehme ___ Saal.', options: ['diesen', 'dieser', 'diese'], correct: 'diesen' },
+    { prompt: '___ Schuhe sind neu.', options: ['Diese', 'Dieser', 'Dieses'], correct: 'Diese' },
+    { prompt: '___ Buch ist interessant.', options: ['Dieses', 'Diese', 'Dieser'], correct: 'Dieses' },
+  ],
+  // WHOLE-SENTENCE WORD ORDER. Every option is a complete sentence; only one
+  // obeys Verb-Second. The `v2` drills above test a single missing word, which
+  // a learner can often solve by recognising the verb; here the whole
+  // arrangement has to be judged, which is the actual V2 skill. Distractors are
+  // built from the two ways beginners actually get it wrong — leaving the
+  // subject in position 1, or putting the verb last.
+  wordOrder: [
+    {
+      prompt: 'Which sentence is correct?',
+      options: ['Heute lerne ich Deutsch.', 'Ich lerne heute Deutsch.', 'Heute ich lerne Deutsch.'],
+      correct: 'Heute lerne ich Deutsch.',
+    },
+    {
+      prompt: 'Which sentence is correct?',
+      options: ['Morgen fahren wir nach Berlin.', 'Morgen wir fahren nach Berlin.', 'Fahren wir morgen nach Berlin.'],
+      correct: 'Morgen fahren wir nach Berlin.',
+    },
+    {
+      prompt: 'Which sentence is correct?',
+      options: ['In der Nacht schlafe ich.', 'In der Nacht ich schlafe.', 'Ich schlafe in der Nacht.'],
+      correct: 'In der Nacht schlafe ich.',
+    },
+    {
+      prompt: 'Which sentence is correct?',
+      options: ['Am Montag geht er zur Schule.', 'Am Montag er geht zur Schule.', 'Geht er am Montag zur Schule.'],
+      correct: 'Am Montag geht er zur Schule.',
+    },
+    {
+      prompt: 'Which sentence is correct?',
+      options: ['Heute trinke ich Kaffee.', 'Heute ich trinke Kaffee.', 'Ich trinke heute Kaffee.'],
+      correct: 'Heute trinke ich Kaffee.',
+    },
+    {
+      prompt: 'Which sentence is correct?',
+      options: ['Im Sommer fahren wir ans Meer.', 'Im Sommer wir fahren ans Meer.', 'Fahren wir im Sommer ans Meer.'],
+      correct: 'Im Sommer fahren wir ans Meer.',
+    },
+  ],
+  // DATIVE (Module 12 — "mit dem Bus"). Dative was used from Module 7 onward
+  // (am Montag, im Januar, zur Arbeit are all an+dem / in+dem / zu+dem) but was
+  // never taught and never checked — the largest hole in the course. Every
+  // option here is the FULL phrase so the contraction itself is drilled, not
+  // just the case ending.
+  dative: [
+    { prompt: 'Ich fahre ___ Bus. (mit)', options: ['mit dem', 'mit der', 'mit den'], correct: 'mit dem' },
+    { prompt: 'Wir treffen uns ___ Bahnhof. (an)', options: ['am', 'an dem', 'auf dem'], correct: 'am' },
+    { prompt: 'Sie arbeitet ___ Computer. (an)', options: ['am', 'an der', 'im'], correct: 'am' },
+    { prompt: 'Das Kind spielt ___ Garten. (in)', options: ['im', 'in dem', 'in den'], correct: 'im' },
+    { prompt: 'Ich gehe ___ Arbeit. (zu)', options: ['zur', 'zu der', 'zum'], correct: 'zur' },
+    { prompt: 'Er geht ___ Strand. (zu)', options: ['zum', 'zur', 'zu dem'], correct: 'zum' },
+    { prompt: 'Die Kinder gehen ___ Schule. (zu)', options: ['zur', 'zum', 'zu den'], correct: 'zur' },
+    { prompt: 'Wie geht es ___? (to me)', options: ['dir', 'Sie', 'ihnen'], correct: 'dir' },
+    { prompt: 'Ich gebe ___ Bruder das Buch.', options: ['meinem', 'mein', 'meine'], correct: 'meinem' },
+    { prompt: 'Wir trinken ___ Tee. (mit)', options: ['mit dem', 'mit der', 'mit das'], correct: 'mit dem' },
+  ],
+  // Two-way prepositions (Wechselpräpositionen) + the standard contractions.
+  // in/an take the ACCUSATIVE for movement toward a destination and the DATIVE
+  // for a fixed location — the most-missed A1 structure there is, and the one
+  // the A2 "and the reasons behind it" note on the level grid promises is next.
+  prepositions: [
+    { prompt: 'Ich gehe ___ Park. (in — movement)', options: ['in den', 'im', 'in dem'], correct: 'in den' },
+    { prompt: 'Ich bin ___ Park. (in — location)', options: ['im', 'in den', 'in das'], correct: 'im' },
+    { prompt: 'Die Flasche steht ___ Tisch. (an — location)', options: ['auf dem', 'auf den', 'in dem'], correct: 'auf dem' },
+    { prompt: 'Er stellt die Flasche ___ Tisch. (an — movement)', options: ['auf den', 'auf dem', 'im'], correct: 'auf den' },
+    { prompt: 'in + das =', options: ['im', 'am', 'zum'], correct: 'im' },
+    { prompt: 'zu + das =', options: ['zum', 'zur', 'im'], correct: 'zum' },
+    { prompt: 'zu + die =', options: ['zur', 'zum', 'am'], correct: 'zur' },
+    { prompt: 'an + dem =', options: ['am', 'im', 'ans'], correct: 'am' },
   ],
   // A1 Resource Pack U4 — separable vs inseparable prefix classifier.
   prefix: [

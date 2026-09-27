@@ -3,73 +3,84 @@
   "order": 9,
   "code": "M09",
   "kind": "core",
-  "cluster": 1,
+  "cluster": 2,
   "title": {
-    "en": "Separable Verbs & Routines",
-    "de": "Trennbare Verben & Routinen"
+    "en": "Separable Verbs & Daily Routines",
+    "de": "Trennbare Verben & Tagesabläufe"
   },
   "theme": {
-    "en": "Prefixes · Sentence bracket",
-    "de": "Präfixe · Satzklammer"
+    "en": "Prefix detachment, Satzklammer, daily routine verbs",
+    "de": "Präfix-Abtrennung, Satzklammer, Tagesablauf-Verben"
   },
   "goal": {
-    "en": "Describe daily routines with separable verbs",
-    "de": "Tägliche Routinen mit trennbaren Verben beschreiben"
+    "en": "Split separable verb prefixes, place them at sentence end, describe daily routines.",
+    "de": "Trennbare Verbpräfixe abtrennen, ans Satzende setzen, Tagesabläufe beschreiben."
   },
   "nodes": [
-    {
-      "id": "m09-separable",
-      "kind": "learn",
-      "label": {
-        "en": "Separable Verbs",
-        "de": "Trennbare Verben"
-      },
-      "to": "/sentence-builder?focus=separable"
-    },
-    {
-      "id": "m09-prefix",
-      "kind": "practice",
-      "label": {
-        "en": "Prefix Drill",
-        "de": "Präfix-Drill"
-      },
-      "to": "/grammar?tab=prefix"
-    },
-    {
-      "id": "m09-gate",
-      "kind": "checkpoint",
-      "label": {
-        "en": "Module 9 Checkpoint",
-        "de": "Modul 9 Prüfung"
-      },
-      "to": "/checkpoint/8"
-    }
+    { "id": "m09-learn", "type": "learn", "label": { "en": "Separable Verbs", "de": "Trennbare Verben" }, "to": "/sentence-builder?focus=separable", "xp": 10 },
+    { "id": "m09-practice", "type": "practice", "label": { "en": "Prefix Drill", "de": "Präfix-Drill" }, "to": "/grammar?tab=prefix", "xp": 20 },
+    { "id": "m09-checkpoint", "type": "checkpoint", "label": { "en": "Module 9 Checkpoint", "de": "Modul 9 Prüfung" }, "to": "/checkpoint/8", "xp": 50 }
   ],
   "checkpoint": {
     "moduleType": "a1-checkpoint",
     "specs": [
-      {
-        "type": "grammar-drill",
-        "count": 6
-      },
-      {
-        "type": "vocab-translation",
-        "count": 6
-      }
+      { "type": "grammar-drill", "count": 6 },
+      { "type": "word-order", "count": 3 },
+      { "type": "vocab-translation", "count": 3 }
     ]
   },
   "pedagogy": {
-    "grammarNote": {
-      "en": "The prefix detaches and jumps to the very end: Ich stehe um sechs Uhr auf. (auf + stehen → stehe … auf). Inseparable prefixes like ver-, be-, ge- never split.",
-      "de": "Das Präfix löst sich und springt ganz nach hinten: Ich stehe um sechs Uhr auf. Untrennbare Präfixe (ver-, be-, ge-) trennen sich nie."
-    }
+    "grammarNotes": [
+      "Separable verbs = prefix + base verb (auf|stehen, ein|kaufen, an|rufen)",
+      "In main clauses: base verb conjugates to Position 2, prefix jumps to VERY END (Satzklammer)",
+      "Common separable prefixes: auf-, ab-, an-, aus-, ein-, mit-, fern-, vor-, zurück-",
+      "Inseparable prefixes (ver-, be-, ge-, ent-, er-, emp-, miss-, zer-) NEVER split"
+    ],
+    "ruleTables": [
+      {
+        "title": {
+          "en": "Satzklammer (Sentence Bracket) Structure",
+          "de": "Satzklammer-Struktur"
+        },
+        "columns": ["Pos 1", "Pos 2 (Verb)", "Middle", "END (Prefix)"],
+        "rows": [
+          ["Ich", "stehe", "jeden Morgen um 6 Uhr", "auf."],
+          ["Wir", "kaufen", "heute im Supermarkt", "ein."],
+          ["Er", "ruft", "seine Mutter", "an."],
+          ["Das Fest", "fängt", "um 20 Uhr", "an."],
+          ["Räumst", "du", "bitte dein Zimmer", "auf?"]
+        ]
+      },
+      {
+        "title": {
+          "en": "Key Separable Verbs for Daily Routines",
+          "de": "Wichtige trennbare Verben für Tagesabläufe"
+        },
+        "columns": ["Verb", "Prefix|Base", "Meaning", "Example"],
+        "rows": [
+          ["aufstehen", "auf|stehen", "get up", "Ich stehe um 7 Uhr auf."],
+          ["einkaufen", "ein|kaufen", "shop", "Am Samstag kaufe ich ein."],
+          ["anrufen", "an|rufen", "call", "Ich rufe dich an."],
+          ["fernsehen", "fern|sehen", "watch TV", "Wir sehen abends fern."],
+          ["ankommen", "an|kommen", "arrive", "Der Zug kommt um 14 Uhr an."],
+          ["abfahren", "ab|fahren", "depart", "Der Bus fährt um 8 Uhr ab."],
+          ["anfangen", "an|fangen", "begin", "Der Kurs fängt um 9 Uhr an."],
+          ["ausmachen", "aus|machen", "turn off", "Er macht das Licht aus."],
+          ["anmachen", "an|machen", "turn on", "Mach bitte die Heizung an."],
+          ["aufhören", "auf|hören", "stop", "Der Regen hört auf."],
+          ["vorbereiten", "vor|bereiten", "prepare", "Wir bereiten das Essen vor."],
+          ["aufräumen", "auf|räumen", "tidy up", "Ich räume das Zimmer auf."]
+        ]
+      }
+    ],
+    "callouts": [
+      "Prefix goes to the VERY END — not just after the verb, but after ALL other elements!",
+      "Stress test: inseparable = stress on ROOT (verSTEHen); separable = stress on PREFIX (AUFstehen)",
+      "Question form: 'Räumst du dein Zimmer AUF?' — prefix still at end!"
+    ],
+    "honorifics": {}
   },
-  "vocabCategories": [
-    "daily-routine",
-    "action-verbs"
-  ],
-  "grammarCategories": [
-    "prefix"
-  ],
+  "vocabCategories": ["daily-routine", "action-verbs", "action-verbs"],
+  "grammarCategories": ["separable-verbs", "word-order", "prefix"],
   "hasLesson": true
 }

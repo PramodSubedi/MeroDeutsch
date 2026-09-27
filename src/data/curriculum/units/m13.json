@@ -5,141 +5,70 @@
   "kind": "core",
   "cluster": 3,
   "title": {
-    "en": "Modal Verbs",
-    "de": "Modalverben"
+    "en": "Shopping, Clothes & Demonstratives",
+    "de": "Einkaufen, Kleidung & Demonstrativartikel"
   },
   "theme": {
-    "en": "Ability · Obligation · Permission",
-    "de": "Fähigkeit · Pflicht · Erlaubnis"
+    "en": "Clothing, colors, sizes, demonstratives (dieser/diese/dieses), preferences (gefallen/passen)",
+    "de": "Kleidung, Farben, Größen, Demonstrativartikel (dieser/diese/dieses), Vorlieben (gefallen/passen)"
   },
   "goal": {
-    "en": "Express ability, obligation, permission and wishes",
-    "de": "Fähigkeit, Pflicht, Erlaubnis und Wünsche ausdrücken"
+    "en": "Shop for clothes, describe colors/sizes, use demonstratives correctly, express preferences.",
+    "de": "Kleidung kaufen, Farben/Größen beschreiben, Demonstrativartikel richtig nutzen, Vorlieben äußern."
   },
   "nodes": [
-    {
-      "id": "m13-modals",
-      "kind": "learn",
-      "label": {
-        "en": "Modal Verbs",
-        "de": "Modalverben"
-      },
-      "to": "/grammar?tab=modals"
-    },
-    {
-      "id": "m13-games",
-      "kind": "practice",
-      "label": {
-        "en": "Conjugation Game",
-        "de": "Konjugations-Spiel"
-      },
-      "to": "/games"
-    },
-    {
-      "id": "m13-gate",
-      "kind": "checkpoint",
-      "label": {
-        "en": "Module 13 Checkpoint",
-        "de": "Modul 13 Prüfung"
-      },
-      "to": "/checkpoint/12"
-    }
-  ],
-  "bonus": [
-    {
-      "id": "m13-tictactoe",
-      "kind": "bonus",
-      "label": {
-        "en": "Conjugation Tic-Tac-Toe",
-        "de": "Konjugations-Spiel"
-      },
-      "to": "/games?game=tictactoe",
-      "bonus": true
-    }
+    { "id": "m13-learn", "type": "learn", "label": { "en": "Clothes & Colors", "de": "Kleidung & Farben" }, "to": "/vocab-trainer?category=clothing", "xp": 10 },
+    { "id": "m13-practice", "type": "practice", "label": { "en": "Shopping Roleplay", "de": "Einkaufs-Rollenspiel" }, "to": "/roleplay?scene=cloth", "xp": 20 },
+    { "id": "m13-checkpoint", "type": "checkpoint", "label": { "en": "Module 13 Checkpoint", "de": "Modul 13 Prüfung" }, "to": "/checkpoint/12", "xp": 50 }
   ],
   "checkpoint": {
     "moduleType": "a1-checkpoint",
     "specs": [
-      {
-        "type": "grammar-drill",
-        "count": 6
-      },
-      {
-        "type": "vocab-translation",
-        "count": 6
-      }
+      { "type": "grammar-drill", "count": 4 },
+      { "type": "vocab-translation", "count": 8 }
     ]
   },
   "pedagogy": {
-    "grammarComparison": {
-      "title": {
-        "en": "Modals & word order",
-        "de": "Modalverben & Wortstellung"
+    "grammarNotes": [
+      "Demonstratives take same endings as definite articles: dieser (der), diese (die), dieses (das)",
+      "Accusative shift for masculine: dieser → diesen (feminine/neuter/plural unchanged)",
+      "Adjectives after sein take NO ending: 'Die Hose ist rot' (not 'rote')",
+      "Asking size: 'Welche Größe haben Sie?' → 'Ich habe Größe M / 38'",
+      "Preference verbs: 'gefallen' (appeals to me, takes dative), 'passen' (fits)"
+    ],
+    "ruleTables": [
+      {
+        "title": {
+          "en": "Demonstrative Articles (dieser/diese/dieses)",
+          "de": "Demonstrativartikel (dieser/diese/dieses)"
+        },
+        "columns": ["Gender", "Nominative", "Accusative", "Example (Nom)", "Example (Acc)"],
+        "rows": [
+          ["Masculine (der)", "dieser", "diesen", "dieser Pullover", "diesen Pullover"],
+          ["Feminine (die)", "diese", "diese", "diese Hose", "diese Hose"],
+          ["Neuter (das)", "dieses", "dieses", "dieses Hemd", "dieses Hemd"],
+          ["Plural (die)", "diese", "diese", "diese Schuhe", "diese Schuhe"]
+        ]
+      }
+    ],
+    "callouts": [
+      "Demonstratives = definite article endings + 'dies-' prefix (dies-er, dies-e, dies-es)",
+      "Masculine accusative: dieser → diesen (like der → den)",
+      "After 'sein/bleiben/werden': adjective has NO ending — 'Das Hemd ist rot' (not 'rote')",
+      "Gefallen takes dative: 'Mir gefällt diese Jacke' (not 'Ich gefalle')"
+    ],
+    "honorifics": {
+      "du": {
+        "en": "Shopping with friends: 'Wie findest du diese Hose?'",
+        "de": "Mit Freunden: 'Wie findest du diese Hose?'"
       },
-      "rows": [
-        {
-          "language": {
-            "en": "English",
-            "ne": "नेपाली",
-            "de": "Deutsch"
-          },
-          "order": {
-            "en": "Subject–Modal–Verb (V2)",
-            "ne": "SOV (विषय–वस्तु–क्रिया)",
-            "de": "V2 (Haupt-) / Modal am Ende (Nebensatz)"
-          },
-          "example": {
-            "en": "I can swim.",
-            "ne": "म तराई गर्न सक्छु।",
-            "de": "Ich kann schwimmen."
-          }
-        },
-        {
-          "language": {
-            "en": "Nepali",
-            "ne": "नेपाली",
-            "de": "Deutsch"
-          },
-          "order": {
-            "en": "Subject–Modal–Verb",
-            "ne": "SOV",
-            "de": "V2 / verb-final"
-          },
-          "example": {
-            "en": "I can swim.",
-            "ne": "म तराई गर्न सक्छु।",
-            "de": "Ich kann schwimmen."
-          }
-        },
-        {
-          "language": {
-            "en": "German",
-            "ne": "नेपाली",
-            "de": "Deutsch"
-          },
-          "order": {
-            "en": "SVO",
-            "ne": "SOV",
-            "de": "Modal am Ende im Nebensatz"
-          },
-          "example": {
-            "en": "I can swim.",
-            "ne": "म तराई गर्न सक्छु।",
-            "de": "Ich kann schwimmen. (V2 im Hauptsatz)"
-          }
-        }
-      ]
-    },
-    "grammarNote": {
-      "en": "The modal takes position two, the second verb goes to the very end unchanged: Ich muss heute zur Arbeit gehen. (müssen + Infinitiv).",
-      "de": "Das Modalverb steht an Position zwei, das zweite Verb bleibt unverändert am Ende: Ich muss heute zur Arbeit gehen."
+      "Sie": {
+        "en": "With salesperson: 'Wie gefällt Ihnen diese Jacke?'",
+        "de": "Mit Verkäufer: 'Wie gefällt Ihnen diese Jacke?'"
+      }
     }
   },
-  "vocabCategories": [
-    "action-verbs"
-  ],
-  "grammarCategories": [
-    "modals"
-  ],
+  "vocabCategories": ["clothing", "colors", "describing-adjectives", "taste-texture-adjectives"],
+  "grammarCategories": ["demonstrative", "adjectives", "preferences"],
   "hasLesson": true
 }

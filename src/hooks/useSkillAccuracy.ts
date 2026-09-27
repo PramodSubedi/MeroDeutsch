@@ -125,9 +125,14 @@ export function useSkillAccuracy() {
   const userId = user?.userId ?? null;
 
   // Live query over the SRS rows — updates instantly as exercises are answered.
+  //
+  // The key must be `userId ?? 'guest'`, matching `addWrongAnswer`'s write. The
+  // old `if (!userId) return []` short-circuited for every signed-out learner,
+  // so the radar showed "no data" no matter how much they had actually
+  // answered — and the companion had no weakest skill to coach.
   const rows = useLiveQuery(() => {
-    if (!db || !userId) return [];
-    return db.userProgress.where('userId').equals(userId).toArray();
+    if (!db) return [];
+    return db.userProgress.where('userId').equals(userId ?? 'guest').toArray();
   }, [userId]) ?? [];
 
   const skills = useMemo<SkillStat[]>(() => {

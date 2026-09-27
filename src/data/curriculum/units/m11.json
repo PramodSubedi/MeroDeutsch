@@ -3,83 +3,75 @@
   "order": 11,
   "code": "M11",
   "kind": "core",
-  "cluster": 2,
+  "cluster": 3,
   "title": {
-    "en": "Shopping & Clothes",
-    "de": "Einkaufen & Kleidung"
+    "en": "Time, Calendar & Clock Inversion",
+    "de": "Zeit, Kalender & Uhrzeit-Inversion"
   },
   "theme": {
-    "en": "Apparel · Colours · dieser/diese/dieses",
-    "de": "Kleidung · Farben · dieser/diese/dieses"
+    "en": "Days, months, seasons, temporal prepositions (am/im/um), colloquial clock",
+    "de": "Tage, Monate, Jahreszeiten, temporale Präpositionen (am/im/um), umgangssprachliche Uhrzeit"
   },
   "goal": {
-    "en": "Buy clothes, name colours and describe items",
-    "de": "Kleidung kaufen, Farben nennen und Artikel beschreiben"
+    "en": "Express time, dates, appointments, and master German colloquial clock (halb neun = 8:30).",
+    "de": "Zeit, Daten, Termine ausdrücken und deutsche Umgangsuhrzeit beherrschen (halb neun = 8:30)."
   },
   "nodes": [
-    {
-      "id": "m11-clothing",
-      "kind": "learn",
-      "label": {
-        "en": "Clothes & Colours",
-        "de": "Kleidung & Farben"
-      },
-      "to": "/vocab-trainer?category=clothing"
-    },
-    {
-      "id": "m11-shopping",
-      "kind": "practice",
-      "label": {
-        "en": "Shopping Roleplay",
-        "de": "Einkaufs-Rollenspiel"
-      },
-      "to": "/roleplay?scene=cloth"
-    },
-    {
-      "id": "m11-gate",
-      "kind": "checkpoint",
-      "label": {
-        "en": "Module 11 Checkpoint",
-        "de": "Modul 11 Prüfung"
-      },
-      "to": "/checkpoint/10"
-    }
-  ],
-  "bonus": [
-    {
-      "id": "m11-vocab-blitz",
-      "kind": "bonus",
-      "label": {
-        "en": "Vocab Drill",
-        "de": "Wortschatz-Drill"
-      },
-      "to": "/rapid-fire?mode=vocabulary-translation",
-      "bonus": true
-    }
+    { "id": "m11-learn", "type": "learn", "label": { "en": "Calendar & Time", "de": "Kalender & Zeit" }, "to": "/calendar", "xp": 10 },
+    { "id": "m11-practice", "type": "practice", "label": { "en": "Calendar Blitz", "de": "Kalender-Blitz" }, "to": "/rapid-fire?mode=calendar-translation", "xp": 20 },
+    { "id": "m11-checkpoint", "type": "checkpoint", "label": { "en": "Module 11 Checkpoint", "de": "Modul 11 Prüfung" }, "to": "/checkpoint/10", "xp": 50 }
   ],
   "checkpoint": {
     "moduleType": "a1-checkpoint",
     "specs": [
-      {
-        "type": "vocab-translation",
-        "count": 8
-      },
-      {
-        "type": "listening-gap",
-        "count": 4
-      }
+      { "type": "calendar-translation", "count": 7 },
+      { "type": "vocab-translation", "count": 5 }
     ]
   },
   "pedagogy": {
-    "grammarNote": {
-      "en": "Adjectives after sein take no ending: Die Hose ist rot. Demonstratives match the noun: dieser Mantel, diese Hose, dieses Hemd.",
-      "de": "Adjektive nach sein bekommen keine Endung: Die Hose ist rot. Demonstrativartikel richten sich nach dem Nomen: dieser Mantel, diese Hose, dieses Hemd."
-    }
+    "grammarNotes": [
+      "Temporal prepositions: am + days/dates/times of day, im + months/seasons, um + clock times",
+      "Exception: 'in der Nacht' (not 'am Nacht')",
+      "Colloquial clock inversion: 08:30 = 'halb neun' (half TO nine), 08:15 = 'viertel nach acht', 08:45 = 'viertel vor neun'",
+      "Standard clock: 08:30 = 'acht Uhr dreißig' (formal)"
+    ],
+    "ruleTables": [
+      {
+        "title": {
+          "en": "Time Preposition Cheat Sheet",
+          "de": "Zeit-Präposition-Spickzettel"
+        },
+        "columns": ["Preposition", "Case", "Used With", "Examples"],
+        "rows": [
+          ["am", "Dative", "Days, dates, parts of day", "am Montag, am 15. Mai, am Morgen"],
+          ["im", "Dative", "Months, seasons, years", "im Juli, im Sommer, im Jahr 2026"],
+          ["um", "Accusative", "Exact clock times", "um 8 Uhr, um 14:30 Uhr"],
+          ["in der", "Dative", "Night (exception)", "in der Nacht"]
+        ]
+      },
+      {
+        "title": {
+          "en": "Colloquial vs Formal Clock",
+          "de": "Umgangssprachliche vs Formale Uhrzeit"
+        },
+        "columns": ["Digital", "Colloquial", "Formal"],
+        "rows": [
+          ["08:00", "acht Uhr", "acht Uhr"],
+          ["08:15", "viertel nach acht", "acht Uhr fünfzehn"],
+          ["08:30", "halb neun", "acht Uhr dreißig"],
+          ["08:45", "viertel vor neun", "acht Uhr fünfundvierzig"],
+          ["09:30", "halb zehn", "neun Uhr dreißig"]
+        ]
+      }
+    ],
+    "callouts": [
+      "⚠️ TRAP: 'Halb acht' = 7:30, NOT 8:30! 'Halb' means half TO the next hour!",
+      "Memory hook: Am für Alle Tage (am Montag). Im für Im Monat (im Juli). Um für Uhrzeit (um 8 Uhr).",
+      "Cultural: Pünktlichkeit is paramount — arrive 5 minutes early!"
+    ],
+    "honorifics": {}
   },
-  "vocabCategories": [
-    "clothing",
-    "colors",
-    "describing-adjectives"
-  ],
+  "vocabCategories": ["nature-time", "travel-questions", "travel"],
+  "grammarCategories": ["temporal-prepositions", "prepositions", "time"],
   "hasLesson": true
 }

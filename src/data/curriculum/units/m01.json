@@ -41,8 +41,7 @@
       "label": {
         "en": "Module 1 Checkpoint",
         "de": "Modul 1 Prüfung"
-      },
-      "to": "/checkpoint/0"
+      }
     }
   ],
   "bonus": [

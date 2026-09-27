@@ -5,80 +5,95 @@
   "kind": "core",
   "cluster": 4,
   "title": {
-    "en": "Health & the Doctor",
-    "de": "Gesundheit & Arzt"
+    "en": "City Navigation, Transport & Dative Prepositions",
+    "de": "Stadtnavigation, Verkehr & Dativ-Präpositionen"
   },
   "theme": {
-    "en": "Body parts · Symptoms · weh tun",
-    "de": "Körperteile · Beschwerden · weh tun"
+    "en": "Places, directions, transport (mit + Dative), formal imperatives, prepositions (nach/zu/in)",
+    "de": "Orte, Richtungen, Verkehr (mit + Dativ), formale Imperative, Präpositionen (nach/zu/in)"
   },
   "goal": {
-    "en": "Describe symptoms and handle a doctor visit",
-    "de": "Beschwerden beschreiben und einen Arztbesuch meistern"
+    "en": "Ask/give directions, describe transport using mit + Dative, use formal imperatives for navigation.",
+    "de": "Nach Weg fragen/geben, Verkehrsmittel mit mit + Dativ beschreiben, formale Imperative für Navigation nutzen."
   },
   "nodes": [
-    {
-      "id": "m14-health",
-      "kind": "learn",
-      "label": {
-        "en": "Body & Health",
-        "de": "Körper & Gesundheit"
-      },
-      "to": "/vocab-trainer?category=body-health"
-    },
-    {
-      "id": "m14-doctor",
-      "kind": "practice",
-      "label": {
-        "en": "Doctor Visit",
-        "de": "Arztbesuch"
-      },
-      "to": "/roleplay?scene=doctor"
-    },
-    {
-      "id": "m14-gate",
-      "kind": "checkpoint",
-      "label": {
-        "en": "Module 14 Checkpoint",
-        "de": "Modul 14 Prüfung"
-      },
-      "to": "/checkpoint/13"
-    }
-  ],
-  "bonus": [
-    {
-      "id": "m14-glossary",
-      "kind": "bonus",
-      "label": {
-        "en": "Glossary",
-        "de": "Glossar"
-      },
-      "to": "/glossary",
-      "bonus": true
-    }
+    { "id": "m14-learn", "type": "learn", "label": { "en": "Directions", "de": "Richtungen" }, "to": "/roleplay?scene=directions", "xp": 10 },
+    { "id": "m14-practice", "type": "practice", "label": { "en": "City & Travel", "de": "Stadt & Reisen" }, "to": "/vocab-trainer?category=city-travel", "xp": 20 },
+    { "id": "m14-checkpoint", "type": "checkpoint", "label": { "en": "Module 14 Checkpoint", "de": "Modul 14 Prüfung" }, "to": "/checkpoint/13", "xp": 50 }
   ],
   "checkpoint": {
     "moduleType": "a1-checkpoint",
     "specs": [
-      {
-        "type": "vocab-translation",
-        "count": 8
-      },
-      {
-        "type": "listening-gap",
-        "count": 4
-      }
+      { "type": "grammar-drill", "count": 8 },
+      { "type": "vocab-translation", "count": 4 }
     ]
   },
   "pedagogy": {
-    "grammarNote": {
-      "en": "Two ways to say it hurts: the compound noun (Ich habe Kopfschmerzen) or weh tun (Der Kopf tut mir weh). How you feel: Es geht mir gut / schlecht.",
-      "de": "Zwei Wege: das Kompositum (Ich habe Kopfschmerzen) oder weh tun (Der Kopf tut mir weh). Wie es einem geht: Es geht mir gut / schlecht."
+    "grammarNotes": [
+      "Transport preposition 'mit' ALWAYS triggers Dative: mit dem Bus, mit der U-Bahn, mit dem Auto",
+      "Directional prepositions: nach + cities/countries (nach Berlin), zu + specific places/people (zum Bahnhof), in + buildings (ins Kaufhaus)",
+      "Formal imperative (Sie-Form): verb first, then 'Sie' — 'Gehen Sie geradeaus!', 'Biegen Sie links ab!'",
+      "Walking on foot: 'zu Fuß' (NOT 'mit Fuß')",
+      "fahren vs gehen: fahren = by vehicle, gehen = walking"
+    ],
+    "ruleTables": [
+      {
+        "title": {
+          "en": "Transport: mit + Dative",
+          "de": "Verkehr: mit + Dativ"
+        },
+        "columns": ["Gender", "Noun", "Dative Article", "Full Phrase"],
+        "rows": [
+          ["Masculine", "der Bus / der Zug", "dem", "mit dem Bus / mit dem Zug"],
+          ["Neuter", "das Auto / das Taxi", "dem", "mit dem Auto / mit dem Taxi"],
+          ["Feminine", "die Bahn / die U-Bahn", "der", "mit der Bahn / mit der U-Bahn"]
+        ]
+      },
+      {
+        "title": {
+          "en": "Directional Prepositions",
+          "de": "Richtungspräpositionen"
+        },
+        "columns": ["Preposition", "Case", "Usage", "Examples"],
+        "rows": [
+          ["nach", "Dative", "Cities, countries, directions", "nach Berlin, nach links, nach Hause"],
+          ["zu / zum / zur", "Dative", "Specific places, people", "zum Bahnhof, zur Schule, zum Arzt"],
+          ["in / ins", "Accusative", "Into buildings", "ins Kaufhaus, ins Kino, in die Apotheke"]
+        ]
+      },
+      {
+        "title": {
+          "en": "Formal Imperatives for Directions",
+          "de": "Formale Imperative für Richtungen"
+        },
+        "columns": ["German", "English", "Structure"],
+        "rows": [
+          ["Gehen Sie geradeaus!", "Go straight ahead!", "Verb + Sie + Adverb"],
+          ["Biegen Sie links ab!", "Turn left!", "Verb + Sie + Prep + ab"],
+          ["Nehmen Sie die erste Straße rechts!", "Take the first street right!", "Verb + Sie + Object"],
+          ["Fahren Sie mit der U-Bahn!", "Take the subway!", "Verb + Sie + mit + Dative"]
+        ]
+      }
+    ],
+    "callouts": [
+      "⚠️ TRAP: 'Ich gehe mit Fuß' is WRONG — correct: 'Ich gehe ZU FUß'",
+      "⚠️ TRAP: 'Ich fahre mit die S-Bahn' — mit takes DATIVE: 'mit DER S-Bahn'",
+      "⚠️ TRAP: 'fahren' vs 'gehen' — gehen = walking on foot, fahren = by vehicle",
+      "Cultural: 'Schwarzfahren' (riding without valid ticket) = heavy fine! Validate tickets (entwerten).",
+      "Ticket validation: Stamp paper tickets at platform machine BEFORE boarding."
+    ],
+    "honorifics": {
+      "du": {
+        "en": "Casual directions: 'Geh geradeaus, dann links.'",
+        "de": "Locker: 'Geh geradeaus, dann links.'"
+      },
+      "Sie": {
+        "en": "Formal: 'Gehen Sie geradeaus, dann biegen Sie links ab.'",
+        "de": "Formell: 'Gehen Sie geradeaus, dann biegen Sie links ab.'"
+      }
     }
   },
-  "vocabCategories": [
-    "body-health",
-    "doctor-shopping-phrases"
-  ],
+  "vocabCategories": ["city-travel", "travel", "travel-questions", "action-verbs"],
+  "grammarCategories": ["dative-prepositions", "imperative", "prepositions", "transport"],
   "hasLesson": true
 }

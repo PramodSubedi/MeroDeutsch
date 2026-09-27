@@ -83,7 +83,35 @@ export type CheckpointSource =
   | 'calendar-translation'
   | 'vocab-translation'
   | 'vocab-translation-ne'
-  | 'listening-gap';
+  /**
+   * ⚠️ CURRENTLY UNUSABLE — no unit may declare it (enforced in `validateCurriculum`).
+   *
+   * The builder draws these from `vocabulary.filter(v => v.audioUrl)`, but
+   * `audioUrl` can never survive the loaders, so the pool is always empty and
+   * the source contributes ZERO items:
+   *   - the Supabase `vocabulary` table has NO `audio_url` column at all, and
+   *     `rowToVocabCard` / `cardToLegacyEntry` never set or forward the field;
+   *   - `localCurriculumService.getVocabularyByCategories` drops it too.
+   *
+   * This is why M03 and M14 shipped 6- and 8-item decks while every other unit
+   * rendered 12. Both now use sources that resolve. To revive this source, add
+   * `audio_url` to the `vocabulary` table, map it in all three places above, and
+   * confirm the affected categories actually have recordings — only 3 of the 41
+   * words in the old M03/M14 categories had audio in `public/data/enriched-vocab.json`.
+   */
+  | 'listening-gap'
+  /**
+   * Whole-sentence WORD ORDER. Reads the `wordOrder` drill pool, whose options
+   * are complete sentences in different orders, so the learner picks the
+   * grammatical arrangement rather than a single missing word.
+   *
+   * Deliberately MCQ rather than a drag-and-drop builder: the checkpoint
+   * session engine renders `options` + `correctAnswer`, and a second exercise
+   * mode inside a timed, gated, SRS-scored round is a much larger change than
+   * the gap it closes. It tests ordering, which the single-blank `v2` drills
+   * cannot.
+   */
+  | 'word-order';
 
 /** Runtime list of the sources above, so the validator never drifts from the type. */
 export const CHECKPOINT_SOURCES: readonly CheckpointSource[] = [
@@ -96,7 +124,22 @@ export const CHECKPOINT_SOURCES: readonly CheckpointSource[] = [
   'vocab-translation',
   'vocab-translation-ne',
   'listening-gap',
+  'word-order',
 ];
+
+/**
+ * Sources that are wired up in the builder but CANNOT currently produce items,
+ * so declaring one silently shortens a unit's deck instead of failing.
+ *
+ * Kept as an explicit deny-list rather than deleting the source: the builder
+ * case and the `CheckpointSource` member stay, so reviving the source is a data
+ * + loader change rather than a re-plumbing of the curriculum schema.
+ *
+ * See the `listening-gap` doc comment for the full root cause.
+ */
+export const UNUSABLE_CHECKPOINT_SOURCES: ReadonlySet<CheckpointSource> = new Set<CheckpointSource>([
+  'listening-gap',
+]);
 
 export interface CheckpointSpec {
   type: CheckpointSource;
@@ -527,6 +570,16 @@ export function validateCurriculum(file: CurriculumFile): CurriculumIssue[] {
       for (const spec of unit.checkpoint.specs) {
         if (!CHECKPOINT_SOURCES.includes(spec.type)) {
           err(at, `unknown checkpoint source '${spec.type}' — no builder case exists in A1CheckpointPage`);
+        }
+        if (UNUSABLE_CHECKPOINT_SOURCES.has(spec.type)) {
+          // The static item-count check below CANNOT catch this: the spec sums
+          // to 12 and the file is well-formed, but the source resolves to zero
+          // items at runtime, so the learner gets a silently shortened deck.
+          err(
+            at,
+            `spec '${spec.type}' cannot produce items today (no audioUrl reaches the builder) — ` +
+              `use a source that resolves, or revive the source first`,
+          );
         }
         if (!Number.isInteger(spec.count) || spec.count < 1) {
           err(at, `spec '${spec.type}' count must be an integer >= 1`);

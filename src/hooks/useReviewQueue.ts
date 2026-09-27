@@ -105,9 +105,16 @@ export function useReviewQueue() {
   const { recordActivity } = useActivityLog();
 
   // Live query for all userProgress rows for this user, with safe fallback to empty array
+  //
+  // The key MUST be `userId ?? 'guest'`, matching `addWrongAnswer` below. It
+  // used to read `userId ?? ''` while every write used `'guest'`, so for
+  // signed-out learners the query matched nothing and the ENTIRE review queue
+  // read as empty — the rows were written correctly, they were just never found.
+  // That silently emptied the Dashboard SRS queue, the "due now" counts, and
+  // `useWeakItems` (which builds on this queue) for every guest.
   const rows = useLiveQuery(() => {
     if (!db) return [];
-    return db.userProgress.where('userId').equals(userId ?? '').toArray();
+    return db.userProgress.where('userId').equals(userId ?? 'guest').toArray();
   }, [userId]) ?? [];
 
   const queue = useMemo(() => rows.map(rowToItem), [rows]);

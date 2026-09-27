@@ -9,6 +9,7 @@ import { PRACTICE_SKILLS, PRACTICE_QUICK_WIN_MINUTES, getPracticeTools } from '.
 import type { PracticeSkill } from '../config/modules';
 import { useWeakestSkill, skillLabel, SKILL_ROUTES } from '../hooks/useSkillAccuracy';
 import { theme } from '../config/theme';
+import { A1_PATH_ROUTE } from '../data/cefrLevels';
 
 type SkillFilter = PracticeSkill | 'all';
 
@@ -173,7 +174,7 @@ export function PracticeHubPage() {
       {/* The Learn/Practice boundary, made explicit: lessons live in Learn, so
           a learner who followed a tool link knows where the course is. */}
       <Link
-        to="/learn"
+        to={A1_PATH_ROUTE}
         className="mt-8 inline-flex min-h-[44px] items-center gap-2 border-t border-ink-200 pt-6 text-body font-semibold text-accent-600 transition hover:text-accent-800 active:scale-95 dark:border-ink-800 dark:text-accent-300 dark:hover:text-accent-200"
       >
         <span>{isDE ? 'Lektionen findest du im Lernpfad' : 'Looking for lessons? Open the learning path'}</span>

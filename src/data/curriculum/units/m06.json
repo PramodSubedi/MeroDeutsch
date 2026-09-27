@@ -5,83 +5,98 @@
   "kind": "core",
   "cluster": 1,
   "title": {
-    "en": "Professions & Education",
-    "de": "Berufe & Bildung"
+    "en": "Present Tense Verb Conjugation",
+    "de": "Präsens-Verbkonjugation"
   },
   "theme": {
-    "en": "Jobs · Workplaces · the -in suffix",
-    "de": "Berufe · Arbeitsplätze · die -in-Endung"
+    "en": "Regular & irregular verbs, stem changes, sein/haben",
+    "de": "Regelmäßige & unregelmäßige Verben, Stammwechsel, sein/haben"
   },
   "goal": {
-    "en": "Discuss occupations, workplaces and study",
-    "de": "Über Berufe, Arbeitsplätze und Studium sprechen"
+    "en": "Conjugate any regular verb, master stem-changing patterns, and use sein/haben correctly in present tense.",
+    "de": "Jedes regelmäßige Verb konjugieren, Stammwechsel-Muster beherrschen, sein/haben im Präsens richtig anwenden."
   },
   "nodes": [
-    {
-      "id": "m06-professions",
-      "kind": "learn",
-      "label": {
-        "en": "Professions",
-        "de": "Berufe"
-      },
-      "to": "/vocab-trainer?category=professions"
-    },
-    {
-      "id": "m06-grammar",
-      "kind": "practice",
-      "label": {
-        "en": "Work Verbs",
-        "de": "Arbeitsverben"
-      },
-      "to": "/grammar?tab=weakVerb"
-    },
-    {
-      "id": "m06-gate",
-      "kind": "checkpoint",
-      "label": {
-        "en": "Module 6 Checkpoint",
-        "de": "Modul 6 Prüfung"
-      },
-      "to": "/checkpoint/5"
-    }
-  ],
-  "bonus": [
-    {
-      "id": "m06-email",
-      "kind": "bonus",
-      "label": {
-        "en": "Email Builder",
-        "de": "E-Mail-Trainer"
-      },
-      "to": "/email-builder",
-      "bonus": true
-    }
+    { "id": "m06-learn", "kind": "learn", "label": { "en": "Conjugation Tables", "de": "Konjugationstabellen" }, "to": "/grammar?tab=conjugation", "xp": 10 },
+    { "id": "m06-practice", "kind": "practice", "label": { "en": "Verb Dice", "de": "Verben-Würfel" }, "to": "/games?game=dice", "xp": 20 },
+    { "id": "m06-checkpoint", "kind": "checkpoint", "label": { "en": "Module 6 Checkpoint", "de": "Modul 6 Prüfung" } }
   ],
   "checkpoint": {
     "moduleType": "a1-checkpoint",
     "specs": [
-      {
-        "type": "vocab-translation",
-        "count": 8
-      },
-      {
-        "type": "grammar-drill",
-        "count": 4
-      }
+      { "type": "grammar-drill", "count": 12 }
     ]
   },
   "pedagogy": {
-    "grammarNote": {
-      "en": "Feminine job titles are built from the masculine: der Arzt → die Ärztin, der Kellner → die Kellnerin. Often the stem vowel also takes an umlaut.",
-      "de": "Weibliche Berufsbezeichnungen entstehen mit -in: der Arzt → die Ärztin, der Kellner → die Kellnerin. Oft ändert sich auch der Stammvokal."
+    "grammarNotes": [
+      "Regular verbs: remove -en, add -e/-st/-t/-en/-t/-en",
+      "Stem-changing verbs (e→i/ie, a→ä) affect ONLY du and er/sie/es",
+      "sein (bin/bist/ist/sind/seid/sind) and haben (habe/hast/hat/haben/habt/haben) are highly irregular"
+    ],
+    "ruleTables": [
+      {
+        "title": {
+          "en": "Regular Verb Endings",
+          "de": "Regelmäßige Verbendungen"
+        },
+        "columns": ["Pronoun", "Ending", "wohnen", "lernen", "machen"],
+        "rows": [
+          ["ich", "-e", "wohne", "lerne", "mache"],
+          ["du", "-st", "wohnst", "lernst", "machst"],
+          ["er/sie/es", "-t", "wohnt", "lernt", "macht"],
+          ["wir", "-en", "wohnen", "lernen", "machen"],
+          ["ihr", "-t", "wohnt", "lernt", "macht"],
+          ["sie/Sie", "-en", "wohnen", "lernen", "machen"]
+        ]
+      },
+      {
+        "title": {
+          "en": "Stem-Changing Verbs (du/er/sie/es only)",
+          "de": "Stammwechsel-Verben (nur du/er/sie/es)"
+        },
+        "columns": ["Pattern", "Infinitive", "ich", "du", "er/sie/es", "wir"],
+        "rows": [
+          ["e → i", "geben", "gebe", "gibst", "gibt", "geben"],
+          ["e → ie", "lesen", "lese", "liest", "liest", "lesen"],
+          ["e → ie", "sehen", "sehe", "siehst", "sieht", "sehen"],
+          ["e → i", "essen", "esse", "isst", "isst", "essen"],
+          ["a → ä", "fahren", "fahre", "fährst", "fährt", "fahren"],
+          ["a → ä", "schlafen", "schlafe", "schläfst", "schläft", "schlafen"]
+        ]
+      },
+      {
+        "title": {
+          "en": "Irregular Verbs: sein & haben",
+          "de": "Unregelmäßige Verben: sein & haben"
+        },
+        "columns": ["Pronoun", "sein", "haben"],
+        "rows": [
+          ["ich", "bin", "habe"],
+          ["du", "bist", "hast"],
+          ["er/sie/es", "ist", "hat"],
+          ["wir", "sind", "haben"],
+          ["ihr", "seid", "habt"],
+          ["sie/Sie", "sind", "haben"]
+        ]
+      }
+    ],
+    "callouts": [
+      "Stem vowel NEVER changes for ich, wir, ihr, sie/Sie — only du and er/sie/es!",
+      "essen: du isst (not esst), er isst (not esst) — double-s spelling!",
+      "sein and haben are the two most important verbs — memorize them completely"
+    ],
+    "honorifics": {
+      "du": {
+        "en": "Informal: friends, family, children",
+        "de": "Freunde, Familie, Kinder"
+      },
+      "Sie": {
+        "en": "Formal: strangers, teachers, doctors, elders",
+        "de": "Fremde, Lehrer, Ärzte, Ältere"
+      }
     }
   },
-  "vocabCategories": [
-    "professions",
-    "school-office"
-  ],
-  "grammarCategories": [
-    "weakVerb"
-  ],
+  "vocabCategories": ["conjugation", "action-verbs"],
+  "grammarCategories": ["conjugation", "stem-change", "irregular-verbs"],
   "hasLesson": true
 }

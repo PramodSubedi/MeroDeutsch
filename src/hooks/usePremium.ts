@@ -22,6 +22,7 @@
  */
 import { useCallback, useEffect, useState } from 'react';
 import { useAuth } from './useAuth';
+import { subscribeDebugMode } from '../lib/debugMode';
 import { entitlementService, type Plan } from '../services/entitlementService';
 
 const OVERRIDE_KEY = 'germanPremiumOverride';
@@ -56,6 +57,35 @@ export function usePremium(): PremiumState {
   const [plan, setPlan] = useState<Plan>('free');
   const [isLoading, setIsLoading] = useState(true);
   const [override, setOverrideState] = useState<Plan | null>(() => readOverride());
+
+  // ⚠️ THE OVERRIDE MUST BE RE-READ WHEN THE MODE CHANGES — this was a real bug.
+  //
+  // The initialiser above runs ONCE, at mount. The QA simulator flips the tier
+  // at RUNTIME (navbar toggle, `postMessage` bridge, `?adminmode=`), which
+  // rewrites the very localStorage key this hook reads. Without this listener
+  // the hook kept its stale value forever, so switching to Premium while the
+  // app was already open did nothing visible and the 15-module campaign simply
+  // never appeared — it only worked after a manual reload.
+  //
+  // That is worse than it sounds, because `usePremium` is consumed by
+  // `ContinueLearningPage` at `/learn`, which is exactly the page an admin is
+  // looking at when they switch modes.
+  //
+  // `subscribeDebugMode` covers same-tab writes (the bridge dispatches through
+  // it); the `storage` listener covers another tab; the custom event covers the
+  // direct `localStorage.setItem` path. All three are needed because the mode
+  // can be set by three different code paths.
+  useEffect(() => {
+    const sync = () => setOverrideState(readOverride());
+    const unsubscribe = subscribeDebugMode(sync);
+    window.addEventListener('storage', sync);
+    window.addEventListener('mero-debug-mode', sync);
+    return () => {
+      unsubscribe();
+      window.removeEventListener('storage', sync);
+      window.removeEventListener('mero-debug-mode', sync);
+    };
+  }, []);
 
   // Read the account's tier whenever the identity changes. `userId` is the whole
   // dependency: signing in, signing out, or switching account must all re-read,

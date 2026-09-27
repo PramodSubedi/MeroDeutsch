@@ -31,6 +31,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, BookOpen, ChevronDown, CircleCheck, Gauge, Flame, RefreshCw, Settings } from 'lucide-react';
 import type { WrongAnswerItem } from '../types';
 import { ANCHORS } from '../lib/anchors';
+import { A1_PATH_ROUTE } from '../data/cefrLevels';
 
 /** Locale-aware number formatter shared by dashboard stats + review queue counts. */
 const numberFormatter = (locale: string) => new Intl.NumberFormat(locale);
@@ -181,7 +182,7 @@ export function DashboardPage() {
             </Link>
           ) : (
             <Link
-              to="/learn"
+              to={A1_PATH_ROUTE}
               className="inline-flex min-h-10 items-center gap-2 rounded-sm bg-accent-600 px-3.5 text-body font-semibold text-white shadow-sm transition hover:bg-accent-700"
             >
               {isDE ? 'Weiterlernen' : 'Continue learning'}
@@ -402,7 +403,7 @@ export function DashboardPage() {
             title={isDE ? 'Keine Review-Einträge' : 'No Review Items'}
             description={isDE ? 'Alles erledigt. Starte eine neue Lektion, damit deine nächste Wiederholung gezielt entsteht.' : 'All caught up. Start a new lesson and your next review will be generated from real practice.'}
             actionLabel={isDE ? 'Weiterlernen' : 'Continue learning'}
-            actionTo="/learn"
+            actionTo={A1_PATH_ROUTE}
             secondaryActionLabel={isDE ? 'Alphabet üben' : 'Practice Alphabet'}
             secondaryActionTo="/alphabet"
           />

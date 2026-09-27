@@ -112,6 +112,53 @@ const SPECIFIC: Record<string, HintText> = {
     ne: 'पर्फेक्ट = सहायक क्रिया दोस्रो स्थानमा + पार्टिजिप द्वितीय अन्त्यमा। गतिका क्रियामा sein (gehen, kommen, fahren), अरूमा haben प्रयोग गर्नुहोस्।',
     de: 'Perfekt = Hilfsverb an Position 2 + Partizip II am Ende. Bei Bewegung nehmen Sie sein (gehen, kommen, fahren), sonst haben.',
   },
+
+  /* ── v4.0 phase-1/3 categories. Each one is reachable: the checkpoint sets
+     `hintReason` to the drill CATEGORY, and `hasSpecificHint` prefers it over
+     the generic 'grammar-drill' fallback. Without these, a learner who missed a
+     dative or V2 item would have been told the generic "check the article or
+     word order" line — which is useless for exactly the structures these
+     categories exist to teach. ─────────────────────────────────────────── */
+  'a1-checkpoint:dative': {
+    en: 'Dative = dem / der / den. After mit, an, in, zu and von: "mit dem Bus", "am Bahnhof", "im Garten", "zur Arbeit".',
+    ne: 'डेटिभ = dem / der / den। mit, an, in, zu र von पछि: "mit dem Bus", "am Bahnhof", "im Garten", "zur Arbeit"।',
+    de: 'Dativ = dem / der / den. Nach mit, an, in, zu und von: „mit dem Bus", „am Bahnhof", „im Garten", „zur Arbeit".',
+  },
+  'a1-checkpoint:prepositions': {
+    en: 'in / an / auf / über take the ACCUSATIVE for movement (in den Park) and the DATIVE for a fixed place (im Park).',
+    ne: 'in / an / auf / über ले गति मा accusative (in den Park) र स्थिर स्थानमा dative (im Park) लिन्छ।',
+    de: 'in / an / auf / über nehmen bei Bewegung den Akkusativ (in den Park) und bei festem Ort den Dativ (im Park).',
+  },
+  'a1-checkpoint:v2': {
+    en: 'The conjugated verb is ALWAYS in Position 2. If a time or place word starts the sentence, the subject moves to Position 3: "Heute lerne ich Deutsch."',
+    ne: 'रूप परिवर्तन भएको क्रिया सधैँ दोस्रो स्थानमा। समय वा स्थानले वाक्य सुरु गरेमा कर्ता तेस्रो स्थानमा जान्छ: "Heute lerne ich Deutsch."',
+    de: 'Das konjugierte Verb steht IMMER an Position 2. Beginnt ein Zeit- oder Ortwort den Satz, rückt das Subjekt auf Position 3: „Heute lerne ich Deutsch."',
+  },
+  'a1-checkpoint:wordOrder': {
+    en: 'Only one arrangement is German: the verb in Position 2. "Heute ich lerne" is wrong — the verb must come before the subject.',
+    ne: 'एउटै मात्र क्रम नेमाली हो: क्रिया दोस्रो स्थानमा। "Heute ich lerne" गलत हो — क्रिया कर्ता भन्दा अगाडि हुनुपर्छ।',
+    de: 'Nur eine Reihenfolge ist deutsch: das Verb an Position 2. „Heute ich lerne" ist falsch — das Verb muss vor dem Subjekt stehen.',
+  },
+  'a1-checkpoint:accusative': {
+    en: 'In the accusative ONLY masculine changes: der → den, ein → einen, kein → keinen. die, das and plural stay the same.',
+    ne: 'एकवचन (accusative) मा पुल्लिङ मात्र बदलिन्छ: der → den, ein → einen, kein → keinen। die, das र बहुवचन उस्तै रहन्छ।',
+    de: 'Im Akkusativ ändert sich NUR das Maskulinum: der → den, ein → einen, kein → keinen. die, das und der Plural bleiben gleich.',
+  },
+  'a1-checkpoint:kein': {
+    en: 'kein / keine stands where a noun with no article stands ("kein Tisch"). nicht negates the verb, the adjective or the whole clause.',
+    ne: 'kein / keine ले article नभएको संज्ञाको ठाउँमा आउँछ ("kein Tisch")। nicht ले क्रिया, विशेषण वा पूरा वाक्य नकार गर्छ।',
+    de: 'kein / keine steht, wo ein Substantiv ohne Artikel steht („kein Tisch"). nicht verneint das Verb, das Adjektiv oder den ganzen Satz.',
+  },
+  'a1-checkpoint:possessive': {
+    en: 'Possessives add -e on feminine AND plural nouns: mein Vater, meine Mutter, meine Kinder. Formal "your" is capitalised: Ihre Frau.',
+    ne: 'सम्बन्धवाचक शब्दले स्त्री र बहुवचनमा -e लिन्छ: mein Vater, meine Mutter, meine Kinder। औपचारिक "तपाईं" को लागि capital: Ihre Frau।',
+    de: 'Possessiva bekommen -e bei weiblichen UND Pluralsubstantiven: mein Vater, meine Mutter, meine Kinder. Höfliches „Sie" wird großgeschrieben: Ihre Frau.',
+  },
+  'a1-checkpoint:demonstrative': {
+    en: 'dieser (der), diese (die), dieses (das) — and in the accusative masculine dieser → diesen.',
+    ne: 'dieser (der), diese (die), dieses (das) — र एकवचन पुल्लिङमा dieser → diesen।',
+    de: 'dieser (der), diese (die), dieses (das) — und im Akkusativ Maskulinum dieser → diesen.',
+  },
 };
 
 /**

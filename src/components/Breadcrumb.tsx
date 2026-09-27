@@ -2,6 +2,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useLang } from '../hooks/useLang';
 import { ROUTE_LABELS } from '../config/routeLabels';
 import { getModuleRoutes } from '../config/modules';
+import { isCefrLevelPath } from '../data/cefrLevels';
 
 interface BreadcrumbItem {
   label: string;
@@ -13,6 +14,10 @@ interface BreadcrumbItem {
  *  - `/`, `/home`          → top of the hierarchy (nothing to trail).
  *  - `/auth`               → standalone focus screen, no app-shell context.
  *  - `/learn`, `/practice` → the two converged hubs carry their own header.
+ *  - `/learn/:levelId`     → a LEVEL's page, which carries its own header AND an
+ *                            explicit "All levels" back link. A crumb here would
+ *                            say "Home / Levels / A1 Path" — three restatements
+ *                            of a back link the page already shows.
  *  - `/privacy`, `/terms`  → legal pages render their own "Back to Home" link.
  *
  * Module routes are handled separately below: Layout swaps the breadcrumb for
@@ -45,7 +50,7 @@ export function Breadcrumb() {
   // previously a second hand-maintained list lived here.
   const isModuleRoute = getModuleRoutes().includes(pathname);
 
-  if (NO_BREADCRUMB.has(pathname) || isModuleRoute) {
+  if (NO_BREADCRUMB.has(pathname) || isCefrLevelPath(pathname) || isModuleRoute) {
     return null;
   }
 

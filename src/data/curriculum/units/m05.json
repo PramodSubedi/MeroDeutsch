@@ -41,8 +41,7 @@
       "label": {
         "en": "Module 5 Checkpoint",
         "de": "Modul 5 Prüfung"
-      },
-      "to": "/checkpoint/4"
+      }
     }
   ],
   "bonus": [
@@ -62,11 +61,15 @@
     "specs": [
       {
         "type": "article-precision",
-        "count": 6
+        "count": 4
+      },
+      {
+        "type": "grammar-drill",
+        "count": 4
       },
       {
         "type": "vocab-translation",
-        "count": 6
+        "count": 4
       }
     ]
   },
@@ -89,7 +92,8 @@
     "kitchen-household"
   ],
   "grammarCategories": [
-    "cases"
+    "cases",
+    "kein"
   ],
   "hasLesson": true
 }

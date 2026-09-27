@@ -33,6 +33,7 @@ import { useHasA1Campaign } from '../../hooks/usePremium';
 import { useLastModule } from '../../hooks/useLastModule';
 import { useReviewQueue } from '../../hooks/useReviewQueue';
 import { labelForPath } from '../../config/routeLabels';
+import { A1_PATH_ROUTE } from '../../data/cefrLevels';
 import { ReviewSessionManager } from '../ReviewSessionManager';
 import { setDailySessionActive } from '../../lib/dailySessionSignal';
 import { ANCHORS } from '../../lib/anchors';
@@ -226,7 +227,7 @@ export function DailySession() {
         </Link>
       ) : (
         <Link
-          to="/learn"
+          to={A1_PATH_ROUTE}
           className="inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-lg border border-success-200 bg-success-50 px-4 py-3 text-body font-bold text-success-800 transition hover:bg-success-100 active:scale-95 dark:border-success-900/50 dark:bg-success-950/30 dark:text-success-300"
         >
           ✅ {isDE ? 'Alles erledigt — zum Lernpfad' : 'All caught up — go to path'}

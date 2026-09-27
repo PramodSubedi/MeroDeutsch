@@ -43,6 +43,7 @@ import { GENDER_PRONOUNS } from '../data/genderPronouns';
 import { pickRandom } from '../utils/questionGenerator';
 import { useWeakKeysFor } from '../hooks/useSkillAccuracy';
 import { getHint } from '../data/hints';
+import { setPageFocus } from '../lib/pageStateSignal';
 import type { ArticleItem } from '../types';
 
 
@@ -86,6 +87,25 @@ export function ArticlesPage() {
   // uniformly. This is a one-time REORDER of the loaded pool, not a re-fetch —
   // the whole pool stays reachable, we just stop ignoring known weak spots.
   const weakNouns = useWeakKeysFor('articles');
+
+  // Tell the AI companion what noun is on screen, so "explain this page" can
+  // talk about THIS one instead of the module in general. Cleared on unmount so
+  // a stale focus can never leak into the next route.
+  useEffect(() => {
+    if (!currentItem) {
+      setPageFocus(null);
+      return;
+    }
+    setPageFocus({
+      subject: currentItem.noun,
+      detail: `${currentItem.art} · ${currentItem.meaning}`,
+      suggestedQuestion:
+        langMode === 'german'
+          ? `Erklär mir ${currentItem.noun}`
+          : `Explain ${currentItem.noun} to me`,
+    });
+    return () => setPageFocus(null);
+  }, [currentItem, langMode]);
 
   useEffect(() => {
     let cancelled = false;

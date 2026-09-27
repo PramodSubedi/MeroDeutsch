@@ -5,136 +5,71 @@
   "kind": "core",
   "cluster": 2,
   "title": {
-    "en": "Food & the Accusative",
-    "de": "Essen & Akkusativ"
+    "en": "Restaurant, Food & Ordering",
+    "de": "Restaurant, Essen & Bestellen"
   },
   "theme": {
-    "en": "Ordering · Direct objects · der → den",
-    "de": "Bestellen · Objekte · der → den"
+    "en": "Polite ordering (möchten), food vocab, applying accusative",
+    "de": "Höflich bestellen (möchten), Essensvokabular, Akkusativ anwenden"
   },
   "goal": {
-    "en": "Order food and use the accusative correctly",
-    "de": "Essen bestellen und den Akkusativ korrekt benutzen"
+    "en": "Order food/drinks politely in a restaurant, apply accusative case to food items.",
+    "de": "Im Restaurant höflich Essen/Trinken bestellen, Akkusativ bei Essenswörtern anwenden."
   },
   "nodes": [
-    {
-      "id": "m10-roleplay",
-      "kind": "learn",
-      "label": {
-        "en": "Ordering Food",
-        "de": "Essen bestellen"
-      },
-      "to": "/roleplay?scene=cafe"
-    },
-    {
-      "id": "m10-accusative",
-      "kind": "practice",
-      "label": {
-        "en": "Akkusativ Builder",
-        "de": "Akkusativ-Bau"
-      },
-      "to": "/sentence-builder?focus=akkusativ"
-    },
-    {
-      "id": "m10-gate",
-      "kind": "checkpoint",
-      "label": {
-        "en": "Module 10 Checkpoint",
-        "de": "Modul 10 Prüfung"
-      },
-      "to": "/checkpoint/9"
-    }
+    { "id": "m10-learn", "type": "learn", "label": { "en": "Café Ordering", "de": "Café-Bestellung" }, "to": "/roleplay?scene=cafe", "xp": 10 },
+    { "id": "m10-practice", "type": "practice", "label": { "en": "Restaurant Roleplay", "de": "Restaurant-Rollenspiel" }, "to": "/roleplay?scene=restaurant", "xp": 20 },
+    { "id": "m10-checkpoint", "type": "checkpoint", "label": { "en": "Module 10 Checkpoint", "de": "Modul 10 Prüfung" }, "to": "/checkpoint/9", "xp": 50 }
   ],
   "checkpoint": {
     "moduleType": "a1-checkpoint",
     "specs": [
-      {
-        "type": "grammar-drill",
-        "count": 6
-      },
-      {
-        "type": "vocab-translation",
-        "count": 6
-      }
+      { "type": "vocab-translation", "count": 8 },
+      { "type": "listening-gap", "count": 4 }
     ]
   },
   "pedagogy": {
-    "ruleTable": {
-      "title": {
-        "en": "Akkusativ",
-        "de": "Akkusativ"
+    "grammarNotes": [
+      "Polite ordering: 'Ich möchte bitte...' (NOT 'Ich will...')",
+      "Apply accusative to food: masculine items shift (der Kaffee → einen Kaffee)",
+      "Feminine/Neuter/Plural food items: NO change in accusative",
+      "Asking for bill: 'Die Rechnung, bitte.' / 'Zusammen oder getrennt?'"
+    ],
+    "ruleTables": [
+      {
+        "title": {
+          "en": "Restaurant Phrases & Accusative Application",
+          "de": "Restaurant-Phrasen & Akkusativ-Anwendung"
+        },
+        "columns": ["Situation", "German", "English", "Accusative Note"],
+        "rows": [
+          ["Order drink (masc)", "Ich möchte einen Kaffee.", "I'd like a coffee.", "der Kaffee → einen"],
+          ["Order drink (neut)", "Ich möchte ein Wasser.", "I'd like a water.", "das Wasser → ein (no change)"],
+          ["Order food (masc)", "Ich nehme einen Salat.", "I'll take a salad.", "der Salat → einen"],
+          ["Order food (fem)", "Ich bestelle eine Suppe.", "I order a soup.", "die Suppe → eine (no change)"],
+          ["Ask for bill", "Die Rechnung, bitte.", "The bill, please.", "—"],
+          ["Pay together", "Zusammen, bitte.", "Together, please.", "—"],
+          ["Pay separate", "Getrennt, bitte.", "Separately, please.", "—"]
+        ]
+      }
+    ],
+    "callouts": [
+      "⚠️ TRAP: 'Ich möchte ein Kaffee' is WRONG — Kaffee is masculine → 'einen Kaffee'!",
+      "Polite: 'Ich möchte bitte...' / Rude: 'Ich will...' / 'Gib mir...'",
+      "Tip (Trinkgeld): Tell waiter total when paying (€18.50 bill → hand €20, say 'Stimmt so')"
+    ],
+    "honorifics": {
+      "du": {
+        "en": "With friends: 'Was möchtest du essen?'",
+        "de": "Mit Freunden: 'Was möchtest du essen?'"
       },
-      "rows": [
-        {
-          "label": {
-            "en": "der → den",
-            "de": "der → den"
-          },
-          "usage": {
-            "en": "masculine direct object",
-            "de": "männliches Objekt"
-          },
-          "example": {
-            "en": "Ich sehe den Mann.",
-            "de": "Ich sehe den Mann."
-          }
-        },
-        {
-          "label": {
-            "en": "ein → einen",
-            "de": "ein → einen"
-          },
-          "usage": {
-            "en": "masculine, no article",
-            "de": "männlich, ohne Artikel"
-          },
-          "example": {
-            "en": "Ich esse einen Apfel.",
-            "de": "Ich esse einen Apfel."
-          }
-        },
-        {
-          "label": {
-            "en": "kein → keinen",
-            "de": "kein → keinen"
-          },
-          "usage": {
-            "en": "negated masculine",
-            "de": "verneintes Maskulinum"
-          },
-          "example": {
-            "en": "Ich habe keinen Stuhl.",
-            "de": "Ich habe keinen Stuhl."
-          }
-        },
-        {
-          "label": {
-            "en": "die / das → same",
-            "de": "die / das → gleich"
-          },
-          "usage": {
-            "en": "feminine, neuter, plural",
-            "de": "Feminin, Neutrum, Plural"
-          },
-          "example": {
-            "en": "Ich trinke das Wasser.",
-            "de": "Ich trinke das Wasser."
-          }
-        }
-      ]
-    },
-    "grammarNote": {
-      "en": "Only MASCULINE articles change in the accusative: der → den, ein → einen, kein → keinen. Feminine, neuter and plural stay the same.",
-      "de": "Nur MASKULINE Artikel ändern sich im Akkusativ: der → den, ein → einen, kein → keinen. Feminin, Neutrum und Plural bleiben gleich."
+      "Sie": {
+        "en": "With waiter: 'Was möchten Sie bestellen?'",
+        "de": "Mit Kellner: 'Was möchten Sie bestellen?'"
+      }
     }
   },
-  "vocabCategories": [
-    "food",
-    "food-drink",
-    "taste-texture-adjectives"
-  ],
-  "grammarCategories": [
-    "cases"
-  ],
+  "vocabCategories": ["food-drink", "restaurant", "taste-texture-adjectives"],
+  "grammarCategories": ["accusative", "modal-verbs"],
   "hasLesson": true
 }

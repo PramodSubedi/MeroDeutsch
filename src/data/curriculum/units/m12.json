@@ -5,131 +5,101 @@
   "kind": "core",
   "cluster": 3,
   "title": {
-    "en": "City & Transport",
-    "de": "Stadt & Verkehr"
+    "en": "Professions, Work & Modal Verbs",
+    "de": "Berufe, Arbeit & Modalverben"
   },
   "theme": {
-    "en": "Places · Directions · nach/zu/in",
-    "de": "Orte · Richtungen · nach/zu/in"
+    "en": "Job titles, female suffix -in, modal verbs (können/müssen/wollen/dürfen/sollen/möchten), sentence bracket",
+    "de": "Berufsbezeichnungen, weibliche Endung -in, Modalverben, Satzklammer"
   },
   "goal": {
-    "en": "Ask for and give directions, and use transport",
-    "de": "Nach dem Weg fragen, Richtungen geben, Verkehr nutzen"
+    "en": "State profession, use modal verbs for ability/obligation/permission/wishes, build modal sentence brackets.",
+    "de": "Beruf angeben, Modalverben für Fähigkeit/Pflicht/Erlaubnis/Wünsche nutzen, Modalsatzklammern bilden."
   },
   "nodes": [
-    {
-      "id": "m12-roleplay",
-      "kind": "learn",
-      "label": {
-        "en": "Asking Directions",
-        "de": "Nach dem Weg fragen"
-      },
-      "to": "/roleplay?scene=directions"
-    },
-    {
-      "id": "m12-travel",
-      "kind": "practice",
-      "label": {
-        "en": "City & Travel",
-        "de": "Stadt & Reisen"
-      },
-      "to": "/vocab-trainer?category=city-travel"
-    },
-    {
-      "id": "m12-gate",
-      "kind": "checkpoint",
-      "label": {
-        "en": "Module 12 Checkpoint",
-        "de": "Modul 12 Prüfung"
-      },
-      "to": "/checkpoint/11"
-    }
-  ],
-  "bonus": [
-    {
-      "id": "m12-pron",
-      "kind": "bonus",
-      "label": {
-        "en": "Pronunciation",
-        "de": "Aussprache"
-      },
-      "to": "/pronunciation",
-      "bonus": true
-    }
+    { "id": "m12-learn", "type": "learn", "label": { "en": "Modal Verbs", "de": "Modalverben" }, "to": "/grammar?tab=modals", "xp": 10 },
+    { "id": "m12-practice", "type": "practice", "label": { "en": "Tic-Tac-Toe", "de": "Tic-Tac-Toe" }, "to": "/games?game=tictactoe", "xp": 20 },
+    { "id": "m12-checkpoint", "type": "checkpoint", "label": { "en": "Module 12 Checkpoint", "de": "Modul 12 Prüfung" }, "to": "/checkpoint/11", "xp": 50 }
   ],
   "checkpoint": {
     "moduleType": "a1-checkpoint",
     "specs": [
-      {
-        "type": "vocab-translation",
-        "count": 8
-      },
-      {
-        "type": "listening-gap",
-        "count": 4
-      }
+      { "type": "grammar-drill", "count": 6 },
+      { "type": "vocab-translation", "count": 6 }
     ]
   },
   "pedagogy": {
-    "ruleTable": {
-      "title": {
-        "en": "Directional prepositions",
-        "de": "Richtungspräpositionen"
+    "grammarNotes": [
+      "Female professions: add -in to masculine (Lehrer → Lehrerin, Arzt → Ärztin), plural -innen",
+      "Stating profession: 'als' for titles (Ich arbeite als Lehrer), 'bei' + Dative for companies (Ich arbeite bei Siemens)",
+      "NO article before job titles with sein/werden: Ich bin Lehrer (NOT: Ich bin ein Lehrer)",
+      "Modal verbs: conjugated in Position 2, main verb → END in INFINITIVE (Satzklammer)",
+      "Modal conjugation: ich/er/sie/es share SAME form (no ending), du adds -st, wir/sie/Sie add -en"
+    ],
+    "ruleTables": [
+      {
+        "title": {
+          "en": "Female Profession Formation",
+          "de": "Weibliche Berufsbildung"
+        },
+        "columns": ["Masculine", "Feminine", "Plural Feminine", "Meaning"],
+        "rows": [
+          ["der Lehrer", "die Lehrerin", "die Lehrerinnen", "teacher"],
+          ["der Arzt", "die Ärztin", "die Ärztinnen", "doctor"],
+          ["der Student", "die Studentin", "die Studentinnen", "student"],
+          ["der Ingenieur", "die Ingenieurin", "die Ingenieurinnen", "engineer"],
+          ["der Verkäufer", "die Verkäuferin", "die Verkäuferinnen", "salesperson"]
+        ]
       },
-      "rows": [
-        {
-          "label": {
-            "en": "nach",
-            "de": "nach"
-          },
-          "usage": {
-            "en": "cities, countries, directions",
-            "de": "Städte, Länder, Richtungen"
-          },
-          "example": {
-            "en": "nach links, nach Berlin",
-            "de": "nach links, nach Berlin"
-          }
+      {
+        "title": {
+          "en": "Modal Verb Conjugation (Present Tense)",
+          "de": "Modalverb-Konjugation (Präsens)"
         },
-        {
-          "label": {
-            "en": "zu / zum / zur",
-            "de": "zu / zum / zur"
-          },
-          "usage": {
-            "en": "specific places, people",
-            "de": "bestimmte Orte, Personen"
-          },
-          "example": {
-            "en": "zum Bahnhof, zur Schule",
-            "de": "zum Bahnhof, zur Schule"
-          }
+        "columns": ["Pronoun", "können (can)", "müssen (must)", "wollen (want)", "dürfen (may)", "sollen (should)", "möchten (would like)"],
+        "rows": [
+          ["ich", "kann", "muss", "will", "darf", "soll", "möchte"],
+          ["du", "kannst", "musst", "willst", "darfst", "sollst", "möchtest"],
+          ["er/sie/es", "kann", "muss", "will", "darf", "soll", "möchte"],
+          ["wir", "können", "müssen", "wollen", "dürfen", "sollen", "möchten"],
+          ["ihr", "könnt", "müsst", "wollt", "dürft", "sollt", "möchtet"],
+          ["sie/Sie", "können", "müssen", "wollen", "dürfen", "sollen", "möchten"]
+        ]
+      },
+      {
+        "title": {
+          "en": "Modal Sentence Bracket (Satzklammer)",
+          "de": "Modalsatzklammer"
         },
-        {
-          "label": {
-            "en": "in / ins",
-            "de": "in / ins"
-          },
-          "usage": {
-            "en": "inside a building",
-            "de": "in ein Gebäude hinein"
-          },
-          "example": {
-            "en": "ins Kaufhaus",
-            "de": "ins Kaufhaus"
-          }
-        }
-      ]
-    },
-    "grammarNote": {
-      "en": "In formal instructions the verb leads and Sie follows immediately: Gehen Sie geradeaus! Fahren Sie nach links!",
-      "de": "In formellen Anweisungen steht das Verb vorn, Sie folgt sofort: Gehen Sie geradeaus! Fahren Sie nach links!"
+        "columns": ["Pos 1", "Pos 2 (Modal)", "Middle", "END (Infinitive)"],
+        "rows": [
+          ["Ich", "kann", "schon gut Deutsch", "sprechen."],
+          ["Er", "muss", "heute lange", "arbeiten."],
+          ["Hier", "darf", "man nicht", "rauchen."],
+          ["Wir", "wollen", "nach Berlin", "fahren."],
+          ["Möchtest", "du", "einen Kaffee", "trinken?"]
+        ]
+      }
+    ],
+    "callouts": [
+      "⚠️ TRAP: 'Ich kann Deutsch spreche' is WRONG — end verb MUST be infinitive: 'Ich kann Deutsch SPRECHEN'",
+      "⚠️ TRAP: 'Ich musst lernen' / 'Er kannt' — ich/er/sie/es have NO ending on modals!",
+      "⚠️ TRAP: 'Ich muss nicht' = I don't have to (optional). 'Ich darf nicht' = I'm NOT allowed (forbidden)!",
+      "Job titles: Drop 'ein' — 'Ich bin Student' not 'Ich bin ein Student'",
+      "Modal order: können > müssen > wollen > dürfen > sollen > möchten (frequency)"
+    ],
+    "honorifics": {
+      "du": {
+        "en": "Informal: 'Was willst du machen?'",
+        "de": "Informell: 'Was willst du machen?'"
+      },
+      "Sie": {
+        "en": "Formal: 'Was möchten Sie machen?'",
+        "de": "Formell: 'Was möchten Sie machen?'"
+      }
     }
   },
-  "vocabCategories": [
-    "city-travel",
-    "travel",
-    "travel-questions"
-  ],
+  "vocabCategories": ["professions", "action-verbs", "modal-verbs"],
+  "grammarCategories": ["modal-verbs", "professions", "sentence-bracket"],
   "hasLesson": true
 }

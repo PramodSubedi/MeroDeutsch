@@ -7,9 +7,35 @@
  * fall back to a neutral "Learn German / Deutsch lernen".
  */
 
+import { CEFR_LEVELS } from '../data/cefrLevels';
+
+/**
+ * The level PAGES, generated from the level registry.
+ *
+ * Order matters and is not cosmetic: `contextLabelFor` / `labelForPath` return
+ * the FIRST prefix match, so `/learn/a1` has to be tried before the bare
+ * `/learn`. With the list reversed, the A1 course would be labelled "Levels"
+ * in the header chip — the exact "two registries disagree" bug this file
+ * exists to prevent, reintroduced one level down.
+ *
+ * Generated rather than hand-written so a new level cannot exist in
+ * cefrLevels.ts and be missing from here.
+ */
+const CEFR_LEVEL_LABELS: ReadonlyArray<readonly [string, { en: string; de: string }]> =
+  CEFR_LEVELS.map((level) => [
+    `/learn/${level.id}`,
+    { en: `${level.code} Path`, de: `${level.code}-Lernpfad` },
+  ]);
+
 export const ROUTE_LABELS: ReadonlyArray<readonly [string, { en: string; de: string }]> = [
   ['/home', { en: 'Home', de: 'Startseite' }],
-  ['/learn', { en: 'A1 Path', de: 'A1-Lernpfad' }],
+  // Order is load-bearing: the level pages come BEFORE the bare `/learn`, because
+  // lookup returns the first PREFIX match. With `/learn` first, `/learn/a1`
+  // matches it and the A1 course is labelled "Levels" in the header chip.
+  ...CEFR_LEVEL_LABELS,
+  // The level GRID — the chooser, not a course. It used to be labelled
+  // "A1 Path" because /learn WAS the A1 path; it is now the parent of them all.
+  ['/learn', { en: 'Levels', de: 'Niveaus' }],
   ['/dashboard', { en: 'Dashboard', de: 'Übersicht' }],
   ['/practice', { en: 'Practice', de: 'Übung' }],
   // A1 learning modules

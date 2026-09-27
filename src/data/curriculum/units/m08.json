@@ -3,152 +3,61 @@
   "order": 8,
   "code": "M08",
   "kind": "core",
-  "cluster": 1,
+  "cluster": 2,
   "title": {
-    "en": "Verbs & V2 Word Order",
-    "de": "Verben & V2-Wortstellung"
+    "en": "Accusative Case & Direct Objects",
+    "de": "Akkusativ & Direkte Objekte"
   },
   "theme": {
-    "en": "Present tense · Verb-second position",
-    "de": "Präsens · Verb an Position zwei"
+    "en": "Masculine shift der→den, transitive verbs, direct objects",
+    "de": "Maskuliner Wechsel der→den, transitive Verben, direkte Objekte"
   },
   "goal": {
-    "en": "Conjugate verbs and keep the verb in second position",
-    "de": "Verben konjugieren und das Verb an Position zwei halten"
+    "en": "Identify direct objects, apply accusative masculine shift, use transitive verbs correctly.",
+    "de": "Direkte Objekte erkennen, maskulinen Akkusativ-Wechsel anwenden, transitive Verben richtig nutzen."
   },
   "nodes": [
-    {
-      "id": "m08-grammar",
-      "kind": "learn",
-      "label": {
-        "en": "Verbs & Word Order",
-        "de": "Verben & Wortstellung"
-      },
-      "to": "/grammar"
-    },
-    {
-      "id": "m08-sentence",
-      "kind": "practice",
-      "label": {
-        "en": "Sentence Builder",
-        "de": "Satzbau"
-      },
-      "to": "/sentence-builder"
-    },
-    {
-      "id": "m08-gate",
-      "kind": "checkpoint",
-      "label": {
-        "en": "Module 8 Checkpoint",
-        "de": "Modul 8 Prüfung"
-      },
-      "to": "/checkpoint/7"
-    }
-  ],
-  "bonus": [
-    {
-      "id": "m08-dice",
-      "kind": "bonus",
-      "label": {
-        "en": "Verb Dice",
-        "de": "Verben-Würfelspiel"
-      },
-      "to": "/games?game=dice",
-      "bonus": true
-    },
-    {
-      "id": "m08-sprint",
-      "kind": "bonus",
-      "label": {
-        "en": "Article Sprint",
-        "de": "Artikel-Sprint"
-      },
-      "to": "/article-sprint",
-      "bonus": true
-    }
+    { "id": "m08-learn", "kind": "learn", "label": { "en": "Accusative Builder", "de": "Akkusativ-Bau" }, "to": "/sentence-builder?focus=akkusativ", "xp": 10 },
+    { "id": "m08-practice", "kind": "practice", "label": { "en": "Article Sprint", "de": "Artikel-Sprint" }, "to": "/article-sprint", "xp": 20 },
+    { "id": "m08-checkpoint", "kind": "checkpoint", "label": { "en": "Module 8 Checkpoint", "de": "Modul 8 Prüfung" } }
   ],
   "checkpoint": {
     "moduleType": "a1-checkpoint",
     "specs": [
-      {
-        "type": "grammar-drill",
-        "count": 12
-      }
+      { "type": "grammar-drill", "count": 6 },
+      { "type": "vocab-translation", "count": 6 }
     ]
   },
   "pedagogy": {
-    "grammarComparison": {
-      "title": {
-        "en": "Word order",
-        "de": "Wortstellung"
-      },
-      "rows": [
-        {
-          "language": {
-            "en": "English",
-            "ne": "नेपाली",
-            "de": "Deutsch"
-          },
-          "order": {
-            "en": "SVO",
-            "ne": "SOV",
-            "de": "V2 (main)"
-          },
-          "example": {
-            "en": "I drink tea.",
-            "ne": "म चिया पिउँछु।",
-            "de": "Ich trinke Tee."
-          }
+    "grammarNotes": [
+      "Direct object = receiver of action (Wen oder was?)",
+      "ONLY masculine articles change: der→den, ein→einen, kein→keinen",
+      "Feminine (die/eine), Neuter (das/ein), Plural (die/keine) stay IDENTICAL to Nominative",
+      "Transitive verbs triggering accusative: haben, trinken, essen, kaufen, brauchen, sehen, möchten, bestellen"
+    ],
+    "ruleTables": [
+      {
+        "title": {
+          "en": "Accusative Article Shift Matrix",
+          "de": "Akkusativ-Artikel-Wechsel-Matrix"
         },
-        {
-          "language": {
-            "en": "Nepali",
-            "ne": "नेपाली",
-            "de": "Deutsch"
-          },
-          "order": {
-            "en": "SVO",
-            "ne": "SOV",
-            "de": "V2/verb-final"
-          },
-          "example": {
-            "en": "I drink tea.",
-            "ne": "म चिया पिउँछु।",
-            "de": "Ich trinke Tee."
-          }
-        },
-        {
-          "language": {
-            "en": "German",
-            "ne": "नेपाली",
-            "de": "Deutsch"
-          },
-          "order": {
-            "en": "SVO",
-            "ne": "SOV",
-            "de": "V2 (Haupt-) / verb-final (Nebensatz)"
-          },
-          "example": {
-            "en": "I drink tea.",
-            "ne": "म चिया पिउँछु।",
-            "de": "Ich trinke Tee. (V2 im Hauptsatz)"
-          }
-        }
-      ]
-    },
-    "grammarNote": {
-      "en": "The conjugated verb is always the SECOND element. Start with a time word and the subject moves to position three: Heute gehe ich zur Schule.",
-      "de": "Das konjugierte Verb steht IMMER an zweiter Stelle. Beginnt der Satz mit einem Zeitwort, rückt das Subjekt auf Position drei: Heute gehe ich zur Schule."
-    }
+        "columns": ["Gender/Number", "Nominative (Subject)", "Accusative (Direct Object)", "Indefinite Acc.", "Negative Acc."],
+        "rows": [
+          ["Masculine", "der Tisch", "den Tisch", "einen Tisch", "keinen Tisch"],
+          ["Feminine", "die Suppe", "die Suppe", "eine Suppe", "keine Suppe"],
+          ["Neuter", "das Brot", "das Brot", "ein Brot", "kein Brot"],
+          ["Plural", "die Äpfel", "die Äpfel", "— Äpfel", "keine Äpfel"]
+        ]
+      }
+    ],
+    "callouts": [
+      "🚨 CRITICAL: ONLY masculine (der) shifts in accusative! Feminine, neuter, plural = NO CHANGE!",
+      "Verbs that ALWAYS take accusative objects: bestellen, trinken, essen, haben, kaufen, brauchen, sehen, möchten",
+      "Example: Ich habe EINEN Kaffee (masc). Ich esse EIN Brot (neut). Ich bestelle EINE Suppe (fem)."
+    ],
+    "honorifics": {}
   },
-  "vocabCategories": [
-    "action-verbs"
-  ],
-  "grammarCategories": [
-    "sein",
-    "haben",
-    "weakVerb",
-    "stem"
-  ],
+  "vocabCategories": ["food-drink", "action-verbs"],
+  "grammarCategories": ["accusative", "cases"],
   "hasLesson": true
 }

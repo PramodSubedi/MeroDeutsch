@@ -5,130 +5,83 @@
   "kind": "core",
   "cluster": 1,
   "title": {
-    "en": "Calendar & Time",
-    "de": "Kalender & Uhrzeit"
+    "en": "V2 Word Order & Sentence Topology",
+    "de": "V2-Wortstellung & Satztopologie"
   },
   "theme": {
-    "en": "Clock times · Days · um/am/im",
-    "de": "Uhrzeiten · Tage · um/am/im"
+    "en": "Verb position 2, subject-verb inversion, TeKaMoLo",
+    "de": "Verbposition 2, Subjekt-Verb-Inversion, TeKaMoLo"
   },
   "goal": {
-    "en": "State times, days and dates correctly",
-    "de": "Zeiten, Tage und Daten korrekt angeben"
+    "en": "Build correct German main clauses by placing the conjugated verb in Position 2, master inversion when time/place leads.",
+    "de": "Richtige deutsche Hauptsätze bilden: konjugiertes Verb auf Position 2, Inversion bei Zeit/Ort vorne beherrschen."
   },
   "nodes": [
-    {
-      "id": "m07-calendar",
-      "kind": "learn",
-      "label": {
-        "en": "Calendar & Time",
-        "de": "Kalender & Uhrzeit"
-      },
-      "to": "/calendar"
-    },
-    {
-      "id": "m07-roleplay",
-      "kind": "practice",
-      "label": {
-        "en": "Making Plans",
-        "de": "Verabredungen"
-      },
-      "to": "/roleplay?scene=treffen"
-    },
-    {
-      "id": "m07-gate",
-      "kind": "checkpoint",
-      "label": {
-        "en": "Module 7 Checkpoint",
-        "de": "Modul 7 Prüfung"
-      },
-      "to": "/checkpoint/6"
-    }
-  ],
-  "bonus": [
-    {
-      "id": "m07-time-blitz",
-      "kind": "bonus",
-      "label": {
-        "en": "Time Practice",
-        "de": "Uhrzeit-Üben"
-      },
-      "to": "/rapid-fire?mode=calendar-translation",
-      "bonus": true
-    }
+    { "id": "m07-learn", "kind": "learn", "label": { "en": "V2 Word Order", "de": "V2-Wortstellung" }, "to": "/grammar?tab=v2", "xp": 10 },
+    { "id": "m07-practice", "kind": "practice", "label": { "en": "Sentence Builder", "de": "Satzbau" }, "to": "/sentence-builder", "xp": 20 },
+    { "id": "m07-checkpoint", "kind": "checkpoint", "label": { "en": "Module 7 Checkpoint", "de": "Modul 7 Prüfung" } }
   ],
   "checkpoint": {
     "moduleType": "a1-checkpoint",
     "specs": [
-      {
-        "type": "calendar-translation",
-        "count": 7
-      },
-      {
-        "type": "vocab-translation",
-        "count": 5
-      }
+      { "type": "grammar-drill", "count": 10 },
+      { "type": "vocab-translation", "count": 4 }
     ]
   },
   "pedagogy": {
-    "ruleTable": {
-      "title": {
-        "en": "Time prepositions",
-        "de": "Zeitpräpositionen"
+    "grammarNotes": [
+      "Main clause (Hauptsatz): conjugated verb ALWAYS in Position 2",
+      "Position 1 can be: Subject, Time, Place, Object, or Adverb",
+      "When non-subject takes Position 1, subject moves to Position 3 (INVERSION)",
+      "Multiple adverbials follow TeKaMoLo order: Temporal → Kausal → Modal → Lokal"
+    ],
+    "ruleTables": [
+      {
+        "title": {
+          "en": "V2 Position Matrix",
+          "de": "V2-Positions-Matrix"
+        },
+        "columns": ["Pos 1 (Any Element)", "Pos 2 (VERB)", "Pos 3 (Subject)", "Pos 4+ (Rest)"],
+        "rows": [
+          ["Ich", "trinke", "—", "heute Tee."],
+          ["Heute", "trinke", "ich", "Tee."],
+          ["In Berlin", "wohnt", "meine Schwester", "seit zwei Jahren."],
+          ["Gestern", "war", "ich", "müde."],
+          ["Morgen", "fahre", "ich", "nach München."],
+          ["Den Apfel", "isst", "er", "gerne."]
+        ]
       },
-      "rows": [
-        {
-          "label": {
-            "en": "um",
-            "de": "um"
-          },
-          "usage": {
-            "en": "exact clock times",
-            "de": "genaue Uhrzeiten"
-          },
-          "example": {
-            "en": "um drei Uhr",
-            "de": "um drei Uhr"
-          }
+      {
+        "title": {
+          "en": "TeKaMoLo Adverbial Order",
+          "de": "TeKaMoLo Adverbial-Reihenfolge"
         },
-        {
-          "label": {
-            "en": "am",
-            "de": "am"
-          },
-          "usage": {
-            "en": "days and dates",
-            "de": "Tage und Daten"
-          },
-          "example": {
-            "en": "am Montag",
-            "de": "am Montag"
-          }
-        },
-        {
-          "label": {
-            "en": "im",
-            "de": "im"
-          },
-          "usage": {
-            "en": "months and seasons",
-            "de": "Monate und Jahreszeiten"
-          },
-          "example": {
-            "en": "im Juli",
-            "de": "im Juli"
-          }
-        }
-      ]
-    },
-    "grammarNote": {
-      "en": "The preposition depends on the unit of time: um for clock times, am for days and dates, im for months and seasons.",
-      "de": "Die Präposition hängt von der Zeiteinheit ab: um für Uhrzeiten, am für Tage und Daten, im für Monate und Jahreszeiten."
+        "columns": ["Type", "Question", "Examples", "Position"],
+        "rows": [
+          ["Temporal (Time)", "Wann?", "heute, gestern, morgens, um 8 Uhr", "First"],
+          ["Kausal (Reason)", "Warum?", "deshalb, daher, wegen dem Regen", "Second"],
+          ["Modal (Manner)", "Wie?", "mit dem Bus, schnell, gerne", "Third"],
+          ["Lokal (Place)", "Wo?", "in Berlin, nach Hause, im Park", "Last"]
+        ]
+      }
+    ],
+    "callouts": [
+      "The verb NEVER moves from Position 2 in a main clause — this is the GOLDEN RULE!",
+      "Inversion is MANDATORY: 'Heute lerne ich' NOT 'Heute ich lerne'",
+      "Subordinate clauses (weil, dass, wenn) push verb to the END — different rule!"
+    ],
+    "honorifics": {
+      "du": {
+        "en": "Informal inversion: 'Heute lernst du'",
+        "de": "Informelle Inversion: 'Heute lernst du'"
+      },
+      "Sie": {
+        "en": "Formal inversion: 'Heute lernen Sie'",
+        "de": "Formelle Inversion: 'Heute lernen Sie'"
+      }
     }
   },
-  "vocabCategories": [
-    "time",
-    "nature-time"
-  ],
+  "vocabCategories": ["v2-order", "action-verbs", "nature-time"],
+  "grammarCategories": ["v2-word-order", "inversion", "tekamolo"],
   "hasLesson": true
 }

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useLang } from '../../hooks/useLang';
 import { useAuth } from '../../hooks/useAuth';
+import { A1_PATH_ROUTE } from '../../data/cefrLevels';
 
 /**
  * Shared module navigation chrome for A1 learning module routes.
@@ -19,7 +20,7 @@ export function ModuleChrome() {
   return (
     <div className="mb-2 flex flex-wrap items-center gap-x-3 gap-y-2">
       <Link
-        to={isAuthenticated ? '/learn' : '/home'}
+        to={isAuthenticated ? A1_PATH_ROUTE : '/home'}
         className="inline-flex shrink-0 items-center gap-1 text-meta font-semibold text-accent-600 hover:text-accent-800 dark:text-accent-300 dark:hover:text-accent-200"
       >
         ← {isDE

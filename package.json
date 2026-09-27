@@ -8,6 +8,11 @@
     "build": "tsc -b && vite build",
     "typecheck": "tsc -b",
     "check:answers": "tsx src/utils/answerNormalize.check.ts",
+    "check:debugmode": "tsx src/lib/debugMode.check.ts",
+    "check:qabridge": "tsx src/lib/qaBridge.check.ts",
+    "check:userfilters": "tsx src/admin/data/filterUsers.check.ts",
+    "check:analytics": "tsx src/admin/data/analytics.check.ts",
+    "check:deployfilter": "tsx scripts/ci/deployFilter.check.ts",
     "lint": "oxlint",
     "enrich": "tsx scripts/enrich-cards.ts",
     "extract-vocab": "tsx scripts/extract-vocab.ts",
@@ -29,7 +34,8 @@
     "curriculum:validate": "tsx scripts/curriculum/validate.ts",
     "curriculum:verify": "tsx scripts/curriculum/verify.ts",
     "curriculum:barrel": "tsx scripts/curriculum/export.ts --barrel-only",
-    "curriculum:baseline": "tsx scripts/curriculum/rebuild-baseline.ts"
+    "curriculum:baseline": "tsx scripts/curriculum/rebuild-baseline.ts",
+    "check:chatbot": "tsx src/lib/chatbot.check.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.112.3",
@@ -40,12 +46,14 @@
     "dexie-react-hooks": "^4.4.0",
     "framer-motion": "^13.1.1",
     "lucide-react": "^1.31.0",
+    "marked": "^15.0.12",
     "pdf-parse": "^2.4.5",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-helmet-async": "^3.0.0",
     "react-router-dom": "^7.18.2",
-    "recharts": "^3.10.1"
+    "recharts": "^3.10.1",
+    "zustand": "^5.0.15"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.3",

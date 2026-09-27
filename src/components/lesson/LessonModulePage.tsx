@@ -44,6 +44,7 @@ import { ExerciseRoundFooter } from '../exercises/ExerciseRoundFooter';
 import { LessonPracticeInline } from './LessonPractice';
 import { buildMcq, pickNUnique } from '../../utils/questionGenerator';
 import { theme } from '../../config/theme';
+import { A1_PATH_ROUTE } from '../../data/cefrLevels';
 import { EmptyState } from '../EmptyState';
 import { LoadingBlock } from '../common/LoadingBlock';
 import type { LexiconEntry, UnitLessonContent } from '../../data/curriculum/schema';
@@ -274,7 +275,7 @@ export function LessonModulePage() {
           title={isDE ? 'Lektion nicht gefunden' : 'Lesson not found'}
           description={isDE ? 'Diese Nummer gibt es nicht.' : 'That lesson number does not exist.'}
         />
-        <Link to="/learn" className={`${theme.button.secondary} mt-4`}>
+        <Link to={A1_PATH_ROUTE} className={`${theme.button.secondary} mt-4`}>
           {isDE ? 'Zurück zum Lernpfad' : 'Back to the learning path'}
         </Link>
       </main>
@@ -300,7 +301,7 @@ export function LessonModulePage() {
               : 'No lesson content has been imported for this unit yet.'
           }
         />
-        <Link to="/learn" className={`${theme.button.secondary} mt-4`}>
+        <Link to={A1_PATH_ROUTE} className={`${theme.button.secondary} mt-4`}>
           {isDE ? 'Zurück zum Lernpfad' : 'Back to the learning path'}
         </Link>
       </main>
@@ -327,7 +328,7 @@ export function LessonModulePage() {
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-6">
       <Link
-        to="/learn"
+        to={A1_PATH_ROUTE}
         className="inline-flex min-h-[44px] items-center gap-2 text-meta font-medium text-ink-600 hover:text-ink-900 dark:text-ink-300 dark:hover:text-ink-50"
       >
         <ArrowLeft className="h-4 w-4" aria-hidden="true" />
