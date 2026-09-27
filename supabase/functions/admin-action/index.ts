@@ -35,7 +35,13 @@ import {
   type RepairEdit,
   type TargetUser,
 } from './guards.ts';
-import { checkPublishSet, checkRollback, checkUnitShape, validateConfigWrite } from './publish.ts';
+import {
+  checkPublishSet,
+  checkRollback,
+  checkUnitShape,
+  normalizeConfigValue,
+  validateConfigWrite,
+} from './publish.ts';
 import { ALLOW_ORIGIN_SECRET, corsHeaders } from './cors.ts';
 
 // CORS is computed PER REQUEST because it echoes the caller's own Origin, so it
@@ -390,10 +396,11 @@ Deno.serve(async (req: Request) => {
     }
 
     const key = cfg!.key as string;
-    // Normalise before storing, so `flagReader.ts` always unwraps to the same
-    // shape `resolveSource` expects.
-    const value: unknown =
-      typeof cfg!.value === 'boolean' ? cfg!.value : String(cfg!.value).trim().toLowerCase();
+    // Canonicalise for STORAGE, not comparison. This used to be an inline
+    // `.trim().toLowerCase()`, which silently corrupted every case-sensitive
+    // string key (`Qwen2.5:3b` → `qwen2.5:3b`). The rule now lives in
+    // `normalizeConfigValue`, next to the validator that gated it.
+    const value = normalizeConfigValue(key, cfg!.value as string | boolean);
 
     const { data: before } = await db.from('app_config').select('value').eq('key', key).maybeSingle();
     const { error } = await db

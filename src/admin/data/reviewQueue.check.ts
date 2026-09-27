@@ -9,11 +9,10 @@
  * Run: npx tsx src/admin/data/reviewQueue.check.ts
  */
 import {
-  DEFAULT_QUEUE_FILTERS,
   buildTotals,
   csvCell,
-  filterQueue,
   overdueDays,
+  summariseDue,
   toCsv,
   STALE_AFTER_DAYS,
   type QueueItem,
@@ -122,24 +121,36 @@ check('results are grouped by value', g.byResult.some((r) => r.result === 'wrong
 check('a null last_result is grouped as unknown', g.byResult.some((r) => r.result === 'unknown' && r.count === 1), JSON.stringify(g.byResult));
 check('result groups sum to the total', g.byResult.reduce((a, b) => a + b.count, 0) === g.total);
 
-console.log('\n=== 5. FILTERS ===');
+console.log('\n=== 5. THE DASHBOARD SUMMARY ===');
+// `summariseDue` is what the Dashboard renders, and `buildTotals` delegates to
+// it for the same figures. These cases pin BOTH: the direct call, and the
+// agreement between the two, which is the property that actually matters — two
+// copies of "what counts as stale" is how an overview and a detail view start
+// quietly disagreeing.
 const mix = decorate([
   item({ moduleType: 'rapid', itemKey: 'alpha-one', username: 'ann', userId: 'a' }),
   item({ moduleType: 'alphabet', itemKey: 'beta-two', username: 'bob', userId: 'b', dueAt: days(4), boxLevel: 2 }),
   item({ moduleType: 'rapid', itemKey: 'gamma-three', username: 'ann', userId: 'a' }),
 ]);
-check('no filters returns everything', filterQueue(mix, DEFAULT_QUEUE_FILTERS).length === 3);
-check('module filter narrows to one module', filterQueue(mix, { ...DEFAULT_QUEUE_FILTERS, module: 'rapid' }).length === 2);
-check('user filter narrows to one learner', filterQueue(mix, { ...DEFAULT_QUEUE_FILTERS, user: 'a' }).length === 2);
-check('due filter narrows to overdue', filterQueue(mix, { ...DEFAULT_QUEUE_FILTERS, due: 'overdue' }).length === 2);
-check('combined filters intersect', filterQueue(mix, { ...DEFAULT_QUEUE_FILTERS, module: 'rapid', user: 'a', due: 'overdue' }).length === 2);
-check('search matches the item key', filterQueue(mix, { ...DEFAULT_QUEUE_FILTERS, search: 'beta' }).length === 1);
-check('search matches the username', filterQueue(mix, { ...DEFAULT_QUEUE_FILTERS, search: 'bob' }).length === 1);
-check('search is case-insensitive', filterQueue(mix, { ...DEFAULT_QUEUE_FILTERS, search: 'BETA' }).length === 1);
-check('search tolerates surrounding space', filterQueue(mix, { ...DEFAULT_QUEUE_FILTERS, search: '  beta  ' }).length === 1);
-check('a search with no match returns nothing', filterQueue(mix, { ...DEFAULT_QUEUE_FILTERS, search: 'zzz' }).length === 0);
-// A null username must not throw inside the `.some()` above.
-check('a null username is searchable without throwing', filterQueue(decorate([item({ username: null })]), { ...DEFAULT_QUEUE_FILTERS, search: 'x' }).length === 0);
+
+const dueOnly = summariseDue(rows.map((r) => r.dueAt), NOW);
+check('an empty queue summarises to nothing', summariseDue([], NOW).total === 0);
+check('an empty queue has no overdue items', summariseDue([], NOW).overdue === 0);
+check('an empty queue has no stale items', summariseDue([], NOW).stale === 0);
+check('an empty queue has no oldest due date', summariseDue([], NOW).oldestDue === null);
+check('a null due date counts as total, not as overdue', summariseDue([null], NOW).total === 1 && summariseDue([null], NOW).overdue === 0);
+check('a future date is total but not overdue', summariseDue([days(5)], NOW).overdue === 0);
+check('a past date is overdue', summariseDue([days(-5)], NOW).overdue === 1);
+// The whole point of the shared function: the Dashboard's four figures and the
+// full aggregation must be the SAME numbers, not two implementations that agree
+// today.
+check('summariseDue agrees with buildTotals on total', dueOnly.total === buildTotals(rows, NOW).total, `${dueOnly.total} vs ${buildTotals(rows, NOW).total}`);
+check('summariseDue agrees with buildTotals on overdue', dueOnly.overdue === buildTotals(rows, NOW).overdue);
+check('summariseDue agrees with buildTotals on stale', dueOnly.stale === buildTotals(rows, NOW).stale);
+check('summariseDue agrees with buildTotals on oldest', dueOnly.oldestDue === buildTotals(rows, NOW).oldestDue);
+check('the oldest due date is the furthest past', summariseDue([days(-2), days(-40), days(1)], NOW).oldestDue === days(-40).slice(0, 10), String(summariseDue([days(-2), days(-40), days(1)], NOW).oldestDue));
+check('stale is over 30 days late', summariseDue([days(-31)], NOW).stale === 1);
+check('not-yet-stale is not counted stale', summariseDue([days(-30)], NOW).stale === 0);
 
 console.log('\n=== 6. CSV ===');
 check('a plain value is unquoted', csvCell('hello') === 'hello');

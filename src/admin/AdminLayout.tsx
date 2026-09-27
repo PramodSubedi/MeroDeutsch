@@ -20,8 +20,8 @@ import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import {
   Activity,
   BookOpen,
+  Bot,
   LayoutDashboard,
-  ListChecks,
   ScrollText,
   ShieldAlert,
   LogOut,
@@ -68,9 +68,9 @@ interface NavItem {
 const NAV_ITEMS: readonly NavItem[] = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/users', label: 'Users', icon: Users },
-  { to: '/review-queue', label: 'Review queue', icon: ListChecks },
   { to: '/curriculum', label: 'Curriculum', icon: BookOpen },
   { to: '/vocabulary', label: 'Vocabulary', icon: Type },
+  { to: '/chatbot', label: 'Chatbot', icon: Bot },
   { to: '/integrity', label: 'Integrity', icon: ShieldAlert },
   { to: '/audit-log', label: 'Audit log', icon: ScrollText },
   { to: '/analytics', label: 'Analytics', icon: Activity },

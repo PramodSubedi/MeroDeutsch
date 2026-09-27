@@ -39,7 +39,59 @@ export const CONFIG_KEYS: Readonly<Record<string, ConfigKeySpec>> = {
     types: ['boolean'],
     description: 'Whether new signups are accepted.',
   },
+
+  // ── The AI companion (Mero) ───────────────────────────────────────────────
+  //
+  // Global defaults only. A learner's own choices stay in per-user localStorage
+  // (`meroDeutschChatbot:<userId>`); these are the values a NEW user starts from
+  // and the values an admin can change for everyone who has not overridden them.
+  chatbot_enabled: {
+    types: ['boolean'],
+    description: 'Global on/off for the AI companion. Overrides every learner personal toggle.',
+  },
+  chatbot_base_url: {
+    types: ['string'],
+    description: 'Default Ollama/LM Studio base URL seeded for learners who have not set one.',
+  },
+  chatbot_default_model: {
+    types: ['string'],
+    // NO `values` — model names are case-sensitive identifiers, not a fixed
+    // vocabulary. That single omission is what stops normalisation lowercasing
+    // `Qwen2.5:3b` into a name no local runtime recognises.
+    description: 'Default model name. Must appear in chatbot_allowed_models when that key is set.',
+  },
+  chatbot_allowed_models: {
+    types: ['string'],
+    description: 'Comma-separated models an admin may set as the default. Case is preserved.',
+  },
+  chatbot_default_intensity: {
+    types: ['string'],
+    values: ['serious', 'balanced', 'playful'],
+    description: 'Default personality intensity for new learners.',
+  },
+  chatbot_default_language_mix: {
+    types: ['string'],
+    values: ['de_en', 'de_en_ne'],
+    description: 'Default helper language mix for new learners.',
+  },
+  chatbot_default_auto_open: {
+    types: ['boolean'],
+    description: 'Whether Mero opens itself unprompted after repeated mistakes, by default.',
+  },
 };
+
+/**
+ * The companion keys, as a set.
+ *
+ * Derived from `CONFIG_KEYS` by PREFIX rather than typed out a second time, so a
+ * key cannot be added to the allow-list and forgotten here — which would leave
+ * the admin page unable to show a control for a flag that is genuinely writable.
+ * The learner app asserts the same list in `src/data/chatbot/config.ts`; the two
+ * are pinned to each other by `check:chatconfig`.
+ */
+export const CHATBOT_CONFIG_KEYS: readonly string[] = Object.freeze(
+  Object.keys(CONFIG_KEYS).filter((k) => k.startsWith('chatbot_')),
+);
 
 export type ConfigCheck = { ok: true } | { ok: false; message: string };
 
@@ -83,6 +135,34 @@ export function validateConfigWrite(key: unknown, value: unknown): ConfigCheck {
   }
 
   return { ok: false, message: `"${key}" has no writable type.` };
+}
+
+/**
+ * Canonicalise a value for STORAGE, after `validateConfigWrite` has accepted it.
+ *
+ * ── WHY THIS IS NOT JUST `.trim().toLowerCase()` ─────────────────────────────
+ * The handler used to lowercase every string it wrote. That was correct when
+ * `curriculum_source` was the only string key, because its entire vocabulary is
+ * `['bundle', 'db']` — two lowercase words. It is actively destructive now:
+ *
+ *   chatbot_default_model   `Qwen2.5:3b`  →  `qwen2.5:3b`   (not an installed model)
+ *   chatbot_allowed_models  `Foo, Bar`    →  `foo, bar`     (silently unmatchable)
+ *   chatbot_base_url        `/v1/Models`  →  `/v1/models`   (path case is significant)
+ *
+ * So case is folded ONLY for keys that declare a closed `values` vocabulary,
+ * where comparison is genuinely case-insensitive and the canonical form is
+ * known. Everything else is trimmed and stored verbatim.
+ *
+ * A missing `values` on a string spec is therefore LOAD-BEARING, not a
+ * shorthand: adding one tells this function the key's vocabulary is enumerable.
+ * It is exported (rather than inlined in the handler) so the rule is testable
+ * against a hundred hostile inputs here, and so the handler cannot drift away
+ * from the validator it runs three lines earlier.
+ */
+export function normalizeConfigValue(key: string, value: string | boolean): string | boolean {
+  if (typeof value === 'boolean') return value;
+  const trimmed = value.trim();
+  return CONFIG_KEYS[key]?.values ? trimmed.toLowerCase() : trimmed;
 }
 
 export interface UnitDoc {

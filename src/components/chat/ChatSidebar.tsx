@@ -30,7 +30,7 @@ import { MessageCircle, WifiOff } from 'lucide-react';
 
 import { useLearningContext } from '../../context/LearningContext';
 import { useChatbotTriggers } from '../../hooks/useChatbotTriggers';
-import { useChatStore, nextMessageId, type QuizSession } from '../../lib/chatStore';
+import { useChatStore, useChatEnabled, nextMessageId, type QuizSession } from '../../lib/chatStore';
 import { classifyIntent, extractQuotedTerm } from '../../lib/intentRouter';
 import { classifyWithModel } from '../../lib/intentModel';
 import { followUpsFor, handleIntent } from '../../lib/responseHandlers';
@@ -111,7 +111,10 @@ export function ChatSidebar() {
   const abortRef = useRef<AbortController | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const isDE = snapshot.isDE;
-  const enabled = settings.enabled;
+  // The build flag, the admin's global switch and the learner's own toggle. The
+  // sidebar renders nothing at all when any of them is off — an openable panel
+  // that cannot talk to anything is worse than no panel.
+  const enabled = useChatEnabled();
 
   /* ── connection health ──────────────────────────────────────────────── */
   useEffect(() => {

@@ -49,9 +49,9 @@ export function csvDocument(header: string[], rows: unknown[][]): string {
 /**
  * Trigger a client-side file download.
  *
- * Shared for the same reason `csvCell` is: `VocabularyPage` and
- * `ReviewQueuePage` each carried their own copy, and a third would be a third
- * place for the blob type or the object-URL cleanup to differ.
+ * Shared for the same reason `csvCell` is: `VocabularyPage` carried its own copy
+ * and a second would have been a second place for the blob type or the
+ * object-URL cleanup to differ.
  *
  * The `revokeObjectURL` is not optional bookkeeping — without it every export
  * pins its blob in memory for the lifetime of the tab, and an admin exporting

@@ -46,6 +46,7 @@ import { A1_CURRICULUM, A1_LEARN_NODES, CHECKPOINT_PASS_THRESHOLD } from '../dat
 import { contextLabelFor } from '../config/routeLabels';
 import { ANCHORS } from '../lib/anchors';
 import { hydrateChat, persistChat, useChatStore } from '../lib/chatStore';
+import { startChatbotConfigResolution } from '../data/chatbot/resolve';
 import type { ContextSnapshot, ReviewSnippet } from '../types/chatbot';
 
 export interface LearningContextValue {
@@ -85,7 +86,34 @@ export function LearningContextProvider({ children }: { children: ReactNode }) {
 
   /* ── chat transcript persistence, scoped to the real user ──────────────── */
   useEffect(() => {
-    hydrateChat(userId);
+    // Resolution FIRST, hydration second — and the order is load-bearing.
+    //
+    // `hydrateChat` merges the admin defaults UNDER the learner's saved
+    // settings, then early-returns for the rest of the session. Resolving after
+    // it means the merge has already run and the admin default is discarded: a
+    // flag that looks like it works and does not. `startChatbotConfigResolution`
+    // is idempotent, so this is safe under StrictMode's double-invoke, and it
+    // never rejects — the worst case is the bundled defaults, which is exactly
+    // today's behaviour.
+    let cancelled = false;
+
+    void (async () => {
+      try {
+        const defaults = await startChatbotConfigResolution();
+        if (cancelled) return;
+        // The global switch is separate from the personal one and is NEVER
+        // persisted, so turning the companion back on in the control centre
+        // works for everyone without touching a single localStorage entry.
+        useChatStore.getState().setAdminEnabled(defaults.enabled);
+      } catch {
+        // `startChatbotConfigResolution` already swallows its own failures.
+        // Reaching here means the wiring broke; leave `adminEnabled` at its
+        // default of true rather than blanking the feature on a flag read.
+      }
+
+      if (!cancelled) hydrateChat(userId);
+    })();
+
     // Persist on ANY transcript/settings change, debounced — subscribing to
     // the store is what makes this correct. An effect keyed on `messages`
     // would either miss the store entirely or fire once per streamed token.
@@ -95,6 +123,7 @@ export function LearningContextProvider({ children }: { children: ReactNode }) {
       timer = setTimeout(() => persistChat(userId), 400);
     });
     return () => {
+      cancelled = true;
       unsubscribe();
       if (timer) clearTimeout(timer);
       persistChat(userId);

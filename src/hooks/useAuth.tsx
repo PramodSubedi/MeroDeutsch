@@ -11,6 +11,7 @@ interface AuthContextValue {
   isLoading: boolean;
   register: (email: string, password: string, username?: string) => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
+  loginWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
   /** Result of the one-time localStorage -> IndexedDB migration (Phase 1). */
   migrationResult: MigrationResult | null;
@@ -130,6 +131,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  const loginWithGoogle = useCallback(async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/home`,
+      },
+    });
+
+    if (error) throw error;
+
+    // Clear guest simulation on successful OAuth initiation (same as email login)
+    if (getDebugMode() === 'guest') {
+      setDebugMode('real');
+    }
+  }, []);
+
   const logout = useCallback(async () => {
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
@@ -159,11 +176,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isLoading,
         register,
         login,
+        loginWithGoogle,
         logout,
         migrationResult,
       };
     },
-    [session, user, isLoading, debugMode, register, login, logout, migrationResult]
+    [session, user, isLoading, debugMode, register, login, loginWithGoogle, logout, migrationResult]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

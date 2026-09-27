@@ -25,8 +25,8 @@ import { HelpCircle } from 'lucide-react';
 
 import { useReviewQueue } from '../../hooks/useReviewQueue';
 import { useLang } from '../../hooks/useLang';
-import { useChatStore } from '../../lib/chatStore';
-import { CHATBOT_ENABLED, isLearningRoute } from '../../config/chatbot';
+import { useChatEnabled, useChatStore } from '../../lib/chatStore';
+import { isLearningRoute } from '../../config/chatbot';
 
 export interface WhyButtonProps {
   className?: string;
@@ -37,11 +37,14 @@ export function WhyButton({ className = '' }: WhyButtonProps) {
   const { langMode } = useLang();
   const { pathname } = useLocation();
   const enqueuePrompt = useChatStore((s) => s.enqueuePrompt);
-  const enabled = useChatStore((s) => s.settings.enabled);
+  // Build flag AND the admin's global switch AND the learner's own toggle. A
+  // button that is visible while the companion is switched off is a dead control
+  // — the one thing this component exists not to render.
+  const enabled = useChatEnabled();
 
   const isDE = langMode === 'german';
 
-  if (!CHATBOT_ENABLED || !enabled || !isLearningRoute(pathname) || queue.length === 0) {
+  if (!enabled || !isLearningRoute(pathname) || queue.length === 0) {
     return null;
   }
 

@@ -19,7 +19,8 @@
  */
 
 import { create } from 'zustand';
-import { CHATBOT_CONFIG, CHATBOT_STORAGE_KEY, DEFAULT_SETTINGS } from '../config/chatbot';
+import { CHATBOT_CONFIG, CHATBOT_ENABLED, CHATBOT_STORAGE_KEY, DEFAULT_SETTINGS } from '../config/chatbot';
+import { getChatbotDefaults } from '../data/chatbot/resolve';
 import { getItem, setItem } from '../utils/safeStorage';
 import { scopedKey } from '../utils/userStorage';
 import type {
@@ -115,6 +116,22 @@ interface ChatStore {
   addMessage: (message: ChatMessage) => void;
   patchMessage: (id: string, patch: Partial<ChatMessage>) => void;
   clearHistory: () => void;
+
+  /**
+   * The ADMIN's global on/off, from `app_config.chatbot_enabled`.
+   *
+   * ── WHY THIS IS IN THE STORE AND NOT PERSISTED ─────────────────────────────
+   * It is a global, but it is NOT persisted per user alongside `settings`.
+   * `persistChat` writes the whole settings object, so a persisted copy would be
+   * frozen at whatever the flag said the day that user last opened the app —
+   * and re-enabling the companion in the control centre would silently fail for
+   * exactly the people who had it on. In memory only, re-read on every boot.
+   *
+   * Defaults to `true` so the companion works before (and if) resolution runs. A
+   * global switch must not be able to blank the feature by being slow.
+   */
+  adminEnabled: boolean;
+  setAdminEnabled: (enabled: boolean) => void;
 }
 
 export const useChatStore = create<ChatStore>()((set, get) => ({
@@ -128,10 +145,12 @@ export const useChatStore = create<ChatStore>()((set, get) => ({
   mode: 'coach',
   pendingPrompt: null,
   quiz: null,
+  adminEnabled: true,
 
   setOpen: (open) => set({ open }),
   toggle: () => set({ open: !get().open }),
   setStatus: (status) => set({ status }),
+  setAdminEnabled: (adminEnabled) => set({ adminEnabled }),
   setSettings: (patch) => set({ settings: { ...get().settings, ...patch } }),
   setStreaming: (isStreaming) => set({ isStreaming }),
   setMood: (mood) => set({ mood }),
@@ -224,10 +243,30 @@ export function hydrateChat(userId: string): void {
     }
   }
 
+  // The admin-resolved defaults go UNDER the learner's saved settings, never
+  // over them. That ordering is the whole contract: an admin sets the floor that
+  // a NEW learner starts from, and a learner who has already chosen something
+  // keeps it. Reversing these two spreads would silently overwrite a saved
+  // choice on every boot, which is the one thing `chatbot_*` must never do.
+  //
+  // `getChatbotDefaults()` reads an in-memory holder that resolution fills in
+  // before this is called — `LearningContext` awaits resolution first. It falls
+  // back to the bundled values if it is called early, so the order is an
+  // optimisation, not a correctness requirement for the learner.
+  const adminDefaults = getChatbotDefaults();
+
   useChatStore.setState({
     // Merge rather than replace, so a newly-added setting field still gets its
     // default for users who saved before it existed.
-    settings: { ...DEFAULT_SETTINGS, ...(parsed.settings ?? {}) },
+    settings: {
+      ...DEFAULT_SETTINGS,
+      baseUrl: adminDefaults.baseUrl,
+      model: adminDefaults.model,
+      intensity: adminDefaults.intensity,
+      languageMix: adminDefaults.languageMix,
+      autoOpenOnMistake: adminDefaults.autoOpenOnMistake,
+      ...(parsed.settings ?? {}),
+    },
     // A transcript restored mid-stream would render a permanently typing
     // bubble, so the flag is cleared on load.
     messages: Array.isArray(parsed.messages) ? parsed.messages.slice(-CHATBOT_CONFIG.storedMessages) : [],
@@ -241,6 +280,36 @@ export function hydrateChat(userId: string): void {
     // written to the SRS queue, so reviving it risks double-counting.
     quiz: null,
   });
+}
+
+/**
+ * Is the companion actually usable right now?
+ *
+ * THREE switches, ANDed:
+ *
+ *   CHATBOT_ENABLED  compiled out at build time (`VITE_CHATBOT_ENABLED=false`)
+ *   adminEnabled    the global switch in `app_config`
+ *   settings.enabled the learner's own personal toggle
+ *
+ * This is a DERIVED read, never a write. Folding the global into
+ * `settings.enabled` would persist it into localStorage, and the learner would be
+ * stuck with a companion that looks broken long after the admin switched it back
+ * on.
+ *
+ * ── WHY EVERY SELECTOR RUNS, EVEN WHEN THE BUILD FLAG IS OFF ────────────────
+ * All three are called UNCONDITIONALLY and only then combined. Writing this as
+ * `CHATBOT_ENABLED && useChatStore(...) && useChatStore(...)` is a
+ * rules-of-hooks violation and a real crash, not a style warning: with the build
+ * flag off, a component that called this hook on the first render and not the
+ * next (or vice versa) would hit "Rendered more hooks than during the previous
+ * render" and unmount the tree. `CHATBOT_ENABLED` is a constant, so the hook
+ * count is stable in practice today — which is exactly why the bug would survive
+ * casual testing and surface only in a kill-switch build.
+ */
+export function useChatEnabled(): boolean {
+  const adminEnabled = useChatStore((s) => s.adminEnabled);
+  const personal = useChatStore((s) => s.settings.enabled);
+  return CHATBOT_ENABLED && adminEnabled && personal;
 }
 
 /** Write settings + transcript back. Called from the provider on change. */

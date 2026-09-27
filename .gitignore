@@ -102,3 +102,4 @@ dev.log
 # no effect on a tracked file) but read as an intent to untrack the continuity
 # record. If you ever mean to untrack it, that is a decision to state out loud
 # in a commit message, not a line to leave lying around in this file.
+supabase/.temp/cli-latest

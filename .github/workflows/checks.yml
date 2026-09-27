@@ -79,6 +79,11 @@ jobs:
         run: npm run check:answers
       - name: check:chatbot
         run: npm run check:chatbot
+      # Pins the companion's config keys, defaults and seed migration against
+      # each other AND against the Edge Function allow-list. Three files that
+      # must agree, connected by nothing in the type system.
+      - name: check:chatconfig
+        run: npm run check:chatconfig
       - name: check:analytics
         run: npm run check:analytics
       - name: check:userdetail

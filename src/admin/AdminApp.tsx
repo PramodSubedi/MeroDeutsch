@@ -24,8 +24,8 @@ import { DashboardPage } from './pages/DashboardPage';
 import { DebugPage } from './pages/DebugPage';
 import { UsersPage } from './pages/UsersPage';
 import { SystemPage } from './pages/SystemPage';
-import { ReviewQueuePage } from './pages/ReviewQueuePage';
 import { CurriculumPage } from './pages/CurriculumPage';
+import { ChatbotSettingsPage } from './pages/ChatbotSettingsPage';
 import { IntegrityPage } from './pages/IntegrityPage';
 import { AuditLogPage } from './pages/AuditLogPage';
 import { VocabularyPage } from './pages/VocabularyPage';
@@ -168,8 +168,8 @@ export function AdminApp() {
         <Route index element={<DashboardPage />} />
         <Route path="debug" element={<DebugPage />} />
         <Route path="users" element={<UsersPage />} />
-        <Route path="review-queue" element={<ReviewQueuePage />} />
         <Route path="curriculum" element={<CurriculumPage />} />
+        <Route path="chatbot" element={<ChatbotSettingsPage />} />
         <Route path="integrity" element={<IntegrityPage />} />
         <Route path="audit-log" element={<AuditLogPage />} />
         <Route path="vocabulary" element={<VocabularyPage />} />

@@ -57,9 +57,16 @@ check('an empty query returns only navigation', empty.every((h) => h.group === '
 check('an empty query is capped', empty.length <= 6, String(empty.length));
 
 console.log('\n=== 4. NAVIGATION IS ALWAYS REACHABLE ===');
-for (const label of ['users', 'review', 'curriculum', 'vocab', 'audit', 'system', 'analytics']) {
+// Every entry here must be a page the admin can actually open. This loop is the
+// only guard on the palette's OWN nav list: `check:routes` reads
+// `AdminApp.tsx` and `AdminLayout.tsx` and cannot see `search.ts`, so a route
+// deleted from those two while left in the palette would be a dead ⌘K link that
+// CI never fails on. 'review' was removed with the standalone review-queue page;
+// 'chatbot' was added with its replacement.
+for (const label of ['users', 'curriculum', 'vocab', 'chatbot', 'audit', 'system', 'analytics']) {
   check(`"${label}" finds its page`, searchAll(index, label).some((h) => h.group === 'navigation'), label);
 }
+check('no palette entry points at a removed route', searchAll(index, 'review').every((h) => h.group !== 'navigation'));
 
 console.log('\n=== 5. USERS ARE SEARCHABLE ===');
 const byName = searchAll(index, 'sunny');

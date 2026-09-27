@@ -7,7 +7,7 @@
  * to another. Every case below is a way the database could hold content that
  * breaks a lesson for a learner who cannot work around it.
  */
-import { CONFIG_KEYS, checkPublishSet, checkRollback, checkUnitShape, snapshotUnitId, validateConfigWrite } from './publish';
+import { CONFIG_KEYS, CHATBOT_CONFIG_KEYS, checkPublishSet, checkRollback, checkUnitShape, normalizeConfigValue, snapshotUnitId, validateConfigWrite } from './publish';
 
 let checks = 0;
 const failures: string[] = [];
@@ -146,6 +146,75 @@ check('the string "false" is accepted', validateConfigWrite('maintenance_mode', 
 for (const bad of ['yes', 'on', 1, 0, null, 'TRUE', {}]) {
   check(`${JSON.stringify(bad)} is refused for a boolean key`, !validateConfigWrite('maintenance_mode', bad).ok, JSON.stringify(bad));
 }
+
+console.log('\n=== 13. CONFIG: THE COMPANION KEYS ARE WRITABLE ===');
+for (const key of CHATBOT_CONFIG_KEYS) {
+  const spec = CONFIG_KEYS[key];
+  const sample = spec.types.includes('boolean') ? true : (spec.values ? spec.values[0] : 'x');
+  check(`${key} is writable`, validateConfigWrite(key, sample).ok);
+}
+check('chatbot_enabled refuses a non-boolean', !validateConfigWrite('chatbot_enabled', 'maybe').ok);
+check('intensity is constrained to its vocabulary', !validateConfigWrite('chatbot_default_intensity', 'sarcastic').ok);
+check('intensity accepts every legal value', ['serious', 'balanced', 'playful'].every((v) => validateConfigWrite('chatbot_default_intensity', v).ok));
+check('language mix is constrained', !validateConfigWrite('chatbot_default_language_mix', 'de_np').ok);
+check('language mix accepts every legal value', ['de_en', 'de_en_ne'].every((v) => validateConfigWrite('chatbot_default_language_mix', v).ok));
+// An EMPTY model list is the "unrestricted" case, so it must be expressible —
+// but a blank string is what an operator actually types, and the writer
+// refuses it for every other string key, so consistency wins.
+check('an empty model name is refused', !validateConfigWrite('chatbot_default_model', '   ').ok);
+check('a model name with spaces around it is accepted', validateConfigWrite('chatbot_default_model', '  qwen2.5:3b  ').ok);
+
+console.log('\n=== 14. CONFIG: STORAGE NORMALISATION PRESERVES CASE ===');
+// THE REGRESSION THIS SECTION EXISTS FOR. `config.set` used to lowercase every
+// string it stored, which was correct while `curriculum_source` was the only
+// string key (its whole vocabulary is two lowercase words) and corrupting the
+// moment a case-sensitive key was added.
+check(
+  'a model name keeps its case',
+  normalizeConfigValue('chatbot_default_model', 'Qwen2.5:3b') === 'Qwen2.5:3b',
+  String(normalizeConfigValue('chatbot_default_model', 'Qwen2.5:3b')),
+);
+check(
+  'a model list keeps the case of every entry',
+  normalizeConfigValue('chatbot_allowed_models', 'Foo:7b, Bar:3b') === 'Foo:7b, Bar:3b',
+);
+check(
+  'a base URL keeps its case',
+  normalizeConfigValue('chatbot_base_url', 'http://NAS.local:11434/v1/Models') === 'http://NAS.local:11434/v1/Models',
+);
+check(
+  'a model name is still trimmed',
+  normalizeConfigValue('chatbot_default_model', '  qwen2.5:3b  ') === 'qwen2.5:3b',
+);
+// Enumerated vocabularies keep the old folding, because that is how the flag
+// reader compares them and a stored '  DB  ' would never match 'db'.
+check(
+  'an enumerated key is still lowercased',
+  normalizeConfigValue('curriculum_source', '  DB  ') === 'db',
+  String(normalizeConfigValue('curriculum_source', '  DB  ')),
+);
+check(
+  'an enumerated companion key is lowercased',
+  normalizeConfigValue('chatbot_default_intensity', ' Playful ') === 'playful',
+);
+check(
+  'a boolean passes through untouched',
+  normalizeConfigValue('chatbot_enabled', true) === true,
+);
+// An unknown key has no spec, so `values` is undefined and case is preserved.
+// It can never be stored (the validator refuses it first), but normalising must
+// not throw on it either.
+check('an unknown key does not throw', normalizeConfigValue('nope', 'Value') === 'Value');
+// The rule and the gate must never disagree: anything normalise is asked to
+// store has already passed validation.
+check(
+  'normalisation never rescues a value the validator refused',
+  Object.keys(CONFIG_KEYS).every((key) => {
+    const spec = CONFIG_KEYS[key];
+    const bad = spec.types.includes('boolean') ? 'maybe' : '';
+    return !validateConfigWrite(key, bad).ok;
+  }),
+);
 
 console.log('\n=== 11. ROLLBACK VALIDATION ===');
 // The hazard specific to rollback: a snapshot was valid against an OLDER

@@ -1,21 +1,38 @@
 /**
  * src/admin/data/reviewQueue.ts
  *
- * The global Review Queue read model — every queued item across every learner.
+ * The Review Queue read model — every queued item across every learner.
  *
- * ── WHY THIS IS A SEPARATE READ, AND WHAT IT EXPOSES ───────────────────────
- * The Users table shows a per-user `queueSize` count. That count answers "does
- * this learner have a backlog?" but not "what is it, and is anyone clearing
- * it?" — and on the live database the answer was genuinely alarming:
+ * ── SCOPE AFTER THE STANDALONE PAGE WAS REMOVED ─────────────────────────────
+ * This used to back a dedicated `/review-queue` page. The page is gone; what
+ * remains here is the part that outlived it:
  *
- *     49 of 50 queued items are OVERDUE, 30 of them by 30+ days,
- *     and only ONE item is still inside a future window.
+ *   summariseDue + fetchQueueKpis   the four figures the Dashboard shows
+ *   buildTotals / QueueItem         the full aggregation, and the shape the
+ *                                   CSV encoder is tested against
+ *   toCsv                           consumed by `csv.check.ts` (see below)
  *
- * That is not a database fault — the Leitner transitions are demonstrably
- * correct (every `wrong` sits at box 1 / interval 1, every `correct` has
- * graduated to interval 3–7). It is uncollected review DEBT: the backlog grows
- * and nobody drains it. Surfacing that is the point of this page; a per-user
- * count hides it completely.
+ * The per-user view a learner actually needs is `fetchUserDetail`, which reads
+ * `review_queue` scoped to one user and is what the User 360 drawer shows.
+ *
+ * ── WHAT WAS DELETED, AND WHY IT WAS SAFE ────────────────────────────────────
+ * `fetchReviewQueue()` selected 13 columns across up to 20 000 rows PLUS a second
+ * 5 000-row `profiles` read, joined them, sorted by severity and decorated every
+ * row — to render a filterable table. The Dashboard needs four scalars, so it now
+ * reads one column through `fetchQueueKpis` instead. A full-table loader with a
+ * username join on an overview page is a real cost for no informational gain.
+ *
+ * `filterQueue` / `QueueFilters` / `DEFAULT_QUEUE_FILTERS` went with the page
+ * that used them. They were pure and tested, so their removal is covered by
+ * deleting the matching section of `reviewQueue.check.ts` — not by leaving dead
+ * code behind a green suite.
+ *
+ * ── `toCsv` IS DELIBERATELY KEPT ─────────────────────────────────────────────
+ * It has no production caller any more. It is still imported by
+ * `csv.check.ts`, a CI gate whose entire subject is "nothing an admin exports
+ * can execute in a spreadsheet", and it is the most realistic fixture that
+ * suite has for the shared encoder. Deleting an export to satisfy tidiness
+ * would mean editing a security suite for cosmetic reasons, so it stays.
  *
  * ── REUSE, NOT DUPLICATION ─────────────────────────────────────────────────
  * The due-date and Leitner classification are the SAME pure functions the User
@@ -78,6 +95,80 @@ export function overdueDays(dueAt: string | null, now: Date): number {
 export const STALE_AFTER_DAYS = 30;
 
 /**
+ * The four aggregate figures the Dashboard shows, derived from due dates alone.
+ *
+ * ── WHY IT IS SPLIT OUT ──────────────────────────────────────────────────────
+ * `buildTotals` answers a research question — where is the debt and who owns it —
+ * and needs every column: module, user, Leitner box, last result. The Dashboard
+ * needs four SCALARS and would otherwise have to pull a 13-column, 20 000-row
+ * read plus a 5 000-row `profiles` join to render four numbers on an overview
+ * page that already loads six other aggregates.
+ *
+ * So this takes the one column it actually needs (`due_at`) and nothing else.
+ *
+ * `buildTotals` DELEGATES to it rather than reimplementing the arithmetic. Two
+ * copies of "what counts as stale" is precisely how an overview page and a
+ * detailed one start disagreeing, and nobody notices until the numbers differ.
+ */
+export interface DueSummary {
+  total: number;
+  overdue: number;
+  /** Overdue by more than `STALE_AFTER_DAYS`. */
+  stale: number;
+  /** Oldest `due_at` still outstanding, ISO date, or null when nothing is. */
+  oldestDue: string | null;
+}
+
+/**
+ * Pure, clock-injected aggregation. Exported so the figures are testable without
+ * a database — "49 of 50 are overdue and 30 are a month late" is a claim worth
+ * being able to prove.
+ */
+export function summariseDue(dueAts: readonly (string | null)[], now: Date): DueSummary {
+  let total = 0;
+  let overdue = 0;
+  let stale = 0;
+  let oldest: number | null = null;
+
+  for (const dueAt of dueAts) {
+    total += 1;
+    if (dueState(dueAt, now) !== 'overdue') continue;
+    overdue += 1;
+    if (overdueDays(dueAt, now) > STALE_AFTER_DAYS) stale += 1;
+    const t = new Date(dueAt!).getTime();
+    if (!Number.isNaN(t) && (oldest === null || t < oldest)) oldest = t;
+  }
+
+  return {
+    total,
+    overdue,
+    stale,
+    oldestDue: oldest === null ? null : new Date(oldest).toISOString().slice(0, 10),
+  };
+}
+
+/**
+ * Load only what the four Dashboard figures need.
+ *
+ * One column, one query, no join. Fails soft to `null` rather than throwing, and
+ * the caller renders a muted em dash — the same contract as every other admin
+ * read model, because a denied table must leave the page working.
+ */
+export async function fetchQueueKpis(): Promise<{
+  kpis: DueSummary | null;
+  error: string | null;
+}> {
+  const { data, error } = await supabase.from('review_queue').select('due_at').limit(20000);
+
+  if (error) return { kpis: null, error: `review_queue: ${error.message}` };
+
+  const dueAts = ((data ?? []) as unknown as Array<{ due_at: string | null }>).map(
+    (r) => r.due_at,
+  );
+  return { kpis: summariseDue(dueAts, new Date()), error: null };
+}
+
+/**
  * Aggregate a flat item list into every figure the page shows.
  *
  * Pure, so the totals are testable without a database — and because "49 of 50
@@ -89,28 +180,23 @@ export function buildTotals(items: QueueItem[], now: Date): QueueTotals {
   const byBand: Record<LeitnerBand, number> = { new: 0, learning: 0, young: 0, mature: 0 };
   const byResult = new Map<string, number>();
 
+  // The scalar figures are NOT recomputed here. `summariseDue` owns them so the
+  // Dashboard and any future detail view cannot disagree about what "stale" or
+  // "oldest" means.
+  const due = summariseDue(items.map((it) => it.dueAt), now);
   let total = 0;
   let overdue = 0;
-  let due = 0;
+  let due2 = 0;
   let upcoming = 0;
   let scheduled = 0;
-  let stale = 0;
-  let oldest: number | null = null;
 
   for (const it of items) {
     total += 1;
     const state = dueState(it.dueAt, now);
     if (state === 'overdue') overdue += 1;
-    else if (state === 'due') due += 1;
+    else if (state === 'due') due2 += 1;
     else if (state === 'upcoming') upcoming += 1;
     else scheduled += 1;
-
-    if (state === 'overdue') {
-      const late = overdueDays(it.dueAt, now);
-      if (late > STALE_AFTER_DAYS) stale += 1;
-      const t = new Date(it.dueAt!).getTime();
-      if (!Number.isNaN(t) && (oldest === null || t < oldest)) oldest = t;
-    }
 
     const m = it.moduleType ?? 'unknown';
     const mRow = byModule.get(m) ?? { total: 0, overdue: 0 };
@@ -132,10 +218,10 @@ export function buildTotals(items: QueueItem[], now: Date): QueueTotals {
   return {
     total,
     overdue,
-    due,
+    due: due2,
     upcoming,
     scheduled,
-    stale,
+    stale: due.stale,
     byModule: [...byModule.entries()]
       .map(([moduleType, v]) => ({ moduleType, ...v }))
       .sort((a, b) => b.total - a.total || a.moduleType.localeCompare(b.moduleType)),
@@ -146,47 +232,9 @@ export function buildTotals(items: QueueItem[], now: Date): QueueTotals {
     byResult: [...byResult.entries()]
       .map(([result, count]) => ({ result, count }))
       .sort((a, b) => b.count - a.count || a.result.localeCompare(b.result)),
-    oldestDue: oldest === null ? null : new Date(oldest).toISOString().slice(0, 10),
+    oldestDue: due.oldestDue,
   };
 }
-
-export interface QueueFilters {
-  search: string;
-  module: string;
-  user: string;
-  due: 'all' | 'overdue' | 'due' | 'upcoming';
-}
-
-/**
- * Apply the page filters.
- *
- * Extracted as a pure function for the same reason `filterUsers` is: a table with
- * 50 rows today and thousands later should not re-read on every keystroke, and
- * the filter logic is the part that can quietly show the wrong rows.
- */
-export function filterQueue(
-  items: (QueueItem & { due: DueState; overdueDays: number })[],
-  filters: QueueFilters,
-): (QueueItem & { due: DueState; overdueDays: number })[] {
-  const q = filters.search.trim().toLowerCase();
-  return items.filter((it) => {
-    if (filters.module !== 'all' && (it.moduleType ?? 'unknown') !== filters.module) return false;
-    if (filters.user !== 'all' && it.userId !== filters.user) return false;
-    if (filters.due !== 'all' && it.due !== filters.due) return false;
-    if (!q) return true;
-    // A single box searches the things an admin would actually type: the item
-    // key, the module, the learner's name, or the id.
-    return [it.itemKey, it.moduleType, it.username, it.userId, it.errorTag]
-      .some((v) => (v ?? '').toLowerCase().includes(q));
-  });
-}
-
-export const DEFAULT_QUEUE_FILTERS: QueueFilters = {
-  search: '',
-  module: 'all',
-  user: 'all',
-  due: 'all',
-};
 
 /**
  * Re-exported from `./csv` so existing importers keep working while there is
@@ -213,69 +261,4 @@ export function toCsv(items: (QueueItem & { due: DueState; overdueDays: number }
   }
   return lines.join('\n');
 }
-
-/**
- * Load the whole queue with its owners denormalised.
- *
- * `review_queue` has no embeddable relation to `profiles` readable by the anon
- * key, so the usernames come from a second explicit read rather than a nested
- * select — a nested select would return NULL usernames silently here, and a
- * table of ids is much less useful to the person reading it.
- */
-export async function fetchReviewQueue(): Promise<QueueResult> {
-  const errors: string[] = [];
-  const now = new Date();
-
-  const [queue, profiles] = await Promise.all([
-    supabase
-      .from('review_queue')
-      .select(
-        'id, user_id, module_type, item_key, user_answer, correct_answer, error_count, interval_days, box_level, due_at, updated_at, error_tag, last_result',
-      )
-      .limit(20000),
-    supabase.from('profiles').select('id, username').limit(5000),
-  ]);
-
-  if (queue.error) errors.push(`review_queue: ${queue.error.message}`);
-  if (profiles.error) errors.push(`profiles: ${profiles.error.message}`);
-
-  const nameBy = new Map((profiles.data ?? []).map((p) => [p.id as string, (p as { username: string | null }).username]));
-
-  const items = ((queue.data ?? []) as unknown as Record<string, unknown>[]).map((r) => {
-    const userId = String(r.user_id);
-    return {
-      id: String(r.id),
-      userId,
-      username: nameBy.get(userId) ?? null,
-      moduleType: (r.module_type as string | null) ?? null,
-      itemKey: (r.item_key as string | null) ?? null,
-      userAnswer: (r.user_answer as string | null) ?? null,
-      correctAnswer: (r.correct_answer as string | null) ?? null,
-      errorCount: (r.error_count as number | null) ?? null,
-      intervalDays: (r.interval_days as number | null) ?? null,
-      boxLevel: (r.box_level as number | null) ?? null,
-      dueAt: (r.due_at as string | null) ?? null,
-      updatedAt: (r.updated_at as string | null) ?? null,
-      errorTag: (r.error_tag as string | null) ?? null,
-      lastResult: (r.last_result as string | null) ?? null,
-    } satisfies QueueItem;
-  });
-
-  const decorated = items.map((it) => {
-    const state = dueState(it.dueAt, now);
-    return { ...it, due: state, overdueDays: state === 'overdue' ? overdueDays(it.dueAt, now) : 0 };
-  });
-
-  // Worst first: longest overdue, then most-missed. That is the order a human
-  // would triage in, so the default view is already the useful one.
-  const rank: Record<DueState, number> = { overdue: 0, due: 1, upcoming: 2, scheduled: 3 };
-  decorated.sort((a, b) => {
-    if (rank[a.due] !== rank[b.due]) return rank[a.due] - rank[b.due];
-    if (a.overdueDays !== b.overdueDays) return b.overdueDays - a.overdueDays;
-    const e = (b.errorCount ?? 0) - (a.errorCount ?? 0);
-    if (e !== 0) return e;
-    return (a.itemKey ?? '').localeCompare(b.itemKey ?? '');
-  });
-
-  return { items: decorated, totals: buildTotals(items, now), errors };
-}
+

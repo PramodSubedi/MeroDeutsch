@@ -50,9 +50,9 @@ export interface SearchOptions {
 const NAV: SearchHit[] = [
   { id: 'nav-dashboard', group: 'navigation', title: 'Dashboard', to: '/', score: 100 },
   { id: 'nav-users', group: 'navigation', title: 'Users', to: '/users', score: 100 },
-  { id: 'nav-review', group: 'navigation', title: 'Review queue', to: '/review-queue', score: 100 },
   { id: 'nav-curriculum', group: 'navigation', title: 'Curriculum', to: '/curriculum', score: 100 },
   { id: 'nav-vocab', group: 'navigation', title: 'Vocabulary', to: '/vocabulary', score: 100 },
+  { id: 'nav-chatbot', group: 'navigation', title: 'Chatbot', to: '/chatbot', score: 100 },
   { id: 'nav-integrity', group: 'navigation', title: 'Content integrity', to: '/integrity', score: 100 },
   { id: 'nav-audit', group: 'navigation', title: 'Audit log', to: '/audit-log', score: 100 },
   { id: 'nav-analytics', group: 'navigation', title: 'Analytics', to: '/analytics', score: 100 },

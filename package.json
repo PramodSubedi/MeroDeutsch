@@ -53,7 +53,8 @@
     "curriculum:barrel": "tsx scripts/curriculum/export.ts --barrel-only",
     "curriculum:baseline": "tsx scripts/curriculum/rebuild-baseline.ts",
     "curriculum:backfill": "tsx scripts/curriculum/backfillUnits.ts",
-    "check:chatbot": "tsx src/lib/chatbot.check.ts"
+    "check:chatbot": "tsx src/lib/chatbot.check.ts",
+    "check:chatconfig": "tsx src/data/chatbot/config.check.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.112.3",

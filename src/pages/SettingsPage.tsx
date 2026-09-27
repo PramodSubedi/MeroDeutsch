@@ -14,15 +14,12 @@ import { supabase } from '../lib/supabase';
 import { db } from '../lib/db';
 import { useChatStore } from '../lib/chatStore';
 import { healthCheck, serverLabel, statusHint } from '../lib/ollamaHealth';
-import { resetFormatCache, resolveModel } from '../lib/ollamaClient';
+import { resetFormatCache } from '../lib/ollamaClient';
 import { AdminPanelLink } from '../components/debug/AdminPanelLink';
-import {
-  CHATBOT_ENABLED,
-  INTENSITY_OPTIONS,
-  LANGUAGE_MIX_OPTIONS,
-  PREFERENCE_OPTIONS,
-  normalizeBaseUrl,
-} from '../config/chatbot';
+// Only the build-time kill switch is needed here. The intensity, language-mix,
+// preference and URL helpers moved to the control centre's Chatbot page, which
+// owns them as global defaults; this page keeps the personal on/off toggle.
+import { CHATBOT_ENABLED } from '../config/chatbot';
 
 /**
  * Per-user localStorage base keys cleared by "Reset progress".
@@ -96,45 +93,34 @@ export function SettingsPage() {
   const [resetCourseMessage, setResetCourseMessage] = useState<string | null>(null);
 
   /* ── AI companion (Mero) ────────────────────────────────────────────── */
-  // The base URL is runtime-overridable rather than env-only: `import.meta.env`
-  // is baked at build time, so a deployed build could never be re-pointed at a
-  // learner's own machine without a rebuild.
+  // PERSONAL ONLY. The base URL, model, personality, language mix and the
+  // proactive nudge are global defaults now, owned by the control centre and
+  // published through `app_config` (`src/data/chatbot/`). What is left here is
+  // the one thing that is genuinely per-learner: whether THIS person wants the
+  // companion at all. It is stored per user in localStorage and is ANDed with
+  // the admin's global switch, so turning the feature off globally overrides
+  // this toggle without overwriting it.
   const chatSettings = useChatStore((s) => s.settings);
   const setChatSettings = useChatStore((s) => s.setSettings);
   const chatStatus = useChatStore((s) => s.status);
   const setChatStatus = useChatStore((s) => s.setStatus);
-  const togglePreference = useChatStore((s) => s.togglePreference);
-  const [urlDraft, setUrlDraft] = useState(chatSettings.baseUrl);
-  const [probing, setProbing] = useState(false);
+  const adminEnabled = useChatStore((s) => s.adminEnabled);
+  const companionActive = adminEnabled && chatSettings.enabled;
 
-  const probeModels = async (rawUrl: string) => {
-    setProbing(true);
-    // A changed URL invalidates the negotiated wire format (Ollama vs
-    // LM Studio), so the cache must be dropped before probing.
-    resetFormatCache();
-    const next = await healthCheck(rawUrl);
-    setChatStatus(next);
-    setChatSettings({
-      baseUrl: rawUrl,
-      // If the configured model is not installed, snap to one that is.
-      ...(next.reachable && next.models.length
-        ? { model: resolveModel(chatSettings.model, next.models) }
-        : {}),
-    });
-    setProbing(false);
-  };
-
-  // Probe once on mount so the page opens with an accurate status instead of
-  // an optimistic green dot the learner has to disprove.
+  // Probe once when the panel becomes active, so it opens with an accurate
+  // status instead of an optimistic green dot the learner has to disprove.
+  // Read-only: it reports whether the configured server answers, and nothing
+  // here can change that configuration.
   useEffect(() => {
+    if (!companionActive) return;
     void (async () => {
       resetFormatCache();
       setChatStatus(await healthCheck(chatSettings.baseUrl));
     })();
-    // Intentionally mount-only: re-probing on every settings change would
-    // fire a request per keystroke.
+    // Intentionally keyed on the active flag only: re-probing on every settings
+    // change would fire a request per keystroke.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [companionActive]);
 
   /**
    * Restart the A1 course only — XP, streak, badges and the review queue stay.
@@ -343,9 +329,12 @@ export function SettingsPage() {
           </div>
         )}
 
-        {/* AI companion — local-first. The URL/model are editable at RUNTIME
-            (not env-only) because a deployed build cannot be re-pointed at a
-            learner's own machine without a rebuild. */}
+        {/* AI companion — PERSONAL toggle only.
+            The server URL, model, personality, language mix and the proactive
+            nudge are global defaults now, published through `app_config` by the
+            control centre's Chatbot page and read at boot by
+            `src/data/chatbot/`. This panel keeps exactly the one decision that is
+            genuinely per-learner. */}
         {CHATBOT_ENABLED && (
           <div className={theme.panel.surface}>
             <div className="flex flex-wrap items-center justify-between gap-3">
@@ -362,6 +351,7 @@ export function SettingsPage() {
               <button
                 type="button"
                 onClick={() => setChatSettings({ enabled: !chatSettings.enabled })}
+                aria-pressed={chatSettings.enabled}
                 className={
                   chatSettings.enabled ? theme.button.toggleActive : theme.button.toggleInactive
                 }
@@ -370,173 +360,34 @@ export function SettingsPage() {
               </button>
             </div>
 
-            {chatSettings.enabled && (
-              <div className="mt-4 space-y-4">
-                <div
-                  className={`rounded-md border px-3 py-2 text-meta ${
-                    chatStatus.reachable
-                      ? 'border-success-200 bg-success-50 text-success-700 dark:border-success-900 dark:bg-success-900/30 dark:text-success-300'
-                      : 'border-warning-200 bg-warning-50 text-warning-800 dark:border-warning-800/50 dark:bg-warning-950/40 dark:text-warning-200'
-                  }`}
-                >
-                  <span className="font-semibold">{serverLabel(chatStatus)}</span> —{' '}
-                  {statusHint(chatStatus)}
-                </div>
+            {/* The admin's global switch, stated plainly rather than shown as a
+                dead control. This toggle still holds the learner's own choice, so
+                it is not overwritten — the companion returns when the admin
+                re-enables it, without the learner having touched anything. */}
+            {!adminEnabled && (
+              <p
+                className="mt-4 rounded-md border border-ink-200 bg-ink-50 px-3 py-2 text-meta text-ink-600 dark:border-ink-700 dark:bg-ink-800/50 dark:text-ink-300"
+                role="status"
+              >
+                {isDE
+                  ? 'Mero ist derzeit für alle deaktiviert. Deine Einstellung bleibt gespeichert.'
+                  : 'Mero is currently switched off for everyone. Your own setting is saved and will be used again.'}
+              </p>
+            )}
 
-                <div>
-                  <label
-                    htmlFor="mero-base-url"
-                    className="block text-body font-semibold text-ink-700 dark:text-ink-300"
-                  >
-                    {isDE ? 'Server-Adresse' : 'Server URL'}
-                  </label>
-                  <div className="mt-1.5 flex flex-wrap gap-2">
-                    <input
-                      id="mero-base-url"
-                      type="text"
-                      inputMode="url"
-                      value={urlDraft}
-                      onChange={(e) => setUrlDraft(e.target.value)}
-                      placeholder="http://localhost:11434"
-                      className="min-h-[44px] flex-1 rounded-md border border-ink-200 bg-white px-3 py-2 text-body text-ink-900 focus-visible:border-accent-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500/30 dark:border-ink-800 dark:bg-ink-900 dark:text-ink-100"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => void probeModels(normalizeBaseUrl(urlDraft))}
-                      disabled={probing}
-                      className={`${theme.button.secondary} disabled:opacity-50`}
-                    >
-                      {probing
-                        ? (isDE ? 'Prüfe…' : 'Testing…')
-                        : (isDE ? 'Verbindung testen' : 'Test connection')}
-                    </button>
-                  </div>
-                </div>
-
-                {chatStatus.models.length > 0 && (
-                  <div>
-                    <label
-                      htmlFor="mero-model"
-                      className="block text-body font-semibold text-ink-700 dark:text-ink-300"
-                    >
-                      {isDE ? 'Modell' : 'Model'}
-                    </label>
-                    <select
-                      id="mero-model"
-                      value={chatSettings.model}
-                      onChange={(e) => setChatSettings({ model: e.target.value })}
-                      className="mt-1.5 min-h-[44px] w-full rounded-md border border-ink-200 bg-white px-3 py-2 text-body text-ink-900 focus-visible:border-accent-500 focus-visible:outline-none dark:border-ink-800 dark:bg-ink-900 dark:text-ink-100"
-                    >
-                      {chatStatus.models.map((m) => (
-                        <option key={m} value={m}>
-                          {m}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                )}
-                {/* personality */}
-                <div>
-                  <p className="text-body font-semibold text-ink-700 dark:text-ink-300">
-                    {isDE ? 'Ton' : 'Tone'}
-                  </p>
-                  <div className="mt-1.5 flex flex-wrap gap-2">
-                    {INTENSITY_OPTIONS.map((o) => (
-                      <button
-                        key={o.id}
-                        type="button"
-                        onClick={() => setChatSettings({ intensity: o.id })}
-                        className={
-                          chatSettings.intensity === o.id
-                            ? theme.button.toggleActive
-                            : theme.button.toggleInactive
-                        }
-                      >
-                        {isDE ? o.de : o.en}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* language mix */}
-                <div>
-                  <p className="text-body font-semibold text-ink-700 dark:text-ink-300">
-                    {isDE ? 'Sprachmix' : 'Language mix'}
-                  </p>
-                  <div className="mt-1.5 flex flex-wrap gap-2">
-                    {LANGUAGE_MIX_OPTIONS.map((o) => (
-                      <button
-                        key={o.id}
-                        type="button"
-                        onClick={() => setChatSettings({ languageMix: o.id })}
-                        className={
-                          chatSettings.languageMix === o.id
-                            ? theme.button.toggleActive
-                            : theme.button.toggleInactive
-                        }
-                      >
-                        {o.en}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* proactive nudge */}
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <p className="text-body text-ink-500 dark:text-ink-400">
-                    {isDE
-                      ? 'Mero vorschlagen, wenn ein Wort 3+ Mal falsch war.'
-                      : 'Suggest Mero when a word has been missed 3+ times.'}
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setChatSettings({ autoOpenOnMistake: !chatSettings.autoOpenOnMistake })
-                    }
-                    className={
-                      chatSettings.autoOpenOnMistake
-                        ? theme.button.toggleActive
-                        : theme.button.toggleInactive
-                    }
-                  >
-                    {chatSettings.autoOpenOnMistake
-                      ? (isDE ? 'An' : 'On')
-                      : (isDE ? 'Aus' : 'Off')}
-                  </button>
-                </div>
-
-                {/* Style preferences — injected into every system prompt. */}
-                <div>
-                  <p className="text-body font-semibold text-ink-700 dark:text-ink-300">
-                    {isDE ? 'Stil-Vorlieben' : 'Style preferences'}
-                  </p>
-                  <div className="mt-1.5 flex flex-wrap gap-2">
-                    {PREFERENCE_OPTIONS.map((p) => {
-                      const active = (chatSettings.preferences ?? []).includes(p.id);
-                      return (
-                        <button
-                          key={p.id}
-                          type="button"
-                          onClick={() => togglePreference(p.id)}
-                          aria-pressed={active}
-                          title={p.hint}
-                          className={
-                            active ? theme.button.toggleActive : theme.button.toggleInactive
-                          }
-                        >
-                          {isDE ? p.de : p.en}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* CORS — the #1 reason this does not work in production */}
-                <p className="rounded-md bg-ink-50 px-3 py-2 text-meta text-ink-600 dark:bg-ink-800/50 dark:text-ink-400">
-                  {isDE
-                    ? 'Läuft die Seite über HTTPS, blockiert der Browser die Verbindung. Starte den Server dann mit: OLLAMA_ORIGINS="https://deine-domain" ollama serve'
-                    : 'If the site is served over HTTPS, the browser blocks the connection. Start the server with: OLLAMA_ORIGINS="https://your-domain" ollama serve'}
-                </p>
+            {/* A read-only status line, so a lone toggle is not a black box. It
+                reports whether the configured server answers; nothing here can
+                change the configuration. */}
+            {companionActive && (
+              <div
+                className={`mt-4 rounded-md border px-3 py-2 text-meta ${
+                  chatStatus.reachable
+                    ? 'border-success-200 bg-success-50 text-success-700 dark:border-success-900 dark:bg-success-900/30 dark:text-success-300'
+                    : 'border-warning-200 bg-warning-50 text-warning-800 dark:border-warning-800/50 dark:bg-warning-950/40 dark:text-warning-200'
+                }`}
+              >
+                <span className="font-semibold">{serverLabel(chatStatus)}</span> —{' '}
+                {statusHint(chatStatus)}
               </div>
             )}
           </div>
