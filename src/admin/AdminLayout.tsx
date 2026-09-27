@@ -40,6 +40,11 @@ import { theme } from '../config/theme';
 import { useDarkMode } from '../hooks/useDarkMode';
 import { useAdminAuth } from './hooks/useAdminAuth';
 import { ModeSwitcher } from './components/ModeSwitcher';
+import { SearchPalette } from './components/SearchPalette';
+import { fetchAuditLog } from './data/auditLog';
+import { fetchUsers } from './data/users';
+import { fetchVocabulary } from './data/vocabulary';
+import type { SearchIndexInput } from './data/search';
 
 interface NavItem {
   to: string;
@@ -90,6 +95,25 @@ export function AdminLayout() {
   // covering the page it just navigated to.
   useEffect(() => {
     setDrawerOpen(false);
+  }, [location.pathname]);
+
+  // Data for the global palette. Loaded once at mount and refreshed when the
+  // palette is opened after a navigation, so a user who just banned someone can
+  // still find them. Failures are ignored: a search index that fails to load
+  // must not take the shell down with it, and navigation hits still work.
+  const [searchIndex, setSearchIndex] = useState<SearchIndexInput>({});
+
+  const refreshIndex = async () => {
+    const [users, vocab, audit] = await Promise.all([
+      fetchUsers().catch(() => ({ rows: [] })),
+      fetchVocabulary().catch(() => ({ rows: [] })),
+      fetchAuditLog(200).catch(() => ({ entries: [] })),
+    ]);
+    setSearchIndex({ users: users.rows, vocabulary: vocab.rows, audit: audit.entries });
+  };
+
+  useEffect(() => {
+    void refreshIndex();
   }, [location.pathname]);
 
   const displayName = profile?.full_name || profile?.username || session?.user.email || 'Admin';
@@ -236,6 +260,8 @@ export function AdminLayout() {
           </div>
         </main>
       </div>
+
+      <SearchPalette index={searchIndex} />
     </div>
   );
 }
