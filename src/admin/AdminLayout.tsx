@@ -45,6 +45,7 @@ import { fetchAuditLog } from './data/auditLog';
 import { fetchUsers } from './data/users';
 import { fetchVocabulary } from './data/vocabulary';
 import type { SearchIndexInput } from './data/search';
+import { startCurriculumResolution } from '../data/curriculum/resolveActive';
 
 interface NavItem {
   to: string;
@@ -115,6 +116,15 @@ export function AdminLayout() {
   useEffect(() => {
     void refreshIndex();
   }, [location.pathname]);
+
+  // Make `curriculum_source` real. Until this runs the flag is inert: the
+  // resolution rules exist in `data/curriculum/source.ts` but nothing invokes
+  // them. Runs after mount rather than at import time, because ~50 importers
+  // read the spine synchronously and a boot-time fetch would make them async.
+  // Any failure leaves the bundled curriculum in place.
+  useEffect(() => {
+    startCurriculumResolution();
+  }, []);
 
   const displayName = profile?.full_name || profile?.username || session?.user.email || 'Admin';
 
