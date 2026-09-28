@@ -145,6 +145,21 @@
 
   /* Content column: ONE max-width, owned by the shell. */
   --container-content: 80rem;
+
+  /* ── Mobile shell geometry ──────────────────────────────────────────────
+     The bottom tab bar's height, and the bottom padding the page needs so its
+     last row is never trapped underneath it.
+
+     `--mobile-content-clearance` is WRITTEN AS bar + gap on purpose. These are
+     the two numbers that used to drift: the bar was `bottom-[calc(0.75rem…)]`
+     and `<main>` was `pb-[calc(5rem…)]`, which left 10px of every page hidden
+     behind the bar. Expressing the relationship in CSS — rather than deriving
+     it in TypeScript — is what keeps them in step, because Tailwind's class
+     scanner cannot see through a template interpolation (see
+     src/config/mobileShell.ts). */
+  --mobile-bar-height: 4rem;
+  --mobile-bar-gap: 0.5rem;
+  --mobile-content-clearance: calc(var(--mobile-bar-height) + var(--mobile-bar-gap));
 }
 
 
@@ -154,6 +169,15 @@ html {
      Quiet Premium separates surfaces with hairline borders, not tint. */
   --app-canvas: #f7f9fb;
   --app-canvas-dark: #0d1219;
+  /* Tell the UA this document supports both schemes, so native scrollbars,
+     form controls and <select> render against the right background instead of
+     staying stubbornly light inside the dark theme. Pure CSS — no JS, and it
+     applies before React hydrates. */
+  color-scheme: light;
+}
+
+.dark {
+  color-scheme: dark;
 }
 
 * {
@@ -182,6 +206,59 @@ body {
   background-color: var(--app-canvas-dark);
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   MOBILE TYPE LAYER
+   ───────────────────────────────────────────────────────────────────────────
+   Phones get a LARGER type scale than desktop, at the token level, for the
+   whole app. This is a deliberate, measured reversal.
+
+   THE PROBLEM
+   A histogram of every rendered element on /learn at 390px showed the dominant
+   size was 13px (`text-meta`), with 15px (`text-body`) second and 11px
+   (`text-micro`) third. That is a desktop scale viewed through a phone-shaped
+   window: iOS body text is 17px, Material body-large is 16sp, and 13px is
+   small for a product whose entire job is READING GERMAN WORDS — for an
+   audience of Nepali and English speakers on mid-range Android hardware, where
+   the viewport is often 360px wide and the device is often held at arm's
+   length.
+
+   WHY IT IS DONE HERE AND NOT AT THE CALL SITES
+   Tailwind v4 emits these utilities as `font-size: var(--text-body)`, so
+   redefining the custom property cascades to every consumer. These three
+   variables drive roughly 1,077 call sites across the codebase (533 `text-body`,
+   452 `text-meta`, 92 `text-micro`). Editing the tokens in `@theme` instead
+   would have reflowed desktop too; editing the call sites would have meant
+   ~1,000 mechanical edits. This block does the whole job in one place and
+   touches zero components — which also satisfies the additive-wrap rule
+   (.clinerules C11/C12).
+
+   Only the three TEXT steps move. `section` (17px), `title` (22px) and
+   `display` (32px) are left alone: they are already generous, and enlarging
+   them would start breaking the tightest layouts (the A1 spine's per-stage
+   columns) for no legibility gain.
+
+   VERIFIED: applied live at 390px, this produced 0 horizontal overflow and 0
+   clipped scroll containers on /learn, /practice and /welcome, including the
+   tightest horizontal control row on the site (the 10-chip practice filter row
+   measured scrollWidth 231 == clientWidth 231). The boundary is `sm` (640px),
+   which is where the existing `sm:min-h-[36px]` touch-target overrides in
+   config/theme.ts also switch back to desktop density — so the two layers
+   agree on where "desktop" begins.
+   ═══════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 639px) {
+  :root {
+    /* 15px → 16px */
+    --text-body: 1rem;
+    --text-body--line-height: 1.5rem;
+    /* 13px → 14px */
+    --text-meta: 0.875rem;
+    --text-meta--line-height: 1.25rem;
+    /* 11px → 12px */
+    --text-micro: 0.75rem;
+    --text-micro--line-height: 1rem;
+  }
+}
+
 /* Mixed-script typography: Devanagari vertical spacing fix */
 .nepali-text,
 [lang="ne"],
@@ -192,6 +269,62 @@ body {
 /* Ensure Nepali content has relaxed line-height to prevent clipping */
 .leading-nepali {
   line-height: 1.6;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TOUCH & INTERACTION LAYER
+   ───────────────────────────────────────────────────────────────────────────
+   Four fixes from a Web Interface Guidelines audit. All three of the first were
+   simply absent — which is why the app felt slightly "web page" rather than
+   "app" under the thumb.
+
+   1. tap-highlight — Chrome and Safari paint a translucent grey rectangle over
+      any element you touch unless told otherwise. On a surface design where
+      borders and tints already carry all the state, that flash fights the
+      design language. Transparent is correct here because every interactive
+      element in this app has a real :active / :focus-visible state.
+
+   2. touch-action — `manipulation` drops the legacy ~300ms double-tap-zoom
+      delay. `pan-x pan-y` is NOT implied: it would disable pinch-zoom, which
+      the Web Interface Guidelines list as an anti-pattern and which this app
+      should keep for the Devanagari and German text it asks learners to read.
+
+   3. overscroll-behavior — on the full-screen drawer and the mobile bottom
+      sheet, without this the browser's pull-to-refresh fires while the user is
+      trying to scroll INSIDE the overlay. It is applied per-surface below
+      rather than globally, because on the document itself pull-to-refresh is
+      a legitimate platform affordance we should not disable.
+
+   4. text-wrap — `balance` on headings prevents a one-word last line at narrow
+      widths. `pretty` is NOT applied globally: it is a newer, less
+      widely-supported property and the benefit here does not justify a
+      whole-document reflow.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+a,
+button,
+input,
+select,
+textarea,
+[role='button'],
+[role='tab'],
+label {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+/* Full-height overlay surfaces own their scroll, so an overscroll gesture that
+   runs out of content must not chain to the page behind them. */
+@layer components {
+  .overscroll-contain-y {
+    overscroll-behavior-y: contain;
+  }
 }
 
 /* Modern Minimalist Scrollbar */

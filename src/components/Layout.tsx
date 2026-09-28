@@ -3,6 +3,7 @@ import { useEffect, useState, lazy, Suspense } from 'react';
 import { theme } from '../config/theme';
 import { getModuleRoutes } from '../config/modules';
 import { railSpecFor } from '../config/moduleRail';
+import { CONTENT_CLEARANCE_PADDING } from '../config/mobileShell';
 import { ContextPanel } from './ContextPanel';
 import { useLang } from '../hooks/useLang';
 import { useAuth } from '../hooks/useAuth';
@@ -207,7 +208,7 @@ export function Layout() {
       <main
         id="main-content"
         role="main"
-        className={`scroll-mt-24 pb-[calc(5rem+env(safe-area-inset-bottom))] lg:pb-8 ${railInset} ${isModuleRoute ? 'pt-4' : ''}`}
+        className={`scroll-mt-24 ${CONTENT_CLEARANCE_PADDING} lg:pb-8 ${railInset} ${isModuleRoute ? 'pt-4' : ''}`}
       >
         {/* Page content, shared by both layout branches. Extracted so the rail
             and no-rail branches can never drift apart. */}

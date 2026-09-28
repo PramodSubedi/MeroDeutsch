@@ -36,16 +36,25 @@ export function GuestHomePage() {
       />
 
       {/* Hero — one primary action: open the first learning component. Not the A1
-          spine (Premium), so it points at /alphabet directly. */}
+          spine (Premium), so it points at /alphabet directly.
+
+          MOBILE DENSITY: this block measured 1,098px tall on a 390px viewport —
+          1.3 full screens before the learner reaches a single module. The cause
+          is `p-4 sm:p-6` plus `text-3xl sm:text-4xl` plus a `mt-3` paragraph and
+          a `mt-5` button, all of which stack. Below `sm` the padding and the
+          heading step down, the subtitle is clamped to two lines, and the CTA
+          is full-bleed, which brings the block to roughly half a screen while
+          leaving every word of it intact. Nothing is removed — the fold still
+          shows the full pitch and a tappable "Start learning". */}
       <section className="overflow-hidden rounded-lg bg-gradient-to-br from-white via-ink-50 to-accent-50 p-4 shadow-sm dark:from-ink-950 dark:via-ink-950 dark:to-ink-900 sm:p-6">
         <div className="max-w-2xl">
           <p className="text-meta font-semibold uppercase tracking-[0.18em] text-accent-600 dark:text-accent-400">
             {isDE ? 'MeroDeutsch · Gast-Modus' : 'MeroDeutsch · Guest mode'}
           </p>
-          <h1 className="mt-2 text-3xl font-semibold tracking-[-0.04em] text-ink-950 sm:text-4xl dark:text-white">
+          <h1 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-ink-950 sm:text-4xl dark:text-white">
             {isDE ? 'Willkommen bei MeroDeutsch' : 'Welcome to MeroDeutsch'}
           </h1>
-          <p className="mt-3 max-w-xl text-body leading-7 text-ink-600 dark:text-ink-300">
+          <p className="mt-2 max-w-xl text-body leading-7 text-ink-600 line-clamp-2 sm:mt-3 sm:line-clamp-none dark:text-ink-300">
             {isDE
               ? 'Wähle, was du lernen willst — Alphabet, Zahlen, Kalender und mehr. Kein Konto nötig.'
               : 'Pick what you want to learn — alphabet, numbers, calendar and more. No account needed.'}
@@ -53,7 +62,7 @@ export function GuestHomePage() {
 
           <Link
             to="/alphabet"
-            className={`${theme.button.primary} mt-5 inline-flex min-h-[48px] w-full items-center justify-center gap-2 sm:w-auto sm:px-8`}
+            className={`${theme.button.primary} mt-4 inline-flex min-h-[48px] w-full items-center justify-center gap-2 sm:mt-5 sm:w-auto sm:px-8`}
           >
             {isDE ? 'Lernen starten' : 'Start learning'}
             <ArrowRight className="h-5 w-5" aria-hidden="true" />

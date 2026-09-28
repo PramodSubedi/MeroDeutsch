@@ -118,7 +118,14 @@ export const theme = {
     app: 'app-shell min-h-screen text-ink-900 dark:text-ink-100',
     // Sticky header. SOLID surface, hairline only — no glass/blur and no
     // solid brand block (both are locked decisions in .clinerules E2).
-    header: 'h-16 border-b border-ink-200 bg-ink-50 sticky top-0 z-50 dark:border-ink-800 dark:bg-ink-950',
+    //
+    // `pt-[env(safe-area-inset-top)]` on a `min-h-16` (not `h-16`) so the bar
+    // GROWS by the inset instead of the padding eating into the 64px of
+    // content: a notched phone in standalone PWA mode draws the status bar into
+    // the page, and without this the logo and menu button sit under the clock.
+    // The inset is 0px in a browser tab, where the chrome already sits outside
+    // the viewport, so this costs desktop nothing.
+    header: 'min-h-16 border-b border-ink-200 bg-ink-50 pt-[env(safe-area-inset-top)] sticky top-0 z-50 dark:border-ink-800 dark:bg-ink-950',
     // NOTE: no `max-w-*` here — the shell owns the single content column
     // (theme.layout.main), so the header and body share one axis.
     headerInner: 'h-16 px-4 sm:px-6 flex items-center justify-between gap-3',
@@ -166,13 +173,40 @@ export const theme = {
   },
   /**
    * Layer ladder (documented — keep values consistent):
-   *   sidebar rail = z-30 (full-height app shell) · header / bottom-nav /
-   *   overlay dialogs = z-50 · mobile drawer = z-[55] · milestone toast = z-[60]
+   *   sidebar rail = z-30 (full-height app shell) · header / bottom-nav =
+   *   z-50 · overlay dialogs = z-[52] · mobile drawer = z-[55] ·
+   *   chat panel = z-[56] · milestone toast = z-[60]
    * Toasts must stay above quiz UI (.clinerules E3); nothing else goes higher.
+   *
+   * The chat panel sits directly above the mobile drawer rather than sharing its
+   * layer: both are `fixed inset-0` on a phone, so an equal z-index leaves two
+   * full-screen overlays to be resolved by DOM order.
    */
   modal: {
-    overlay: 'fixed inset-0 z-50 flex items-start justify-center bg-ink-950/50 p-4 backdrop-blur-sm',
+    // `z-[52]`, not z-50: the bottom tab bar is also z-50 and is full-bleed to
+    // the screen edge, so a dialog at the same layer could tie with it and let
+    // the bar paint over a sheet's bottom corner. The documented ladder is
+    // unchanged in spirit — bar z-50 < dialog z-[52] < drawer z-[55] < toast
+    // z-[60] — and the milestone toast still wins over everything, which is
+    // what .clinerules E3 requires.
+    overlay: 'fixed inset-0 z-[52] flex items-start justify-center bg-ink-950/50 p-4 backdrop-blur-sm',
     dialog: 'relative mt-[5%] w-full max-w-md rounded-lg border border-ink-200 bg-white p-6 shadow-xl dark:border-ink-800 dark:bg-ink-900 dark:text-ink-100',
+    // Phone presentation: a bottom sheet rather than a centred dialog.
+    //
+    // WHY — a confirm that deletes or resets is the one dialog a learner opens
+    // with a thumb already moving toward the bottom of the screen. Centred at
+    // `mt-[5%]` it puts its actions in the hardest place to reach one-handed.
+    // Anchoring to the bottom edge puts them under the thumb, and the sheet can
+    // sit above the tab bar and the home indicator without covering either.
+    //
+    // `overscroll-contain-y` stops a scroll that runs out of content from
+    // chaining to the page behind the sheet (pull-to-refresh firing on top of a
+    // destructive-confirm sheet is the exact bug the Web Interface Guidelines
+    // call out for modals).
+    sheetOverlay:
+      'fixed inset-0 z-[52] flex items-end justify-center bg-ink-950/50 backdrop-blur-sm',
+    sheet:
+      'relative w-full max-w-md rounded-t-xl border-t border-ink-200 bg-white p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] shadow-xl dark:border-ink-800 dark:bg-ink-900 dark:text-ink-100 sm:rounded-xl sm:rounded-t-none sm:border-l sm:border-r sm:border-b sm:p-6',
     close: 'absolute right-4 top-3 flex h-11 w-11 items-center justify-center text-2xl text-ink-400 transition hover:text-ink-800 dark:hover:text-white',
   },
   card: {

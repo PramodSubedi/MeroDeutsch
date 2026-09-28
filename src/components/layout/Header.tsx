@@ -61,13 +61,18 @@ export function Header({
           <Logo size="sm" variant="navbar" showText={false} />
         </Link>
 
-        {/* Section context — shown on every width, right-aligned next to the utilities. */}
+        {/* Section context — shown on every width, right-aligned next to the
+            utilities. `min-w-0` is what lets this truncate instead of pushing
+            the utility cluster off the bar at 320px. */}
         <div className="min-w-0 flex-1 lg:hidden">
           <span className="block truncate text-meta font-bold text-ink-600 dark:text-ink-300">{contextGroup}</span>
         </div>
 
-        {/* Global utilities — every breakpoint: menu (mobile/tablet) + language + theme + audio + user */}
-        <div className="flex items-center gap-2">
+        {/* Global utilities — every breakpoint: menu (mobile/tablet) + language + theme + audio + user.
+            `gap-1.5` below sm: the cluster is four 44px controls plus the account
+            menu, and at 380px every 2px of gap is a pixel the section label cannot
+            use. The `sm:gap-2` keeps the roomier rhythm once there is room for it. */}
+        <div className="flex items-center gap-1.5 sm:gap-2">
           <button
             type="button"
             onClick={() => setSidebarOpen(true)}

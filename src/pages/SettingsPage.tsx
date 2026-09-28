@@ -502,15 +502,29 @@ export function SettingsPage() {
             premium/guest switch to every account. See `src/lib/debugModeLink.ts`
             and `src/lib/qaBridge.ts`. */}
 
-        {/* Support links */}
-        <div className="flex flex-wrap gap-3 pt-2 text-body">
-          <Link to="/help" className="text-accent-600 hover:text-accent-800 dark:text-accent-300 dark:hover:text-accent-200">
+        {/* Support links.
+            `inline-flex min-h-11 items-center` on each link: these measured 24px
+            tall on a phone, and an inline run of three text links is exactly the
+            pattern where adjacent tap targets are hard to hit without a 44px
+            box. The row keeps `flex-wrap` so nothing reflows when a German
+            label runs long. */}
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 pt-2 text-body">
+          <Link
+            to="/help"
+            className="inline-flex min-h-11 items-center text-accent-600 hover:text-accent-800 dark:text-accent-300 dark:hover:text-accent-200"
+          >
             {isDE ? 'Hilfe & FAQ' : 'Help & FAQ'}
           </Link>
-          <Link to="/privacy" className="text-accent-600 hover:text-accent-800 dark:text-accent-300 dark:hover:text-accent-200">
+          <Link
+            to="/privacy"
+            className="inline-flex min-h-11 items-center text-accent-600 hover:text-accent-800 dark:text-accent-300 dark:hover:text-accent-200"
+          >
             {isDE ? 'Datenschutz' : 'Privacy'}
           </Link>
-          <Link to="/terms" className="text-accent-600 hover:text-accent-800 dark:text-accent-300 dark:hover:text-accent-200">
+          <Link
+            to="/terms"
+            className="inline-flex min-h-11 items-center text-accent-600 hover:text-accent-800 dark:text-accent-300 dark:hover:text-accent-200"
+          >
             {isDE ? 'Nutzungsbedingungen' : 'Terms'}
           </Link>
         </div>

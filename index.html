@@ -4,7 +4,22 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/svg+xml" href="/logo.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- viewport-fit=cover is REQUIRED for env(safe-area-inset-*) to resolve to a
+         non-zero value. Without it the app already references those insets in
+         BottomNav / Layout, but they silently compute to 0px and a notched
+         iPhone draws its home indicator straight through the bottom tab bar.
+         max-scale / user-scalable are deliberately NOT set — pinch-zoom stays. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <!-- OS chrome colour. Two media-scoped values so the browser/PWA status bar
+         follows the platform theme; useDarkMode additionally syncs these at
+         runtime for learners whose in-app toggle disagrees with the OS. -->
+    <meta name="theme-color" content="#f7f9fb" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0d1219" media="(prefers-color-scheme: dark)" />
+    <!-- Add-to-home-screen on iOS: without these the app opens in a Safari
+         chrome with a white status bar over the dark canvas. -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="MeroDeutsch" />
     <title>Mero Deutsch | German Learning for Nepali & English Speakers</title>
     <meta name="description" content="MeroDeutsch helps Nepali and English speakers learn A1 German — alphabet, numbers, articles, greetings, grammar, vocabulary, and daily challenges with offline PWA support." />
     <meta property="og:title" content="MeroDeutsch – Learn German" />

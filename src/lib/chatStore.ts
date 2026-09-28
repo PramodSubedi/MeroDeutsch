@@ -79,13 +79,22 @@ interface ChatStore {
   /** A live in-chat drill, or null. Never persisted. */
   quiz: QuizSession | null;
   /**
-   * A question handed to the chat from OUTSIDE the panel.
+   * Questions handed to the chat from OUTSIDE the panel, oldest first.
    *
    * This is the seam that lets `WhyButton` and the proactive triggers start a
    * conversation without importing `ChatSidebar` or threading a callback
    * through every quiz page. `ChatSidebar` drains it via `takePendingPrompt`.
+   *
+   * ── WHY A QUEUE AND NOT A SINGLE SLOT ──────────────────────────────────────
+   * It was one `string | null`, overwritten unconditionally — and the triggers
+   * genuinely collide. Streak-at-risk and level-up both fire off the same XP
+   * and streak state, so a learner who levels up on a cold day queued two
+   * nudges in one tick and the first was destroyed. The checkpoint trigger made
+   * it worse by looping every failed unit into that one slot. A dropped nudge
+   * is unrecoverable: there is no second chance at it, which is the opposite of
+   * what the comment here used to promise.
    */
-  pendingPrompt: string | null;
+  pendingPrompts: string[];
   /**
    * A prompt was queued while a graded run was in flight, so its panel reveal
    * was withheld. Cleared — and the panel opened — the moment the run ends.
@@ -118,7 +127,7 @@ interface ChatStore {
   markOnboarded: () => void;
   /** Open the panel and queue `text` to be sent as the next message. */
   enqueuePrompt: (text: string) => void;
-  /** Read-and-clear, so a queued prompt is never sent twice. */
+  /** Read-and-clear the OLDEST queued prompt, so nothing is sent twice or lost. */
   takePendingPrompt: () => string | null;
   addMessage: (message: ChatMessage) => void;
   patchMessage: (id: string, patch: Partial<ChatMessage>) => void;
@@ -150,7 +159,7 @@ export const useChatStore = create<ChatStore>()((set, get) => ({
   mood: 'idle',
   conversation: createConversation(),
   mode: 'coach',
-  pendingPrompt: null,
+  pendingPrompts: [],
   deferredReveal: false,
   quiz: null,
   adminEnabled: true,
@@ -193,16 +202,24 @@ export const useChatStore = create<ChatStore>()((set, get) => ({
     // Measured: panel left edge 1070, Next button 1157-1223 at 1440px, and
     // `elementFromPoint` on the button returned a chat paragraph. The learner
     // could neither advance, retry, nor leave.
+    //
+    // A duplicate is the SAME nudge re-queued by a second effect in the same
+    // commit (two triggers can both observe the same new level). Sending the
+    // same question twice reads as a stutter, so identical text collapses onto
+    // one entry. Genuinely DIFFERENT nudges still queue behind each other.
+    const queue = get().pendingPrompts;
+    const pendingPrompts = queue.includes(text) ? queue : [...queue, text];
+
     if (isAssessmentActive()) {
-      set({ open: false, pendingPrompt: text, deferredReveal: true });
+      set({ open: false, pendingPrompts, deferredReveal: true });
     } else {
-      set({ pendingPrompt: text, open: true });
+      set({ pendingPrompts, open: true });
     }
   },
   takePendingPrompt: () => {
-    const next = get().pendingPrompt;
-    if (next) set({ pendingPrompt: null });
-    return next;
+    const [next, ...rest] = get().pendingPrompts;
+    if (next !== undefined) set({ pendingPrompts: rest });
+    return next ?? null;
   },
 
   startQuiz: (deck, mode) => {
@@ -284,7 +301,14 @@ subscribeAssessmentActive((active) => {
   }
 
   // THE RUN ENDED. A nudge withheld during the run finally gets to show itself.
+  // Guarded on the queue being non-empty: with a queue, a later enqueue may have
+  // replaced the set of pending nudges, and opening an empty panel would show the
+  // learner a blank drawer with no explanation for why it appeared.
   if (!deferredReveal || open) return;
+  if (useChatStore.getState().pendingPrompts.length === 0) {
+    useChatStore.setState({ deferredReveal: false });
+    return;
+  }
   useChatStore.setState({ deferredReveal: false, open: true });
 });
 
@@ -348,10 +372,12 @@ export function hydrateChat(userId: string): void {
     // Session-scoped, never persisted: reopening the app should not silently
     // drop the learner into German-drill mode.
     mode: 'coach',
-    pendingPrompt: null,
     // Never restore a withheld reveal across a reload: the run that caused it
     // is long gone, so honouring it would pop a panel the learner never asked
-    // for on a page they have not even opened yet.
+    // for on a page they have not even opened yet. The queued text goes with
+    // it — a nudge addressed to a run that no longer exists is not worth
+    // replaying into a fresh session.
+    pendingPrompts: [],
     deferredReveal: false,
     // A drill in flight does NOT survive a reload: its answers were already
     // written to the SRS queue, so reviving it risks double-counting.

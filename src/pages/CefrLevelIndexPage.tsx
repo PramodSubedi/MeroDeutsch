@@ -47,7 +47,7 @@ export function CefrLevelIndexPage() {
       <header className="mb-6">
         <Link
           to="/home"
-          className="inline-flex items-center gap-1 text-body text-accent-600 hover:text-accent-800 dark:text-accent-300 dark:hover:text-accent-200"
+          className="-ml-1 inline-flex min-h-11 items-center gap-1 rounded-sm px-1 text-body text-accent-600 hover:text-accent-800 dark:text-accent-300 dark:hover:text-accent-200"
         >
           ← {isDE ? 'Zurück zur Startseite' : 'Back to Home'}
         </Link>

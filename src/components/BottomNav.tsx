@@ -8,6 +8,7 @@ import {
   navShortLabel,
   navTarget,
 } from '../config/navigation';
+import { BAR_SAFE_AREA_PADDING, MOBILE_BAR_HEIGHT_CLASS } from '../config/mobileShell';
 
 /** Map of route paths to their lazy import functions for preloading */
 const routePreloadMap: Record<string, () => Promise<any>> = {
@@ -37,6 +38,24 @@ function preloadRoute(path: string) {
  * Guests get three tabs (Progress is auth-gated and the A1 spine is a
  * signed-in benefit — they get the Home module grid instead). Touch targets are
  * min 44px with safe-area padding.
+ *
+ * WHY IT IS EDGE-TO-EDGE, NOT A FLOATING PILL
+ * It used to be `inset-x-3 … rounded-lg shadow-lg` — a pill inset 12px from
+ * each edge, hovering over a gap below the content. That is a 2019-era idiom:
+ * it cost 24px of horizontal room, needed a drop shadow to separate itself
+ * from the page, and read as an overlay floating on top of the content rather
+ * than as part of the shell. The current platform idiom is a full-width bar
+ * flush to the bottom edge, split from the content by a single hairline.
+ *
+ * It stays SOLID and carries no backdrop-blur. The "no glass navbar" decision
+ * in .clinerules Part B is a real design direction, not a constraint to route
+ * around — and as a full-bleed surface it genuinely needs the safe-area inset
+ * that only `viewport-fit=cover` makes live (see index.html).
+ *
+ * Both this bar's height and `<main>`'s matching bottom padding derive from
+ * config/mobileShell.ts. That shared constant is what stops the two from
+ * drifting apart, which is how 10px of every page came to sit permanently
+ * underneath the bar.
  */
 export function BottomNav() {
   const { pathname } = useLocation();
@@ -60,9 +79,9 @@ export function BottomNav() {
   return (
     <nav
       aria-label={isDE ? 'Hauptnavigation' : 'Main navigation'}
-      className="fixed inset-x-3 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] z-50 mx-auto max-w-md rounded-lg border border-ink-200 bg-white p-1.5 shadow-lg lg:hidden dark:border-ink-800 dark:bg-ink-900"
+      className={`fixed inset-x-0 bottom-0 z-50 border-t border-ink-200 bg-white lg:hidden dark:border-ink-800 dark:bg-ink-950 ${MOBILE_BAR_HEIGHT_CLASS} ${BAR_SAFE_AREA_PADDING}`}
     >
-      <div className="flex items-center justify-around">
+      <div className="flex h-16 items-stretch justify-around">
         {navItems.map((item) => {
           const Icon = item.icon;
           return (
@@ -72,27 +91,27 @@ export function BottomNav() {
               aria-current={item.active ? 'location' : undefined}
               onMouseEnter={() => preloadRoute(item.to)}
               onFocus={() => preloadRoute(item.to)}
-              className="relative flex min-h-11 min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-sm px-1 py-1.5 transition-colors"
+              className="relative flex min-h-11 min-w-0 flex-1 flex-col items-center justify-center gap-1 px-1 py-1.5 transition-colors"
             >
               <span
-                className={`flex h-8 w-10 items-center justify-center rounded-sm transition-colors ${
+                className={`flex h-7 w-11 items-center justify-center rounded-md transition-colors ${
                   item.active
                     ? 'bg-accent-100 text-accent-700 dark:bg-accent-950/70 dark:text-accent-300'
-                    : 'text-ink-500 hover:bg-ink-100 hover:text-ink-900 dark:text-ink-400 dark:hover:bg-ink-800 dark:hover:text-white'
+                    : 'text-ink-500 dark:text-ink-400'
                 }`}
               >
-                <Icon className="h-[18px] w-[18px]" strokeWidth={2.2} aria-hidden="true" />
+                <Icon className="h-[19px] w-[19px]" strokeWidth={2.2} aria-hidden="true" />
               </span>
               <span
                 className={`max-w-full truncate text-micro font-bold ${
-                  item.active ? 'text-ink-950 dark:text-white' : 'text-ink-500 dark:text-ink-400'
+                  item.active ? 'text-accent-700 dark:text-accent-300' : 'text-ink-500 dark:text-ink-400'
                 }`}
               >
                 {item.label}
               </span>
               {item.count > 0 && (
                 <span
-                  className="absolute top-0 right-1/4 min-w-[18px] rounded-full bg-warning-100 px-1 py-px text-[10px] font-bold leading-tight text-warning-800 dark:bg-warning-900/50 dark:text-warning-200"
+                  className="absolute top-0.5 right-1/4 min-w-[18px] rounded-full bg-warning-100 px-1 py-px text-[10px] font-bold leading-tight text-warning-800 dark:bg-warning-900/50 dark:text-warning-200"
                   aria-label={`${item.count} due`}
                 >
                   {item.count > 9 ? '9+' : item.count}

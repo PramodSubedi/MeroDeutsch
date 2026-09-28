@@ -34,7 +34,7 @@ import { shuffleArray } from '../utils/shuffleArray';
 import { useExerciseSession, type ExerciseQuestion } from '../hooks/useExerciseSession';
 import { playAudioUrl } from '../hooks/useSpeech';
 import { MultipleChoice } from '../components/exercises/MultipleChoice';
-import { setAssessmentActive } from '../lib/assessmentSignal';
+import { useAssessmentActive } from '../hooks/useAssessmentActive';
 import { buildOptions, isUsableQuestion, toVocabEntry } from '../lib/checkpointDeck';
 import { theme } from '../config/theme';
 import { GenderBadge } from '../components/ui/GenderBadge';
@@ -503,11 +503,14 @@ export function A1CheckpointPage() {
    * is driven from state (not from the recording effect) so the flag also
    * covers the ordinary case of a learner sitting on the last question, and so
    * it clears on unmount if they navigate away mid-run.
+   *
+   * This page ALSO gets a claim from `useExerciseSession` below, which drives
+   * the questions. Two overlapping claims is exactly why `assessmentSignal`
+   * counts them rather than holding a boolean: the panel stays shut until the
+   * last holder releases, and a premature release here can no longer cut the
+   * session's claim short.
    */
-  useEffect(() => {
-    setAssessmentActive(phase === 'playing');
-  }, [phase]);
-  useEffect(() => () => setAssessmentActive(false), []);
+  useAssessmentActive(phase === 'playing');
 
   /**
    * Question keys missed on the previous FAILED attempt.

@@ -45,13 +45,27 @@ export function useChatbotTriggers(snapshot: ContextSnapshot): void {
   const isDE = langMode === 'german';
 
   // ── 2. a failed checkpoint ────────────────────────────────────────────
-  const failedUnits = useRef<Set<number>>(new Set());
+  // Seed on first sight, exactly like trigger 4 below.
+  //
+  // Without the seed this fired on EVERY page load for as long as any unit
+  // sat below the gate — and because a ref is per-mount, a learner who failed
+  // a checkpoint and kept studying (or simply kept the tab open over a
+  // refresh) was nagged indefinitely about a failure they had already been
+  // told about. The nudge is for the MOMENT a gate is missed, which is an
+  // event observed across renders, not a state read on mount.
+  const failedUnits = useRef<Set<number> | null>(null);
   useEffect(() => {
-    for (const [key, record] of Object.entries(attemptsByUnit)) {
+    const failed = Object.entries(attemptsByUnit).filter(
+      ([, record]) => record.lastScore < CHECKPOINT_PASS_THRESHOLD,
+    );
+    // First sight: remember what is already failed, say nothing.
+    if (failedUnits.current === null) {
+      failedUnits.current = new Set(failed.map(([key]) => Number(key)));
+      return;
+    }
+    for (const [key] of failed) {
       const unit = Number(key);
-      if (!Number.isFinite(unit)) continue;
-      if (failedUnits.current.has(unit)) continue;
-      if (record.lastScore >= CHECKPOINT_PASS_THRESHOLD) continue;
+      if (!Number.isFinite(unit) || failedUnits.current.has(unit)) continue;
       failedUnits.current.add(unit);
       useChatStore
         .getState()

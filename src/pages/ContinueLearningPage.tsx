@@ -143,7 +143,7 @@ export function ContinueLearningPage() {
         <header className="mb-5">
           <Link
             to={CEFR_LEVELS_ROUTE}
-            className="inline-flex items-center gap-1 text-body text-accent-600 hover:text-accent-800 dark:text-accent-300 dark:hover:text-accent-200"
+            className="-ml-1 inline-flex min-h-11 items-center gap-1 rounded-sm px-1 text-body text-accent-600 hover:text-accent-800 dark:text-accent-300 dark:hover:text-accent-200"
           >
             ← {isDE ? 'Alle Niveaus' : 'All levels'}
           </Link>
@@ -171,7 +171,7 @@ export function ContinueLearningPage() {
           <div>
             <Link
               to={CEFR_LEVELS_ROUTE}
-              className="inline-flex items-center gap-1 text-body text-accent-600 hover:text-accent-800 dark:text-accent-300 dark:hover:text-accent-200"
+              className="-ml-1 inline-flex min-h-11 items-center gap-1 rounded-sm px-1 text-body text-accent-600 hover:text-accent-800 dark:text-accent-300 dark:hover:text-accent-200"
             >
               ← {isDE ? 'Alle Niveaus' : 'All levels'}
             </Link>
@@ -238,7 +238,7 @@ export function ContinueLearningPage() {
         <div>
           <Link
             to={CEFR_LEVELS_ROUTE}
-            className="inline-flex items-center gap-1 text-body text-accent-600 hover:text-accent-800 dark:text-accent-300 dark:hover:text-accent-200"
+            className="-ml-1 inline-flex min-h-11 items-center gap-1 rounded-sm px-1 text-body text-accent-600 hover:text-accent-800 dark:text-accent-300 dark:hover:text-accent-200"
           >
             ← {isDE ? 'Alle Niveaus' : 'All levels'}
           </Link>

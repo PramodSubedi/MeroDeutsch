@@ -20,6 +20,7 @@ import React, { useEffect, useMemo } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { useRapidBlitzMultiChallenge, getChallengeQuestion } from '../hooks/useRapidBlitzMultiChallenge';
+import { useAssessmentActive } from '../hooks/useAssessmentActive';
 import { ChallengeView } from '../components/RapidBlitz/ChallengeView';
 import { theme } from '../config/theme';
 import { BookOpen, Ear, Tag, Hash, Edit3, Mic } from 'lucide-react';
@@ -181,6 +182,15 @@ export function RapidBlitzPage() {
     answerSpeech,
     skip,
   } = useRapidBlitzMultiChallenge(modeForHook as any);
+
+  // Blitz has no `useExerciseSession` deck, so it has to claim for itself.
+  // `sectionInfo` is included deliberately: it is a mid-run PAUSE with its own
+  // "continue" control, and a proactive nudge opening the panel over that button
+  // is the same blocker the checkpoint measured, just at a different moment.
+  // `finished` is excluded — the run is over and the result overlay is the
+  // learner's to dismiss, not something the companion should sit on top of.
+  const blitzRunLive = status !== 'idle' && status !== 'finished';
+  useAssessmentActive(blitzRunLive);
 
   const accuracy = useMemo(() => {
     if (correctCount + wrongCount === 0) return 0;

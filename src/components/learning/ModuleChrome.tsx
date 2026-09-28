@@ -11,6 +11,12 @@ import { A1_PATH_ROUTE } from '../../data/cefrLevels';
  * both duplicated the same links directly under the header.
  * Mounted by Layout.tsx above <Outlet /> for module routes so that ArticlesPage
  * (a protected file) receives module navigation without being edited.
+ *
+ * TOUCH TARGET
+ * The link is 20px of text but carries a 44px hit area (`min-h-11` with `-my-2`
+ * so the visual spacing is unchanged). It measured 24px tall on a 390px viewport,
+ * and it sits at the top of a scrolling page, which is precisely where a thumb
+ * lands while scrolling upward.
  */
 export function ModuleChrome() {
   const { langMode } = useLang();
@@ -21,7 +27,7 @@ export function ModuleChrome() {
     <div className="mb-2 flex flex-wrap items-center gap-x-3 gap-y-2">
       <Link
         to={isAuthenticated ? A1_PATH_ROUTE : '/home'}
-        className="inline-flex shrink-0 items-center gap-1 text-meta font-semibold text-accent-600 hover:text-accent-800 dark:text-accent-300 dark:hover:text-accent-200"
+        className="-my-2 inline-flex min-h-11 shrink-0 items-center gap-1 text-meta font-semibold text-accent-600 hover:text-accent-800 dark:text-accent-300 dark:hover:text-accent-200"
       >
         ← {isDE
           ? (isAuthenticated ? 'Zurück zum Lernpfad' : 'Zurück zur Startseite')

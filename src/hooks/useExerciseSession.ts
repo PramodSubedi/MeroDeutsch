@@ -25,6 +25,7 @@ import { shuffleArray } from '../utils/shuffleArray';
 import { useXp } from './useXp';
 import type { ReportAnswerOptions } from '../context/XpContext';
 import { useReviewQueue } from './useReviewQueue';
+import { useAssessmentActive } from './useAssessmentActive';
 
 /** Minimal shape a question must satisfy to be driven by the engine. */
 export interface ExerciseQuestion {
@@ -114,6 +115,25 @@ export function useExerciseSession<Q extends ExerciseQuestion>(
   const [results, setResults] = useState<Record<string, boolean>>({});
   /** Correctness of the CURRENT locked answer (respects custom `matches`). */
   const [lastCorrect, setLastCorrect] = useState(false);
+
+  // ── Claim the companion's attention for the whole run ──────────────────────
+  // The Mero panel is `fixed inset-y-0 right-0 sm:w-[360px]` and auto-opens on
+  // a proactive nudge. A1CheckpointPage measured what that costs: at 1440px the
+  // panel covered the Next button outright (`elementFromPoint` returned a chat
+  // paragraph), so the learner could not advance, retry or leave. That fix was
+  // written here, where the first blocker was found — and it guarded exactly ONE
+  // of the six graded routes, while this engine drives the other five
+  // (/articles, /article-sprint, /dictation, /numbers, /grammar, …).
+  //
+  // Claiming here is the one seam that covers all of them, because a page
+  // cannot forget it: no deck-driven quiz can exist without this hook.
+  //
+  // The claim spans the RESULT screen too, not just the last question — Retry
+  // and "Back to map" are right-aligned and were covered by the same panel.
+  // `questions.length > 0` keeps an empty/loading deck from claiming, and the
+  // reference count in `assessmentSignal` means a page that ALSO claims (the
+  // checkpoint does, for its own phase) cannot cut this one short.
+  useAssessmentActive(questions.length > 0 && index < questions.length);
 
   // Ref guard so rapid double-taps cannot double-report before re-render.
   const lockedRef = useRef(false);

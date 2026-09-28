@@ -46,7 +46,7 @@
       ]
     }
   },
-  "vocabCategories": ["nature-time", "travel-questions", "travel"],
+  "vocabCategories": ["nature-time", "travel-questions", "weather-wishes"],
   "grammarCategories": ["prepositions"],
   "hasLesson": true
 }

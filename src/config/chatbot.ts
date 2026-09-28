@@ -34,12 +34,24 @@ import type {
  *  C13/C14). */
 export const CHATBOT_STORAGE_KEY = 'meroDeutschChatbot';
 
+/**
+ * `import.meta.env` is a Vite INJECTION and is absent under bare `tsx`, which is
+ * what the `check:*` suites run on. Read defensively for the same reason, and in
+ * the same shape, as `lib/qaBridge.ts` and `lib/supabase.ts` — a config module
+ * that cannot be imported outside a bundler cannot be unit-tested at all.
+ */
+function readEnv(key: string): string | undefined {
+  const env = (import.meta as { env?: Record<string, string | undefined> }).env;
+  const value = env?.[key];
+  return typeof value === 'string' ? value : undefined;
+}
+
 /** Feature flag. `VITE_CHATBOT_ENABLED=false` compiles the feature out. */
 export const CHATBOT_ENABLED =
-  String(import.meta.env.VITE_CHATBOT_ENABLED ?? 'true').toLowerCase() !== 'false';
+  String(readEnv('VITE_CHATBOT_ENABLED') ?? 'true').toLowerCase() !== 'false';
 
-const envUrl = String(import.meta.env.VITE_OLLAMA_BASE_URL ?? '').trim();
-const envModel = String(import.meta.env.VITE_OLLAMA_DEFAULT_MODEL ?? '').trim();
+const envUrl = (readEnv('VITE_OLLAMA_BASE_URL') ?? '').trim();
+const envModel = (readEnv('VITE_OLLAMA_DEFAULT_MODEL') ?? '').trim();
 
 export const CHATBOT_CONFIG = {
   defaultBaseUrl: envUrl || 'http://localhost:11434',

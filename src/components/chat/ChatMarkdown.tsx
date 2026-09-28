@@ -1,22 +1,19 @@
 /**
  * src/components/chat/ChatMarkdown.tsx — render model output.
  *
- * SECURITY POSTURE (accepted, see the note in `lib/ollamaClient.ts`)
- * -----------------------------------------------------------------
+ * SECURITY POSTURE
+ * ----------------
  * `marked` is configured once, module-wide, and its output is injected via
- * `dangerouslySetInnerHTML`. Two things are worth stating plainly rather than
- * leaving implicit:
+ * `dangerouslySetInnerHTML`. Two facts are worth stating plainly:
  *
  *  1. `marked` v15 REMOVED its `sanitize` option. There is no supported way to
  *     strip raw HTML through the library any more.
- *  2. Therefore any `<script>` / `<img onerror>` / `javascript:` link present
- *     in the model output would execute.
- *
- * Why that is bounded here: the only producer is a model the learner runs on
- * their own machine, reached over localhost. There is no cross-user or
- * third-party content path into this component, so this is a self-inflicted
- * risk surface rather than a remote one. If the companion is ever pointed at a
- * shared or proxied model, this component must gain a sanitiser FIRST.
+ *  2. So every reply is passed through `lib/sanitizeHtml.ts` — an allowlist
+ *     sanitiser — BEFORE it reaches the DOM. Do not "simplify" this away: the
+ *     risk was previously documented as acceptable only because the sole
+ *     producer is a model the learner runs on their own machine, and
+ *     `settings.baseUrl` is user-editable *and* admin-settable via
+ *     `chatbot_base_url`, so a shared or proxied model is one config row away.
  *
  * `breaks: true` because the model writes plain lines and single newlines
  * should render as breaks in a narrow sidebar.
@@ -25,10 +22,18 @@
 import { useMemo } from 'react';
 import { marked } from 'marked';
 
+import { sanitizeHtml } from '../../lib/sanitizeHtml';
+
 marked.setOptions({ gfm: true, breaks: true });
 
 export function ChatMarkdown({ text }: { text: string }) {
-  const html = useMemo(() => marked.parse(text, { async: false }) as string, [text]);
+  // Sanitised on the way out, not on the way in: the input is the learner's or
+  // the model's own markdown, and the thing that reaches innerHTML is the only
+  // thing that needs constraining.
+  const html = useMemo(
+    () => sanitizeHtml(marked.parse(text, { async: false }) as string),
+    [text],
+  );
   return (
     <div
       className="text-body leading-relaxed [&_a]:underline [&_code]:rounded-sm [&_code]:bg-ink-100 [&_code]:px-1 [&_code]:py-0.5 [&_code]:text-[0.9em] [&_li]:ml-4 [&_ol]:list-decimal [&_p]:my-1.5 [&_strong]:font-semibold [&_ul]:list-disc dark:[&_code]:bg-ink-800"

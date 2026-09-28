@@ -19,9 +19,10 @@
  *
  * Z-ORDER
  * -------
- * `z-[55]` for the panel: above the sticky header (z-50) so it is not clipped,
- * below the milestone/level-up toast (z-[60]) so XP and streak toasts are
- * never hidden behind a chat drawer.
+ * `z-[56]` for the panel: above the sticky header (z-50) so it is not clipped,
+ * above the AppSidebar mobile drawer (z-[55]) so a full-screen drawer pair can
+ * never resolve by DOM order, and below the milestone/level-up toast (z-[60])
+ * so XP and streak toasts are never hidden behind a chat drawer.
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -101,7 +102,10 @@ export function ChatSidebar() {
   const setConversation = useChatStore((s) => s.setConversation);
   const mode = useChatStore((s) => s.mode);
   const setMode = useChatStore((s) => s.setMode);
-  const pendingPrompt = useChatStore((s) => s.pendingPrompt);
+  // Read the HEAD of the queue, not a boolean. The effect must re-run as each
+  // prompt is consumed, or a second queued nudge would sit unsent until some
+  // unrelated state change happened to re-render this component.
+  const pendingPrompt = useChatStore((s) => s.pendingPrompts[0] ?? null);
   const quiz = useChatStore((s) => s.quiz);
   // The live drill question. Declared with the other selectors — a hook below
   // the early `return null` would change hook order as the route changes.
@@ -493,7 +497,14 @@ export function ChatSidebar() {
           onClick={() => setOpen(true)}
           aria-label={isDE ? 'Mero öffnen' : 'Open Mero'}
           title={isDE ? 'Mero öffnen (Strg+K)' : 'Open Mero (Ctrl+K)'}
-          className="fixed right-4 bottom-24 z-[54] inline-flex h-14 w-14 items-center justify-center rounded-full bg-accent-600 text-white shadow-lg transition hover:bg-accent-700 active:scale-95 sm:bottom-6"
+          // `mb-(--mobile-content-clearance)` rather than the old literal
+          // `bottom-24` (96px): the bar grew to 65px plus its safe-area inset, so
+          // a fixed 96px offset left the launcher sitting 6px above a bar that
+          // now reaches the screen edge — and on a notched phone, inside the
+          // home-indicator region. Offsetting by the SAME token the page
+          // clearance uses means the launcher can never end up under the bar.
+          // `sm:mb-0 sm:bottom-6` keeps the original desktop position.
+          className="fixed right-4 bottom-0 z-[54] mb-[calc(var(--mobile-content-clearance)+0.5rem)] inline-flex h-14 w-14 items-center justify-center rounded-full bg-accent-600 text-white shadow-lg transition hover:bg-accent-700 active:scale-95 sm:bottom-6 sm:mb-0"
         >
           <MessageCircle className="h-6 w-6" aria-hidden="true" />
           {!status.reachable && !status.checking && (
@@ -509,7 +520,7 @@ export function ChatSidebar() {
       {open && (
         <aside
           aria-label={isDE ? 'Mero Lernbegleiter' : 'Mero learning companion'}
-          className="fixed inset-y-0 right-0 z-[55] flex w-full flex-col border-l border-ink-200 bg-white shadow-2xl sm:w-[360px] dark:border-ink-800 dark:bg-ink-900"
+          className="fixed inset-y-0 right-0 z-[56] flex w-full flex-col border-l border-ink-200 bg-white shadow-2xl sm:w-[360px] dark:border-ink-800 dark:bg-ink-900"
         >
           <ChatHeader
             isDE={isDE}
@@ -614,7 +625,7 @@ export function ChatSidebar() {
                     key={q}
                     type="button"
                     onClick={() => void send(q)}
-                    className="inline-flex min-h-[32px] items-center rounded-full border border-ink-200 bg-white px-3 py-1 text-meta font-medium text-ink-700 transition hover:border-accent-400 hover:text-accent-600 active:scale-95 dark:border-ink-800 dark:bg-ink-800 dark:text-ink-300"
+                    className="inline-flex min-h-11 items-center rounded-full border border-ink-200 bg-white px-3 py-1 text-meta font-medium text-ink-700 transition hover:border-accent-400 hover:text-accent-600 active:scale-95 dark:border-ink-800 dark:bg-ink-800 dark:text-ink-300"
                   >
                     {q}
                   </button>
@@ -642,7 +653,7 @@ export function ChatSidebar() {
                 <button
                   type="button"
                   onClick={() => setHelpOpen(false)}
-                  className="mt-2 inline-flex min-h-[32px] items-center rounded-md border border-ink-200 px-2.5 py-1 text-meta font-semibold text-ink-700 transition hover:bg-ink-50 active:scale-95 dark:border-ink-700 dark:text-ink-300"
+                  className="mt-2 inline-flex min-h-11 items-center rounded-md border border-ink-200 px-2.5 py-1 text-meta font-semibold text-ink-700 transition hover:bg-ink-50 active:scale-95 dark:border-ink-700 dark:text-ink-300"
                 >
                   {isDE ? 'Schließen' : 'Close'}
                 </button>

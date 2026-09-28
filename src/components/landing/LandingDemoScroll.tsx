@@ -219,10 +219,24 @@ export function LandingDemoScroll() {
               style={frameStyle ?? { opacity: 1 }}
               className="relative z-10 mx-auto flex max-w-4xl flex-col items-center"
             >
+              {/* `inset-0 sm:-inset-6`, not a flat `-inset-6`. The glow bleeds
+                  24px past its container, and on a phone that container is
+                  already flush to the viewport, so the bleed escaped to the
+                  document and gave the landing page 8px of horizontal scroll
+                  (scrollWidth 388 vs clientWidth 380) — a rubber-band that reads
+                  as a mis-tap on a marketing page.
+
+                  Deliberately NOT fixed with `overflow-hidden` on an ancestor:
+                  this component is a framer-motion `useScroll` container, and any
+                  non-visible overflow above it makes motion resolve the WRONG
+                  element as the scroll container, freezing every transform on
+                  the page. Clipping this layer's own geometry is the one fix
+                  that cannot reach the scroll machinery. The bleed is kept from
+                  `sm` up, where there is room for it. */}
               {/* Ambient brand glow behind the assembled frame */}
               <div
                 aria-hidden="true"
-                className="pointer-events-none absolute -inset-6 -z-10 rounded-[2rem] bg-gradient-to-tr from-accent-500/15 via-accent-400/10 to-transparent blur-2xl"
+                className="pointer-events-none absolute inset-0 -z-10 rounded-[2rem] bg-gradient-to-tr from-accent-500/15 via-accent-400/10 to-transparent blur-2xl sm:-inset-6"
               />
 
               {/* Browser chrome */}

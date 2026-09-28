@@ -384,7 +384,7 @@ export function AppSidebar({
           role={mobileOpen ? 'dialog' : undefined}
           aria-modal={mobileOpen ? true : undefined}
           aria-label={isDE ? 'Seitennavigation' : 'Site navigation'}
-          className={`relative h-full w-72 max-w-[85vw] overflow-y-auto border-l border-ink-200 bg-ink-50 text-ink-900 dark:border-ink-800 dark:bg-ink-950 dark:text-ink-100 ${mobileOpen ? 'block' : 'hidden'}`}
+          className={`relative h-full w-72 max-w-[85vw] overscroll-contain-y overflow-y-auto border-l border-ink-200 bg-ink-50 text-ink-900 dark:border-ink-800 dark:bg-ink-950 dark:text-ink-100 ${mobileOpen ? 'block' : 'hidden'}`}
         >
           {renderRail(false, false, 'drawer', onClose)}
         </aside>

@@ -28,22 +28,47 @@
  * reason: the answer is needed by `chatStore` (below the tree) and by a page
  * (above it), and threading a provider between them would be all cost. No new
  * context, no new storage, no re-render of the tree.
+ * ── WHY A DEPTH COUNTER AND NOT A BOOLEAN ───────────────────────────────────
+ * A single boolean cannot be owned by two managers. `useExerciseSession` claims
+ * for every deck-driven page, and `A1CheckpointPage` holds a second claim for
+ * its own `phase === 'playing'` window — under a boolean, whichever released
+ * first would clear the flag while the other was still mid-question and
+ * re-open the panel over a live run. Counting claims makes overlapping owners
+ * safe: the flag falls only when the LAST holder lets go. Every acquire must be
+ * balanced by exactly one release, which is what `useAssessmentActive` is for.
  */
 
-let active = false;
+/** How many owners currently claim a graded run is in flight. */
+let depth = 0;
 
 const listeners = new Set<(v: boolean) => void>();
 
-/** Mark a graded run as started / finished. */
-export function setAssessmentActive(value: boolean): void {
-  if (active === value) return;
-  active = value;
+function emit(value: boolean): void {
   listeners.forEach((listener) => listener(value));
+}
+
+/**
+ * Claim that a graded run is in flight. Balance every call with `releaseAssessment`.
+ *
+ * The one rule: ONE release per acquire, always — including on unmount. That is
+ * why `useAssessmentActive` exists; calling these by hand from a page effect is
+ * exactly how a leaked claim would freeze the panel shut for the whole session.
+ */
+export function acquireAssessment(): void {
+  depth += 1;
+  if (depth === 1) emit(true);
+}
+
+/** Release a claim. Clamped at zero, so a stray release cannot go negative. */
+export function releaseAssessment(): void {
+  if (depth === 0) return;
+  depth -= 1;
+  if (depth === 0) emit(false);
 }
 
 /** True while a graded run is in flight. */
 export function isAssessmentActive(): boolean {
-  return active;
+  return depth > 0;
 }
 
 /** Subscribe to changes. Returns an unsubscribe fn. */

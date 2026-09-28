@@ -56,7 +56,7 @@ export function ErrorCard({
         <button
           type="button"
           onClick={() => onAction(payload.route as string)}
-          className="mt-2 inline-flex min-h-[32px] items-center rounded-md border border-accent-300 bg-white px-2.5 py-1 text-meta font-semibold text-accent-700 transition hover:bg-accent-50 active:scale-[0.98] dark:border-accent-800 dark:bg-ink-900 dark:text-accent-300"
+          className="mt-2 inline-flex min-h-11 items-center rounded-md border border-accent-300 bg-white px-2.5 py-1 text-meta font-semibold text-accent-700 transition hover:bg-accent-50 active:scale-[0.98] dark:border-accent-800 dark:bg-ink-900 dark:text-accent-300"
         >
           → {isDE ? 'Übung öffnen' : 'Practise this'}
         </button>
