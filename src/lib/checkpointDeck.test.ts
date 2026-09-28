@@ -220,4 +220,39 @@ describe('isUsableQuestion', () => {
     isUsableQuestion(good, (q) => dropped.push(q));
     expect(dropped).toHaveLength(0);
   });
+
+  // ── Degenerate prompts (C2.6) ──────────────────────────────────────────────
+  //
+  // A prompt that IS the answer is not a question. It became an ANSWER LEAK
+  // once `speakText` began preferring bundled clips: `vocab-translation` sets
+  // `speakPrompt: v.en` and `correctAnswer: v.de`, so for a true cognate the
+  // pre-lock speaker played a recording of the answer before the learner could
+  // choose. These assertions lock the invariant that prevents it.
+
+  it('rejects a self-answering prompt', () => {
+    // The real card: German "bitter", English "bitter" — tags
+    // ['adjective','A1','taste-texture-adjectives'], which is what m10/m13 pull.
+    const cognate: DeckQuestion = {
+      key: 'vocab:bitter',
+      prompt: 'bitter',
+      correctAnswer: 'bitter',
+      options: ['bitter', 'süß', 'salzig'],
+      source: 'vocab-translation',
+    };
+    expect(isUsableQuestion(cognate)).toBe(false);
+  });
+
+  it('catches the collision through case and spacing, not just identity', () => {
+    // A naive `===` would pass these through and still leak.
+    expect(isUsableQuestion({ ...good, prompt: 'Hallo', correctAnswer: 'hallo' })).toBe(false);
+    expect(isUsableQuestion({ ...good, prompt: '  Hallo  ', correctAnswer: 'Hallo' })).toBe(false);
+  });
+
+  it('still accepts a cognate-shaped question whose answer is a DIFFERENT word', () => {
+    // "Hallo" -> "Guten Tag" is a translation question like any other. The
+    // invariant must not start dropping legitimate vocabulary questions.
+    expect(
+      isUsableQuestion({ ...good, prompt: 'Hello', correctAnswer: 'Guten Tag', options: ['Guten Tag', 'Hallo'] }),
+    ).toBe(true);
+  });
 });

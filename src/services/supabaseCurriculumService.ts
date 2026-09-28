@@ -68,6 +68,15 @@ interface VocabRow {
   plural_form?: string | null;
   /** Raw tags[] (migration 010) — preserved through to the Dexie cache. */
   tags?: string[] | null;
+  /**
+   * Bundled TTS clip for this lemma, e.g. `/audio/anki/tts-84886454796.mp3`
+   * (migration 20260930170000). Null when no recording exists.
+   *
+   * Loaded but not yet populated in the live table — run `npm run
+   * backfill-audio`. See the post-mortem on `listening-gap` in
+   * src/data/curriculum/schema.ts for why it had nowhere to live before.
+   */
+  audio_url?: string | null;
 }
 
 /** Raw shape of a `sentences` row returned by the RPC/table. */
@@ -122,6 +131,10 @@ function rowToVocabCard(
     examples: row.example_de
       ? [{ de: row.example_de, en: row.example_en ?? '', np: row.example_np ?? '' }]
       : [],
+    // The single field the `listening-gap` checkpoint source filters on. It was
+    // dropped here for as long as the table had no `audio_url` column, which is
+    // what kept that source permanently empty.
+    audioUrl: row.audio_url ?? undefined,
   };
 }
 
@@ -147,6 +160,10 @@ function cardToLegacyEntry(c: VocabCard): VocabEntry {
     tags: c.tags,
     level: 'A1',
     exampleDe: c.examples[0]?.de,
+    // Forwarded so `getVocabularyByCategories` → checkpointDeck.toVocabEntry
+    // → A1CheckpointPage's `listening-gap` case can see the recording. Dropping
+    // it here is what made the source unreachable even once the column existed.
+    audioUrl: c.audioUrl,
   };
 }
 
@@ -316,7 +333,7 @@ export class SupabaseCurriculumService implements CurriculumService {
             // Fallback: full table SELECT (online — so we can still cache).
             const { data: fbData, error: fbError } = await supabase
               .from('vocabulary')
-              .select('word, article, translation_en, translation_np, example_de, part_of_speech, level, plural_form')
+              .select('word, article, translation_en, translation_np, example_de, part_of_speech, level, plural_form, audio_url')
               .eq('part_of_speech', 'noun')
               .not('article', 'is', null);
 
@@ -430,7 +447,7 @@ export class SupabaseCurriculumService implements CurriculumService {
             let q = supabase
               .from('vocabulary')
               .select(
-                'word, article, translation_en, translation_np, translation_ne_roman, example_de, example_en, example_np, part_of_speech, level, plural_form, tags'
+                'word, article, translation_en, translation_np, translation_ne_roman, example_de, example_en, example_np, part_of_speech, level, plural_form, tags, audio_url'
               );
             if (filters.pos) q = q.eq('part_of_speech', filters.pos);
             if (filters.level) q = q.eq('level', filters.level);
@@ -480,7 +497,7 @@ export class SupabaseCurriculumService implements CurriculumService {
       let q = supabase
         .from('vocabulary')
         .select(
-          'word, article, translation_en, translation_np, translation_ne_roman, example_de, example_en, example_np, part_of_speech, level, plural_form, tags'
+          'word, article, translation_en, translation_np, translation_ne_roman, example_de, example_en, example_np, part_of_speech, level, plural_form, tags, audio_url'
         )
         .order('word', { ascending: true })
         .limit(Math.min(target, 1000));
@@ -571,7 +588,7 @@ export class SupabaseCurriculumService implements CurriculumService {
           let q = supabase
             .from('vocabulary')
             .select(
-              'word, article, translation_en, translation_np, translation_ne_roman, example_de, part_of_speech, level, plural_form, tags'
+              'word, article, translation_en, translation_np, translation_ne_roman, example_de, example_en, example_np, part_of_speech, level, plural_form, tags, audio_url'
             )
             .overlaps('tags', cats)
             .limit(limit);

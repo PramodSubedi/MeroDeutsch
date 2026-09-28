@@ -34,7 +34,53 @@ const PROJECT_ROOT = path.resolve(__dirname, '..');
 // Input is a pipeline intermediate (NOT app data) — lives under scripts/.
 const INPUT_FILE = path.join(PROJECT_ROOT, 'scripts', 'data', 'raw-words.json');
 // Output IS consumed by the app (useDexieInit boot seed) — stays in public/.
+//
+// ⚠️ THIS PATH IS ALSO WRITTEN BY scripts/bundle-offline-seed.cjs.
+//
+// That script is the AUTHORITATIVE producer of this file: it is the only one
+// that carries the bundled-TTS fields — `audioUrl` (616 lemmas) and
+// `examples[].audioUrl` (626 sentence clips) — sourced from
+// `scripts/local-german-db-v2.json` and the Goethe-Institut A1 Anki deck.
+//
+// This script is a different, OpenAI-backed pipeline for ad-hoc words. Its
+// output has no audio and, written over the top, would silently delete all
+// ~1,200 audio references and every curated translation the bundler merged in.
+// `assertNoBundledAudio` below makes that impossible rather than leaving it to
+// whoever happens to run `npm run enrich` next.
 const OUTPUT_FILE = path.join(PROJECT_ROOT, 'public', 'data', 'enriched-vocab.json');
+
+/**
+ * Refuse to overwrite a bundled-audio seed. Exits non-zero with the correct
+ * command to run instead.
+ */
+async function assertNoBundledAudio(): Promise<void> {
+  let existing: unknown;
+  try {
+    existing = JSON.parse(await fs.readFile(OUTPUT_FILE, 'utf-8'));
+  } catch {
+    return; // absent or unreadable — nothing to protect
+  }
+  if (!Array.isArray(existing)) return;
+
+  const withClip = existing.filter(
+    (c): c is { audioUrl?: string } =>
+      Boolean(c?.audioUrl) || (Array.isArray(c?.examples) && c.examples.some((e: { audioUrl?: string }) => e?.audioUrl))
+  ).length;
+
+  if (withClip === 0) return;
+
+  console.error(
+    `\n❌ Refusing to overwrite ${path.relative(PROJECT_ROOT, OUTPUT_FILE)}.\n` +
+      `   It currently holds ${withClip} card(s) with bundled TTS audio, and this script\n` +
+      `   produces cards with none. Writing here would delete every audio reference\n` +
+      `   AND the curated translations the bundler merged in.\n\n` +
+      `   For the offline seed (and the audio), run:\n` +
+      `     npm run bundle-offline-seed\n\n` +
+      `   To override deliberately, move the file aside first:\n` +
+      `     mv ${path.relative(PROJECT_ROOT, OUTPUT_FILE)} ${path.relative(PROJECT_ROOT, OUTPUT_FILE)}.bak\n`
+  );
+  process.exit(1);
+}
 
 const MODEL = process.env.OPENAI_MODEL || 'gpt-4o';
 const BATCH_SIZE = Math.max(1, Number(process.env.ENRICH_BATCH_SIZE || 10));
@@ -273,6 +319,10 @@ async function main() {
     console.error('   npm run enrich');
     process.exit(1);
   }
+
+  // Before spending a single API call: this script must not be the thing that
+  // destroys the bundled-TTS seed. See assertNoBundledAudio.
+  await assertNoBundledAudio();
 
   const inputWords = await readWords();
   const unique = [...new Set(inputWords.map((w) => w.trim()).filter(Boolean))];

@@ -57,6 +57,9 @@
     "curriculum:backfill": "tsx scripts/curriculum/backfillUnits.ts",
     "check:chatbot": "tsx src/lib/chatbot.check.ts",
     "check:chatconfig": "tsx src/data/chatbot/config.check.ts",
+    "check:audio": "tsx scripts/checkAudio.check.ts",
+    "backfill-audio": "tsx scripts/backfillVocabularyAudio.ts",
+    "bundle-offline-seed": "tsx scripts/bundle-offline-seed.cjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage"

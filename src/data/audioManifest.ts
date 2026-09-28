@@ -3,6 +3,12 @@
  * Maps lowercased German lemma to a bundled TTS clip under /audio/anki/.
  * Source: Goethe Institute A1 Wordlist Anki deck (CC BY-SA 4.0),
  * audio generated with Thorsten-Voice.
+ *
+ * Keys are either the card's exact lemma or a normalized form of the wordlist's
+ * printed headword ("(sich) duschen" -> "duschen", "eltern (pl.)" -> "eltern").
+ * Because every key is a German lemma, an English or Nepali prompt string can
+ * never match — which is what keeps speakText() TTS-safe. Do not add
+ * non-German keys here.
  */
 export const AUDIO_BY_LEMMA: Record<string, string> = {
   "ansage": "/audio/anki/tts-84886454452.mp3",
@@ -620,5 +626,37 @@ export const AUDIO_BY_LEMMA: Record<string, string> = {
   "zug": "/audio/anki/tts-84886455257.mp3",
   "zurück": "/audio/anki/tts-84886455258.mp3",
   "zusammen": "/audio/anki/tts-84886455260.mp3",
-  "zwischen": "/audio/anki/tts-84886455262.mp3"
+  "zwischen": "/audio/anki/tts-84886455262.mp3",
+  "anziehen": "/audio/anki/tts-84886454459.mp3",
+  "zum beispiel": "/audio/anki/tts-84886454529.mp3",
+  "best": "/audio/anki/tts-84886454542.mp3",
+  "circa": "/audio/anki/tts-84886454586.mp3",
+  "dein": "/audio/anki/tts-84886454602.mp3",
+  "dies": "/audio/anki/tts-84886454610.mp3",
+  "duschen": "/audio/anki/tts-84886454629.mp3",
+  "ein": "/audio/anki/tts-84886454636.mp3",
+  "eltern": "/audio/anki/tts-84886454650.mp3",
+  "freuen": "/audio/anki/tts-84886454711.mp3",
+  "gern": "/audio/anki/tts-84886454746.mp3",
+  "geschwister": "/audio/anki/tts-84886454749.mp3",
+  "grad": "/audio/anki/tts-84886454767.mp3",
+  "großeltern": "/audio/anki/tts-84886454773.mp3",
+  "ihm": "/audio/anki/tts-84886454827.mp3",
+  "jed": "/audio/anki/tts-84886454840.mp3",
+  "-karte": "/audio/anki/tts-84886454852.mp3",
+  "lebensmittel": "/audio/anki/tts-84886454901.mp3",
+  "letzt": "/audio/anki/tts-84886454911.mp3",
+  "leute": "/audio/anki/tts-84886454912.mp3",
+  "lieb": "/audio/anki/tts-84886454914.mp3",
+  "lieblings": "/audio/anki/tts-84886454917.mp3",
+  "meist": "/audio/anki/tts-84886454938.mp3",
+  "möbel": "/audio/anki/tts-84886454949.mp3",
+  "nächst": "/audio/anki/tts-84886454963.mp3",
+  "papiere": "/audio/anki/tts-84886454997.mp3",
+  "pommes frites": "/audio/anki/tts-84886455008.mp3",
+  "treffen": "/audio/anki/tts-84886455145.mp3",
+  "unser": "/audio/anki/tts-84886455162.mp3",
+  "vorstellen": "/audio/anki/tts-84886455189.mp3",
+  "waschen": "/audio/anki/tts-84886455201.mp3",
+  "welch": "/audio/anki/tts-84886455209.mp3"
 };

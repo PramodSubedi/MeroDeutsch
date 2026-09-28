@@ -34,13 +34,100 @@ function extractAudioRef(metadata) {
   return match ? `/audio/anki/${match[0]}` : null;
 }
 
+/**
+ * Strip the Goethe-Institut wordlist's print apparatus off a headword so the
+ * manifest key can match what the app actually stores in `VocabCard.lemma`.
+ *
+ * The source deck formats entries for a printed wordlist, not for a lookup
+ * table: plural markers, cross-references, inflected glosses and derivational
+ * stems all appear in the headword itself. Left as-is those keys are dead
+ * weight — nothing in the app will ever pass "(sich) duschen" to `speakWord`.
+ *
+ *   "(sich) duschen"      -> "duschen"
+ *   "eltern (pl.)"        -> "eltern"
+ *   "der/die bekannte, -n"-> "bekannte"
+ *   "ihm/ihr"             -> "ihm"   (first alternative; see buildManifest)
+ *   "zum beispiel/z. b." -> "beispiel"
+ *   "gern(e)"             -> "gern"
+ *   "best-"               -> "best"
+ *   "kulturell interessiert" -> unchanged (a real multi-word headword)
+ *
+ * Returns null when nothing was stripped, so the caller can leave the exact key
+ * alone and avoid clobbering a real lemma.
+ */
+function normalizeHeadword(raw) {
+  let s = String(raw || '').trim().toLowerCase();
+  if (!s) return null;
+  const before = s;
+
+  // "zum beispiel/z. b." -> "beispiel";  "ihm/ihr" -> "ihm"; "circa/ca." -> "circa"
+  const slash = s.indexOf('/');
+  if (slash !== -1) s = s.slice(0, slash);
+  // Leading reflexive gloss: "(sich) duschen" -> "duschen"
+  s = s.replace(/^\(sich\)\s+/, '');
+  s = s.replace(/^\([^)]*\)\s*/, '');
+  // Parenthetical qualifiers anywhere: "eltern (pl.)", "grad (celsius)",
+  // "gern(e)", "lebensmittel (pl.)"
+  s = s.replace(/\s*\([^)]*\)/g, '');
+  // Plural / gender apparatus: "der/die bekannte, -n" -> "bekannte"
+  s = s.replace(/,\s*-n\b/g, '');
+  // "abfliegen" style is a real headword, but "karte" from "(kredit)-karte, -n"
+  // already lost its prefix above; nothing more to do here.
+  s = s.replace(/[\s.]+$/g, '').trim();
+  // Derivational stem marker: "best-", "ein-", "jed-", "welch-", "lieb-"
+  if (/^[a-zäöüß]+-$/.test(s)) s = s.slice(0, -1);
+
+  if (!s || s === before) return null;
+  return s;
+}
+
+/**
+ * Build the runtime lemma -> clip map.
+ *
+ * Two kinds of entry, both load-bearing:
+ *  1. EXACT keys — the card's own `lemma`, lowercased. Always written.
+ *  2. NORMALIZED keys — see `normalizeHeadword`. Written only when the
+ *     normalized form differs AND is not already claimed, so a normalized
+ *     convenience key can never displace a real lemma.
+ */
+function buildManifest(cards) {
+  const manifest = {};
+  const reserved = new Set();
+
+  for (const card of cards) {
+    if (!card.audioUrl) continue;
+    const key = String(card.lemma || '').toLowerCase();
+    if (!key) continue;
+    manifest[key] = card.audioUrl;
+    reserved.add(key);
+  }
+
+  let normalizedAdded = 0;
+  for (const card of cards) {
+    if (!card.audioUrl) continue;
+    const norm = normalizeHeadword(card.lemma);
+    if (!norm || reserved.has(norm)) continue;
+    manifest[norm] = card.audioUrl;
+    reserved.add(norm);
+    normalizedAdded++;
+  }
+
+  return { manifest, normalizedAdded };
+}
+
 async function main() {
   const db = JSON.parse(fs.readFileSync(V2_DB_PATH, 'utf-8'));
   console.log('Bundling offline seed from v2 JSON...');
   console.log('Words:', db.words.length);
   console.log('Sentences:', db.sentences.length);
 
-  // Build word ID → sentence map
+  // Build word ID → sentence map.
+  //
+  // `audio_url` is carried onto each example. This is the whole reason 197 of
+  // the 813 bundled clips were previously unreachable: the Anki deck has ONE
+  // clip per card, and a card is (lemma + its own example sentence). Several
+  // cards share a lemma, so the lemma-level manifest keeps only the last one —
+  // but the sentence-level clip is a perfectly good recording in its own right.
   const wordSentenceMap = new Map();
   for (const sentence of db.sentences) {
     if (!sentence.word_references || !Array.isArray(sentence.word_references)) continue;
@@ -53,7 +140,8 @@ async function main() {
         examples.push({
           de: sentence.german_text,
           en: sentence.english_translation || '',
-          np: sentence.nepali_translation || ''
+          np: sentence.nepali_translation || '',
+          ...(sentence.audio_url ? { audioUrl: sentence.audio_url } : {}),
         });
       }
     }
@@ -227,17 +315,36 @@ async function main() {
 
   fs.writeFileSync(OUTPUT_PATH, JSON.stringify(cards, null, 2), 'utf-8');
 
+  // How many sentence-level recordings the Dexie boot seed will now carry, and
+  // how many distinct clips that makes reachable. Reported so a regression in
+  // the sentence→audio carry is visible without reading the JSON.
+  let examplesWithAudio = 0;
+  const clipSet = new Set();
+  for (const card of cards) {
+    if (card.audioUrl) clipSet.add(card.audioUrl);
+    for (const ex of card.examples || []) {
+      if (ex.audioUrl) {
+        examplesWithAudio++;
+        clipSet.add(ex.audioUrl);
+      }
+    }
+  }
+  console.log('Distinct clips now reachable:', clipSet.size);
+
   // Emit runtime lemma -> local-audio map so the shared speech helper can
   // prefer bundled MP3s before falling back to speechSynthesis.
-  const manifest = {};
-  for (const card of cards) {
-    if (card.audioUrl) manifest[card.lemma.toLowerCase()] = card.audioUrl;
-  }
+  const { manifest, normalizedAdded } = buildManifest(cards);
   const manifestTs = `/**
  * GENERATED by scripts/bundle-offline-seed.cjs — do not edit by hand.
  * Maps lowercased German lemma to a bundled TTS clip under /audio/anki/.
  * Source: Goethe Institute A1 Wordlist Anki deck (CC BY-SA 4.0),
  * audio generated with Thorsten-Voice.
+ *
+ * Keys are either the card's exact lemma or a normalized form of the wordlist's
+ * printed headword ("(sich) duschen" -> "duschen", "eltern (pl.)" -> "eltern").
+ * Because every key is a German lemma, an English or Nepali prompt string can
+ * never match — which is what keeps speakText() TTS-safe. Do not add
+ * non-German keys here.
  */
 export const AUDIO_BY_LEMMA: Record<string, string> = ${JSON.stringify(manifest, null, 2)};
 `;
@@ -249,7 +356,8 @@ export const AUDIO_BY_LEMMA: Record<string, string> = ${JSON.stringify(manifest,
   console.log('\nBundle complete');
   console.log('Cards bundled:', cards.length);
   console.log('Curriculum merge: +' + added + ' recovered, ' + upgraded + ' enriched from curated sources');
-  console.log('Cards with audioUrl:', Object.keys(manifest).length);
+  console.log('Manifest keys:', Object.keys(manifest).length, '(' + normalizedAdded + ' normalized from wordlist headwords)');
+  console.log('Examples with sentence audio:', examplesWithAudio);
   console.log('Output:', OUTPUT_PATH);
   console.log('File size:', (statFinal.size / 1024).toFixed(1), 'KB');
   console.log('Manifest:', manifestPath);

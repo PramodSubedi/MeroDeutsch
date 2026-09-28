@@ -84,20 +84,34 @@ export type CheckpointSource =
   | 'vocab-translation'
   | 'vocab-translation-ne'
   /**
-   * ⚠️ CURRENTLY UNUSABLE — no unit may declare it (enforced in `validateCurriculum`).
+   * ⚠️ STILL CURRENTLY UNUSABLE — no unit may declare it (enforced in `validateCurriculum`).
    *
-   * The builder draws these from `vocabulary.filter(v => v.audioUrl)`, but
-   * `audioUrl` can never survive the loaders, so the pool is always empty and
-   * the source contributes ZERO items:
-   *   - the Supabase `vocabulary` table has NO `audio_url` column at all, and
-   *     `rowToVocabCard` / `cardToLegacyEntry` never set or forward the field;
-   *   - `localCurriculumService.getVocabularyByCategories` drops it too.
+   * The builder draws these from `vocabulary.filter(v => v.audioUrl)`. The
+   * plumbing that used to drop that field is now FIXED:
+   *   - migration 20260930170000 adds `audio_url` to the `vocabulary` table;
+   *   - `rowToVocabCard` / `cardToLegacyEntry` and
+   *     `localCurriculumService.getVocabularyByCategories` all forward it.
    *
-   * This is why M03 and M14 shipped 6- and 8-item decks while every other unit
-   * rendered 12. Both now use sources that resolve. To revive this source, add
-   * `audio_url` to the `vocabulary` table, map it in all three places above, and
-   * confirm the affected categories actually have recordings — only 3 of the 41
-   * words in the old M03/M14 categories had audio in `public/data/enriched-vocab.json`.
+   * The source is still gated because the COLUMN is empty: `npm run backfill-audio`
+   * has to run against the live project before any pool exists. `npm run check:audio`
+   * prints the per-tag coverage table that decides it.
+   *
+   * TO REVIVE:
+   *   1. Apply 20260930170000_vocabulary_audio_url.sql.
+   *   2. `npm run backfill-audio` (idempotent; --dry-run first).
+   *   3. `npm run check:audio` and confirm a REAL category the unit declares
+   *      shows non-zero coverage. As of the last run NO topical category did —
+   *      the audio-bearing cards are the Anki-sourced ones, whose tags are
+   *      structural ('A1', 'noun'), while the topical categories
+   *      ('unit3-adjectives', 'dative-prepositions', …) sit on curriculum rows
+   *      that are mostly outside the Goethe A1 list.
+   *   4. Only then remove the member from UNUSABLE_CHECKPOINT_SOURCES below and
+   *      add it to a unit's `checkpoint.specs`.
+   *
+   * Declaring it before step 3 re-creates the original defect: the pool is
+   * empty, the source contributes ZERO items, and the unit's deck is silently
+   * SHORTER than its declared count. That is what shipped M03 and M14 as 6- and
+   * 8-item decks when every other unit rendered 12.
    */
   | 'listening-gap'
   /**

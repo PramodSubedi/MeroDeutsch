@@ -21,6 +21,7 @@
  */
 
 import { shuffleArray } from '../utils/shuffleArray';
+import { normalizeAnswer } from '../utils/answerNormalize';
 
 /** The minimum a checkpoint question must carry to be playable. */
 export interface DeckQuestion {
@@ -130,6 +131,24 @@ export function toVocabEntry(raw: FlatVocab | CardVocab): {
  * The caller passes `onDrop` to route the warning somewhere (console in the
  * page, an assertion in the test). A silent drop would reintroduce the original
  * failure mode, where content quietly rots with nothing to notice.
+ *
+ * DEGENERATE PROMPTS (the `prompt === answer` clause) — C2.6
+ * ----------------------------------------------------
+ * A question whose prompt IS its own answer is not a question. The learner is
+ * handed the answer on screen, and — because `speakPrompt` reuses that same
+ * string — the pre-lock speaker plays the bundled RECORDING of the answer too.
+ * That second half is an answer leak, not just a weak question, and it is
+ * reachable purely from seed data: a true cognate (German "bitter", English
+ * "bitter") produces `prompt: v.en === correctAnswer: v.de` for the
+ * `vocab-translation` source. It only became audible once `speakText` started
+ * preferring bundled clips, because the manifest is keyed by the same German
+ * string — before that it was an unreadable babble in a de-DE voice.
+ *
+ * Fixing it at the source (correcting `translation.en`) is a seed-data job, and
+ * a cognate is not even wrong — the words genuinely coincide. So the invariant
+ * is enforced here instead: the degenerate card is dropped from the deck and
+ * the remaining pool absorbs the slot. Both affected units have pools several
+ * times larger than their declared count, so no checkpoint is starved.
  */
 export function isUsableQuestion(q: DeckQuestion, onDrop?: (q: DeckQuestion) => void): boolean {
   const prompt = typeof q.prompt === 'string' ? q.prompt.trim() : '';
@@ -139,6 +158,9 @@ export function isUsableQuestion(q: DeckQuestion, onDrop?: (q: DeckQuestion) => 
   const usable =
     prompt.length > 0 &&
     answer.length > 0 &&
+    // The prompt must not already BE the answer. Compared through the shared
+    // normalizer so case and spacing cannot smuggle a collision past this.
+    normalizeAnswer(prompt) !== normalizeAnswer(answer) &&
     options.length >= 2 &&
     options.every((o) => typeof o === 'string' && o.trim().length > 0) &&
     options.includes(answer);

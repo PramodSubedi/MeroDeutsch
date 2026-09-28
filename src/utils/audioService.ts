@@ -1,79 +1,45 @@
 /**
- * audioService — unified pronunciation + feedback audio engine.
+ * audioService — the mute toggle's home and the Web Audio outcome FX.
  *
- * Wraps the native Web Speech API (`window.speechSynthesis`) with a fixed
- * `de-DE` language, an optional global mute/volume toggle persisted in
- * localStorage (`md_audio_enabled`), and Web Audio FX for correct/wrong
- * outcomes and combo milestones.
+ * WHAT MOVED OUT OF HERE
+ * ----------------------
+ * Speech. The `getGermanVoice()` picker that used to live here was a verbatim
+ * duplicate of the one in `useSpeech.ts`, which made it possible for two
+ * surfaces to sound different from one another. `speakGerman` / `speakPhrase`
+ * are now thin delegates to `useSpeech`, which prefers a bundled MP3 from
+ * `/audio/anki/` and falls back to `speechSynthesis` — so every call site that
+ * imported `speakGerman` from here gets natural recordings for free.
  *
- * All in-app audio (article trainer, rapid-fire, alerts) should route through
- * this module so mute is honored globally.
+ * The mute FLAG moved to `utils/audioEnabled.ts` so that `useSpeech` can read it
+ * without importing this module (which would be circular). It is re-exported
+ * below, so `Header.tsx` and existing importers are unaffected.
+ *
+ * What stays: the outcome FX. Those are synthesized tones, not speech, and they
+ * are already mute-aware.
  */
 
 /* ───────────────────────────────────────────────────────────
  * Persisted audio toggle (global, across header + all pages)
+ * Re-exported for back-compat; the owner is utils/audioEnabled.ts.
  * ─────────────────────────────────────────────────────────── */
 
-const AUDIO_KEY = 'md_audio_enabled';
+import { isAudioEnabled } from './audioEnabled';
+import { speakText } from '../hooks/useSpeech';
 
-export function isAudioEnabled(): boolean {
-  if (typeof window === 'undefined') return true;
-  try {
-    return window.localStorage.getItem(AUDIO_KEY) !== 'false';
-  } catch {
-    return true;
-  }
-}
-
-export function setAudioEnabled(enabled: boolean): void {
-  if (typeof window === 'undefined') return;
-  try {
-    window.localStorage.setItem(AUDIO_KEY, enabled ? 'true' : 'false');
-  } catch {
-    // ignore storage failures
-  }
-  if (!enabled && typeof window !== 'undefined' && window.speechSynthesis) {
-    window.speechSynthesis.cancel();
-  }
-}
+export { isAudioEnabled, setAudioEnabled } from './audioEnabled';
 
 /* ───────────────────────────────────────────────────────────
- * Speech synthesis (German)
+ * Speech (delegates to useSpeech — see the file header)
  * ─────────────────────────────────────────────────────────── */
-
-function getGermanVoice(): SpeechSynthesisVoice | undefined {
-  if (typeof window === 'undefined' || !window.speechSynthesis) return undefined;
-  const voices = window.speechSynthesis.getVoices();
-  const de = voices.filter((v) => v.lang.toLowerCase().startsWith('de'));
-  if (de.length === 0) return undefined;
-
-  // Prefer natural-sounding voices over robotic defaults. Windows 11 ships
-  // "… Natural" voices; Chrome/Edge expose "Google Deutsch". These read far
-  // more naturally than the basic system voice.
-  const natural = de.find((v) => /natural/i.test(v.name));
-  if (natural) return natural;
-  const google = de.find((v) => /google/i.test(v.name));
-  if (google) return google;
-  // Fall back to a female voice (usually clearer / less robotic).
-  const female = de.find((v) => /(female|katja|anna|hedda|zira|hazel|susan)/i.test(v.name));
-  if (female) return female;
-  return de[0];
-}
 
 /**
  * Speak `text` in German, honoring the global mute toggle.
- * Rate override lets callers slow down for emphasis (default 0.85 ≈ normal app speed).
+ * Rate override lets callers slow down for emphasis (default: the Settings
+ * speed). Delegates to `useSpeech.speakText`, so a bundled recording is
+ * preferred whenever the text is a German lemma with a clip.
  */
 export function speakGerman(text: string, rate = 0.85): void {
-  if (!isAudioEnabled()) return;
-  if (typeof window === 'undefined' || !window.speechSynthesis) return;
-  window.speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = 'de-DE';
-  u.rate = rate;
-  const voice = getGermanVoice();
-  if (voice) u.voice = voice;
-  window.speechSynthesis.speak(u);
+  speakText(text, rate);
 }
 
 /** Speak the full "article + noun" phrase for a card, e.g. "der Tisch". */

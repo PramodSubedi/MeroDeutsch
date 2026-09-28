@@ -109,11 +109,28 @@ export default defineConfig({
         cleanupOutdatedCaches: true,
         navigateFallback: '/index.html',
         navigateFallbackDenylist: [/^\/api\//],
-        // Offline-first AUDIO caching: dictation/TTS audio blobs are fetched
-        // once, then served instantly from the Cache Storage API on every
-        // later visit (including fully offline) — matching the reliability of
-        // our Dexie text data. CacheFirst: audio files are immutable content;
-        // a 30-entry / 30-day LRU keeps storage bounded.
+        // Offline-first AUDIO caching: a clip is fetched once, then served
+        // instantly from Cache Storage on every later visit (including fully
+        // offline). Two layers, deliberately:
+        //
+        //   1. The HTTP cache, via `Cache-Control: public, max-age=31536000,
+        //      immutable` on /audio/(.*) in vercel.json. Files are named by Anki
+        //      media id and never change in place, so this is correct and free.
+        //      Repeat playback costs no workbox round-trip at all.
+        //   2. This runtime cache, for the fully-offline case the HTTP cache
+        //      cannot cover.
+        //
+        // CacheFirst: audio files are immutable content.
+        //
+        // maxEntries is 200, not 30. The previous value was sized for a handful
+        // of sample clips; the catalogue is 813 files, so a learner moving
+        // through A1 vocabulary evicted a clip before ever hearing it twice.
+        // 200 x ~16 kB is ~3.2 MB worst case — bounded, and enough to cover the
+        // words a learner actually revisits. (It does NOT match the Dexie text
+        // cache's unbounded storage; an earlier comment here claimed it did.)
+        //
+        // The cache name is v2 to supersede the 30-entry v1 bucket rather than
+        // inheriting it.
         runtimeCaching: [
           {
             // Match same- and cross-origin audio by request destination OR
@@ -123,9 +140,9 @@ export default defineConfig({
               /\.(mp3|wav|ogg|m4a)$/i.test(url.pathname),
             handler: 'CacheFirst',
             options: {
-              cacheName: 'md-audio-v1',
+              cacheName: 'md-audio-v2',
               expiration: {
-                maxEntries: 30,
+                maxEntries: 200,
                 maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
                 purgeOnQuotaError: true,
               },

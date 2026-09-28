@@ -206,6 +206,11 @@ export class LocalCurriculumService implements CurriculumService {
       tags: c.tags,
       level: 'A1' as const,
       exampleDe: c.examples[0]?.de,
+      // Must match `cardToLegacyEntry` in supabaseCurriculumService: without
+      // this the fully-offline path silently loses the recording that the
+      // online path returns, and `listening-gap` produces nothing offline
+      // while appearing to work online.
+      audioUrl: c.audioUrl,
     }));
   }
 

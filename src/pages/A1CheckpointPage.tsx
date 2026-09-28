@@ -333,7 +333,15 @@ function buildQuestions(
           out.push({
             key: `vocab-ne:${v.id}`,
             prompt: v.ne || v.en,
-            speakPrompt: v.de,
+            // TTS safety (C2.6): NO pre-lock prompt audio. This case previously
+            // set `speakPrompt: v.de`, which is also `correctAnswer` — the
+            // answer was read aloud before the learner could choose. Its
+            // sibling `vocab-translation` speaks the ENGLISH prompt, but
+            // `speakText` always synthesizes with a `de-DE` voice, so reading
+            // the Nepali/English prompt back would be gibberish. Omitting the
+            // field is the honest fix: MultipleChoice renders no pre-lock
+            // speaker when it is absent, and the answer is still spoken after
+            // lock via `speakAfter`.
             speakAfter: v.de,
             options: buildOptions(v.de, data.vocabulary.map((x) => x.de), 4),
             correctAnswer: v.de,

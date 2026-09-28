@@ -27,6 +27,12 @@ interface DictationInputProps<Q extends ExerciseQuestion> {
   placeholder?: string;
   /** Hide the built-in Next footer (page renders its own). */
   hideFooter?: boolean;
+  /**
+   * Noun used in the progress header and the Next button ("Word" / "Satz").
+   * DictationPage switches to "Satz" in its sentence mode, where each item is
+   * a whole sentence rather than a single word.
+   */
+  itemNoun?: { singular: string; plural: string };
 }
 
 export function DictationInput<Q extends ExerciseQuestion>({
@@ -35,6 +41,7 @@ export function DictationInput<Q extends ExerciseQuestion>({
   autoPlay = true,
   placeholder,
   hideFooter = false,
+  itemNoun,
 }: DictationInputProps<Q>) {
   const { langMode } = useLang();
   const isDE = langMode === 'german';
@@ -56,6 +63,21 @@ export function DictationInput<Q extends ExerciseQuestion>({
 
   if (!current) return null;
 
+  const noun = itemNoun
+    ? isDE
+      ? itemNoun.singular
+      : itemNoun.plural
+    : isDE
+      ? 'Wort'
+      : 'Word';
+  const nextLabel = isDE
+    ? noun === 'Satz'
+      ? 'Nächster Satz →'
+      : 'Nächstes Wort →'
+    : noun === 'Satz'
+      ? 'Next Sentence →'
+      : 'Next Word →';
+
   const check = () => {
     if (locked || value.trim().length === 0) return;
     select(value);
@@ -66,7 +88,7 @@ export function DictationInput<Q extends ExerciseQuestion>({
       {/* Progress header */}
       <div className="mb-4 flex items-center justify-between text-body text-ink-500 dark:text-ink-400">
         <span>
-          {isDE ? 'Wort' : 'Word'} {index + 1} / {total}
+          {noun} {index + 1} / {total}
         </span>
         <span>
           {isDE ? 'Punkte' : 'Score'}:{' '}
@@ -80,7 +102,7 @@ export function DictationInput<Q extends ExerciseQuestion>({
           type="button"
           onClick={() => onPlayAudio(current)}
           className={theme.button.primary}
-          aria-label={isDE ? 'Wort anhören' : 'Play the word'}
+          aria-label={isDE ? `${noun} anhören` : `Play the ${noun.toLowerCase()}`}
         >
           🔊 {isDE ? 'Anhören' : 'Listen'}
         </button>
@@ -121,7 +143,7 @@ export function DictationInput<Q extends ExerciseQuestion>({
           )}
           {locked && (
             <button type="button" onClick={next} className={theme.button.primary}>
-              {index >= total - 1 ? (isDE ? 'Fertig' : 'Finish') : isDE ? 'Nächstes Wort →' : 'Next Word →'}
+              {index >= total - 1 ? (isDE ? 'Fertig' : 'Finish') : nextLabel}
             </button>
           )}
         </div>

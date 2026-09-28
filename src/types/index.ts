@@ -132,8 +132,24 @@ export interface VocabEntry {
   tags: string[];
   level: 'A1';
   exampleDe?: string;
-  audioId?: string;
   /** Local TTS audio path for listening-gap questions. */
+  audioUrl?: string;
+}
+
+/**
+ * One worked example on a card.
+ *
+ * `audioUrl` is the bundled recording of THIS sentence (not the bare lemma).
+ * The Goethe-Institut A1 deck has one clip per Anki card, and each card carries
+ * its own example sentence, so several sentences per word often have distinct
+ * clips. Emitted by `scripts/bundle-offline-seed.cjs` from
+ * `scripts/local-german-db-v2.json` `sentences[].audio_url`.
+ */
+export interface VocabExample {
+  de: string;
+  en: string;
+  np: string;
+  /** e.g. `/audio/anki/tts-84886454453.mp3`. Absent when the sentence had no clip. */
   audioUrl?: string;
 }
 
@@ -154,7 +170,7 @@ export interface VocabCard {
   translationNeRoman?: string;
   phonetics: { ipa: string; devanagari: string };
   tags: string[];
-  examples: { de: string; en: string; np: string }[];
+  examples: VocabExample[];
   /** Local TTS audio path (e.g. `/audio/anki/tts-123.mp3`). Null when unavailable. */
   audioUrl?: string;
 }
