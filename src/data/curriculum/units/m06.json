@@ -29,68 +29,25 @@
   },
   "pedagogy": {
     "grammarNote": {
-      "en": "Take the -en off the infinitive, then add the personal ending: ich lerne, du lernst, er lernt, wir lernen.",
-      "de": "Nimm das -en vom Infinitiv und hänge die Personalendung an: ich lerne, du lernst, er lernt, wir lernen."
+      "en": "Take the -en off the infinitive, then add the personal ending: ich lerne, du lernst, er lernt, wir lernen. Regular verbs: remove -en, add -e/-st/-t/-en/-t/-en. Stem-changing verbs (e→i/ie, a→ä) affect ONLY du and er/sie/es. sein (bin/bist/ist/sind/seid/sind) and haben (habe/hast/hat/haben/habt/haben) are highly irregular. Stem vowel NEVER changes for ich, wir, ihr, sie/Sie — only du and er/sie/es! essen: du isst (not esst), er isst (not esst) — double-s spelling! sein and haben are the two most important verbs — memorize them completely.",
+      "de": "Nimm das -en vom Infinitiv und hänge die Personalendung an: ich lerne, du lernst, er lernt, wir lernen. Regelmäßige Verben: -en entfernen, -e/-st/-t/-en/-t/-en anhängen. Stammwechsel-Verben (e→i/ie, a→ä) betreffen NUR du und er/sie/es. sein (bin/bist/ist/sind/seid/sind) und haben (habe/hast/hat/haben/habt/haben) sind stark unregelmäßig. Stammvokal ändert sich NIEMALS für ich, wir, ihr, sie/Sie — nur du und er/sie/es! essen: du isst (nicht esst), er isst (nicht esst) — Doppel-s-Schreibung! sein und haben sind die zwei wichtigsten Verben — vollständig auswendig lernen."
     },
-    "grammarNotes": [
-      "Regular verbs: remove -en, add -e/-st/-t/-en/-t/-en",
-      "Stem-changing verbs (e→i/ie, a→ä) affect ONLY du and er/sie/es",
-      "sein (bin/bist/ist/sind/seid/sind) and haben (habe/hast/hat/haben/habt/haben) are highly irregular"
-    ],
-    "ruleTables": [
-      {
-        "title": {
-          "en": "Regular Verb Endings",
-          "de": "Regelmäßige Verbendungen"
-        },
-        "columns": ["Pronoun", "Ending", "wohnen", "lernen", "machen"],
-        "rows": [
-          ["ich", "-e", "wohne", "lerne", "mache"],
-          ["du", "-st", "wohnst", "lernst", "machst"],
-          ["er/sie/es", "-t", "wohnt", "lernt", "macht"],
-          ["wir", "-en", "wohnen", "lernen", "machen"],
-          ["ihr", "-t", "wohnt", "lernt", "macht"],
-          ["sie/Sie", "-en", "wohnen", "lernen", "machen"]
-        ]
+    "ruleTable": {
+      "title": {
+        "en": "Regular Verb Endings",
+        "de": "Regelmäßige Verbendungen"
       },
-      {
-        "title": {
-          "en": "Stem-Changing Verbs (du/er/sie/es only)",
-          "de": "Stammwechsel-Verben (nur du/er/sie/es)"
-        },
-        "columns": ["Pattern", "Infinitive", "ich", "du", "er/sie/es", "wir"],
-        "rows": [
-          ["e → i", "geben", "gebe", "gibst", "gibt", "geben"],
-          ["e → ie", "lesen", "lese", "liest", "liest", "lesen"],
-          ["e → ie", "sehen", "sehe", "siehst", "sieht", "sehen"],
-          ["e → i", "essen", "esse", "isst", "isst", "essen"],
-          ["a → ä", "fahren", "fahre", "fährst", "fährt", "fahren"],
-          ["a → ä", "schlafen", "schlafe", "schläfst", "schläft", "schlafen"]
-        ]
-      },
-      {
-        "title": {
-          "en": "Irregular Verbs: sein & haben",
-          "de": "Unregelmäßige Verben: sein & haben"
-        },
-        "columns": ["Pronoun", "sein", "haben"],
-        "rows": [
-          ["ich", "bin", "habe"],
-          ["du", "bist", "hast"],
-          ["er/sie/es", "ist", "hat"],
-          ["wir", "sind", "haben"],
-          ["ihr", "seid", "habt"],
-          ["sie/Sie", "sind", "haben"]
-        ]
-      }
-    ],
-    "callouts": [
-      "Stem vowel NEVER changes for ich, wir, ihr, sie/Sie — only du and er/sie/es!",
-      "essen: du isst (not esst), er isst (not esst) — double-s spelling!",
-      "sein and haben are the two most important verbs — memorize them completely"
-    ]
+      "rows": [
+        { "label": { "en": "ich", "de": "ich" }, "usage": { "en": "First person singular", "de": "1. Person Singular" }, "example": { "en": "wohne, lerne, mache", "de": "wohne, lerne, mache" } },
+        { "label": { "en": "du", "de": "du" }, "usage": { "en": "Second person singular informal", "de": "2. Person Singular informell" }, "example": { "en": "wohnst, lernst, machst", "de": "wohnst, lernst, machst" } },
+        { "label": { "en": "er/sie/es", "de": "er/sie/es" }, "usage": { "en": "Third person singular", "de": "3. Person Singular" }, "example": { "en": "wohnt, lernt, macht", "de": "wohnt, lernt, macht" } },
+        { "label": { "en": "wir", "de": "wir" }, "usage": { "en": "First person plural", "de": "1. Person Plural" }, "example": { "en": "wohnen, lernen, machen", "de": "wohnen, lernen, machen" } },
+        { "label": { "en": "ihr", "de": "ihr" }, "usage": { "en": "Second person plural informal", "de": "2. Person Plural informell" }, "example": { "en": "wohnt, lernt, macht", "de": "wohnt, lernt, macht" } },
+        { "label": { "en": "sie/Sie", "de": "sie/Sie" }, "usage": { "en": "Third person plural / formal", "de": "3. Person Plural / formell" }, "example": { "en": "wohnen, lernen, machen", "de": "wohnen, lernen, machen" } }
+      ]
+    }
   },
   "vocabCategories": ["conjugation", "action-verbs"],
-  "grammarCategories": ["conjugation", "stem-change", "irregular-verbs"],
+  "grammarCategories": ["weakVerb", "stem", "sein"],
   "hasLesson": true
 }

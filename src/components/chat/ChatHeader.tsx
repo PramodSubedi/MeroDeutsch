@@ -80,7 +80,7 @@ export function ChatHeader({
         onClick={onExplainPage}
         aria-label={isDE ? 'Diese Seite erklären' : 'Explain this page'}
         title={isDE ? 'Diese Seite erklären' : 'Explain this page'}
-        className="inline-flex h-9 w-9 items-center justify-center rounded-md text-ink-500 transition hover:bg-ink-100 hover:text-ink-800 active:scale-95 dark:text-ink-400 dark:hover:bg-ink-800 dark:hover:text-ink-100"
+        className="inline-flex h-11 w-11 items-center justify-center rounded-md text-ink-500 transition hover:bg-ink-100 hover:text-ink-800 active:scale-95 dark:text-ink-400 dark:hover:bg-ink-800 dark:hover:text-ink-100"
       >
         <HelpCircle className="h-4 w-4" aria-hidden="true" />
       </button>
@@ -109,7 +109,7 @@ export function ChatHeader({
         onClick={onClear}
         aria-label={isDE ? 'Chatverlauf löschen' : 'Clear chat history'}
         title={isDE ? 'Verlauf löschen' : 'Clear history'}
-        className="inline-flex h-9 w-9 items-center justify-center rounded-md text-ink-500 transition hover:bg-ink-100 hover:text-ink-800 active:scale-95 dark:text-ink-400 dark:hover:bg-ink-800 dark:hover:text-ink-100"
+        className="inline-flex h-11 w-11 items-center justify-center rounded-md text-ink-500 transition hover:bg-ink-100 hover:text-ink-800 active:scale-95 dark:text-ink-400 dark:hover:bg-ink-800 dark:hover:text-ink-100"
       >
         <Trash2 className="h-4 w-4" aria-hidden="true" />
       </button>
@@ -118,7 +118,7 @@ export function ChatHeader({
         type="button"
         onClick={onClose}
         aria-label={isDE ? 'Mero schließen' : 'Close Mero'}
-        className="inline-flex h-9 w-9 items-center justify-center rounded-md text-ink-500 transition hover:bg-ink-100 hover:text-ink-800 active:scale-95 dark:text-ink-400 dark:hover:bg-ink-800 dark:hover:text-ink-100"
+        className="inline-flex h-11 w-11 items-center justify-center rounded-md text-ink-500 transition hover:bg-ink-100 hover:text-ink-800 active:scale-95 dark:text-ink-400 dark:hover:bg-ink-800 dark:hover:text-ink-100"
       >
         <Minus className="h-4 w-4" aria-hidden="true" />
       </button>

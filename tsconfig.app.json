@@ -29,8 +29,7 @@
     "noFallthroughCasesInSwitch": true
   },
   "include": ["src"],
-  /* Node-only self-checks (*.check.ts) are run with `npx tsx`, not bundled into
-     the app — they use `process`, which the browser tsconfig has no types for.
-     Keeping them in `include` would break `tsc -b`. */
-  "exclude": ["src/**/*.check.ts"]
+  /* Node-only self-checks (*.check.ts) and tests are run with `npx tsx`/`vitest`,
+     not bundled into the app. Keeping them in `include` would break `tsc -b`. */
+  "exclude": ["src/**/*.check.ts", "src/**/*.test.ts", "src/test/**"]
 }

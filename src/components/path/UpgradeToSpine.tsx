@@ -25,6 +25,7 @@ import { useLang } from '../../hooks/useLang';
 import { usePremium } from '../../hooks/usePremium';
 import { useAuth } from '../../hooks/useAuth';
 import { theme } from '../../config/theme';
+import { A1_CLUSTER_COUNT, A1_UNIT_COUNT } from '../../data/a1Path';
 
 export function UpgradeToSpine() {
   const { langMode } = useLang();
@@ -50,8 +51,8 @@ export function UpgradeToSpine() {
           </h2>
           <p className="mt-1.5 max-w-xl text-body text-ink-600 dark:text-ink-300">
             {isDE
-              ? 'Premium verwandelt die Bausteine in einen geführten Kurs: 15 Module in 5 Etappen, jede Prüfung ab 80 % schaltet die nächste frei, und dein Fortschritt wird auf allen Geräten gespeichert.'
-              : 'Premium turns the building blocks into a guided course: 15 modules across 5 stages, each checkpoint unlocks the next at 80% or better, and your progress follows you across devices.'}
+              ? `Premium verwandelt die Bausteine in einen geführten Kurs: ${A1_UNIT_COUNT} Module in ${A1_CLUSTER_COUNT} Etappen, jede Prüfung ab 80 % schaltet die nächste frei, und dein Fortschritt wird auf allen Geräten gespeichert.`
+              : `Premium turns the building blocks into a guided course: ${A1_UNIT_COUNT} modules across ${A1_CLUSTER_COUNT} stages, each checkpoint unlocks the next at 80% or better, and your progress follows you across devices.`}
           </p>
           {isOverridden && (
             <p className="mt-2 text-meta text-warning-600 dark:text-warning-400">

@@ -237,6 +237,16 @@ export const A1_CURRICULUM: A1Curriculum = buildCurriculum();
 export const A1_UNIT_COUNT = A1_UNITS.length;
 
 /**
+ * How many STAGES (topic-area clusters) the units are grouped into.
+ *
+ * Exported beside `A1_UNIT_COUNT` because the two appear together in almost
+ * every sentence about the course ("16 modules across 5 stages"). Keeping them
+ * adjacent is what stops a future unit file from updating one number in the
+ * prose and forgetting the other.
+ */
+export const A1_CLUSTER_COUNT = A1_CLUSTERS.length;
+
+/**
  * The first unit index the checkpoint service maps to (always 0).
  * Consumers must derive unitIndex from the config, never hardcode 0.
  */

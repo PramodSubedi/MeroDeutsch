@@ -76,7 +76,7 @@ function LessonNotes() {
     return () => {
       cancelled = true;
     };
-  }, [unit?.id]);
+  }, [unit]);
 
   if (!unit) {
     return (

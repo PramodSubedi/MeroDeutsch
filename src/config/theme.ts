@@ -191,9 +191,21 @@ export const theme = {
     // variants (36px) — the old 42/44/56 mix is gone.
     primary: 'inline-flex min-h-[44px] items-center justify-center rounded-md bg-accent-600 px-4 py-2.5 text-body font-semibold text-white transition hover:bg-accent-700 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50',
     /** Compact primary for dense rows (quest claim, inline CTAs). */
-    primarySmall: 'inline-flex min-h-[36px] items-center justify-center rounded-md bg-accent-600 px-3 py-1.5 text-meta font-semibold text-white transition hover:bg-accent-700 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50',
+    // THE SMALL BUTTONS ARE TOUCH-SIZED ON PHONES ONLY.
+    //
+    // 36px clears the bar on a desktop pointer but misses WCAG 2.5.8 (Target
+    // Size, Minimum: 24x24) and is well under the 44px this project's own
+    // `.clinerules` Part E1.4 asks for on new primary CTAs. Measured on a
+    // 390px viewport: "Start review", "Start practice" and "Start Blitz" on
+    // the Home daily loop all rendered at 36px tall and 254px wide.
+    //
+    // `sm:` keeps the 36px density for pointer users, who have no such
+    // constraint and where the tighter control reads better next to text.
+    // Raising it globally would reflow every card on the site for a problem
+    // that only exists where there is no mouse.
+    primarySmall: 'inline-flex min-h-[44px] sm:min-h-[36px] items-center justify-center rounded-md bg-accent-600 px-3 py-1.5 text-meta font-semibold text-white transition hover:bg-accent-700 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50',
     /** Compact secondary for dense rows (quest actions). */
-    secondarySmall: 'inline-flex min-h-[36px] items-center justify-center rounded-md border border-ink-200 bg-white px-3 py-1.5 text-meta font-semibold text-ink-700 transition hover:bg-ink-50 hover:text-ink-900 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 dark:border-ink-800 dark:bg-ink-900 dark:text-ink-300 dark:hover:bg-ink-800',
+    secondarySmall: 'inline-flex min-h-[44px] sm:min-h-[36px] items-center justify-center rounded-md border border-ink-200 bg-white px-3 py-1.5 text-meta font-semibold text-ink-700 transition hover:bg-ink-50 hover:text-ink-900 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 dark:border-ink-800 dark:bg-ink-900 dark:text-ink-300 dark:hover:bg-ink-800',
     secondary: 'inline-flex min-h-[44px] items-center justify-center rounded-md border border-ink-200 bg-white px-4 py-2.5 text-body font-semibold text-ink-700 transition hover:bg-ink-50 hover:text-ink-900 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 dark:border-ink-800 dark:bg-ink-900 dark:text-ink-300 dark:hover:bg-ink-800',
     danger: 'inline-flex min-h-[44px] items-center justify-center rounded-md bg-danger-600 px-4 py-2.5 text-body font-semibold text-white transition hover:bg-danger-700 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50',
     icon: 'inline-flex h-11 w-11 items-center justify-center rounded-md text-base text-ink-500 transition hover:bg-ink-100 hover:text-ink-700 focus-visible:outline-none active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 dark:text-ink-400 dark:hover:bg-ink-800 dark:hover:text-ink-200',

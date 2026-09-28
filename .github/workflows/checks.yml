@@ -124,6 +124,12 @@ jobs:
         run: npm run check:currboot
       - name: check:v4migration
         run: npm run check:v4migration
+      # Guards unit `vocabCategories` against typo'd names. A category that
+      # matches nothing is NOT a crash — it silently falls back to an unthemed
+      # "first 60 A1 cards" fill, which is how units 2-4 ended up serving the
+      # same generic words forever.
+      - name: check:vocabcats
+        run: npm run check:vocabcats
       - name: check:deployfilter
         run: npm run check:deployfilter
       - name: check:routes

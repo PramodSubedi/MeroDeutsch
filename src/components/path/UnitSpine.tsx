@@ -46,6 +46,7 @@ import { Check, Flag, Lock, Unlock } from 'lucide-react';
 import { useLang } from '../../hooks/useLang';
 import { useA1Path } from '../../hooks/useA1Path';
 import {
+  A1_CLUSTER_COUNT,
   A1_CLUSTERS,
   A1_UNIT_COUNT,
   A1_UNITS,
@@ -344,8 +345,8 @@ export function UnitSpine() {
           </h2>
           <p className="mt-1 text-body text-ink-500 dark:text-ink-400">
             {isDE
-              ? '15 Lektionen in 5 Etappen. Zum Lernen auf eine Lektion klicken.'
-              : '15 lessons across 5 stages. Click a lesson to open it.'}
+              ? `${A1_UNIT_COUNT} Lektionen in ${A1_CLUSTER_COUNT} Etappen. Zum Lernen auf eine Lektion klicken.`
+              : `${A1_UNIT_COUNT} lessons across ${A1_CLUSTER_COUNT} stages. Click a lesson to open it.`}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">

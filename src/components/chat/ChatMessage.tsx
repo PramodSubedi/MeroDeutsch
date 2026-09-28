@@ -171,7 +171,7 @@ export function ChatMessage({
               disabled={!plain && !message.audioUrl}
               aria-label={isDE ? 'Antwort vorlesen' : 'Listen to reply'}
               title={isDE ? 'Vorlesen' : 'Listen'}
-              className="inline-flex h-8 w-8 items-center justify-center rounded-md text-ink-500 transition hover:bg-ink-100 hover:text-ink-800 active:scale-95 disabled:opacity-40 dark:text-ink-400 dark:hover:bg-ink-800 dark:hover:text-ink-100"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-md text-ink-500 transition hover:bg-ink-100 hover:text-ink-800 active:scale-95 disabled:opacity-40 dark:text-ink-400 dark:hover:bg-ink-800 dark:hover:text-ink-100"
             >
               <Volume2 className="h-4 w-4" aria-hidden="true" />
             </button>
@@ -182,7 +182,7 @@ export function ChatMessage({
               disabled={!plain}
               aria-label={isDE ? 'Antwort kopieren' : 'Copy reply'}
               title={isDE ? 'Kopieren' : 'Copy'}
-              className="inline-flex h-8 w-8 items-center justify-center rounded-md text-ink-500 transition hover:bg-ink-100 hover:text-ink-800 active:scale-95 disabled:opacity-40 dark:text-ink-400 dark:hover:bg-ink-800 dark:hover:text-ink-100"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-md text-ink-500 transition hover:bg-ink-100 hover:text-ink-800 active:scale-95 disabled:opacity-40 dark:text-ink-400 dark:hover:bg-ink-800 dark:hover:text-ink-100"
             >
               {copied ? (
                 <Check className="h-4 w-4 text-success-600" aria-hidden="true" />
@@ -197,7 +197,7 @@ export function ChatMessage({
                 onClick={() => onRetry(message.inReplyTo as string)}
                 aria-label={isDE ? 'Nochmal fragen' : 'Ask again'}
                 title={isDE ? 'Nochmal fragen' : 'Ask again'}
-                className="inline-flex h-8 w-8 items-center justify-center rounded-md text-ink-500 transition hover:bg-ink-100 hover:text-ink-800 active:scale-95 dark:text-ink-400 dark:hover:bg-ink-800 dark:hover:text-ink-100"
+                className="inline-flex h-11 w-11 items-center justify-center rounded-md text-ink-500 transition hover:bg-ink-100 hover:text-ink-800 active:scale-95 dark:text-ink-400 dark:hover:bg-ink-800 dark:hover:text-ink-100"
               >
                 <RotateCcw className="h-4 w-4" aria-hidden="true" />
               </button>
@@ -207,7 +207,7 @@ export function ChatMessage({
               <button
                 type="button"
                 onClick={() => onAction(message.action!.to)}
-                className="inline-flex min-h-[32px] items-center rounded-md border border-accent-300 bg-accent-50 px-2.5 py-1 text-meta font-semibold text-accent-700 transition hover:bg-accent-100 active:scale-[0.98] dark:border-accent-800 dark:bg-accent-950/50 dark:text-accent-300 dark:hover:bg-accent-950"
+                className="inline-flex min-h-[44px] items-center rounded-md border border-accent-300 bg-accent-50 px-2.5 py-1 text-meta font-semibold text-accent-700 transition hover:bg-accent-100 active:scale-[0.98] dark:border-accent-800 dark:bg-accent-950/50 dark:text-accent-300 dark:hover:bg-accent-950"
               >
                 → {message.action.label}
               </button>

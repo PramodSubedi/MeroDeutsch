@@ -33,6 +33,7 @@
 import { useId } from 'react';
 import { useLang } from '../../hooks/useLang';
 import { useA1Path } from '../../hooks/useA1Path';
+import { A1_UNIT_COUNT } from '../../data/a1Path';
 import type { PathMode } from '../../data/a1Path';
 
 const MODES: { id: PathMode; en: string; de: string }[] = [
@@ -100,8 +101,8 @@ export function PathModeToggle({ compact = false }: PathModeToggleProps) {
               : 'Each lesson unlocks once you pass the previous checkpoint with 80% or more.'
           ) : (
             isDE
-              ? 'Alle 15 Lektionen sind offen. Die Prüfungen zählen weiterhin, aber sie sperren nichts.'
-              : 'All 15 lessons are open. Checkpoints still count, but they lock nothing.'
+              ? `Alle ${A1_UNIT_COUNT} Lektionen sind offen. Die Prüfungen zählen weiterhin, aber sie sperren nichts.`
+              : `All ${A1_UNIT_COUNT} lessons are open. Checkpoints still count, but they lock nothing.`
           )}
           <span className="mt-1 block text-ink-400 dark:text-ink-500">
             {isDE

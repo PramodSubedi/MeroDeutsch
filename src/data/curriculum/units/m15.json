@@ -30,90 +30,21 @@
   },
   "pedagogy": {
     "grammarNote": {
-      "en": "The perfect tense is the spoken past: conjugated haben or sein in Position 2, then Partizip II at the end. Only motion and change of state take sein.",
-      "de": "Das Perfekt ist die gesprochene Vergangenheit: konjugiertes haben oder sein auf Position 2, dann Partizip II am Ende. Nur Bewegung und Zustandswechsel nehmen sein."
+      "en": "The perfect tense is the spoken past: conjugated haben or sein in Position 2, then Partizip II at the end. Only motion and change of state take sein. HEALTH: Two ways to express pain — compound nouns (Ich habe Kopfschmerzen) or weh tun (Der Kopf tut mir weh). Singular body part = 'tut', plural = 'tun'. HEALTH: 'Mir ist kalt' (I feel cold) NOT 'Ich bin kalt' (I'm a cold person). Dative for sensations! PERFEKT: Spoken past = Auxiliary (haben/sein) in Pos 2 + Partizip II at END. Auxiliary selection: SEIN for movement/change of state (kommen, fahren, gehen, laufen, einschlafen, aufwachen). HABEN for everything else. Partizip II formation: Regular = ge- + stem + -t (spielen → gespielt). Strong verbs = ge- + stem + -en with possible vowel change (essen → gegessen, fahren → gefahren). Irregular Partizip II: sein → gewesen, haben → gehabt, gehen → gegangen, kommen → gekommen, stehen → gestanden. ⚠️ HEALTH TRAP: 'Meine Augen tut weh' — Augen is plural → 'Meine Augen TUN weh'! ⚠️ HEALTH TRAP: 'Ich bin kalt' = I'm a cold person. Correct: 'Mir ist kalt' (Dative!). ⚠️ PERFEKT TRAP: 'Ich habe nach Berlin gefahren' — movement verbs take SEIN: 'Ich BIN nach Berlin gefahren'. ⚠️ PERFEKT TRAP: 'Ich gelernt gestern Deutsch' — auxiliary in Pos 2, Partizip at END: 'Ich HABE gestern Deutsch GELERNT'. ⚠️ PERFEKT TRAP: Forgetting 'ge-' prefix on regular verbs: machen → gemacht (not 'macht'). Cultural: 'Gute Besserung!' = Get well sick note (Krankschreibung/AU-Bescheinigung) required by day 3 in Germany.",
+      "de": "Das Perfekt ist die gesprochene Vergangenheit: konjugiertes haben oder sein auf Position 2, dann Partizip II am Ende. Nur Bewegung und Zustandswechsel nehmen sein. GESUNDHEIT: Zwei Arten, Schmerzen auszudrücken — Komposita (Ich habe Kopfschmerzen) oder weh tun (Der Kopf tut mir weh). Einzahl = 'tut', Mehrzahl = 'tun'. GESUNDHEIT: 'Mir ist kalt' (mir friert) NICHT 'Ich bin kalt' (ich bin eine kalte Person). Dativ für Empfindungen! PERFEKT: Gesprochene Vergangenheit = Hilfsverb (haben/sein) Pos 2 + Partizip II am ENDE. Hilfsverbwahl: SEIN für Bewegung/Zustandswechsel (kommen, fahren, gehen, laufen, einschlafen, aufwachen). HABEN für alles andere. Partizip II Bildung: Regelmäßig = ge- + Stamm + -t (spielen → gespielt). Starke Verben = ge- + Stamm + -en mit möglicher Vokaländerung (essen → gegessen, fahren → gefahren). Unregelmäßige Partizip II: sein → gewesen, haben → gehabt, gehen → gegangen, kommen → gekommen, stehen → gestanden. ⚠️ GESUNDHEIT-FALLE: 'Meine Augen tut weh' — Augen ist Plural → 'Meine Augen TUN weh'! ⚠️ GESUNDHEIT-FALLE: 'Ich bin kalt' = Ich bin eine kalte Person. Richtig: 'Mir ist kalt' (Dativ!). ⚠️ PERFEKT-FALLE: 'Ich habe nach Berlin gefahren' — Bewegungsverben nehmen SEIN: 'Ich BIN nach Berlin gefahren'. ⚠️ PERFEKT-FALLE: 'Ich gelernt gestern Deutsch' — Hilfsverb Pos 2, Partizip am ENDE: 'Ich HABE gestern Deutsch GELERNT'. ⚠️ PERFEKT-FALLE: 'ge-' Präfix vergessen bei regulären Verben: machen → gemacht (nicht 'macht'). Kultur: 'Gute Besserung!' = Gute Besserung Krankmeldung (Krankschreibung/AU-Bescheinigung) ab Tag 3 in Deutschland Pflicht."
     },
-    "grammarNotes": [
-      "HEALTH: Two ways to express pain — compound nouns (Ich habe Kopfschmerzen) or weh tun (Der Kopf tut mir weh). Singular body part = 'tut', plural = 'tun'",
-      "HEALTH: 'Mir ist kalt' (I feel cold) NOT 'Ich bin kalt' (I'm a cold person). Dative for sensations!",
-      "PERFEKT: Spoken past = Auxiliary (haben/sein) in Pos 2 + Partizip II at END",
-      "Auxiliary selection: SEIN for movement/change of state (kommen, fahren, gehen, laufen, einschlafen, aufwachen). HABEN for everything else",
-      "Partizip II formation: Regular = ge- + stem + -t (spielen → gespielt). Strong verbs = ge- + stem + -en with possible vowel change (essen → gegessen, fahren → gefahren)",
-      "Irregular Partizip II: sein → gewesen, haben → gehabt, gehen → gegangen, kommen → gekommen, stehen → gestanden"
-    ],
-    "ruleTables": [
-      {
-        "title": {
-          "en": "Pain Expressions: weh tun vs. Schmerzen haben",
-          "de": "Schmerzausdrücke: weh tun vs. Schmerzen haben"
-        },
-        "columns": ["Structure", "Singular Body Part", "Plural Body Part", "Example"],
-        "rows": [
-          ["weh tun", "Der Kopf TUT weh.", "Die Augen TUN weh.", "Mein Rücken tut mir weh."],
-          ["Schmerzen haben", "Ich habe Kopfschmerzen.", "—", "Er hat Bauchschmerzen."]
-        ]
+    "ruleTable": {
+      "title": {
+        "en": "Perfekt: Auxiliary Selection",
+        "de": "Perfekt: Hilfsverbwahl"
       },
-      {
-        "title": {
-          "en": "Perfekt: Auxiliary Selection",
-          "de": "Perfekt: Hilfsverbwahl"
-        },
-        "columns": ["Auxiliary", "When to Use", "Key Verbs", "Example"],
-        "rows": [
-          ["SEIN", "Movement / change of state", "kommen, fahren, gehen, laufen, fliegen, reisen, einschlafen, aufwachen, sterben, werden", "Ich BIN nach Berlin GEFAHREN."],
-          ["HABEN", "All other verbs (transitive, stationary)", "machen, kaufen, lernen, spielen, essen, trinken, lesen, sehen, hören, arbeiten", "Ich HABE Fußball GESPIELT."]
-        ]
-      },
-      {
-        "title": {
-          "en": "Partizip II Formation Patterns",
-          "de": "Partizip-II-Bildungsmuster"
-        },
-        "columns": ["Pattern", "Rule", "Examples"],
-        "rows": [
-          ["Regular (weak)", "ge- + stem + -t", "machen → gemacht, lernen → gelernt, kaufen → gekauft, spielen → gespielt"],
-          ["Strong (vowel change)", "ge- + stem + -en", "essen → gegessen, trinken → getrunken, lesen → gelesen, fahren → gefahren, geben → gegeben"],
-          ["Mixed", "ge- + stem + -t (vowel change)", "denken → gedacht, kennen → gekannt, brennen → gebrannt, rennen → gerannt"],
-          ["Inseparable prefixes", "NO ge- (prefix stays)", "verstehen → verstanden, bekommen → bekommen, erzählen → erzählt"],
-          ["Separable prefixes", "ge- between prefix & stem", "einkaufen → eingekauft, aufstehen → aufgestanden, anrufen → angerufen"],
-          ["Verbs ending in -ieren", "NO ge-, just -t", "studieren → studiert, telefonieren → telefoniert, reparieren → repariert"]
-        ]
-      },
-      {
-        "title": {
-          "en": "Key Irregular Partizip II Forms",
-          "de": "Wichtige unregelmäßige Partizip-II-Formen"
-        },
-        "columns": ["Infinitive", "Partizip II", "Auxiliary", "English"],
-        "rows": [
-          ["sein", "gewesen", "sein", "been"],
-          ["haben", "gehabt", "haben", "had"],
-          ["gehen", "gegangen", "sein", "gone/walked"],
-          ["kommen", "gekommen", "sein", "come"],
-          ["stehen", "gestanden", "sein", "stood"],
-          ["sitzen", "gesessen", "haben", "sat"],
-          ["liegen", "gelegen", "haben", "lay"],
-          ["schlafen", "geschlafen", "haben", "slept"],
-          ["essen", "gegessen", "haben", "eaten"],
-          ["trinken", "getrunken", "haben", "drunk"],
-          ["lesen", "gelesen", "haben", "read"],
-          ["sehen", "gesehen", "haben", "seen"],
-          ["helfen", "geholfen", "haben", "helped"],
-          ["geben", "gegeben", "haben", "given"],
-          ["nehmen", "genommen", "haben", "taken"]
-        ]
-      }
-    ],
-    "callouts": [
-      "⚠️ HEALTH TRAP: 'Meine Augen tut weh' — Augen is plural → 'Meine Augen TUN weh'!",
-      "⚠️ HEALTH TRAP: 'Ich bin kalt' = I'm a cold person. Correct: 'Mir ist kalt' (Dative!)",
-      "⚠️ PERFEKT TRAP: 'Ich habe nach Berlin gefahren' — movement verbs take SEIN: 'Ich BIN nach Berlin gefahren'",
-      "⚠️ PERFEKT TRAP: 'Ich gelernt gestern Deutsch' — auxiliary in Pos 2, Partizip at END: 'Ich HABE gestern Deutsch GELERNT'",
-      "⚠️ PERFEKT TRAP: Forgetting 'ge-' prefix on regular verbs: machen → gemacht (not 'macht')",
-      "Cultural: 'Gute Besserung!' = Get well sick note (Krankschreibung/AU-Bescheinigung) required by day 3 in Germany"
-    ]
+      "rows": [
+        { "label": { "en": "SEIN", "de": "SEIN" }, "usage": { "en": "Movement / change of state", "de": "Bewegung / Zustandswechsel" }, "example": { "en": "kommen, fahren, gehen, laufen, fliegen, reisen, einschlafen, aufwachen, sterben, werden → Ich BIN nach Berlin GEFAHREN.", "de": "kommen, fahren, gehen, laufen, fliegen, reisen, einschlafen, aufwachen, sterben, werden → Ich BIN nach Berlin GEFAHREN." } },
+        { "label": { "en": "HABEN", "de": "HABEN" }, "usage": { "en": "All other verbs", "de": "Alle anderen Verben" }, "example": { "en": "machen, kaufen, lernen, spielen, essen, trinken, lesen, sehen, hören, arbeiten → Ich HABE Fußball GESPIELT.", "de": "machen, kaufen, lernen, spielen, essen, trinken, lesen, sehen, hören, arbeiten → Ich HABE Fußball GESPIELT." } }
+      ]
+    }
   },
   "vocabCategories": ["body-health", "doctor-shopping-phrases", "hobby-verbs", "weather-wishes", "perfekt"],
-  "grammarCategories": ["dative", "perfekt", "health", "past-tense"],
+  "grammarCategories": ["perfekt"],
   "hasLesson": true
 }

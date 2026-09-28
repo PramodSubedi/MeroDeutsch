@@ -561,13 +561,44 @@ export function GlossaryPage() {
       <div className={theme.page.container}>
         <h1 className="text-2xl font-semibold tracking-tight text-ink-950 dark:text-white">{title}</h1>
         <p className="mt-1 text-body text-ink-500 dark:text-ink-400">{description}</p>
-        <p
-          className="mt-4 text-body text-ink-500 dark:text-ink-400"
-          role="status"
-          aria-live="polite"
-        >
-          Loading…
-        </p>
+        {/*
+          A SKELETON, not the word "Loading…".
+
+          This page reads ~986 entries out of five separate curriculum pools
+          (articles, greetings, numbers, calendar, vocab) and only then filters
+          them. Measured cold, the bare-text state sat on screen for over four
+          seconds, which reads as a broken or empty page rather than a busy
+          one. Skeleton rows also preserve the page's shape, so nothing jumps
+          when the real list replaces them.
+
+          `aria-busy` + `role="status"` keep it announced without exposing a
+          grid of placeholder divs to a screen reader as content.
+        */}
+        <div role="status" aria-live="polite" aria-busy="true" className="mt-6">
+          <span className="sr-only">{isDE ? 'Glossar wird geladen…' : 'Loading glossary…'}</span>
+          <div aria-hidden="true" className="space-y-3">
+            {/* The filter row: a search field and two chip groups. */}
+            <div className="h-10 w-full animate-pulse rounded-md bg-ink-200/70 dark:bg-ink-800/70" />
+            <div className="flex flex-wrap gap-2">
+              {[0, 1, 2, 3, 4].map((i) => (
+                <div
+                  key={i}
+                  className="h-8 w-24 animate-pulse rounded-full bg-ink-200/70 dark:bg-ink-800/70"
+                />
+              ))}
+            </div>
+            {/* Word rows, at the width the real entries use. */}
+            {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
+              <div
+                key={i}
+                className="flex items-center justify-between gap-4 rounded-md border border-ink-200 p-3 dark:border-ink-800"
+              >
+                <div className="h-4 w-1/3 animate-pulse rounded bg-ink-200/70 dark:bg-ink-800/70" />
+                <div className="h-4 w-1/4 animate-pulse rounded bg-ink-200/50 dark:bg-ink-800/50" />
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     );
   }

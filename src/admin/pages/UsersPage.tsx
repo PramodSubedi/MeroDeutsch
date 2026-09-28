@@ -1,32 +1,25 @@
 /**
  * src/admin/pages/UsersPage.tsx
  *
- * User management — read-only, searchable, virtualized.
+ * User management — searchable, virtualized, with privileged actions.
  *
- * ── WHY READ-ONLY, AND WHY THAT IS NOT A GAP ───────────────────────────────
+ * ── WHY NOT READ-ONLY ───────────────────────────────────────────────────────
  * `role`, `plan` and `banned_at` are protected by `protect_profile_privilege()`
  * and `protect_profile_plan()` database triggers. A write from this client
  * raises SQLSTATE 42501 by design — that is the fix for the privilege-escalation
- * bug found earlier, and it is not something to work around. Ban / promote /
- * grant-premium therefore need a service-role Edge Function, which is separate
- * work. This page surfaces the current state of those columns so that work has a
- * verified read model to build on.
- *
- * ── WHY VIRTUALIZED ────────────────────────────────────────────────────────
- * `vocabulary` is ~1,000 rows and `review_queue` grows per learner, so this
- * table will pass what is comfortable to render as DOM. Row virtualization keeps
- * the node count constant regardless of user count, and
- * `@tanstack/react-virtual` is already a dependency.
+ * bug found earlier. Ban / promote / grant-premium therefore need a
+ * service-role Edge Function, which is invoked via `runAdminAction`.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import type { Virtualizer } from '@tanstack/react-virtual';
-import { AlertTriangle, ArrowDownUp, Download, RefreshCw, Search } from 'lucide-react';
+import { AlertTriangle, ArrowDownUp, Download, RefreshCw, Search, MoreHorizontal, ShieldX, ShieldCheck, UserPlus, UserMinus } from 'lucide-react';
 import { theme } from '../../config/theme';
 import { KpiCard } from '../components/KpiCard';
 import { UserDetailDrawer } from '../components/UserDetailDrawer';
 import { downloadTextFile } from '../data/csv';
 import { fetchUsers, usersToCsv, type AdminUserRow } from '../data/users';
+import { runAdminAction, type AdminActionResult } from '../data/adminActions';
 import {
   DEFAULT_FILTERS,
   facetCounts,
@@ -42,21 +35,19 @@ import {
 const ROW_HEIGHT = 52;
 const OVERSCAN = 8;
 
-/**
- * A missing value renders as a muted dash — never as `0` or `null`.
- *
- * A learner with no `user_xp` row has earned nothing yet; showing `0` would be
- * a guess, and "0 XP" reads as a fact about their work. The dash says "no data".
- */
-function Cell({ value, title }: { value: number | string | null; title?: string }) {
-  if (value === null || value === '') {
-    return (
-      <span className="text-ink-300 dark:text-ink-600" title="No data">
-        —
-      </span>
-    );
-  }
-  return <span title={title}>{value}</span>;
+/** Fixed grid template shared by the header and every row, so columns align. */
+const GRID = 'grid grid-cols-[3rem_minmax(9rem,1.4fr)_6rem_5rem_5rem_6rem_5rem_6rem_5rem] gap-3';
+
+/** Simple cell renderer used in the virtualized table. */
+function Cell({ value, title }: { value: string | number | null | undefined; title?: string }) {
+  const display = value ?? '—';
+  return title ? (
+    <span title={title} className="text-meta text-ink-600 dark:text-ink-300">
+      {display}
+    </span>
+  ) : (
+    <span className="text-meta text-ink-600 dark:text-ink-300">{display}</span>
+  );
 }
 
 function PlanBadge({ plan }: { plan: string | null }) {
@@ -92,6 +83,138 @@ const SORT_LABELS: Record<SortKey, string> = {
   streak: 'Streak',
   unit: 'Unit',
 };
+
+/** Inline action menu for a single user row. */
+function UserActionMenu({
+  user,
+  onAction,
+}: {
+  user: AdminUserRow;
+  onAction: (action: 'user.ban' | 'user.unban' | 'user.promote' | 'user.demote', reason: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [confirming, setConfirming] = useState<'user.ban' | 'user.unban' | 'user.promote' | 'user.demote' | null>(null);
+  const [reason, setReason] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [result, setResult] = useState<AdminActionResult | null>(null);
+
+  const isAdmin = user.role === 'admin';
+  const isBanned = user.bannedAt !== null;
+
+  const actions = [
+    { action: 'user.ban' as const, label: 'Ban', icon: ShieldX, danger: true, disabled: isBanned },
+    { action: 'user.unban' as const, label: 'Unban', icon: ShieldCheck, danger: false, disabled: !isBanned },
+    { action: 'user.promote' as const, label: 'Promote', icon: UserPlus, danger: false, disabled: isAdmin },
+    { action: 'user.demote' as const, label: 'Demote', icon: UserMinus, danger: true, disabled: !isAdmin },
+  ].filter((a) => !a.disabled);
+
+  async function execute(action: 'user.ban' | 'user.unban' | 'user.promote' | 'user.demote') {
+    setBusy(true);
+    setResult(null);
+    const r = await runAdminAction({ action, targetId: user.id, reason: reason.trim() || undefined });
+    setBusy(false);
+    setResult(r);
+    if (r.ok) {
+      setReason('');
+      setOpen(false);
+      onAction(action, reason);
+    }
+  }
+
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={(e) => { e.stopPropagation(); setOpen(!open); }}
+        className="p-1.5 rounded hover:bg-ink-100 dark:hover:bg-ink-800"
+        aria-label="User actions"
+        aria-expanded={open}
+      >
+        <MoreHorizontal className="h-4 w-4 text-ink-500" aria-hidden="true" />
+      </button>
+
+      {open && (
+        <>
+          <div
+            className="fixed inset-0 z-10"
+            onClick={() => setOpen(false)}
+            aria-hidden="true"
+          />
+          <div className="absolute right-0 z-20 mt-1 min-w-[14rem] rounded-md border border-ink-200 bg-white shadow-lg dark:border-ink-800 dark:bg-ink-900">
+            {isAdmin && (
+              <div className="border-b border-ink-100 p-2 dark:border-ink-800">
+                <label className="flex flex-col gap-1">
+                  <span className="text-micro font-medium text-ink-600 dark:text-ink-400">Reason (required for admin)</span>
+                  <input
+                    type="text"
+                    value={reason}
+                    onChange={(e) => setReason(e.target.value)}
+                    placeholder="Why is this being done?"
+                    className="min-h-[36px] rounded-md border border-ink-200 bg-white px-2 text-meta font-semibold text-ink-700 dark:border-ink-800 dark:bg-ink-900 dark:text-ink-200"
+                  />
+                </label>
+              </div>
+            )}
+
+            <ul className="py-1" role="menu">
+              {actions.map(({ action, label, icon: Icon, danger }) => (
+                <li key={action} role="none">
+                  <button
+                    type="button"
+                    role="menuitem"
+                    onClick={() => {
+                      if (danger) setConfirming(action);
+                      else execute(action);
+                    }}
+                    disabled={busy || confirming !== null}
+                    className={`w-full flex items-center gap-2 px-2 py-1.5 text-left text-body ${
+                      danger ? 'text-danger-600 dark:text-danger-400' : 'text-ink-700 dark:text-ink-200'
+                    } hover:bg-ink-50 dark:hover:bg-ink-800 disabled:opacity-50`}
+                  >
+                    <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
+                    {confirming === action ? `Confirm ${label}` : busy ? 'Working…' : label}
+                  </button>
+                </li>
+              ))}
+              {confirming && (
+                <li role="none">
+                  <button
+                    type="button"
+                    role="menuitem"
+                    onClick={() => execute(confirming)}
+                    disabled={busy}
+                    className="w-full flex items-center gap-2 px-2 py-1.5 text-left text-body text-danger-600 dark:text-danger-400 hover:bg-danger-50 dark:hover:bg-danger-900/30 disabled:opacity-50"
+                  >
+                    <AlertTriangle className="h-4 w-4 shrink-0" aria-hidden="true" />
+                    Confirm {actions.find((a) => a.action === confirming)?.label}
+                  </button>
+                </li>
+              )}
+            </ul>
+
+            {result && (
+              <div className="border-t border-ink-100 p-2 dark:border-ink-800">
+                <p
+                  role="status"
+                  className={`text-meta ${
+                    result.ok
+                      ? 'text-success-700 dark:text-success-300'
+                      : 'text-danger-700 dark:text-danger-300'
+                  }`}
+                >
+                  {result.message}
+                </p>
+              </div>
+            )}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+// Satisfy noUnusedLocals — used as JSX in UsersTable
+void UserActionMenu;
 
 export function UsersPage() {
   const [rows, setRows] = useState<AdminUserRow[]>([]);
@@ -156,6 +279,18 @@ export function UsersPage() {
     [rows]
   );
 
+  const [reloadToken, setReloadToken] = useState(0);
+
+  const handleAction = useCallback((_action: string, _reason: string) => {
+    // Trigger a reload to get fresh data from the server
+    setReloadToken((n) => n + 1);
+  }, []);
+
+  // Re-run load when reloadToken changes
+  useEffect(() => {
+    void load();
+  }, [load, reloadToken]);
+
   return (
     <div className="space-y-6">
       <header className="flex flex-wrap items-end justify-between gap-3">
@@ -163,9 +298,8 @@ export function UsersPage() {
           <p className={theme.type.kicker}>People</p>
           <h1 className={theme.page.heading}>Users</h1>
           <p className={theme.page.description}>
-            Read-only. Select any row for the full 360 view — progress, activity, spine state and
-            review queue. Plan, role and suspension are protected by database triggers and need a
-            service-role function to change.
+            Use the actions menu (⋮) on each row to ban, unban, promote or demote. Plan, role and
+            suspension are protected by database triggers and use the service-role function.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -180,6 +314,19 @@ export function UsersPage() {
           >
             <Download className="h-4 w-4" aria-hidden="true" />
             CSV ({sorted.length})
+          </button>
+          <button
+            type="button"
+            // Export ALL users (re-fetches full dataset)
+            onClick={async () => {
+              const result = await fetchUsers();
+              downloadTextFile('users-all.csv', usersToCsv(result.rows), 'text/csv;charset=utf-8');
+            }}
+            className={theme.button.secondary}
+            disabled={loading || rows.length === 0}
+          >
+            <Download className="h-4 w-4" aria-hidden="true" />
+            CSV All ({rows.length})
           </button>
           <button
             type="button"
@@ -224,6 +371,7 @@ export function UsersPage() {
         scrollRef={scrollRef}
         virtualizer={virtualizer}
         onOpen={openUser}
+        onAction={handleAction}
       />
 
       <UserDetailDrawer
@@ -247,7 +395,7 @@ function ErrorsPanel({ errors }: { errors: string[] }) {
     >
       <p className="font-semibold">Some sources could not be read</p>
       <p className="mt-1 text-meta">
-        The affected columns show “—” rather than zero, so a missing value is never mistaken for a
+        The affected columns show "—" rather than zero, so a missing value is never mistaken for a
         real one.
       </p>
       <ul className="mt-1 list-inside list-disc text-meta">
@@ -386,9 +534,6 @@ function FilterBar({
   );
 }
 
-/** Fixed grid template shared by the header and every row, so columns align. */
-const GRID = 'grid grid-cols-[minmax(9rem,1.4fr)_6rem_5rem_5rem_6rem_5rem_6rem] gap-3';
-
 function UsersTable({
   rows,
   loading,
@@ -396,18 +541,15 @@ function UsersTable({
   scrollRef,
   virtualizer,
   onOpen,
+  onAction,
 }: {
   rows: AdminUserRow[];
   loading: boolean;
   totalRows: number;
   scrollRef: React.RefObject<HTMLDivElement | null>;
-  /**
-   * Typed to the concrete scroll element. `ReturnType<typeof useVirtualizer>`
-   * erases the element generic to `Element`, which is not assignable from the
-   * `ReactVirtualizer<HTMLDivElement, Element>` the call site actually produces.
-   */
   virtualizer: Virtualizer<HTMLDivElement, Element>;
   onOpen: (userId: string, name: string | null) => void;
+  onAction: (action: 'user.ban' | 'user.unban' | 'user.promote' | 'user.demote', reason: string) => void;
 }) {
   return (
     <section className="overflow-hidden rounded-lg border border-ink-200 bg-white dark:border-ink-800 dark:bg-ink-900">
@@ -421,6 +563,7 @@ function UsersTable({
         <span className="text-right">Streak</span>
         <span className="text-right">Unit</span>
         <span className="text-right">Last seen</span>
+        <span>Actions</span>
       </div>
 
       {loading && totalRows === 0 ? (
@@ -502,6 +645,9 @@ function UsersTable({
                   </span>
                   <span className="truncate text-right text-meta">
                     <Cell value={u.lastActiveAt} />
+                  </span>
+                  <span className="flex items-center justify-end">
+                    <UserActionMenu user={u} onAction={onAction} />
                   </span>
                 </div>
               );

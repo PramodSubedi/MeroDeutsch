@@ -30,35 +30,21 @@
   },
   "pedagogy": {
     "grammarNote": {
-      "en": "Only the masculine shifts in the accusative: der → den, ein → einen, kein → keinen. Feminine, neuter and plural stay exactly as they are.",
-      "de": "Nur das Maskulinum wechselt im Akkusativ: der → den, ein → einen, kein → keinen. Feminin, Neutrum und Plural bleiben unverändert."
+      "en": "Only the masculine shifts in the accusative: der → den, ein → einen, kein → keinen. Feminine, neuter and plural stay exactly as they are. Direct object = receiver of action (Wen oder was?). ONLY masculine articles change: der→den, ein→einen, kein→keinen. Feminine (die/eine), Neuter (das/ein), Plural (die/keine) stay IDENTICAL to Nominative. Transitive verbs triggering accusative: haben, trinken, essen, kaufen, brauchen, sehen, möchten, bestellen. 🚨 CRITICAL: ONLY masculine (der) shifts in accusative! Feminine, neuter, plural = NO CHANGE! Verbs that ALWAYS take accusative objects: bestellen, trinken, essen, haben, kaufen, brauchen, sehen, möchten. Example: Ich habe EINEN Kaffee (masc). Ich esse EIN Brot (neut). Ich bestelle EINE Suppe (fem).",
+      "de": "Nur das Maskulinum wechselt im Akkusativ: der → den, ein → einen, kein → keinen. Feminin, Neutrum und Plural bleiben unverändert. Direktes Objekt = Empfänger der Handlung (Wen oder was?). NUR maskuline Artikel ändern sich: der→den, ein→einen, kein→keinen. Feminin (die/eine), Neutrum (das/ein), Plural (die/keine) bleiben IDENTISCH zum Nominativ. Transitive Verben, die Akkusativ fordern: haben, trinken, essen, kaufen, brauchen, sehen, möchten, bestellen. 🚨 KRITISCH: NUR maskulin (der) wechselt im Akkusativ! Feminin, Neutrum, Plural = KEINE ÄNDERUNG! Verben, die IMMER Akkusativ-Objekte fordern: bestellen, trinken, essen, haben, kaufen, brauchen, sehen, möchten. Beispiel: Ich habe EINEN Kaffee (mask). Ich esse EIN Brot (neutr). Ich bestelle EINE Suppe (fem)."
     },
-    "grammarNotes": [
-      "Direct object = receiver of action (Wen oder was?)",
-      "ONLY masculine articles change: der→den, ein→einen, kein→keinen",
-      "Feminine (die/eine), Neuter (das/ein), Plural (die/keine) stay IDENTICAL to Nominative",
-      "Transitive verbs triggering accusative: haben, trinken, essen, kaufen, brauchen, sehen, möchten, bestellen"
-    ],
-    "ruleTables": [
-      {
-        "title": {
-          "en": "Accusative Article Shift Matrix",
-          "de": "Akkusativ-Artikel-Wechsel-Matrix"
-        },
-        "columns": ["Gender/Number", "Nominative (Subject)", "Accusative (Direct Object)", "Indefinite Acc.", "Negative Acc."],
-        "rows": [
-          ["Masculine", "der Tisch", "den Tisch", "einen Tisch", "keinen Tisch"],
-          ["Feminine", "die Suppe", "die Suppe", "eine Suppe", "keine Suppe"],
-          ["Neuter", "das Brot", "das Brot", "ein Brot", "kein Brot"],
-          ["Plural", "die Äpfel", "die Äpfel", "— Äpfel", "keine Äpfel"]
-        ]
-      }
-    ],
-    "callouts": [
-      "🚨 CRITICAL: ONLY masculine (der) shifts in accusative! Feminine, neuter, plural = NO CHANGE!",
-      "Verbs that ALWAYS take accusative objects: bestellen, trinken, essen, haben, kaufen, brauchen, sehen, möchten",
-      "Example: Ich habe EINEN Kaffee (masc). Ich esse EIN Brot (neut). Ich bestelle EINE Suppe (fem)."
-    ]
+    "ruleTable": {
+      "title": {
+        "en": "Accusative Article Shift Matrix",
+        "de": "Akkusativ-Artikel-Wechsel-Matrix"
+      },
+      "rows": [
+        { "label": { "en": "Masculine", "de": "Maskulin" }, "usage": { "en": "der → den", "de": "der → den" }, "example": { "en": "der Tisch → den Tisch / einen Tisch / keinen Tisch", "de": "der Tisch → den Tisch / einen Tisch / keinen Tisch" } },
+        { "label": { "en": "Feminine", "de": "Feminin" }, "usage": { "en": "no change", "de": "kein Wechsel" }, "example": { "en": "die Suppe → die Suppe / eine Suppe / keine Suppe", "de": "die Suppe → die Suppe / eine Suppe / keine Suppe" } },
+        { "label": { "en": "Neuter", "de": "Neutrum" }, "usage": { "en": "no change", "de": "kein Wechsel" }, "example": { "en": "das Brot → das Brot / ein Brot / kein Brot", "de": "das Brot → das Brot / ein Brot / kein Brot" } },
+        { "label": { "en": "Plural", "de": "Plural" }, "usage": { "en": "no change", "de": "kein Wechsel" }, "example": { "en": "die Äpfel → die Äpfel / — Äpfel / keine Äpfel", "de": "die Äpfel → die Äpfel / — Äpfel / keine Äpfel" } }
+      ]
+    }
   },
   "vocabCategories": ["food-drink", "action-verbs"],
   "grammarCategories": ["accusative", "cases"],

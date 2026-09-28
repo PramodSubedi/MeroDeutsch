@@ -17,10 +17,11 @@
  * privileged function, same as ban/promote.
  */
 import { useCallback, useEffect, useState } from 'react';
-import { Activity, Database, Flag, RefreshCw, ScrollText } from 'lucide-react';
+import { Activity, Database, Flag, RefreshCw, ScrollText, Megaphone, X } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { theme } from '../../config/theme';
 import { KpiCard } from '../components/KpiCard';
+import { runAdminAction, type AdminActionResult } from '../data/adminActions';
 
 interface TableCount {
   table_name: string;
@@ -51,11 +52,300 @@ interface AppFlag {
   updated_at: string;
 }
 
+interface AnnouncementBanner {
+  text: string;
+  link?: string;
+  severity: 'info' | 'warning' | 'danger' | 'success';
+  dismissible: boolean;
+}
+
+/** Announcement banner editor. */
+function AnnouncementBannerPanel({
+  flags,
+  onAction,
+}: {
+  flags: AppFlag[];
+  onAction: (key: string, value: boolean, reason: string) => void;
+}) {
+  const bannerFlag = flags.find((f) => f.key === 'announcement_banner');
+  const [text, setText] = useState(bannerFlag?.value && typeof bannerFlag.value === 'object' && bannerFlag.value !== null
+    ? (bannerFlag.value as AnnouncementBanner).text ?? ''
+    : '');
+  const [link, setLink] = useState(bannerFlag?.value && typeof bannerFlag.value === 'object' && bannerFlag.value !== null
+    ? (bannerFlag.value as AnnouncementBanner).link ?? ''
+    : '');
+  const [severity, setSeverity] = useState(bannerFlag?.value && typeof bannerFlag.value === 'object' && bannerFlag.value !== null
+    ? (bannerFlag.value as AnnouncementBanner).severity ?? 'info'
+    : 'info');
+  const [dismissible, setDismissible] = useState(bannerFlag?.value && typeof bannerFlag.value === 'object' && bannerFlag.value !== null
+    ? (bannerFlag.value as AnnouncementBanner).dismissible ?? true
+    : true);
+  const [busy, setBusy] = useState(false);
+  const [result, setResult] = useState<AdminActionResult | null>(null);
+
+  const severityOptions: Array<{ value: AnnouncementBanner['severity']; label: string }> = [
+    { value: 'info', label: 'Info' },
+    { value: 'warning', label: 'Warning' },
+    { value: 'danger', label: 'Danger' },
+    { value: 'success', label: 'Success' },
+  ];
+
+  async function save() {
+    setBusy(true);
+    setResult(null);
+    const payload: AnnouncementBanner = { text: text.trim(), severity, dismissible };
+    if (link.trim()) payload.link = link.trim();
+    const r = await runAdminAction({
+      action: 'config.set',
+      config: { key: 'announcement_banner', value: payload },
+      reason: `Announcement banner ${text.trim() ? 'updated' : 'cleared'}`,
+    });
+    setBusy(false);
+    setResult(r);
+    if (r.ok) {
+      onAction('announcement_banner', true, 'Banner updated');
+    }
+  }
+
+  async function clear() {
+    setBusy(true);
+    setResult(null);
+    const payload: AnnouncementBanner = { text: '', severity: 'info', dismissible: true };
+    const r = await runAdminAction({
+      action: 'config.set',
+      config: { key: 'announcement_banner', value: payload },
+      reason: 'Announcement banner cleared',
+    });
+    setBusy(false);
+    setResult(r);
+    if (r.ok) {
+      setText('');
+      setLink('');
+      setSeverity('info');
+      setDismissible(true);
+      onAction('announcement_banner', true, 'Banner cleared');
+    }
+  }
+
+  return (
+    <section className="rounded-lg border border-ink-200 bg-white p-4 dark:border-ink-800 dark:bg-ink-900">
+      <div className="flex items-center justify-between gap-3">
+        <h2 className={theme.type.section}>
+          <Megaphone className="mr-1 inline h-5 w-5" aria-hidden="true" />
+          Announcement banner
+        </h2>
+        <span className="text-micro text-ink-400">Public-read, visible before sign-in</span>
+      </div>
+      <p className="mt-1 text-meta text-ink-500 dark:text-ink-400">
+        Show a global banner to all users. Set text to empty to hide.
+      </p>
+      <div className="mt-4 space-y-3">
+        <label className="flex flex-col gap-1">
+          <span className="text-label text-ink-600 dark:text-ink-300">Message</span>
+          <textarea
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            rows={3}
+            placeholder="Enter announcement text (Markdown supported by learner app)..."
+            className={`min-h-[36px] rounded-md border border-ink-200 bg-white px-2 text-meta font-semibold text-ink-700 dark:border-ink-800 dark:bg-ink-900 dark:text-ink-200 ${theme.input}`}
+          />
+        </label>
+        <label className="flex flex-col gap-1">
+          <span className="text-label text-ink-600 dark:text-ink-300">Link (optional)</span>
+          <input
+            type="url"
+            value={link}
+            onChange={(e) => setLink(e.target.value)}
+            placeholder="https://example.com"
+            className="min-h-[36px] rounded-md border border-ink-200 bg-white px-2 text-meta font-semibold text-ink-700 dark:border-ink-800 dark:bg-ink-900 dark:text-ink-200"
+          />
+        </label>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <label className="flex flex-col gap-1">
+            <span className="text-label text-ink-600 dark:text-ink-300">Severity</span>
+            <select
+              value={severity}
+              onChange={(e) => setSeverity(e.target.value as AnnouncementBanner['severity'])}
+              className="min-h-[36px] rounded-md border border-ink-200 bg-white px-2 text-meta font-semibold text-ink-700 dark:border-ink-800 dark:bg-ink-900 dark:text-ink-200"
+            >
+              {severityOptions.map((o) => (
+                <option key={o.value} value={o.value}>{o.label}</option>
+              ))}
+            </select>
+          </label>
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={dismissible}
+              onChange={(e) => setDismissible(e.target.checked)}
+              className="h-4 w-4 rounded border-ink-300 text-accent-600 focus:ring-accent-500"
+            />
+            <span className="text-meta text-ink-700 dark:text-ink-200">Dismissible by users</span>
+          </label>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={save}
+            disabled={busy || text.trim() === ''}
+            className={theme.button.primary}
+          >
+            {busy ? 'Saving…' : text.trim() ? 'Update banner' : 'Create banner'}
+          </button>
+          {text.trim() && (
+            <button
+              type="button"
+              onClick={clear}
+              disabled={busy}
+              className="px-3 py-2 rounded-md border border-ink-200 bg-white text-ink-700 hover:bg-ink-50 dark:border-ink-800 dark:bg-ink-900 dark:text-ink-200"
+            >
+              <X className="mr-1 inline h-4 w-4" aria-hidden="true" />
+              Clear
+            </button>
+          )}
+        </div>
+        {result && (
+          <p
+            role="status"
+            className={`text-meta ${
+              result.ok
+                ? 'text-success-700 dark:text-success-300'
+                : 'text-danger-700 dark:text-danger-300'
+            }`}
+          >
+            {result.message}
+          </p>
+        )}
+      </div>
+    </section>
+  );
+}
+
+/** Inline toggle for a feature flag. */
+function FlagToggle({
+  flag,
+  onAction,
+}: {
+  flag: AppFlag;
+  onAction: (key: string, value: boolean, reason: string) => void;
+}) {
+  const [confirming, setConfirming] = useState(false);
+  const [reason, setReason] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [result, setResult] = useState<AdminActionResult | null>(null);
+
+  const currentValue = flag.value === true || flag.value === 'true';
+
+  async function execute() {
+    setBusy(true);
+    setResult(null);
+    const newValue = !currentValue;
+    const r = await runAdminAction({
+      action: 'config.set',
+      config: { key: flag.key, value: newValue },
+      reason: reason.trim() || `${flag.key} ${newValue ? 'enabled' : 'disabled'}`,
+    });
+    setBusy(false);
+    setResult(r);
+    if (r.ok) {
+      setReason('');
+      setConfirming(false);
+      onAction(flag.key, newValue, reason);
+    }
+  }
+
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={() => setConfirming(true)}
+        disabled={busy}
+        className={currentValue ? 'bg-accent-600 text-white' : 'bg-ink-200 text-ink-600 dark:bg-ink-700 dark:text-ink-300'}
+        style={{ width: '56px', height: '28px', borderRadius: '9999px', display: 'flex', alignItems: 'center', padding: '0 2px', transition: 'all 0.2s', justifyContent: currentValue ? 'flex-end' : 'flex-start' }}
+        aria-label={currentValue ? 'Disable' : 'Enable'}
+        aria-pressed={currentValue}
+      >
+        <span className="w-5 h-5 rounded-full bg-white shadow flex-shrink-0" aria-hidden="true" />
+      </button>
+
+      {confirming && (
+        <>
+          <div
+            className="fixed inset-0 z-10"
+            onClick={() => { setConfirming(false); setReason(''); }}
+            aria-hidden="true"
+          />
+          <div className="absolute right-0 z-20 mt-1 min-w-[16rem] rounded-md border border-ink-200 bg-white shadow-lg dark:border-ink-800 dark:bg-ink-900">
+            <div className="border-b border-ink-100 p-2 dark:border-ink-800">
+              <label className="flex flex-col gap-1">
+                <span className="text-micro font-medium text-ink-600 dark:text-ink-400">Reason</span>
+                <input
+                  type="text"
+                  value={reason}
+                  onChange={(e) => setReason(e.target.value)}
+                  placeholder="Why is this being changed?"
+                  className="min-h-[36px] rounded-md border border-ink-200 bg-white px-2 text-meta font-semibold text-ink-700 dark:border-ink-800 dark:bg-ink-900 dark:text-ink-200"
+                />
+              </label>
+            </div>
+
+            <ul className="py-1" role="menu">
+              <li role="none">
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={() => execute()}
+                  disabled={busy}
+                  className="w-full flex items-center gap-2 px-2 py-1.5 text-left text-body text-ink-700 dark:text-ink-200 hover:bg-ink-50 dark:hover:bg-ink-800 disabled:opacity-50"
+                >
+                  {busy ? 'Saving…' : `Confirm ${currentValue ? 'disable' : 'enable'}`}
+                </button>
+              </li>
+              <li role="none">
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={() => { setConfirming(false); setReason(''); }}
+                  className="w-full flex items-center gap-2 px-2 py-1.5 text-left text-body text-ink-500 dark:text-ink-400 hover:bg-ink-50 dark:hover:bg-ink-800"
+                >
+                  Cancel
+                </button>
+              </li>
+            </ul>
+
+            {result && (
+              <div className="border-t border-ink-100 p-2 dark:border-ink-800">
+                <p
+                  role="status"
+                  className={`text-meta ${
+                    result.ok
+                      ? 'text-success-700 dark:text-success-300'
+                      : 'text-danger-700 dark:text-danger-300'
+                  }`}
+                >
+                  {result.message}
+                </p>
+              </div>
+            )}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 export function SystemPage() {
   const [counts, setCounts] = useState<TableCount[]>([]);
   const [flags, setFlags] = useState<AppFlag[]>([]);
   const [errors, setErrors] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const [reloadToken, setReloadToken] = useState(0);
+
+  const handleAction = useCallback((_key: string, _value: boolean, _reason: string) => {
+    // Trigger a reload to get fresh data from the server
+    setReloadToken((n) => n + 1);
+  }, []);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -80,7 +370,7 @@ export function SystemPage() {
 
   useEffect(() => {
     void load();
-  }, [load]);
+  }, [load, reloadToken]);
 
   const totalRows = counts.reduce((sum, c) => sum + (c.row_count ?? 0), 0);
   const byName = new Map(counts.map((c) => [c.table_name, c.row_count]));
@@ -139,7 +429,8 @@ export function SystemPage() {
       </section>
 
       <CountPanel counts={byName} />
-      <FlagsPanel flags={flags} />
+      <FlagsPanel flags={flags} onAction={handleAction} />
+      <AnnouncementBannerPanel flags={flags} onAction={handleAction} />
       <MigrationsPanel />
     </div>
   );
@@ -193,12 +484,12 @@ function CountPanel({ counts }: { counts: Map<string, number> }) {
   );
 }
 
-function FlagsPanel({ flags }: { flags: AppFlag[] }) {
+function FlagsPanel({ flags, onAction }: { flags: AppFlag[]; onAction: (key: string, value: boolean, reason: string) => void }) {
   return (
     <section className="rounded-lg border border-ink-200 bg-white p-4 dark:border-ink-800 dark:bg-ink-900">
       <h2 className={theme.type.section}>Feature flags</h2>
       <p className="mt-1 text-meta text-ink-500 dark:text-ink-400">
-        Read-only. Writes are service-role only, so toggling a flag needs a privileged function.
+        Toggle a flag to enable/disable it globally. Changes are written via the service-role function and recorded in the audit log.
       </p>
       {flags.length === 0 ? (
         <p className="mt-3 text-meta text-ink-500 dark:text-ink-400">No flags found.</p>
@@ -220,6 +511,7 @@ function FlagsPanel({ flags }: { flags: AppFlag[] }) {
                   {JSON.stringify(flag.value)}
                 </code>
                 <span className="text-micro text-ink-400">{String(flag.updated_at).slice(0, 10)}</span>
+                <FlagToggle flag={flag} onAction={onAction} />
               </span>
             </li>
           ))}

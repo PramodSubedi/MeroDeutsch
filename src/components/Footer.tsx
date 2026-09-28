@@ -32,11 +32,15 @@ export function Footer({ className }: FooterProps) {
             <h4 className="text-meta font-bold text-ink-600 dark:text-ink-400 uppercase tracking-wider mb-2">
               {isDE ? 'Entdecken' : 'Explore'}
             </h4>
+            {/* These four measured 18px tall on a 390px viewport — inline text
+                links with no padding. `inline-flex min-h-[44px] items-center`
+                gives them a real target on phones; on pointer screens they stay
+                flush with the prose, which is how a footer should read. */}
             <ul className="space-y-0.5 text-meta text-ink-600 dark:text-ink-400 font-medium">
-              <li><Link to="/dashboard" className="hover:text-accent-600 dark:hover:text-accent-400 transition-colors">{isDE ? 'Übersicht' : 'Dashboard'}</Link></li>
-              <li><Link to="/alphabet" className="hover:text-accent-600 dark:hover:text-accent-400 transition-colors">Alphabet</Link></li>
-              <li><Link to="/articles" className="hover:text-accent-600 dark:hover:text-accent-400 transition-colors">{isDE ? 'Artikel' : 'Articles'}</Link></li>
-              <li><Link to="/glossary" className="hover:text-accent-600 dark:hover:text-accent-400 transition-colors">{isDE ? 'Glossar' : 'Glossary'}</Link></li>
+              <li><Link to="/dashboard" className="inline-flex min-h-[44px] items-center hover:text-accent-600 sm:min-h-0 dark:hover:text-accent-400 transition-colors">{isDE ? 'Übersicht' : 'Dashboard'}</Link></li>
+              <li><Link to="/alphabet" className="inline-flex min-h-[44px] items-center hover:text-accent-600 sm:min-h-0 dark:hover:text-accent-400 transition-colors">Alphabet</Link></li>
+              <li><Link to="/articles" className="inline-flex min-h-[44px] items-center hover:text-accent-600 sm:min-h-0 dark:hover:text-accent-400 transition-colors">{isDE ? 'Artikel' : 'Articles'}</Link></li>
+              <li><Link to="/glossary" className="inline-flex min-h-[44px] items-center hover:text-accent-600 sm:min-h-0 dark:hover:text-accent-400 transition-colors">{isDE ? 'Glossar' : 'Glossary'}</Link></li>
             </ul>
           </div>
 
@@ -56,9 +60,9 @@ export function Footer({ className }: FooterProps) {
         <div className="mt-4 pt-3 flex flex-col sm:flex-row justify-between items-center text-meta text-ink-500 dark:text-ink-400 px-2 gap-3">
           <p>© {new Date().getFullYear()} MeroDeutsch. {isDE ? 'Für mehrsprachiges Lernen entwickelt.' : 'Designed for multilingual learning.'}</p>
           <div className="flex space-x-4 font-medium">
-            <Link to="/privacy" className="inline-flex h-9 items-center hover:text-accent-600 dark:hover:text-accent-400 transition-colors">{isDE ? 'Datenschutz' : 'Privacy'}</Link>
-            <Link to="/terms" className="inline-flex h-9 items-center hover:text-accent-600 dark:hover:text-accent-400 transition-colors">{isDE ? 'Nutzungsbedingungen' : 'Terms'}</Link>
-            <Link to="/help" className="inline-flex h-9 items-center hover:text-accent-600 dark:hover:text-accent-400 transition-colors">{isDE ? 'Hilfe' : 'Support'}</Link>
+            <Link to="/privacy" className="inline-flex h-11 sm:h-9 items-center hover:text-accent-600 dark:hover:text-accent-400 transition-colors">{isDE ? 'Datenschutz' : 'Privacy'}</Link>
+            <Link to="/terms" className="inline-flex h-11 sm:h-9 items-center hover:text-accent-600 dark:hover:text-accent-400 transition-colors">{isDE ? 'Nutzungsbedingungen' : 'Terms'}</Link>
+            <Link to="/help" className="inline-flex h-11 sm:h-9 items-center hover:text-accent-600 dark:hover:text-accent-400 transition-colors">{isDE ? 'Hilfe' : 'Support'}</Link>
           </div>
         </div>
       </div>

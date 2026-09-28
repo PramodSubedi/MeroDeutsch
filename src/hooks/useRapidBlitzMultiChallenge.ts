@@ -93,6 +93,24 @@ function shuffleChallengeOptions(challenge: RapidBlitzChallenge): RapidBlitzChal
 }
 
 /**
+ * Draw at most `QUESTIONS_PER_SECTION` questions from one section pool.
+ *
+ * This used to consume the WHOLE pool. The bundled `rapidfire-question`
+ * snapshot holds only 4 items per challenge type, so every Blitz run served all
+ * 4 of them — the same questions, in a new order, with their options
+ * reshuffled. Since Blitz is the Home "Challenge" CTA (the most-replayed
+ * surface in the app), that was the most visible repetition of all.
+ *
+ * Sampling — rather than consuming — is also what makes the section pools SAFE
+ * TO GROW: run length stays pinned at 6 sections x 4 questions no matter how
+ * much content a section holds, while each run draws a different subset.
+ */
+function sampleSection(pool: RapidBlitzChallenge[]): RapidBlitzChallenge[] {
+  if (pool.length <= QUESTIONS_PER_SECTION) return [...pool];
+  return shuffleArray(pool).slice(0, QUESTIONS_PER_SECTION);
+}
+
+/**
  * Build the flat challenge list for a given mode from the DYNAMIC pools.
  * Mixed mode => 6 sections, each section's questions shuffled locally.
  * Focused mode => just the questions for that section.
@@ -106,9 +124,11 @@ function buildChallengeList(
   pools: Record<string, RapidBlitzChallenge[]>
 ): RapidBlitzChallenge[] {
   if (mode) {
-    return [...(pools[mode] ?? [])].map(shuffleChallengeOptions);
+    return sampleSection(pools[mode] ?? []).map(shuffleChallengeOptions);
   }
-  return CHALLENGE_MODES.flatMap((m) => shuffleArray(pools[m] ?? [])).map(shuffleChallengeOptions);
+  return CHALLENGE_MODES.flatMap((m) => sampleSection(pools[m] ?? [])).map(
+    shuffleChallengeOptions
+  );
 }
 
 /**

@@ -257,7 +257,7 @@ export function LessonModulePage() {
     return () => {
       cancelled = true;
     };
-  }, [unit?.id]);
+  }, [unit]);
 
   // `round` is in the deps on purpose: a new round must produce a NEW deck, and
   // without it "Play again" would reshuffle nothing.

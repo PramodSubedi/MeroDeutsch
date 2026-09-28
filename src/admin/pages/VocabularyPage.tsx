@@ -17,6 +17,7 @@ import { Download, RefreshCw, Search } from 'lucide-react';
 import { theme } from '../../config/theme';
 import { KpiCard } from '../components/KpiCard';
 import { fetchVocabulary, toCsv, type VocabRow, type VocabSource } from '../data/vocabulary';
+import { VocabularyRepair } from '../components/VocabularyRepair';
 
 const ROW_HEIGHT = 48;
 const GRID = 'grid grid-cols-[minmax(10rem,1.5fr)_5rem_5rem_4rem_minmax(9rem,1.2fr)_minmax(9rem,1.2fr)] gap-3';
@@ -295,9 +296,11 @@ export function VocabularyPage() {
     setLoading(false);
   }, []);
 
+  const [reloadToken, setReloadToken] = useState(0);
+
   useEffect(() => {
     void load();
-  }, [load]);
+  }, [load, reloadToken]);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -413,6 +416,11 @@ export function VocabularyPage() {
         totalRows={rows.length}
         scrollRef={scrollRef}
         virtualizer={virtualizer}
+      />
+
+      <VocabularyRepair
+        onDone={() => setReloadToken((n) => n + 1)}
+        disabled={loading}
       />
     </div>
   );

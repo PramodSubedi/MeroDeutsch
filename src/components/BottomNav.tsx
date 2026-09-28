@@ -9,6 +9,19 @@ import {
   navTarget,
 } from '../config/navigation';
 
+/** Map of route paths to their lazy import functions for preloading */
+const routePreloadMap: Record<string, () => Promise<any>> = {
+  '/learn': () => import('../pages/CefrLevelIndexPage'),
+  '/dashboard': () => import('../pages/DashboardPage'),
+  '/practice': () => import('../pages/PracticeHubPage'),
+};
+
+/** Preload a route's chunk on hover/focus */
+function preloadRoute(path: string) {
+  const loader = routePreloadMap[path];
+  if (loader) loader();
+}
+
 /**
  * Primary navigation for every width below lg.
  *
@@ -57,6 +70,8 @@ export function BottomNav() {
               key={item.id}
               to={item.to}
               aria-current={item.active ? 'location' : undefined}
+              onMouseEnter={() => preloadRoute(item.to)}
+              onFocus={() => preloadRoute(item.to)}
               className="relative flex min-h-11 min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-sm px-1 py-1.5 transition-colors"
             >
               <span

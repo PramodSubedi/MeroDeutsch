@@ -30,51 +30,23 @@
   },
   "pedagogy": {
     "grammarNote": {
-      "en": "am = days, im = months and seasons, um = clock times. And halb acht is 7:30, not 8:30.",
-      "de": "am = Tage, im = Monate und Jahreszeiten, um = Uhrzeiten. Und halb acht heißt 7:30, nicht 8:30."
+      "en": "am = days, im = months and seasons, um = clock times. And halb acht is 7:30, not 8:30. Temporal prepositions: am + days/dates/times of day, im + months/seasons, um + clock times. Exception: 'in der Nacht' (not 'am Nacht'). Colloquial clock inversion: 08:30 = 'halb neun' (half TO nine), 08:15 = 'viertel nach acht', 08:45 = 'viertel vor neun'. Standard clock: 08:30 = 'acht Uhr dreißig' (formal). ⚠️ TRAP: 'Halb acht' = 7:30, NOT 8:30! 'Halb' means half TO the next hour! Memory hook: Am für Alle Tage (am Montag). Im für Im Monat (im Juli). Um für Uhrzeit (um 8 Uhr). Cultural: Pünktlichkeit is paramount — arrive 5 minutes early!",
+      "de": "am = Tage, im = Monate und Jahreszeiten, um = Uhrzeiten. Und halb acht heißt 7:30, nicht 8:30. Temporale Präpositionen: am + Tage/Daten/Tageszeiten, im + Monate/Jahreszeiten, um + Uhrzeiten. Ausnahme: 'in der Nacht' (nicht 'am Nacht'). Umgangssprachliche Uhraufteilung: 08:30 = 'halb neun' (halb ZUR nächsten Stunde), 08:15 = 'viertel nach acht', 08:45 = 'viertel vor neun'. Formale Uhrzeit: 08:30 = 'acht Uhr dreißig'. ⚠️ FALLE: 'Halb acht' = 7:30, NICHT 8:30! 'Halb' bedeutet halb ZUR nächsten Stunde! Eselsbrücke: Am für Alle Tage (am Montag). Im für Im Monat (im Juli). Um für Uhrzeit (um 8 Uhr). Kultur: Pünktlichkeit ist oberstes Gebot — 5 Minuten früher kommen!"
     },
-    "grammarNotes": [
-      "Temporal prepositions: am + days/dates/times of day, im + months/seasons, um + clock times",
-      "Exception: 'in der Nacht' (not 'am Nacht')",
-      "Colloquial clock inversion: 08:30 = 'halb neun' (half TO nine), 08:15 = 'viertel nach acht', 08:45 = 'viertel vor neun'",
-      "Standard clock: 08:30 = 'acht Uhr dreißig' (formal)"
-    ],
-    "ruleTables": [
-      {
-        "title": {
-          "en": "Time Preposition Cheat Sheet",
-          "de": "Zeit-Präposition-Spickzettel"
-        },
-        "columns": ["Preposition", "Case", "Used With", "Examples"],
-        "rows": [
-          ["am", "Dative", "Days, dates, parts of day", "am Montag, am 15. Mai, am Morgen"],
-          ["im", "Dative", "Months, seasons, years", "im Juli, im Sommer, im Jahr 2026"],
-          ["um", "Accusative", "Exact clock times", "um 8 Uhr, um 14:30 Uhr"],
-          ["in der", "Dative", "Night (exception)", "in der Nacht"]
-        ]
+    "ruleTable": {
+      "title": {
+        "en": "Time Preposition Cheat Sheet",
+        "de": "Zeit-Präposition-Spickzettel"
       },
-      {
-        "title": {
-          "en": "Colloquial vs Formal Clock",
-          "de": "Umgangssprachliche vs Formale Uhrzeit"
-        },
-        "columns": ["Digital", "Colloquial", "Formal"],
-        "rows": [
-          ["08:00", "acht Uhr", "acht Uhr"],
-          ["08:15", "viertel nach acht", "acht Uhr fünfzehn"],
-          ["08:30", "halb neun", "acht Uhr dreißig"],
-          ["08:45", "viertel vor neun", "acht Uhr fünfundvierzig"],
-          ["09:30", "halb zehn", "neun Uhr dreißig"]
-        ]
-      }
-    ],
-    "callouts": [
-      "⚠️ TRAP: 'Halb acht' = 7:30, NOT 8:30! 'Halb' means half TO the next hour!",
-      "Memory hook: Am für Alle Tage (am Montag). Im für Im Monat (im Juli). Um für Uhrzeit (um 8 Uhr).",
-      "Cultural: Pünktlichkeit is paramount — arrive 5 minutes early!"
-    ]
+      "rows": [
+        { "label": { "en": "am", "de": "am" }, "usage": { "en": "Days, dates, parts of day", "de": "Tage, Daten, Tageszeiten" }, "example": { "en": "am Montag, am 15. Mai, am Morgen", "de": "am Montag, am 15. Mai, am Morgen" } },
+        { "label": { "en": "im", "de": "im" }, "usage": { "en": "Months, seasons, years", "de": "Monate, Jahreszeiten, Jahre" }, "example": { "en": "im Juli, im Sommer, im Jahr 2026", "de": "im Juli, im Sommer, im Jahr 2026" } },
+        { "label": { "en": "um", "de": "um" }, "usage": { "en": "Exact clock times", "de": "Genauen Uhrzeiten" }, "example": { "en": "um 8 Uhr, um 14:30 Uhr", "de": "um 8 Uhr, um 14:30 Uhr" } },
+        { "label": { "en": "in der", "de": "in der" }, "usage": { "en": "Night (exception)", "de": "Nacht (Ausnahme)" }, "example": { "en": "in der Nacht", "de": "in der Nacht" } }
+      ]
+    }
   },
   "vocabCategories": ["nature-time", "travel-questions", "travel"],
-  "grammarCategories": ["temporal-prepositions", "prepositions", "time"],
+  "grammarCategories": ["prepositions"],
   "hasLesson": true
 }

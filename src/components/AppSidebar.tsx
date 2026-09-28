@@ -18,6 +18,19 @@ import {
 } from '../config/navigation';
 import { LearnerWaypoint } from './path/LearnerWaypoint';
 
+/** Map of route paths to their lazy import functions for preloading (desktop rail) */
+const railPreloadMap: Record<string, () => Promise<any>> = {
+  '/learn': () => import('../pages/CefrLevelIndexPage'),
+  '/dashboard': () => import('../pages/DashboardPage'),
+  '/practice': () => import('../pages/PracticeHubPage'),
+};
+
+/** Preload a route's chunk on hover/focus */
+function preloadRoute(path: string) {
+  const loader = railPreloadMap[path];
+  if (loader) loader();
+}
+
 /** Guest-first split: /home is the app home (authed OR guest), /welcome is
     the marketing landing (no app shell). Home nav + brand link must point at
     /home so authenticated users never bounce through a redirect. */
@@ -63,14 +76,32 @@ function NavRow({ row, collapsed, onNavigate }: { row: RailRow; collapsed?: bool
   // the icon stays perfectly centered (doesn't drift with the number).
   if (count <= 0) {
     return (
-      <Link to={row.to} className={linkClass} onClick={onNavigate} aria-label={row.label} title={collapsed ? row.label : undefined} aria-current={row.active ? 'location' : undefined}>
+      <Link
+        to={row.to}
+        className={linkClass}
+        onClick={onNavigate}
+        onMouseEnter={() => preloadRoute(row.to)}
+        onFocus={() => preloadRoute(row.to)}
+        aria-label={row.label}
+        title={collapsed ? row.label : undefined}
+        aria-current={row.active ? 'location' : undefined}
+      >
         <Icon className="h-5 w-5 shrink-0" aria-hidden="true" />
         {!collapsed && <span className="min-w-0 flex-1 truncate">{row.label}</span>}
       </Link>
     );
   }
   return (
-    <Link to={row.to} className={linkClass} onClick={onNavigate} aria-label={row.label} title={collapsed ? row.label : undefined} aria-current={row.active ? 'location' : undefined}>
+    <Link
+      to={row.to}
+      className={linkClass}
+      onClick={onNavigate}
+      onMouseEnter={() => preloadRoute(row.to)}
+      onFocus={() => preloadRoute(row.to)}
+      aria-label={row.label}
+      title={collapsed ? row.label : undefined}
+      aria-current={row.active ? 'location' : undefined}
+    >
       <Icon className="h-5 w-5 shrink-0" aria-hidden="true" />
       {!collapsed ? (
         <>

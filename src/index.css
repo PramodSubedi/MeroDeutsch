@@ -295,14 +295,17 @@ input[type="button"] {
   border-width: 0;
 }
 
-/* Skip to main content link for keyboard users */
+/* Skip to main content link for keyboard users.
+   40px -> 44px: this is a real control that a keyboard or switch user hits
+   first, and 40 is the only target on the page that was still under the
+   project's own 44px floor after the mobile pass. */
 .skip-to-main {
   position: absolute;
-  top: -40px;
+  top: -44px;
   left: 0;
   background: var(--color-accent-600);
   color: white;
-  padding: 8px 16px;
+  padding: 12px 16px;
   text-decoration: none;
   z-index: 100;
   border-radius: 0 0 0.375rem 0;

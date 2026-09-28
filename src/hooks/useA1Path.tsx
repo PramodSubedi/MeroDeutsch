@@ -137,7 +137,7 @@ const DEFAULT_STATE: A1PathState = {
 };
 
 /** Coerce a raw/partial attempt record into a valid one. */
-function normalizeAttempt(raw: unknown): CheckpointAttemptRecord {
+export function normalizeAttempt(raw: unknown): CheckpointAttemptRecord {
   const r = (raw ?? {}) as Partial<CheckpointAttemptRecord>;
   const attempts = Number.isFinite(r.attempts) ? Math.max(0, Number(r.attempts)) : 0;
   const best = Number.isFinite(r.best) ? Math.max(0, Math.min(1, Number(r.best))) : 0;
@@ -154,7 +154,7 @@ function normalizeAttempt(raw: unknown): CheckpointAttemptRecord {
 }
 
 /** True when a state object carries any real progress worth hydrating/migrating. */
-function hasProgress(s: Partial<A1PathState>): boolean {
+export function hasProgress(s: Partial<A1PathState>): boolean {
   return (
     (Array.isArray(s.completedNodeIds) && s.completedNodeIds.length > 0) ||
     (typeof s.unlockedUnitIndex === 'number' && s.unlockedUnitIndex > 0) ||
@@ -166,7 +166,7 @@ function hasProgress(s: Partial<A1PathState>): boolean {
 }
 
 /** Clamp/normalize any partial state into a valid A1PathState. */
-function normalizeState(raw: Partial<A1PathState>): A1PathState {
+export function normalizeState(raw: Partial<A1PathState>): A1PathState {
   // `let`, not `const`: the v3->v4 node-id migration below REBINDS this to the
   // remapped list. Same pattern as `markCheckpointResult` further down.
   let completedNodeIds = Array.isArray(raw.completedNodeIds)

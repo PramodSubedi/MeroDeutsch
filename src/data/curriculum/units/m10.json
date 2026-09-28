@@ -29,40 +29,26 @@
   },
   "pedagogy": {
     "grammarNote": {
-      "en": "Ordering is where the accusative earns its keep: \"Ich möchte einen Salat und ein Wasser\" — masculine einen, neuter ein.",
-      "de": "Beim Bestellen zeigt sich der Akkusativ: „Ich möchte einen Salat und ein Wasser\" — maskulin einen, neutrum ein."
+      "en": "Ordering is where the accusative earns its keep: \"Ich möchte einen Salat und ein Wasser\" — masculine einen, neuter ein. Polite ordering: 'Ich möchte bitte...' (NOT 'Ich will...'). Apply accusative to food: masculine items shift (der Kaffee → einen Kaffee). Feminine/Neuter/Plural food items: NO change in accusative. Asking for bill: 'Die Rechnung, bitte.' / 'Zusammen oder getrennt?' ⚠️ TRAP: 'Ich möchte ein Kaffee' is WRONG — Kaffee is masculine → 'einen Kaffee'! Polite: 'Ich möchte bitte...' / Rude: 'Ich will...' / 'Gib mir...'. Tip (Trinkgeld): Tell waiter total when paying (€18.50 bill → hand €20, say 'Stimmt so').",
+      "de": "Beim Bestellen zeigt sich der Akkusativ: „Ich möchte einen Salat und ein Wasser\" — maskulin einen, neutrum ein. Höflich bestellen: 'Ich möchte bitte...' (NICHT 'Ich will...'). Akkusativ bei Essen anwenden: maskuline Artikel wechseln (der Kaffee → einen Kaffee). Feminin/Neutrum/Plural: KEIN Wechsel im Akkusativ. Rechnung fragen: 'Die Rechnung, bitte.' / 'Zusammen oder getrennt?' ⚠️ FALLE: 'Ich möchte ein Kaffee' ist FALSCH — Kaffee ist maskulin → 'einen Kaffee'! Höflich: 'Ich möchte bitte...' / Unhöflich: 'Ich will...' / 'Gib mir...'. Trinkgeld: Gesamtbetrag nennen beim Bezahlen (Rechnung €18,50 → €20 geben, 'Stimmt so' sagen)."
     },
-    "grammarNotes": [
-      "Polite ordering: 'Ich möchte bitte...' (NOT 'Ich will...')",
-      "Apply accusative to food: masculine items shift (der Kaffee → einen Kaffee)",
-      "Feminine/Neuter/Plural food items: NO change in accusative",
-      "Asking for bill: 'Die Rechnung, bitte.' / 'Zusammen oder getrennt?'"
-    ],
-    "ruleTables": [
-      {
-        "title": {
-          "en": "Restaurant Phrases & Accusative Application",
-          "de": "Restaurant-Phrasen & Akkusativ-Anwendung"
-        },
-        "columns": ["Situation", "German", "English", "Accusative Note"],
-        "rows": [
-          ["Order drink (masc)", "Ich möchte einen Kaffee.", "I'd like a coffee.", "der Kaffee → einen"],
-          ["Order drink (neut)", "Ich möchte ein Wasser.", "I'd like a water.", "das Wasser → ein (no change)"],
-          ["Order food (masc)", "Ich nehme einen Salat.", "I'll take a salad.", "der Salat → einen"],
-          ["Order food (fem)", "Ich bestelle eine Suppe.", "I order a soup.", "die Suppe → eine (no change)"],
-          ["Ask for bill", "Die Rechnung, bitte.", "The bill, please.", "—"],
-          ["Pay together", "Zusammen, bitte.", "Together, please.", "—"],
-          ["Pay separate", "Getrennt, bitte.", "Separately, please.", "—"]
-        ]
-      }
-    ],
-    "callouts": [
-      "⚠️ TRAP: 'Ich möchte ein Kaffee' is WRONG — Kaffee is masculine → 'einen Kaffee'!",
-      "Polite: 'Ich möchte bitte...' / Rude: 'Ich will...' / 'Gib mir...'",
-      "Tip (Trinkgeld): Tell waiter total when paying (€18.50 bill → hand €20, say 'Stimmt so')"
-    ]
+    "ruleTable": {
+      "title": {
+        "en": "Restaurant Phrases & Accusative Application",
+        "de": "Restaurant-Phrasen & Akkusativ-Anwendung"
+      },
+      "rows": [
+        { "label": { "en": "Order drink (masc)", "de": "Getränk bestellen (mask)" }, "usage": { "en": "Ich möchte einen Kaffee.", "de": "Ich möchte einen Kaffee." }, "example": { "en": "der Kaffee → einen", "de": "der Kaffee → einen" } },
+        { "label": { "en": "Order drink (neut)", "de": "Getränk bestellen (neutr)" }, "usage": { "en": "Ich möchte ein Wasser.", "de": "Ich möchte ein Wasser." }, "example": { "en": "das Wasser → ein (no change)", "de": "das Wasser → ein (kein Wechsel)" } },
+        { "label": { "en": "Order food (masc)", "de": "Essen bestellen (mask)" }, "usage": { "en": "Ich nehme einen Salat.", "de": "Ich nehme einen Salat." }, "example": { "en": "der Salat → einen", "de": "der Salat → einen" } },
+        { "label": { "en": "Order food (fem)", "de": "Essen bestellen (fem)" }, "usage": { "en": "Ich bestelle eine Suppe.", "de": "Ich bestelle eine Suppe." }, "example": { "en": "die Suppe → eine (no change)", "de": "die Suppe → eine (kein Wechsel)" } },
+        { "label": { "en": "Ask for bill", "de": "Rechnung fragen" }, "usage": { "en": "Die Rechnung, bitte.", "de": "Die Rechnung, bitte." }, "example": { "en": "—", "de": "—" } },
+        { "label": { "en": "Pay together", "de": "Zusammen zahlen" }, "usage": { "en": "Zusammen, bitte.", "de": "Zusammen, bitte." }, "example": { "en": "—", "de": "—" } },
+        { "label": { "en": "Pay separate", "de": "Getrennt zahlen" }, "usage": { "en": "Getrennt, bitte.", "de": "Getrennt, bitte." }, "example": { "en": "—", "de": "—" } }
+      ]
+    }
   },
   "vocabCategories": ["food-drink", "restaurant", "taste-texture-adjectives"],
-  "grammarCategories": ["accusative", "modal-verbs"],
+  "grammarCategories": ["accusative", "modals"],
   "hasLesson": true
 }

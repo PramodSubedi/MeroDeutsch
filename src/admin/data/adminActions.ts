@@ -49,7 +49,7 @@ export interface RepairEditInput {
 
 export interface ConfigWritePayload {
   key: string;
-  value: string | boolean;
+  value: unknown;
 }
 
 export interface PublishPayload {

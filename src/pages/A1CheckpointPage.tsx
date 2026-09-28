@@ -34,11 +34,13 @@ import { shuffleArray } from '../utils/shuffleArray';
 import { useExerciseSession, type ExerciseQuestion } from '../hooks/useExerciseSession';
 import { playAudioUrl } from '../hooks/useSpeech';
 import { MultipleChoice } from '../components/exercises/MultipleChoice';
+import { setAssessmentActive } from '../lib/assessmentSignal';
+import { buildOptions, isUsableQuestion, toVocabEntry } from '../lib/checkpointDeck';
 import { theme } from '../config/theme';
 import { GenderBadge } from '../components/ui/GenderBadge';
 import { hasSpecificHint } from '../data/hints';
 import { A1_PATH_ROUTE } from '../data/cefrLevels';
-import type { AlphabetItem, ArticleItem, CalendarItem, GreetingItem, NumberItem, VocabEntry } from '../types';
+import type { AlphabetItem, ArticleItem, CalendarItem, GreetingItem, NumberItem, VocabCard, VocabEntry } from '../types';
 import type { GrammarDrill } from '../types/curriculum';
 
 /** Shared empty array so `missedItemKeys` keeps a stable identity when there is
@@ -94,11 +96,33 @@ interface LoadedData {
   grammar: Record<string, GrammarDrill[]>;
 }
 
-function buildOptions(correct: string, decoyPool: string[], count: number): string[] {
-  const uniqueDecoys = Array.from(new Set(decoyPool.filter((d) => d !== correct)));
-  const chosen = uniqueDecoys.slice(0, count - 1);
-  return [correct, ...chosen]; // final shuffle happens once at session mount
-}
+/**
+ * Build the option set for one question: the correct answer plus `count - 1`
+ * distractors drawn at RANDOM from the pool.
+ *
+ * The decoys MUST be shuffled BEFORE they are sliced.
+ *
+ * This used to be `uniqueDecoys.slice(0, count - 1)` — a POSITIONAL take. The
+ * pool returned by `curriculumService` is deterministically ordered (Dexie
+ * primary-key order for vocab; `sort` order for content pools), so every single
+ * question in a deck was handed the SAME first three distractors. Only their
+ * display position changed, because `useExerciseSession` shuffles options once
+ * at mount. The result read as "the same question over and over" even though the
+ * prompts were different.
+ *
+ * Concrete example this fixes — the 8-item greeting pool, old behaviour:
+ *   'Hallo'           -> Hallo | Guten Morgen | Guten Tag | Guten Abend
+ *   'Auf Wiedersehen' -> Auf Wiedersehen | Hallo | Guten Morgen | Guten Tag
+ *   'Entschuldigung'  -> Entschuldigung | Hallo | Guten Morgen | Guten Tag
+ *
+ * Matches the convention already used in `templateResolver.ts` and
+ * `ClockDrill.tsx` (`shuffleArray(distractors).slice(0, n)`).
+ */
+
+// `buildOptions`, `toVocabEntry` and `isUsableQuestion` now live in
+// `lib/checkpointDeck` so they can be unit-tested without mounting this page.
+// That is not tidiness: the bug that emptied 14 of 16 checkpoints lived in this
+// file, and it shipped precisely because nothing here was under test.
 
 // The origin-statement country pool is shared with SentenceBuilderPage — see
 // src/data/templateCountries.ts. This copy was previously 4 countries while
@@ -340,7 +364,17 @@ function buildQuestions(
   // items to the front. `sort` is stable, so the shuffle inside each rank group
   // survives — a retry stays varied, it just opens with what you got wrong.
   const rank = (q: CheckpointQuestion) => (priority.has(q.key) ? 0 : 1);
-  return shuffleArray(out).sort((a, b) => rank(a) - rank(b));
+  return shuffleArray(
+    out.filter((q) =>
+      isUsableQuestion(q, (bad) =>
+        console.warn(
+          `[a1-checkpoint] dropped unplayable question "${bad.key}" (source=${bad.source}) ` +
+            `— prompt=${JSON.stringify(bad.prompt)} answer=${JSON.stringify(bad.correctAnswer)} ` +
+            `options=${Array.isArray(bad.options) ? bad.options.length : 0}`,
+        ),
+      ),
+    ),
+  ).sort((a, b) => rank(a) - rank(b));
 }
 
 /**
@@ -449,6 +483,25 @@ export function A1CheckpointPage() {
   const [runId, setRunId] = useState(0);
 
   /**
+   * Tell the companion a graded run is in flight, for as long as it is.
+   *
+   * The Mero panel is `fixed inset-y-0 right-0 sm:w-[360px]`. When the
+   * "I didn't pass the checkpoint" nudge fired — which it does the instant a
+   * run is recorded, i.e. while the learner is still holding Next — the panel
+   * opened over the Next button and swallowed the click. At 1440px the panel
+   * covered it outright, so a learner could not advance, retry, or leave.
+   *
+   * Mirrors `useExerciseSession`'s existing `setDailySessionActive` pattern, and
+   * is driven from state (not from the recording effect) so the flag also
+   * covers the ordinary case of a learner sitting on the last question, and so
+   * it clears on unmount if they navigate away mid-run.
+   */
+  useEffect(() => {
+    setAssessmentActive(phase === 'playing');
+  }, [phase]);
+  useEffect(() => () => setAssessmentActive(false), []);
+
+  /**
    * Question keys missed on the previous FAILED attempt.
    *
    * Read at the moment the deck is BUILT (not stored in component state) so a
@@ -524,7 +577,23 @@ export function A1CheckpointPage() {
         new Set([...(unit.grammarCategories ?? []), ...DEFAULT_GRAMMAR_CATEGORIES]),
       );
       const vocabularyNeeded = needed.has('vocab-translation') || needed.has('vocab-translation-ne') || needed.has('listening-gap');
-      const vocabulary = vocabularyNeeded
+      // Two DIFFERENT shapes arrive here, and conflating them is what used to
+      // break every deck:
+      //
+      //   getVocabularyByCategories → VocabEntry[]  (already {id,de,en,ne})
+      //   getVocabularyFiltered     → VocabCard[]   ({lemma, translation{en,np}})
+      //
+      // The old code cast BOTH to `any` and read `c.lemma` / `c.translation`,
+      // which are `undefined` on a VocabEntry. Every question built from that
+      // pool had `prompt: ''`, `correctAnswer: undefined` and exactly one empty
+      // option — an unanswerable question with no error shown. The `as any`
+      // also silenced the type checker that would have caught it.
+      //
+      // `toVocabEntry` normalises either shape, drops any row that still lacks
+      // German or English text, and stamps `level` back on (the deck's
+      // `VocabEntry` contract wants it; the normaliser is deliberately not
+      // opinionated about levels). A bad row can never reach the builder.
+      const rawVocabulary: Array<VocabEntry | VocabCard> = vocabularyNeeded
         ? unit.vocabCategories?.length || unit.vocabPos
           ? await curriculumService.getVocabularyByCategories(
               unit.vocabCategories ?? [],
@@ -533,23 +602,17 @@ export function A1CheckpointPage() {
             )
           : await curriculumService.getVocabularyFiltered({ level: 'A1', limit: 120 })
         : [];
-      // Map VocabCard[] to VocabEntry[] shape for compatibility with LoadedData
-      const vocabEntries: VocabEntry[] = ((vocabulary ?? []) as any).map((c: { id: string; lemma: string; translation: { en: string; np: string } | undefined; tags?: string[]; audioUrl?: string }) => ({
-        id: c.id,
-        de: c.lemma,
-        en: c.translation?.en ?? '',
-        ne: c.translation?.np ?? '',
-        tags: c.tags ?? [],
-        level: 'A1',
-        audioUrl: c.audioUrl,
-      }));
+      const vocabulary: VocabEntry[] = rawVocabulary
+        .map(toVocabEntry)
+        .filter((v): v is NonNullable<typeof v> => v !== null)
+        .map((v) => ({ ...v, level: 'A1' as const }));
       const data: LoadedData = {
         greetings: needed.has('greeting-translation') ? await curriculumService.getGreetings() : [],
         numbers: needed.has('number-conversion') ? await curriculumService.getNumbers() : [],
         alphabet: needed.has('alphabet-letter') ? await curriculumService.getAlphabet() : [],
         articles: needed.has('article-precision') ? await curriculumService.getArticles() : [],
         calendar: needed.has('calendar-translation') ? await curriculumService.getCalendar() : [],
-        vocabulary: vocabEntries,
+        vocabulary,
         grammar: needed.has('grammar-drill')
           ? (await Promise.all(grammarCategories.map((c) => curriculumService.getGrammarDrills(c)))).reduce(
               (acc, drills, i) => {

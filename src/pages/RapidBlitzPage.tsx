@@ -421,7 +421,28 @@ export function RapidBlitzPage() {
                 onClick={continuePreRound}
                 className={`${theme.button.primary} w-full text-lg`}
               >
-                {isSectionInfo ? isDE ? `▶ Weiter — Abschnitt ${currentSection}` : `▶ Continue — Section ${currentSection}` : selectedMode ? isDE ? `⚡ ${infoTitle} starten` : `⚡ Start ${info.title}` : isDE ? '⚡ Gemischten Blitz starten' : '⚡ Start Blitz (Mixed)'}
+                {/*
+                  THE LABEL MUST NOT REPEAT THE SPLASH'S.
+
+                  The flow is splash ("choose a mode" → "⚡ Start Blitz") →
+                  preRound (read the rules) → countdown. Both screens used to
+                  offer a button reading "⚡ Start Blitz", so a learner who
+                  clicked the first one, waited, and saw an identical button
+                  reasonably concluded the app had frozen. Two different steps
+                  now read as two different steps:
+
+                    · sectionInfo  → keep "Continue — Section N" (mid-game)
+                    · preRound     → "Let's go": this screen has already
+                                     chosen the mode; all it does is confirm
+                                     the rules and hand over to the countdown.
+                */}
+                {isSectionInfo
+                  ? isDE
+                    ? `▶ Weiter — Abschnitt ${currentSection}`
+                    : `▶ Continue — Section ${currentSection}`
+                  : isDE
+                    ? '▶ Los geht’s'
+                    : '▶ Let’s go'}
               </button>
             )}
           </div>

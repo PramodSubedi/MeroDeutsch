@@ -140,7 +140,9 @@ export function HomeLayoutA() {
           into one disclosure so the loop above is the first thing on screen. */}
       {(isAuthenticated || dueCount > 0) && (
         <details className="group rounded-lg border border-ink-200 bg-white p-4 shadow-sm dark:border-ink-900 dark:border-ink-800">
-          <summary className="flex cursor-pointer list-none items-center justify-between gap-3">
+          {/* The summary row is the disclosure control and measured 24px tall.
+              44px on phones; the row is full-width so nothing else reflows. */}
+          <summary className="flex min-h-[44px] cursor-pointer list-none items-center justify-between gap-3 sm:min-h-0">
             <span className="text-body font-semibold text-ink-700 dark:text-ink-200">
               {isDE ? 'Mehr für heute' : 'More for today'}
             </span>
@@ -209,7 +211,13 @@ export function HomeLayoutA() {
           <h2 className="text-xl font-semibold text-ink-950 dark:text-white">
             {isDE ? 'Errungenschaften' : 'Achievements'}
           </h2>
-          <Link to="/dashboard" className="text-body font-medium text-accent-600 dark:text-accent-400">
+          {/* `min-h-[44px] sm:min-h-0` — this link measured 24px tall on a
+              390px viewport. The text is tiny and sits in the far corner of
+              the card, which is exactly where a thumb lands by accident. */}
+          <Link
+            to="/dashboard"
+            className="inline-flex min-h-[44px] items-center text-body font-medium text-accent-600 sm:min-h-0 dark:text-accent-400"
+          >
             {isDE ? 'Alle anzeigen' : 'See all'}
           </Link>
         </div>

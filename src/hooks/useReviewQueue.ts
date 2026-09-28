@@ -112,6 +112,12 @@ export function useReviewQueue() {
   // read as empty — the rows were written correctly, they were just never found.
   // That silently emptied the Dashboard SRS queue, the "due now" counts, and
   // `useWeakItems` (which builds on this queue) for every guest.
+  //
+  // useLiveQuery is called directly (not in useMemo) to obey rules of hooks.
+  // We then memoize the mapped result to stabilize the reference — useLiveQuery
+  // returns a new array on every render even when data hasn't changed, which
+  // would cascade into queue/sortedQueue/dueQueue recalculations and trigger
+  // the debounced Supabase sync on every render.
   const rows = useLiveQuery(() => {
     if (!db) return [];
     return db.userProgress.where('userId').equals(userId ?? 'guest').toArray();
@@ -129,7 +135,7 @@ export function useReviewQueue() {
   const DEBOUNCE_MS = 300;
   const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Sync from Supabase on login (once). Merges remote rows with the *latest*
+// Sync from Supabase on login (once). Merges remote rows with the *latest*
   // local queue (via queueRef) so newer local items are never dropped.
   useEffect(() => {
     if (isAuthenticated && user && userId) {
@@ -167,7 +173,7 @@ export function useReviewQueue() {
           }
         });
     }
-  }, [isAuthenticated, userId]); // queue intentionally read via queueRef to avoid loops
+  }, [isAuthenticated, userId, user?.userId]); // queue intentionally read via queueRef to avoid loops
 
   // Debounced persist to remote Supabase (only when queue changes).
   // Uses upsert-by-id (never delete-all + insert) so a failed write cannot
@@ -238,7 +244,7 @@ const addWrongAnswer = useCallback((item: Omit<WrongAnswerItem, 'id' | 'timestam
     } as any);
 
     void recordActivity(1);
-  }, [db, userId, queue, recordActivity]);
+  }, [userId, queue, recordActivity]);
 
 const markCorrect = useCallback((id: string) => {
     const localDb = db;
@@ -251,7 +257,7 @@ const markCorrect = useCallback((id: string) => {
 
       const currentBox = row.box ?? 1;
 
-// TRUE 4-BOX LEITNER: a correct answer at box 4 GRADUATES the card —
+ // TRUE 4-BOX LEITNER: a correct answer at box 4 GRADUATES the card —
       // it is retired from the queue entirely instead of advancing to an
       // out-of-range box 5 (which would produce LEITNER_INTERVALS[4] === undefined
       // → Invalid Date → silent put failure, so mastered items could never leave the queue).
@@ -280,7 +286,7 @@ const markCorrect = useCallback((id: string) => {
         return;
       }
 
-// Advance one box, never exceeding box 4 (the graduation threshold).
+ // Advance one box, never exceeding box 4 (the graduation threshold).
       const nextBox = Math.min(currentBox + 1, LEITNER_INTERVALS.length);
       const reps = (row.repetitions ?? 0) + 1;
       const interval = LEITNER_INTERVALS[nextBox - 1];
@@ -296,7 +302,7 @@ const markCorrect = useCallback((id: string) => {
       });
     });
     void recordActivity(1);
-  }, [db, userId, isAuthenticated, recordActivity]);
+  }, [userId, isAuthenticated, recordActivity]);
 
 const markResolved = useCallback((id: string) => {
     const localDb = db;
@@ -326,7 +332,7 @@ const markResolved = useCallback((id: string) => {
         }
       }
     });
-  }, [db, userId, isAuthenticated]);
+  }, [userId, isAuthenticated]);
 
   /** Clear ALL review items. Cloud delete is AWAITED first so a subsequent
    *  login-merge cannot bulkPut the just-deleted remote rows back (Bug B).
@@ -344,7 +350,7 @@ const markResolved = useCallback((id: string) => {
     if (!db) return true;
     db.userProgress.where('userId').equals(effectiveUserId).delete();
     return true;
-  }, [db, isAuthenticated, userId]);
+  }, [isAuthenticated, userId]);
 
   const sortedQueue = useMemo(() => {
     const now = new Date().toISOString();

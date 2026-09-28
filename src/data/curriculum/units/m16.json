@@ -23,18 +23,9 @@
   ],
   "pedagogy": {
     "grammarNote": {
-      "en": "Check yourself honestly against the answer key — a low score is information about where to go back to, not a verdict.",
-      "de": "Prüfe dich ehrlich mit dem Lösungsschlüssel — ein niedriger Wert sagt dir, wohin du zurückmusst, er ist kein Urteil."
+      "en": "Check yourself honestly against the answer key — a low score is information about where to go back to, not a verdict. This module is a SUPPORT band: it reviews Units 01–15 and never gates progress, so it cannot lock a learner out of completion. Exercise 1 targets gender + nominative article (Units 04–05). Exercise 2 targets the masculine accusative shift (Unit 08). Exercise 3 targets verb conjugation, stem changes, and modals (Units 06, 12). Exercise 4 targets V2 word order and inversion (Unit 07). Exercise 5 targets end-to-end translation across all structures (cumulative). Every answer key entry is given in DE, EN and NE so the learner can self-check without a tutor. This module is optional (SUPPORT). Skipping it does not affect your progress or any unlock. Do the exercises BEFORE opening the answer key — the value is in the attempt, not the reading. If you score below 80% on any exercise, go back to that unit: Exercise 1→M05, 2→M08, 3→M06/M12, 4→M07, 5→cumulative. The answer key is trilingual (DE/EN/NE) — check the German first, then your own translation against the English.",
+      "de": "Prüfe dich ehrlich mit dem Lösungsschlüssel — ein niedriger Wert sagt dir, wohin du zurückmusst, er ist kein Urteil. Dieses Modul ist ein SUPPORT-Band: es wiederholt Einheiten 01–15 und blockiert KEINEN Fortschritt, also kann es niemanden vom Abschluss ausschließen. Übung 1 zielt auf Genus + Nominativartikel (Einheiten 04–05). Übung 2 zielt auf maskulinen Akkusativ-Wechsel (Einheit 08). Übung 3 zielt auf Verbkonjugation, Stammwechsel und Modalverben (Einheiten 06, 12). Übung 4 zielt auf V2-Wortstellung und Inversion (Einheit 07). Übung 5 zielt auf End-to-End-Übersetzung über alle Strukturen (kumulativ). Jeder Lösungsschlüsseleintrag ist auf DE, EN und NE angegeben, damit der Lernende ohne Tutor selbst prüfen kann. Dieses Modul ist optional (SUPPORT). Es zu überspringen beeinflusst deinen Fortschritt und keine Freischaltung nicht. Mache die Übungen VOR dem Öffnen des Lösungsschlüssels — der Wert liegt im Versuch, nicht im Lesen. Wenn du bei einer Übung unter 80% erreichst, gehe zurück zu dieser Einheit: Übung 1→M05, 2→M08, 3→M06/M12, 4→M07, 5→kumulativ. Der Lösungsschlüssel ist dreisprachig (DE/EN/NE) — prüfe zuerst das Deutsche, dann deine eigene Übersetzung gegen das Englische."
     },
-    "grammarNotes": [
-      "This module is a SUPPORT band: it reviews Units 01–15 and never gates progress, so it cannot lock a learner out of completion.",
-      "Exercise 1 targets gender + nominative article (Units 04–05).",
-      "Exercise 2 targets the masculine accusative shift (Unit 08).",
-      "Exercise 3 targets verb conjugation, stem changes, and modals (Units 06, 12).",
-      "Exercise 4 targets V2 word order and inversion (Unit 07).",
-      "Exercise 5 targets end-to-end translation across all structures (cumulative).",
-      "Every answer key entry is given in DE, EN and NE so the learner can self-check without a tutor."
-    ],
     "ruleTable": {
       "title": {
         "en": "A1 Mastery Checklist",
@@ -55,15 +46,9 @@
         { "label": { "en": "Two-way prepositions", "de": "Wechselpräpositionen" }, "usage": { "en": "Choose acc (Wohin?) vs. dat (Wo?)", "de": "Wähle Akk. (Wohin?) vs. Dat. (Wo?)" }, "example": { "en": "M14", "de": "M14" } },
         { "label": { "en": "Perfekt", "de": "Perfekt" }, "usage": { "en": "Pick haben/sein and form Partizip II", "de": "Wähle haben/sein und bilde Partizip II" }, "example": { "en": "M15", "de": "M15" } }
       ]
-    },
-    "callouts": [
-      "This module is optional (SUPPORT). Skipping it does not affect your progress or any unlock.",
-      "Do the exercises BEFORE opening the answer key — the value is in the attempt, not the reading.",
-      "If you score below 80% on any exercise, go back to that unit: Exercise 1→M05, 2→M08, 3→M06/M12, 4→M07, 5→cumulative.",
-      "The answer key is trilingual (DE/EN/NE) — check the German first, then your own translation against the English."
-    ]
+    }
   },
   "vocabCategories": ["conjugation", "v2-order", "modal-verbs", "dative-prepositions", "perfekt"],
-  "grammarCategories": ["accusative", "v2-word-order", "modal-verbs", "prepositions", "perfekt"],
+  "grammarCategories": ["v2", "modals", "accusative", "prepositions", "perfekt"],
   "hasLesson": true
 }

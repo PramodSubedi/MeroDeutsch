@@ -23,6 +23,7 @@ import { CHATBOT_CONFIG, CHATBOT_ENABLED, CHATBOT_STORAGE_KEY, DEFAULT_SETTINGS 
 import { getChatbotDefaults } from '../data/chatbot/resolve';
 import { getItem, setItem } from '../utils/safeStorage';
 import { scopedKey } from '../utils/userStorage';
+import { isAssessmentActive, subscribeAssessmentActive } from './assessmentSignal';
 import type {
   ChatbotSettings,
   ChatMessage,
@@ -85,6 +86,12 @@ interface ChatStore {
    * through every quiz page. `ChatSidebar` drains it via `takePendingPrompt`.
    */
   pendingPrompt: string | null;
+  /**
+   * A prompt was queued while a graded run was in flight, so its panel reveal
+   * was withheld. Cleared — and the panel opened — the moment the run ends.
+   * See `enqueuePrompt`.
+   */
+  deferredReveal: boolean;
 
   setOpen: (open: boolean) => void;
   toggle: () => void;
@@ -144,6 +151,7 @@ export const useChatStore = create<ChatStore>()((set, get) => ({
   conversation: createConversation(),
   mode: 'coach',
   pendingPrompt: null,
+  deferredReveal: false,
   quiz: null,
   adminEnabled: true,
 
@@ -159,7 +167,38 @@ export const useChatStore = create<ChatStore>()((set, get) => ({
 
   // Opening AND queueing together is deliberate: a proactive nudge that does
   // not reveal the panel is a nudge nobody ever sees.
-  enqueuePrompt: (text) => set({ pendingPrompt: text, open: true }),
+  //
+  // THE EXCEPTION, and it is not a nicety. `useChatbotTriggers` fires the
+  // "I didn't pass the checkpoint" nudge the moment a run is RECORDED, which
+  // is while the learner is still on the checkpoint page holding Next. The
+  // panel is `fixed inset-y-0 right-0 sm:w-[360px]`, and at 1440px it covered
+  // the Next button outright (measured: panel left edge 1070, button 1157-1223,
+  // `elementFromPoint` returned a chat paragraph). The learner could not
+  // advance, and Retry / "Back to map" were covered too, so they could not
+  // leave either.
+  //
+  // So while a graded run is in flight the prompt is still QUEUED — it is not
+  // dropped, because a dropped nudge is the original sin — but the reveal is
+  // deferred. `setOpen` is subscribed below and fires the moment the run ends.
+  // ChatSidebar's own header states the rule this enforces: "Nothing auto-opens
+  // it" mid-question.
+  enqueuePrompt: (text) => {
+    // A panel that is ALREADY open when a run starts must get out of the way,
+    // not just stay out of the way. `autoOpenOnMistake` fires from the review
+    // queue on ordinary page load, so by the time the learner opens a
+    // checkpoint the panel can already be covering it — and the
+    // `isAssessmentActive()` guard below cannot help, because the prompt was
+    // enqueued before the run existed.
+    //
+    // Measured: panel left edge 1070, Next button 1157-1223 at 1440px, and
+    // `elementFromPoint` on the button returned a chat paragraph. The learner
+    // could neither advance, retry, nor leave.
+    if (isAssessmentActive()) {
+      set({ open: false, pendingPrompt: text, deferredReveal: true });
+    } else {
+      set({ pendingPrompt: text, open: true });
+    }
+  },
   takePendingPrompt: () => {
     const next = get().pendingPrompt;
     if (next) set({ pendingPrompt: null });
@@ -214,6 +253,40 @@ export const useChatStore = create<ChatStore>()((set, get) => ({
 
   clearHistory: () => set({ messages: [], conversation: createConversation() }),
 }));
+
+/**
+ * FLUSH THE DEFERRED REVEAL.
+ *
+ * When a graded run ends, a nudge that was queued mid-run finally gets to show
+ * itself. Subscribed at MODULE scope, not from a component, on purpose: a run
+ * can end because the learner navigated away, and in that case no component of
+ * ours is guaranteed to be mounted to act as the wake-up.
+ *
+ * Idempotent by construction — the flag is cleared in the same `set` that opens
+ * the panel, so a burst of end-events cannot re-open a panel the learner has
+ * since closed on purpose.
+ */
+subscribeAssessmentActive((active) => {
+  const { deferredReveal, open } = useChatStore.getState();
+
+  if (active) {
+    // A RUN JUST STARTED. Any open panel is now sitting on top of the learner's
+    // question and its Next button, so it gets out of the way — unconditionally
+    // and without discarding the transcript, which is the learner's data.
+    //
+    // This is the half of the rule `enqueuePrompt` cannot cover. A prompt may
+    // have been enqueued on an EARLIER page load (`autoOpenOnMistake` reads the
+    // review queue at mount), long before any run existed, so the panel is
+    // already open by the time the first question renders. Guarding only the
+    // enqueue would leave that case wide open.
+    if (open) useChatStore.setState({ open: false });
+    return;
+  }
+
+  // THE RUN ENDED. A nudge withheld during the run finally gets to show itself.
+  if (!deferredReveal || open) return;
+  useChatStore.setState({ deferredReveal: false, open: true });
+});
 
 /* ── persistence ──────────────────────────────────────────────────────────── */
 
@@ -276,6 +349,10 @@ export function hydrateChat(userId: string): void {
     // drop the learner into German-drill mode.
     mode: 'coach',
     pendingPrompt: null,
+    // Never restore a withheld reveal across a reload: the run that caused it
+    // is long gone, so honouring it would pop a panel the learner never asked
+    // for on a page they have not even opened yet.
+    deferredReveal: false,
     // A drill in flight does NOT survive a reload: its answers were already
     // written to the SRS queue, so reviving it risks double-counting.
     quiz: null,

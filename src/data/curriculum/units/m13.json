@@ -30,39 +30,24 @@
   },
   "pedagogy": {
     "grammarNote": {
-      "en": "Demonstratives take the gender of the noun: dieser (der), diese (die), dieses (das) — and after sein they never take an ending.",
-      "de": "Demonstrativa richten sich nach dem Genus: dieser (der), diese (die), dieses (das) — und nach sein nie mit Endung."
+      "en": "Demonstratives take the gender of the noun: dieser (der), diese (die), dieses (das) — and after sein they never take an ending. Demonstratives take same endings as definite articles: dieser (der), diese (die), dieses (das). Accusative shift for masculine: dieser → diesen (feminine/neuter/plural unchanged). Adjectives after sein take NO ending: 'Die Hose ist rot' (not 'rote'). Asking size: 'Welche Größe haben Sie?' → 'Ich habe Größe M / 38'. Preference verbs: 'gefallen' (appeals to me, takes dative), 'passen' (fits). Demonstratives = definite article endings + 'dies-' prefix (dies-er, dies-e, dies-es). Masculine accusative: dieser → diesen (like der → den). After 'sein/bleiben/werden': adjective has NO ending — 'Das Hemd ist rot' (not 'rote'). Gefallen takes dative: 'Mir gefällt diese Jacke' (not 'Ich gefalle').",
+      "de": "Demonstrativa richten sich nach dem Genus: dieser (der), diese (die), dieses (das) — und nach sein nie mit Endung. Demonstrativa haben dieselben Endungen wie bestimmte Artikel: dieser (der), diese (die), dieses (das). Akkusativ-Wechsel für Maskulin: dieser → diesen (Feminin/Neutrum/Plural unverändert). Adjektive nach sein haben KEINE Endung: 'Die Hose ist rot' (nicht 'rote'). Größe fragen: 'Welche Größe haben Sie?' → 'Ich habe Größe M / 38'. Präferenzverben: 'gefallen' (gefällt mir, Dativ), 'passen' (passt). Demonstrativ = bestimmte Artikelendungen + 'dies-' Präfix (dies-er, dies-e, dies-es). Maskulin Akkusativ: dieser → diesen (wie der → den). Nach 'sein/bleiben/werden': Adjektiv ohne Endung — 'Das Hemd ist rot' (nicht 'rote'). Gefallen braucht Dativ: 'Mir gefällt diese Jacke' (nicht 'Ich gefalle')."
     },
-    "grammarNotes": [
-      "Demonstratives take same endings as definite articles: dieser (der), diese (die), dieses (das)",
-      "Accusative shift for masculine: dieser → diesen (feminine/neuter/plural unchanged)",
-      "Adjectives after sein take NO ending: 'Die Hose ist rot' (not 'rote')",
-      "Asking size: 'Welche Größe haben Sie?' → 'Ich habe Größe M / 38'",
-      "Preference verbs: 'gefallen' (appeals to me, takes dative), 'passen' (fits)"
-    ],
-    "ruleTables": [
-      {
-        "title": {
-          "en": "Demonstrative Articles (dieser/diese/dieses)",
-          "de": "Demonstrativartikel (dieser/diese/dieses)"
-        },
-        "columns": ["Gender", "Nominative", "Accusative", "Example (Nom)", "Example (Acc)"],
-        "rows": [
-          ["Masculine (der)", "dieser", "diesen", "dieser Pullover", "diesen Pullover"],
-          ["Feminine (die)", "diese", "diese", "diese Hose", "diese Hose"],
-          ["Neuter (das)", "dieses", "dieses", "dieses Hemd", "dieses Hemd"],
-          ["Plural (die)", "diese", "diese", "diese Schuhe", "diese Schuhe"]
-        ]
-      }
-    ],
-    "callouts": [
-      "Demonstratives = definite article endings + 'dies-' prefix (dies-er, dies-e, dies-es)",
-      "Masculine accusative: dieser → diesen (like der → den)",
-      "After 'sein/bleiben/werden': adjective has NO ending — 'Das Hemd ist rot' (not 'rote')",
-      "Gefallen takes dative: 'Mir gefällt diese Jacke' (not 'Ich gefalle')"
-    ]
+    "ruleTable": {
+      "title": {
+        "en": "Demonstrative Articles (dieser/diese/dieses)",
+        "de": "Demonstrativartikel (dieser/diese/dieses)"
+      },
+      "rows": [
+        { "label": { "en": "Masculine (der)", "de": "Maskulin (der)" }, "usage": { "en": "Nominative", "de": "Nominativ" }, "example": { "en": "dieser Pullover", "de": "dieser Pullover" } },
+        { "label": { "en": "Masculine (der)", "de": "Maskulin (der)" }, "usage": { "en": "Accusative", "de": "Akkusativ" }, "example": { "en": "diesen Pullover", "de": "diesen Pullover" } },
+        { "label": { "en": "Feminine (die)", "de": "Feminin (die)" }, "usage": { "en": "Nominative / Accusative", "de": "Nominativ / Akkusativ" }, "example": { "en": "diese Hose", "de": "diese Hose" } },
+        { "label": { "en": "Neuter (das)", "de": "Neutrum (das)" }, "usage": { "en": "Nominative / Accusative", "de": "Nominativ / Akkusativ" }, "example": { "en": "dieses Hemd", "de": "dieses Hemd" } },
+        { "label": { "en": "Plural (die)", "de": "Plural (die)" }, "usage": { "en": "Nominative / Accusative", "de": "Nominativ / Akkusativ" }, "example": { "en": "diese Schuhe", "de": "diese Schuhe" } }
+      ]
+    }
   },
-  "vocabCategories": ["clothing", "colors", "describing-adjectives", "taste-texture-adjectives"],
-  "grammarCategories": ["demonstrative", "adjectives", "preferences"],
+  "vocabCategories": ["colors", "describing-adjectives", "taste-texture-adjectives"],
+  "grammarCategories": ["demonstrative"],
   "hasLesson": true
 }

@@ -1,30 +1,27 @@
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { useEffect, useState, lazy, Suspense } from 'react';
-import { Menu, Volume2, VolumeX } from 'lucide-react';
 import { theme } from '../config/theme';
 import { getModuleRoutes } from '../config/modules';
-import { navSectionFor } from '../config/navigation';
 import { railSpecFor } from '../config/moduleRail';
-import { contextLabelFor } from '../config/routeLabels';
 import { ContextPanel } from './ContextPanel';
 import { useLang } from '../hooks/useLang';
 import { useAuth } from '../hooks/useAuth';
 import { useOnlineStatus } from '../hooks/useOnlineStatus';
 import { useLastModule } from '../hooks/useLastModule';
 import { useXp } from '../hooks/useXp';
-import { isAudioEnabled, setAudioEnabled } from '../utils/audioService';
-import { Logo } from './common/Logo';
-import { ThemeToggle } from './common/ThemeToggle';
 import { Footer } from './Footer';
 import { ModuleChrome } from './learning/ModuleChrome';
 import { BottomNav } from './BottomNav';
 import { AppSidebar } from './AppSidebar';
 import { Breadcrumb } from './Breadcrumb';
-import { UserMenu } from './UserMenu';
-import { LanguageToggle } from './LanguageToggle';
 import { LevelUpModal } from './LevelUpModal';
 import { useMilestoneToast } from '../hooks/useMilestoneToast';
 import { A1PathVisitTracker } from './path/A1PathVisitTracker';
+
+import { Header } from './layout/Header';
+import { OfflineBanner } from './layout/OfflineBanner';
+import { LevelUpToast } from './layout/LevelUpToast';
+import { AnnouncementBanner } from './layout/AnnouncementBanner';
 
 /**
  * The AI companion is a SECONDARY surface, but a static import would pull
@@ -47,17 +44,15 @@ import { subscribeDailySessionActive } from '../lib/dailySessionSignal';
  * exactly the duplication the nav redesign removes — the bottom bar now
  * extends to `lg` so tablet keeps primary navigation without them.
  */
-
 export function Layout() {
   const { pathname } = useLocation();
   const { langMode } = useLang();
-  const { user, isAuthenticated } = useAuth();
+  useAuth(); // Initializes auth state; isAuthenticated not needed here
   const { isOnline } = useOnlineStatus();
   const { rememberModule } = useLastModule();
   const { rank, onLevelUp } = useXp();
   const [levelUpModalOpen, setLevelUpModalOpen] = useState(false);
   const [newLevel, setNewLevel] = useState(1);
-  const [audioEnabled, setAudioEnabledState] = useState(isAudioEnabled);
   const { toast, showToast, dismissToast } = useMilestoneToast();
   const [dailySessionActive, setDailySessionActiveState] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -92,12 +87,6 @@ export function Layout() {
   }, [sidebarCollapsed]);
 
   const isDE = langMode === 'german';
-  // "Where am I?" comes from the nav table, so the header chip and the
-  // rail/bottom-bar active rows can never name the same section differently.
-  const { label: contextGroup, icon: ContextIcon } = navSectionFor(pathname, isAuthenticated, isDE);
-  // Which exact page, from the route label table (the single label source the
-  // breadcrumb and practice cards already read).
-  const contextPage = contextLabelFor(pathname, isDE);
 
   // U6: the daily review session runs on Home/Learn — not a "quiz route" by
   // pathname. Subscribe to the module signal so level-ups mid-batch render as
@@ -105,7 +94,7 @@ export function Layout() {
   useEffect(() => subscribeDailySessionActive(setDailySessionActiveState), []);
 
   // Check if current route is a quiz, blitz, or active training session (Phase D: TTS/Modal safety)
-    const isActiveQuizRoute =
+  const isActiveQuizRoute =
     dailySessionActive || // Daily review batch active (U6)
     pathname.includes('/rapid-fire') ||
     pathname.includes('/rapid-blitz') ||
@@ -183,16 +172,11 @@ export function Layout() {
 
       {/* Global non-blocking milestone/level-up toast */}
       {toast && (
-        <div
-          role="status"
-          aria-live="polite"
-          className="fixed top-20 left-1/2 z-[60] -translate-x-1/2 flex items-center gap-3 rounded-md bg-ink-900 px-4 py-3 text-body font-bold text-white shadow-lg animate-in fade-in slide-in-from-top-4 duration-300 dark:bg-white dark:text-ink-900"
-        >
-          <span>{toast.icon} {toast.message}</span>
-          <button type="button" onClick={dismissToast} className="text-white/70 hover:text-white dark:text-ink-500 dark:hover:text-ink-900 font-bold" aria-label="Dismiss">
-            ×
-          </button>
-        </div>
+        <LevelUpToast
+          message={toast.message ?? ''}
+          icon={toast.icon ?? '⭐'}
+          onDismiss={dismissToast}
+        />
       )}
 
       {/* A1 path visit tracking (lesson-complete rule A) — renders nothing */}
@@ -211,79 +195,15 @@ export function Layout() {
       {/* Header rides the content column: the fixed rail owns the left shell,
           so the sticky header is pulled in with a MARGIN (lg:ml-*) — left/right
           offsets don't move sticky elements on a vertical-scroll page. */}
-      <header
-        className={`${theme.layout.header} ${railInset}`}
-        role="banner"
-      >
-        <div className={theme.layout.headerInner}>
-          {/* Desktop context chip (lg+): the rail owns top-level nav AND its
-              own expand/collapse control (pinned to the rail's bottom edge),
-              so the header only shows "where you are" — nothing stranded. */}
-          <div className="hidden min-w-0 items-center gap-3 lg:flex">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-accent-50 text-accent-700 dark:bg-accent-950/60 dark:text-accent-300">
-              <ContextIcon className="h-5 w-5" aria-hidden="true" />
-            </span>
-            <span className="min-w-0">
-              {/* Editorial chip: the SECTION is the kicker, the PAGE is the
-                  value. Previously the kicker was a hardcoded "WORKSPACE"
-                  and the value repeated the section — so the chip could never
-                  tell you WHICH page you were on, only which section. */}
-              <span className={`${theme.type.kicker} block`}>{contextGroup}</span>
-              <span className={`${theme.type.section} block truncate`}>{contextPage}</span>
-            </span>
-          </div>
-
-          {/* Brand — header keeps the logo below lg (mobile/tablet); on lg+
-              the rail owns the brand band, so it is hidden here. */}
-           <Link to="/home" aria-label={isDE ? 'MeroDeutsch – Startseite' : 'MeroDeutsch – Home'} className="inline-flex h-9 items-center transition duration-200 hover:opacity-90 focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:outline-none focus-visible:ring-offset-2 rounded-sm lg:hidden">
-            <Logo size="sm" variant="navbar" showText={false} />
-          </Link>
-
-          {/* Section context — shown on every width, right-aligned next to the
-              utilities. This is the header's only job; destinations live in the
-              rail (lg+) and the bottom bar (<lg). */}
-          <div className="min-w-0 flex-1 lg:hidden">
-            <span className="block truncate text-meta font-bold text-ink-600 dark:text-ink-300">{contextGroup}</span>
-          </div>
-
-          {/* Global utilities — every breakpoint: menu (mobile/tablet) + language + theme + audio + user */}
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setSidebarOpen(true)}
-              className={`${theme.layout.themeButton} lg:hidden`}
-              aria-expanded={sidebarOpen}
-              aria-controls="mobile-site-navigation"
-              aria-label={isDE ? 'Menü öffnen' : 'Open menu'}
-            >
-              <Menu className="h-5 w-5" />
-            </button>
-            <LanguageToggle />
-            <ThemeToggle />
-            <button
-              type="button"
-              onClick={() => {
-                const next = !audioEnabled;
-                setAudioEnabled(next);
-                setAudioEnabledState(next);
-              }}
-              className={theme.layout.themeButton}
-              aria-label={audioEnabled ? (isDE ? 'Ton ausschalten' : 'Mute audio') : (isDE ? 'Ton einschalten' : 'Unmute audio')}
-            >
-              {audioEnabled ? <Volume2 className="h-5 w-5" aria-hidden="true" /> : <VolumeX className="h-5 w-5" aria-hidden="true" />}
-            </button>
-            {user && <UserMenu user={user} />}
-          </div>
-        </div>
-      </header>
-      {!isOnline && (
-        <div className={`border-b border-warning-200 bg-warning-50 px-4 py-2 text-center text-body font-medium text-warning-800 dark:border-warning-800/50 dark:bg-warning-950/40 dark:text-warning-200 ${railInset}`}>
-          <span aria-hidden="true">📡</span>{' '}
-          {langMode === 'german'
-            ? 'Du bist offline — gecachte Lektionen funktionieren weiter.'
-            : 'You are offline — cached lessons still work.'}
-        </div>
-      )}
+      <Header
+        railInset={railInset}
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
+      />
+      {/* Offline banner — shown when navigator.onLine is false */}
+      <OfflineBanner railInset={railInset} isOnline={isOnline} />
+      {/* Announcement banner — global messages from admins */}
+      <AnnouncementBanner />
       <main
         id="main-content"
         role="main"

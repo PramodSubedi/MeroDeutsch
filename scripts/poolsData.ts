@@ -119,15 +119,35 @@ export interface GreetingItemSeed {
   ne: string;
 }
 
+/**
+ * GREETINGS.
+ *
+ * Pool size matters: this feeds the `greeting-translation` checkpoint source
+ * (Module 1 draws 6) and the `/greetings` matching drill. At 8 items the deck
+ * had almost no room to vary. Keep this list in step with the German actually
+ * taught in Module 1 — courtesy register (du/Sie) plus everyday reactions.
+ */
 export const GREETINGS: GreetingItemSeed[] = [
   { de: 'Hallo', engPh: 'hah-lo', nepPh: 'हालो', en: 'Hello', ne: 'नमस्ते' },
   { de: 'Guten Morgen', engPh: 'goo-ten mor-gen', nepPh: 'गुटेन मोर्गेन', en: 'Good Morning', ne: 'शुभ प्रभात' },
   { de: 'Guten Tag', engPh: 'goo-ten tahk', nepPh: 'गुटेन टाक', en: 'Good Day', ne: 'नमस्कार' },
   { de: 'Guten Abend', engPh: 'goo-ten ah-bent', nepPh: 'गुटेन आबेन्ट', en: 'Good Evening', ne: 'शुभ साँझ' },
+  { de: 'Gute Nacht', engPh: 'goo-tuh nakht', nepPh: 'गुटे नख्त', en: 'Good night', ne: 'शुभ रात्री' },
   { de: 'Auf Wiedersehen', engPh: 'owf vee-der-zayn', nepPh: 'आउफ विडरजेन', en: 'Goodbye', ne: 'फेरि भेटौंला' },
+  { de: 'Bis später', engPh: 'bis shpue-ter', nepPh: 'बिस श्प्युटर', en: 'See you later', ne: 'पछि भेटौंला' },
   { de: 'Danke', engPh: 'dahn-kuh', nepPh: 'डानके', en: 'Thank you', ne: 'धन्यवाद' },
   { de: 'Bitte', engPh: 'bih-tuh', nepPh: 'बिट्टे', en: 'Please / You are welcome', ne: 'कृपया / स्वागत छ' },
   { de: 'Entschuldigung', engPh: 'ent-shul-di-gung', nepPh: 'एन्टशुल्डिगुङ', en: 'Excuse me / Sorry', ne: 'माफ गर्नुहोस्' },
+  { de: 'Gut gemacht', engPh: 'gut ma-khart', nepPh: 'गुट मखार्ट', en: 'Well done', ne: 'बहुत राम्रो' },
+  { de: 'Kein Problem', engPh: 'kayn pro-blem', nepPh: 'केन प्रोब्लेम', en: 'No problem', ne: 'कुनै समस्या छैन' },
+  { de: 'Natürlich', engPh: 'na-tuer-likh', nepPh: 'नाटर्लिख', en: 'Of course', ne: 'अवश्य' },
+  { de: 'Wie geht es Ihnen?', engPh: 'vee gayt es EE-nen', nepPh: 'वी गेट एस ईनन', en: 'How are you? (formal)', ne: 'तपाईं कस्तो हुनुहुन्छ?' },
+  { de: 'Viel Spaß', engPh: 'feel shpash', nepPh: 'फिल श्पाश', en: 'Have fun', ne: 'रमाइलो गर्नुहोस्' },
+  { de: 'Gute Reise', engPh: 'goo-tuh rye-ze', nepPh: 'गुटे राइजे', en: 'Have a good trip', ne: 'राम्रो यात्रा होस्' },
+  { de: 'Schönen Tag', engPh: 'shoo-nen taak', nepPh: 'शूनन ताक', en: 'Have a nice day', ne: 'राम्रो दिन होस्' },
+  { de: 'Herzlich willkommen', engPh: 'herts-leekh vil-kom-men', nepPh: 'हर्जिल्क विलकमेन', en: 'A warm welcome', ne: 'हार्दिक स्वागत छ' },
+  { de: 'Willkommen', engPh: 'vil-kom-men', nepPh: 'विलकमेन', en: 'Welcome', ne: 'स्वागत छ' },
+  { de: 'Freundliche Grüße', engPh: 'froyn-tli-khe grue-se', nepPh: 'फ्रायन्टलिखे ग्रुसे', en: 'Kind regards', ne: 'शुभकामना' },
 ];
 
 export const CALENDAR: GreetingItemSeed[] = [
@@ -515,24 +535,56 @@ export const RAPID_FIRE: Record<string, unknown[]> = {
     { id: 'vocab-trans-2', type: 'vocabulary-translation', timeLimit: 5000, english: 'water', german: 'wasser', options: ['Wasser', 'Brot', 'Hund'] },
     { id: 'vocab-trans-3', type: 'vocabulary-translation', timeLimit: 5000, english: 'friend', german: 'Freund', options: ['Freundin', 'Freund', 'Frei'] },
     { id: 'vocab-trans-4', type: 'vocabulary-translation', timeLimit: 5000, english: 'book', german: 'Buch', options: ['Buch', 'Baum', 'Bank'] },
+    { id: 'vocab-trans-5', type: 'vocabulary-translation', timeLimit: 5000, english: 'cat', german: 'Katze', options: ['Katze', 'Hund', 'Baum'] },
+    { id: 'vocab-trans-6', type: 'vocabulary-translation', timeLimit: 5000, english: 'table', german: 'Tisch', options: ['Tisch', 'Stuhl', 'Fenster'] },
+    { id: 'vocab-trans-7', type: 'vocabulary-translation', timeLimit: 5000, english: 'street', german: 'Straße', options: ['Straße', 'Zug', 'Berg'] },
+    { id: 'vocab-trans-8', type: 'vocabulary-translation', timeLimit: 5000, english: 'child', german: 'Kind', options: ['Kind', 'Name', 'Tag'] },
+    { id: 'vocab-trans-9', type: 'vocabulary-translation', timeLimit: 5000, english: 'bread', german: 'Brot', options: ['Brot', 'Wasser', 'Milch'] },
+    { id: 'vocab-trans-10', type: 'vocabulary-translation', timeLimit: 5000, english: 'doctor', german: 'Arzt', options: ['Arzt', 'Bäcker', 'Polizist'] },
+    { id: 'vocab-trans-11', type: 'vocabulary-translation', timeLimit: 5000, english: 'morning', german: 'Morgen', options: ['Morgen', 'Abend', 'Nacht'] },
+    { id: 'vocab-trans-12', type: 'vocabulary-translation', timeLimit: 5000, english: 'city', german: 'Stadt', options: ['Stadt', 'Land', 'Haus'] },
   ],
   'audio-comprehension': [
     { id: 'audio-comp-1', type: 'audio-comprehension', timeLimit: 6000, word: 'Haus', meaning: 'house', options: ['house', 'home', 'yard'] },
     { id: 'audio-comp-2', type: 'audio-comprehension', timeLimit: 6000, word: 'Buch', meaning: 'book', options: ['book', 'table', 'chair'] },
     { id: 'audio-comp-3', type: 'audio-comprehension', timeLimit: 6000, word: 'Freund', meaning: 'friend', options: ['friend', 'teacher', 'doctor'] },
     { id: 'audio-comp-4', type: 'audio-comprehension', timeLimit: 6000, word: 'Wasser', meaning: 'water', options: ['water', 'milk', 'juice'] },
+    { id: 'audio-comp-5', type: 'audio-comprehension', timeLimit: 6000, word: 'Katze', meaning: 'cat', options: ['cat', 'dog', 'bird'] },
+    { id: 'audio-comp-6', type: 'audio-comprehension', timeLimit: 6000, word: 'Tisch', meaning: 'table', options: ['table', 'chair', 'door'] },
+    { id: 'audio-comp-7', type: 'audio-comprehension', timeLimit: 6000, word: 'Schule', meaning: 'school', options: ['school', 'church', 'hotel'] },
+    { id: 'audio-comp-8', type: 'audio-comprehension', timeLimit: 6000, word: 'Brot', meaning: 'bread', options: ['bread', 'butter', 'cheese'] },
+    { id: 'audio-comp-9', type: 'audio-comprehension', timeLimit: 6000, word: 'Zug', meaning: 'train', options: ['train', 'bus', 'bike'] },
+    { id: 'audio-comp-10', type: 'audio-comprehension', timeLimit: 6000, word: 'Stadt', meaning: 'city', options: ['city', 'village', 'country'] },
+    { id: 'audio-comp-11', type: 'audio-comprehension', timeLimit: 6000, word: 'Arzt', meaning: 'doctor', options: ['doctor', 'teacher', 'driver'] },
+    { id: 'audio-comp-12', type: 'audio-comprehension', timeLimit: 6000, word: 'Kind', meaning: 'child', options: ['child', 'friend', 'neighbour'] },
   ],
   'article-precision': [
     { id: 'article-1', type: 'article-precision', timeLimit: 4000, noun: 'Apfel', article: 'der' },
     { id: 'article-2', type: 'article-precision', timeLimit: 4000, noun: 'Tisch', article: 'der' },
     { id: 'article-3', type: 'article-precision', timeLimit: 4000, noun: 'Tür', article: 'die' },
     { id: 'article-4', type: 'article-precision', timeLimit: 4000, noun: 'Haus', article: 'das' },
+    { id: 'article-5', type: 'article-precision', timeLimit: 4000, noun: 'Katze', article: 'die' },
+    { id: 'article-6', type: 'article-precision', timeLimit: 4000, noun: 'Stuhl', article: 'der' },
+    { id: 'article-7', type: 'article-precision', timeLimit: 4000, noun: 'Fenster', article: 'das' },
+    { id: 'article-8', type: 'article-precision', timeLimit: 4000, noun: 'Brot', article: 'das' },
+    { id: 'article-9', type: 'article-precision', timeLimit: 4000, noun: 'Schule', article: 'die' },
+    { id: 'article-10', type: 'article-precision', timeLimit: 4000, noun: 'Zug', article: 'der' },
+    { id: 'article-11', type: 'article-precision', timeLimit: 4000, noun: 'Arzt', article: 'der' },
+    { id: 'article-12', type: 'article-precision', timeLimit: 4000, noun: 'Kind', article: 'das' },
   ],
   'number-conversion': [
     { id: 'number-1', type: 'number-conversion', timeLimit: 5000, number: 5, germanText: 'fünf', direction: 'digit-to-text', options: ['fünf', 'zehn', 'eins'] },
     { id: 'number-2', type: 'number-conversion', timeLimit: 5000, number: 12, germanText: 'zwölf', direction: 'text-to-digit', options: ['12', '21', '2'] },
     { id: 'number-3', type: 'number-conversion', timeLimit: 5000, number: 20, germanText: 'zwanzig', direction: 'digit-to-text', options: ['zwanzig', 'fünfzehn', 'dreißig'] },
     { id: 'number-4', type: 'number-conversion', timeLimit: 5000, number: 30, germanText: 'dreißig', direction: 'text-to-digit', options: ['30', '31', '20'] },
+    { id: 'number-5', type: 'number-conversion', timeLimit: 5000, number: 7, germanText: 'sieben', direction: 'digit-to-text', options: ['sieben', 'acht', 'neun'] },
+    { id: 'number-6', type: 'number-conversion', timeLimit: 5000, number: 14, germanText: 'vierzehn', direction: 'text-to-digit', options: ['14', '41', '4'] },
+    { id: 'number-7', type: 'number-conversion', timeLimit: 5000, number: 40, germanText: 'vierzig', direction: 'digit-to-text', options: ['vierzig', 'vierzehn', 'fünfzig'] },
+    { id: 'number-8', type: 'number-conversion', timeLimit: 5000, number: 17, germanText: 'siebzehn', direction: 'text-to-digit', options: ['17', '71', '7'] },
+    { id: 'number-9', type: 'number-conversion', timeLimit: 5000, number: 9, germanText: 'neun', direction: 'digit-to-text', options: ['neun', 'sieben', 'zehn'] },
+    { id: 'number-10', type: 'number-conversion', timeLimit: 5000, number: 25, germanText: 'fünfundzwanzig', direction: 'text-to-digit', options: ['25', '52', '2'] },
+    { id: 'number-11', type: 'number-conversion', timeLimit: 5000, number: 16, germanText: 'sechzehn', direction: 'digit-to-text', options: ['sechzehn', 'sechszehn', 'siebzehn'] },
+    { id: 'number-12', type: 'number-conversion', timeLimit: 5000, number: 11, germanText: 'elf', direction: 'text-to-digit', options: ['11', '1', '111'] },
   ],
   'verb-conjugation': [
     { id: 'verb-1', type: 'verb-conjugation', timeLimit: 5000, pronoun: 'ich', verb: 'sein', conjugated: 'bin', options: ['bin', 'bist', 'ist'] },
@@ -552,6 +604,14 @@ export const RAPID_FIRE: Record<string, unknown[]> = {
     { id: 'pron-2', type: 'pronunciation-reading', timeLimit: 7000, text: 'Buch', meaning: 'book', audio: 'Buch', options: ['Buch', 'Baden', 'Burg'] },
     { id: 'pron-3', type: 'pronunciation-reading', timeLimit: 7000, text: 'Freund', meaning: 'friend', audio: 'Freund', options: ['Freund', 'Früh', 'Frei'] },
     { id: 'pron-4', type: 'pronunciation-reading', timeLimit: 7000, text: 'Wasser', meaning: 'water', audio: 'Wasser', options: ['Wasser', 'Wald', 'Werk'] },
+    { id: 'pron-5', type: 'pronunciation-reading', timeLimit: 7000, text: 'Katze', meaning: 'cat', audio: 'Katze', options: ['Katze', 'Karte', 'Kasse'] },
+    { id: 'pron-6', type: 'pronunciation-reading', timeLimit: 7000, text: 'Tisch', meaning: 'table', audio: 'Tisch', options: ['Tisch', 'Tasche', 'Fisch'] },
+    { id: 'pron-7', type: 'pronunciation-reading', timeLimit: 7000, text: 'Schule', meaning: 'school', audio: 'Schule', options: ['Schule', 'Schlüssel', 'Schuhe'] },
+    { id: 'pron-8', type: 'pronunciation-reading', timeLimit: 7000, text: 'Brot', meaning: 'bread', audio: 'Brot', options: ['Brot', 'Bord', 'Brett'] },
+    { id: 'pron-9', type: 'pronunciation-reading', timeLimit: 7000, text: 'Zug', meaning: 'train', audio: 'Zug', options: ['Zug', 'Zuck', 'Buck'] },
+    { id: 'pron-10', type: 'pronunciation-reading', timeLimit: 7000, text: 'Stadt', meaning: 'city', audio: 'Stadt', options: ['Stadt', 'Stark', 'Stack'] },
+    { id: 'pron-11', type: 'pronunciation-reading', timeLimit: 7000, text: 'Arzt', meaning: 'doctor', audio: 'Arzt', options: ['Arzt', 'Art', 'Erde'] },
+    { id: 'pron-12', type: 'pronunciation-reading', timeLimit: 7000, text: 'Kind', meaning: 'child', audio: 'Kind', options: ['Kind', 'Kino', 'Kiste'] },
   ],
 };
 

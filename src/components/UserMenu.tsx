@@ -59,7 +59,7 @@ export function UserMenu({ user }: UserMenuProps) {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex h-9 items-center gap-2 rounded-full px-2 text-body text-ink-600 transition hover:bg-ink-100 focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:outline-none dark:text-ink-300 dark:hover:bg-ink-800"
+        className="flex h-11 items-center gap-2 rounded-full px-2 text-body text-ink-600 transition hover:bg-ink-100 focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:outline-none dark:text-ink-300 dark:hover:bg-ink-800"
         aria-expanded={isOpen}
         aria-haspopup="true"
       >

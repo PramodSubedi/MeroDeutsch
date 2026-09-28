@@ -45,6 +45,8 @@
  * they declare none rather than faking modules.
  */
 
+import { A1_CLUSTER_COUNT, A1_UNIT_COUNT } from './a1Path';
+
 /** Stable id used in the URL and as a React key. Never translated. */
 export type CefrLevelId = 'a1' | 'a2' | 'b1';
 
@@ -99,8 +101,13 @@ export const CEFR_LEVELS: readonly CefrLevel[] = [
     name: { en: 'Beginner', de: 'Anfänger' },
     tagline: { en: 'Your current course', de: 'Dein aktueller Kurs' },
     description: {
-      en: 'The full A1 course: 15 modules across 5 stages, with a checkpoint at the end of every stage.',
-      de: 'Der komplette A1-Kurs: 15 Module in 5 Etappen, mit einer Prüfung am Ende jeder Etappe.',
+      // DERIVED, never hardcoded. `m16.json` was added without updating the
+      // prose, so this card read "15 modules" while the progress line directly
+      // beneath it counted 16 — two true numbers a learner could not reconcile.
+      // `ContinueLearningPage` already derived its copy this way; this brings
+      // the level card in line with it.
+      en: `The full A1 course: ${A1_UNIT_COUNT} modules across ${A1_CLUSTER_COUNT} stages, with a checkpoint at the end of every module.`,
+      de: `Der komplette A1-Kurs: ${A1_UNIT_COUNT} Module in ${A1_CLUSTER_COUNT} Etappen, mit einer Prüfung am Ende jedes Moduls.`,
     },
     planned: [],
   },

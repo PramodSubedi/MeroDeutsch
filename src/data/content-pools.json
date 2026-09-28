@@ -1061,6 +1061,17 @@
         "sort": 3
       },
       {
+        "id": "greeting-Gute Nacht",
+        "payload": {
+          "de": "Gute Nacht",
+          "engPh": "goo-tuh nakht",
+          "nepPh": "गुटे नख्त",
+          "en": "Good night",
+          "ne": "शुभ रात्री"
+        },
+        "sort": 4
+      },
+      {
         "id": "greeting-Auf Wiedersehen",
         "payload": {
           "de": "Auf Wiedersehen",
@@ -1069,7 +1080,18 @@
           "en": "Goodbye",
           "ne": "फेरि भेटौंला"
         },
-        "sort": 4
+        "sort": 5
+      },
+      {
+        "id": "greeting-Bis später",
+        "payload": {
+          "de": "Bis später",
+          "engPh": "bis shpue-ter",
+          "nepPh": "बिस श्प्युटर",
+          "en": "See you later",
+          "ne": "पछि भेटौंला"
+        },
+        "sort": 6
       },
       {
         "id": "greeting-Danke",
@@ -1080,7 +1102,7 @@
           "en": "Thank you",
           "ne": "धन्यवाद"
         },
-        "sort": 5
+        "sort": 7
       },
       {
         "id": "greeting-Bitte",
@@ -1091,7 +1113,7 @@
           "en": "Please / You are welcome",
           "ne": "कृपया / स्वागत छ"
         },
-        "sort": 6
+        "sort": 8
       },
       {
         "id": "greeting-Entschuldigung",
@@ -1102,7 +1124,117 @@
           "en": "Excuse me / Sorry",
           "ne": "माफ गर्नुहोस्"
         },
-        "sort": 7
+        "sort": 9
+      },
+      {
+        "id": "greeting-Gut gemacht",
+        "payload": {
+          "de": "Gut gemacht",
+          "engPh": "gut ma-khart",
+          "nepPh": "गुट मखार्ट",
+          "en": "Well done",
+          "ne": "बहुत राम्रो"
+        },
+        "sort": 10
+      },
+      {
+        "id": "greeting-Kein Problem",
+        "payload": {
+          "de": "Kein Problem",
+          "engPh": "kayn pro-blem",
+          "nepPh": "केन प्रोब्लेम",
+          "en": "No problem",
+          "ne": "कुनै समस्या छैन"
+        },
+        "sort": 11
+      },
+      {
+        "id": "greeting-Natürlich",
+        "payload": {
+          "de": "Natürlich",
+          "engPh": "na-tuer-likh",
+          "nepPh": "नाटर्लिख",
+          "en": "Of course",
+          "ne": "अवश्य"
+        },
+        "sort": 12
+      },
+      {
+        "id": "greeting-Wie geht es Ihnen?",
+        "payload": {
+          "de": "Wie geht es Ihnen?",
+          "engPh": "vee gayt es EE-nen",
+          "nepPh": "वी गेट एस ईनन",
+          "en": "How are you? (formal)",
+          "ne": "तपाईं कस्तो हुनुहुन्छ?"
+        },
+        "sort": 13
+      },
+      {
+        "id": "greeting-Viel Spaß",
+        "payload": {
+          "de": "Viel Spaß",
+          "engPh": "feel shpash",
+          "nepPh": "फिल श्पाश",
+          "en": "Have fun",
+          "ne": "रमाइलो गर्नुहोस्"
+        },
+        "sort": 14
+      },
+      {
+        "id": "greeting-Gute Reise",
+        "payload": {
+          "de": "Gute Reise",
+          "engPh": "goo-tuh rye-ze",
+          "nepPh": "गुटे राइजे",
+          "en": "Have a good trip",
+          "ne": "राम्रो यात्रा होस्"
+        },
+        "sort": 15
+      },
+      {
+        "id": "greeting-Schönen Tag",
+        "payload": {
+          "de": "Schönen Tag",
+          "engPh": "shoo-nen taak",
+          "nepPh": "शूनन ताक",
+          "en": "Have a nice day",
+          "ne": "राम्रो दिन होस्"
+        },
+        "sort": 16
+      },
+      {
+        "id": "greeting-Herzlich willkommen",
+        "payload": {
+          "de": "Herzlich willkommen",
+          "engPh": "herts-leekh vil-kom-men",
+          "nepPh": "हर्जिल्क विलकमेन",
+          "en": "A warm welcome",
+          "ne": "हार्दिक स्वागत छ"
+        },
+        "sort": 17
+      },
+      {
+        "id": "greeting-Willkommen",
+        "payload": {
+          "de": "Willkommen",
+          "engPh": "vil-kom-men",
+          "nepPh": "विलकमेन",
+          "en": "Welcome",
+          "ne": "स्वागत छ"
+        },
+        "sort": 18
+      },
+      {
+        "id": "greeting-Freundliche Grüße",
+        "payload": {
+          "de": "Freundliche Grüße",
+          "engPh": "froyn-tli-khe grue-se",
+          "nepPh": "फ्रायन्टलिखे ग्रुसे",
+          "en": "Kind regards",
+          "ne": "शुभकामना"
+        },
+        "sort": 19
       }
     ]
   },
@@ -3597,6 +3729,134 @@
         "sort": 3
       },
       {
+        "id": "rapid-vocab-trans-5",
+        "payload": {
+          "id": "vocab-trans-5",
+          "type": "vocabulary-translation",
+          "timeLimit": 5000,
+          "english": "cat",
+          "german": "Katze",
+          "options": [
+            "Katze",
+            "Hund",
+            "Baum"
+          ]
+        },
+        "sort": 4
+      },
+      {
+        "id": "rapid-vocab-trans-6",
+        "payload": {
+          "id": "vocab-trans-6",
+          "type": "vocabulary-translation",
+          "timeLimit": 5000,
+          "english": "table",
+          "german": "Tisch",
+          "options": [
+            "Tisch",
+            "Stuhl",
+            "Fenster"
+          ]
+        },
+        "sort": 5
+      },
+      {
+        "id": "rapid-vocab-trans-7",
+        "payload": {
+          "id": "vocab-trans-7",
+          "type": "vocabulary-translation",
+          "timeLimit": 5000,
+          "english": "street",
+          "german": "Straße",
+          "options": [
+            "Straße",
+            "Zug",
+            "Berg"
+          ]
+        },
+        "sort": 6
+      },
+      {
+        "id": "rapid-vocab-trans-8",
+        "payload": {
+          "id": "vocab-trans-8",
+          "type": "vocabulary-translation",
+          "timeLimit": 5000,
+          "english": "child",
+          "german": "Kind",
+          "options": [
+            "Kind",
+            "Name",
+            "Tag"
+          ]
+        },
+        "sort": 7
+      },
+      {
+        "id": "rapid-vocab-trans-9",
+        "payload": {
+          "id": "vocab-trans-9",
+          "type": "vocabulary-translation",
+          "timeLimit": 5000,
+          "english": "bread",
+          "german": "Brot",
+          "options": [
+            "Brot",
+            "Wasser",
+            "Milch"
+          ]
+        },
+        "sort": 8
+      },
+      {
+        "id": "rapid-vocab-trans-10",
+        "payload": {
+          "id": "vocab-trans-10",
+          "type": "vocabulary-translation",
+          "timeLimit": 5000,
+          "english": "doctor",
+          "german": "Arzt",
+          "options": [
+            "Arzt",
+            "Bäcker",
+            "Polizist"
+          ]
+        },
+        "sort": 9
+      },
+      {
+        "id": "rapid-vocab-trans-11",
+        "payload": {
+          "id": "vocab-trans-11",
+          "type": "vocabulary-translation",
+          "timeLimit": 5000,
+          "english": "morning",
+          "german": "Morgen",
+          "options": [
+            "Morgen",
+            "Abend",
+            "Nacht"
+          ]
+        },
+        "sort": 10
+      },
+      {
+        "id": "rapid-vocab-trans-12",
+        "payload": {
+          "id": "vocab-trans-12",
+          "type": "vocabulary-translation",
+          "timeLimit": 5000,
+          "english": "city",
+          "german": "Stadt",
+          "options": [
+            "Stadt",
+            "Land",
+            "Haus"
+          ]
+        },
+        "sort": 11
+      },
+      {
         "id": "rapid-audio-comp-1",
         "payload": {
           "id": "audio-comp-1",
@@ -3661,6 +3921,134 @@
         "sort": 3
       },
       {
+        "id": "rapid-audio-comp-5",
+        "payload": {
+          "id": "audio-comp-5",
+          "type": "audio-comprehension",
+          "timeLimit": 6000,
+          "word": "Katze",
+          "meaning": "cat",
+          "options": [
+            "cat",
+            "dog",
+            "bird"
+          ]
+        },
+        "sort": 4
+      },
+      {
+        "id": "rapid-audio-comp-6",
+        "payload": {
+          "id": "audio-comp-6",
+          "type": "audio-comprehension",
+          "timeLimit": 6000,
+          "word": "Tisch",
+          "meaning": "table",
+          "options": [
+            "table",
+            "chair",
+            "door"
+          ]
+        },
+        "sort": 5
+      },
+      {
+        "id": "rapid-audio-comp-7",
+        "payload": {
+          "id": "audio-comp-7",
+          "type": "audio-comprehension",
+          "timeLimit": 6000,
+          "word": "Schule",
+          "meaning": "school",
+          "options": [
+            "school",
+            "church",
+            "hotel"
+          ]
+        },
+        "sort": 6
+      },
+      {
+        "id": "rapid-audio-comp-8",
+        "payload": {
+          "id": "audio-comp-8",
+          "type": "audio-comprehension",
+          "timeLimit": 6000,
+          "word": "Brot",
+          "meaning": "bread",
+          "options": [
+            "bread",
+            "butter",
+            "cheese"
+          ]
+        },
+        "sort": 7
+      },
+      {
+        "id": "rapid-audio-comp-9",
+        "payload": {
+          "id": "audio-comp-9",
+          "type": "audio-comprehension",
+          "timeLimit": 6000,
+          "word": "Zug",
+          "meaning": "train",
+          "options": [
+            "train",
+            "bus",
+            "bike"
+          ]
+        },
+        "sort": 8
+      },
+      {
+        "id": "rapid-audio-comp-10",
+        "payload": {
+          "id": "audio-comp-10",
+          "type": "audio-comprehension",
+          "timeLimit": 6000,
+          "word": "Stadt",
+          "meaning": "city",
+          "options": [
+            "city",
+            "village",
+            "country"
+          ]
+        },
+        "sort": 9
+      },
+      {
+        "id": "rapid-audio-comp-11",
+        "payload": {
+          "id": "audio-comp-11",
+          "type": "audio-comprehension",
+          "timeLimit": 6000,
+          "word": "Arzt",
+          "meaning": "doctor",
+          "options": [
+            "doctor",
+            "teacher",
+            "driver"
+          ]
+        },
+        "sort": 10
+      },
+      {
+        "id": "rapid-audio-comp-12",
+        "payload": {
+          "id": "audio-comp-12",
+          "type": "audio-comprehension",
+          "timeLimit": 6000,
+          "word": "Kind",
+          "meaning": "child",
+          "options": [
+            "child",
+            "friend",
+            "neighbour"
+          ]
+        },
+        "sort": 11
+      },
+      {
         "id": "rapid-article-1",
         "payload": {
           "id": "article-1",
@@ -3703,6 +4091,94 @@
           "article": "das"
         },
         "sort": 3
+      },
+      {
+        "id": "rapid-article-5",
+        "payload": {
+          "id": "article-5",
+          "type": "article-precision",
+          "timeLimit": 4000,
+          "noun": "Katze",
+          "article": "die"
+        },
+        "sort": 4
+      },
+      {
+        "id": "rapid-article-6",
+        "payload": {
+          "id": "article-6",
+          "type": "article-precision",
+          "timeLimit": 4000,
+          "noun": "Stuhl",
+          "article": "der"
+        },
+        "sort": 5
+      },
+      {
+        "id": "rapid-article-7",
+        "payload": {
+          "id": "article-7",
+          "type": "article-precision",
+          "timeLimit": 4000,
+          "noun": "Fenster",
+          "article": "das"
+        },
+        "sort": 6
+      },
+      {
+        "id": "rapid-article-8",
+        "payload": {
+          "id": "article-8",
+          "type": "article-precision",
+          "timeLimit": 4000,
+          "noun": "Brot",
+          "article": "das"
+        },
+        "sort": 7
+      },
+      {
+        "id": "rapid-article-9",
+        "payload": {
+          "id": "article-9",
+          "type": "article-precision",
+          "timeLimit": 4000,
+          "noun": "Schule",
+          "article": "die"
+        },
+        "sort": 8
+      },
+      {
+        "id": "rapid-article-10",
+        "payload": {
+          "id": "article-10",
+          "type": "article-precision",
+          "timeLimit": 4000,
+          "noun": "Zug",
+          "article": "der"
+        },
+        "sort": 9
+      },
+      {
+        "id": "rapid-article-11",
+        "payload": {
+          "id": "article-11",
+          "type": "article-precision",
+          "timeLimit": 4000,
+          "noun": "Arzt",
+          "article": "der"
+        },
+        "sort": 10
+      },
+      {
+        "id": "rapid-article-12",
+        "payload": {
+          "id": "article-12",
+          "type": "article-precision",
+          "timeLimit": 4000,
+          "noun": "Kind",
+          "article": "das"
+        },
+        "sort": 11
       },
       {
         "id": "rapid-number-1",
@@ -3771,6 +4247,142 @@
           ]
         },
         "sort": 3
+      },
+      {
+        "id": "rapid-number-5",
+        "payload": {
+          "id": "number-5",
+          "type": "number-conversion",
+          "timeLimit": 5000,
+          "number": 7,
+          "germanText": "sieben",
+          "direction": "digit-to-text",
+          "options": [
+            "sieben",
+            "acht",
+            "neun"
+          ]
+        },
+        "sort": 4
+      },
+      {
+        "id": "rapid-number-6",
+        "payload": {
+          "id": "number-6",
+          "type": "number-conversion",
+          "timeLimit": 5000,
+          "number": 14,
+          "germanText": "vierzehn",
+          "direction": "text-to-digit",
+          "options": [
+            "14",
+            "41",
+            "4"
+          ]
+        },
+        "sort": 5
+      },
+      {
+        "id": "rapid-number-7",
+        "payload": {
+          "id": "number-7",
+          "type": "number-conversion",
+          "timeLimit": 5000,
+          "number": 40,
+          "germanText": "vierzig",
+          "direction": "digit-to-text",
+          "options": [
+            "vierzig",
+            "vierzehn",
+            "fünfzig"
+          ]
+        },
+        "sort": 6
+      },
+      {
+        "id": "rapid-number-8",
+        "payload": {
+          "id": "number-8",
+          "type": "number-conversion",
+          "timeLimit": 5000,
+          "number": 17,
+          "germanText": "siebzehn",
+          "direction": "text-to-digit",
+          "options": [
+            "17",
+            "71",
+            "7"
+          ]
+        },
+        "sort": 7
+      },
+      {
+        "id": "rapid-number-9",
+        "payload": {
+          "id": "number-9",
+          "type": "number-conversion",
+          "timeLimit": 5000,
+          "number": 9,
+          "germanText": "neun",
+          "direction": "digit-to-text",
+          "options": [
+            "neun",
+            "sieben",
+            "zehn"
+          ]
+        },
+        "sort": 8
+      },
+      {
+        "id": "rapid-number-10",
+        "payload": {
+          "id": "number-10",
+          "type": "number-conversion",
+          "timeLimit": 5000,
+          "number": 25,
+          "germanText": "fünfundzwanzig",
+          "direction": "text-to-digit",
+          "options": [
+            "25",
+            "52",
+            "2"
+          ]
+        },
+        "sort": 9
+      },
+      {
+        "id": "rapid-number-11",
+        "payload": {
+          "id": "number-11",
+          "type": "number-conversion",
+          "timeLimit": 5000,
+          "number": 16,
+          "germanText": "sechzehn",
+          "direction": "digit-to-text",
+          "options": [
+            "sechzehn",
+            "sechszehn",
+            "siebzehn"
+          ]
+        },
+        "sort": 10
+      },
+      {
+        "id": "rapid-number-12",
+        "payload": {
+          "id": "number-12",
+          "type": "number-conversion",
+          "timeLimit": 5000,
+          "number": 11,
+          "germanText": "elf",
+          "direction": "text-to-digit",
+          "options": [
+            "11",
+            "1",
+            "111"
+          ]
+        },
+        "sort": 11
       },
       {
         "id": "rapid-verb-1",
@@ -4009,6 +4621,142 @@
           ]
         },
         "sort": 3
+      },
+      {
+        "id": "rapid-pron-5",
+        "payload": {
+          "id": "pron-5",
+          "type": "pronunciation-reading",
+          "timeLimit": 7000,
+          "text": "Katze",
+          "meaning": "cat",
+          "audio": "Katze",
+          "options": [
+            "Katze",
+            "Karte",
+            "Kasse"
+          ]
+        },
+        "sort": 4
+      },
+      {
+        "id": "rapid-pron-6",
+        "payload": {
+          "id": "pron-6",
+          "type": "pronunciation-reading",
+          "timeLimit": 7000,
+          "text": "Tisch",
+          "meaning": "table",
+          "audio": "Tisch",
+          "options": [
+            "Tisch",
+            "Tasche",
+            "Fisch"
+          ]
+        },
+        "sort": 5
+      },
+      {
+        "id": "rapid-pron-7",
+        "payload": {
+          "id": "pron-7",
+          "type": "pronunciation-reading",
+          "timeLimit": 7000,
+          "text": "Schule",
+          "meaning": "school",
+          "audio": "Schule",
+          "options": [
+            "Schule",
+            "Schlüssel",
+            "Schuhe"
+          ]
+        },
+        "sort": 6
+      },
+      {
+        "id": "rapid-pron-8",
+        "payload": {
+          "id": "pron-8",
+          "type": "pronunciation-reading",
+          "timeLimit": 7000,
+          "text": "Brot",
+          "meaning": "bread",
+          "audio": "Brot",
+          "options": [
+            "Brot",
+            "Bord",
+            "Brett"
+          ]
+        },
+        "sort": 7
+      },
+      {
+        "id": "rapid-pron-9",
+        "payload": {
+          "id": "pron-9",
+          "type": "pronunciation-reading",
+          "timeLimit": 7000,
+          "text": "Zug",
+          "meaning": "train",
+          "audio": "Zug",
+          "options": [
+            "Zug",
+            "Zuck",
+            "Buck"
+          ]
+        },
+        "sort": 8
+      },
+      {
+        "id": "rapid-pron-10",
+        "payload": {
+          "id": "pron-10",
+          "type": "pronunciation-reading",
+          "timeLimit": 7000,
+          "text": "Stadt",
+          "meaning": "city",
+          "audio": "Stadt",
+          "options": [
+            "Stadt",
+            "Stark",
+            "Stack"
+          ]
+        },
+        "sort": 9
+      },
+      {
+        "id": "rapid-pron-11",
+        "payload": {
+          "id": "pron-11",
+          "type": "pronunciation-reading",
+          "timeLimit": 7000,
+          "text": "Arzt",
+          "meaning": "doctor",
+          "audio": "Arzt",
+          "options": [
+            "Arzt",
+            "Art",
+            "Erde"
+          ]
+        },
+        "sort": 10
+      },
+      {
+        "id": "rapid-pron-12",
+        "payload": {
+          "id": "pron-12",
+          "type": "pronunciation-reading",
+          "timeLimit": 7000,
+          "text": "Kind",
+          "meaning": "child",
+          "audio": "Kind",
+          "options": [
+            "Kind",
+            "Kino",
+            "Kiste"
+          ]
+        },
+        "sort": 11
       }
     ]
   },

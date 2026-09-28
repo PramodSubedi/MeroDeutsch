@@ -31,59 +31,24 @@
   },
   "pedagogy": {
     "grammarNote": {
-      "en": "A separable verb splits in a main clause: the conjugated stem takes Position 2 and the prefix goes to the very end.",
-      "de": "Ein trennbares Verb trennt sich im Hauptsatz: der konjugierte Stamm auf Position 2, die Vorsilbe ans Satzende."
+      "en": "A separable verb splits in a main clause: the conjugated stem takes Position 2 and the prefix goes to the very end. Separable verbs = prefix + base verb (auf|stehen, ein|kaufen, an|rufen). In main clauses: base verb conjugates to Position 2, prefix jumps to VERY END (Satzklammer). Common separable prefixes: auf-, ab-, an-, aus-, ein-, mit-, fern-, vor-, zurück-. Inseparable prefixes (ver-, be-, ge-, ent-, er-, emp-, miss-, zer-) NEVER split. Prefix goes to the VERY END — not just after the verb, but after ALL other elements! Stress test: inseparable = stress on ROOT (verSTEHen); separable = stress on PREFIX (AUFstehen). Question form: 'Räumst du dein Zimmer AUF?' — prefix still at end!",
+      "de": "Ein trennbares Verb trennt sich im Hauptsatz: der konjugierte Stamm auf Position 2, die Vorsilbe ans Satzende. Trennbare Verben = Präfix + Basisverb (auf|stehen, ein|kaufen, an|rufen). Im Hauptsatz: Basisverb konjugiert auf Position 2, Präfix springt ans ENDE (Satzklammer). Häufige trennbare Präfixe: auf-, ab-, an-, aus-, ein-, mit-, fern-, vor-, zurück-. Untrennbare Präfixe (ver-, be-, ge-, ent-, er-, emp-, miss-, zer-) trennen sich NIEMALS. Präfix geht ans ALLERENDE — nicht nur nach dem Verb, sondern nach ALLEN anderen Elementen! Betonungstest: untrennbar = Betonung auf STAMM (verSTEHen); trennbar = Betonung auf PRÄFIX (AUFstehen). Frageform: 'Räumst du dein Zimmer AUF?' — Präfix bleibt am Ende!"
     },
-    "grammarNotes": [
-      "Separable verbs = prefix + base verb (auf|stehen, ein|kaufen, an|rufen)",
-      "In main clauses: base verb conjugates to Position 2, prefix jumps to VERY END (Satzklammer)",
-      "Common separable prefixes: auf-, ab-, an-, aus-, ein-, mit-, fern-, vor-, zurück-",
-      "Inseparable prefixes (ver-, be-, ge-, ent-, er-, emp-, miss-, zer-) NEVER split"
-    ],
-    "ruleTables": [
-      {
-        "title": {
-          "en": "Satzklammer (Sentence Bracket) Structure",
-          "de": "Satzklammer-Struktur"
-        },
-        "columns": ["Pos 1", "Pos 2 (Verb)", "Middle", "END (Prefix)"],
-        "rows": [
-          ["Ich", "stehe", "jeden Morgen um 6 Uhr", "auf."],
-          ["Wir", "kaufen", "heute im Supermarkt", "ein."],
-          ["Er", "ruft", "seine Mutter", "an."],
-          ["Das Fest", "fängt", "um 20 Uhr", "an."],
-          ["Räumst", "du", "bitte dein Zimmer", "auf?"]
-        ]
+    "ruleTable": {
+      "title": {
+        "en": "Satzklammer (Sentence Bracket) Structure",
+        "de": "Satzklammer-Struktur"
       },
-      {
-        "title": {
-          "en": "Key Separable Verbs for Daily Routines",
-          "de": "Wichtige trennbare Verben für Tagesabläufe"
-        },
-        "columns": ["Verb", "Prefix|Base", "Meaning", "Example"],
-        "rows": [
-          ["aufstehen", "auf|stehen", "get up", "Ich stehe um 7 Uhr auf."],
-          ["einkaufen", "ein|kaufen", "shop", "Am Samstag kaufe ich ein."],
-          ["anrufen", "an|rufen", "call", "Ich rufe dich an."],
-          ["fernsehen", "fern|sehen", "watch TV", "Wir sehen abends fern."],
-          ["ankommen", "an|kommen", "arrive", "Der Zug kommt um 14 Uhr an."],
-          ["abfahren", "ab|fahren", "depart", "Der Bus fährt um 8 Uhr ab."],
-          ["anfangen", "an|fangen", "begin", "Der Kurs fängt um 9 Uhr an."],
-          ["ausmachen", "aus|machen", "turn off", "Er macht das Licht aus."],
-          ["anmachen", "an|machen", "turn on", "Mach bitte die Heizung an."],
-          ["aufhören", "auf|hören", "stop", "Der Regen hört auf."],
-          ["vorbereiten", "vor|bereiten", "prepare", "Wir bereiten das Essen vor."],
-          ["aufräumen", "auf|räumen", "tidy up", "Ich räume das Zimmer auf."]
-        ]
-      }
-    ],
-    "callouts": [
-      "Prefix goes to the VERY END — not just after the verb, but after ALL other elements!",
-      "Stress test: inseparable = stress on ROOT (verSTEHen); separable = stress on PREFIX (AUFstehen)",
-      "Question form: 'Räumst du dein Zimmer AUF?' — prefix still at end!"
-    ]
+      "rows": [
+        { "label": { "en": "Ich", "de": "Ich" }, "usage": { "en": "Subject", "de": "Subjekt" }, "example": { "en": "Ich stehe jeden Morgen um 6 Uhr auf.", "de": "Ich stehe jeden Morgen um 6 Uhr auf." } },
+        { "label": { "en": "Wir", "de": "Wir" }, "usage": { "en": "Subject", "de": "Subjekt" }, "example": { "en": "Wir kaufen heute im Supermarkt ein.", "de": "Wir kaufen heute im Supermarkt ein." } },
+        { "label": { "en": "Er", "de": "Er" }, "usage": { "en": "Subject", "de": "Subjekt" }, "example": { "en": "Er ruft seine Mutter an.", "de": "Er ruft seine Mutter an." } },
+        { "label": { "en": "Das Fest", "de": "Das Fest" }, "usage": { "en": "Subject", "de": "Subjekt" }, "example": { "en": "Das Fest fängt um 20 Uhr an.", "de": "Das Fest fängt um 20 Uhr an." } },
+        { "label": { "en": "Räumst du", "de": "Räumst du" }, "usage": { "en": "Question form", "de": "Frageform" }, "example": { "en": "Räumst du bitte dein Zimmer auf?", "de": "Räumst du bitte dein Zimmer auf?" } }
+      ]
+    }
   },
-  "vocabCategories": ["daily-routine", "action-verbs", "action-verbs"],
-  "grammarCategories": ["separable-verbs", "word-order", "prefix"],
+  "vocabCategories": ["daily-routine", "action-verbs"],
+  "grammarCategories": ["wordOrder"],
   "hasLesson": true
 }
