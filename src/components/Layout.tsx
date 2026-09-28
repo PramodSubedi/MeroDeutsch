@@ -9,6 +9,8 @@ import { useLang } from '../hooks/useLang';
 import { useAuth } from '../hooks/useAuth';
 import { useOnlineStatus } from '../hooks/useOnlineStatus';
 import { useLastModule } from '../hooks/useLastModule';
+import { useReviewQueue } from '../hooks/useReviewQueue';
+import { useAppBadge } from '../hooks/useAppBadge';
 import { useXp } from '../hooks/useXp';
 import { Footer } from './Footer';
 import { ModuleChrome } from './learning/ModuleChrome';
@@ -18,10 +20,12 @@ import { Breadcrumb } from './Breadcrumb';
 import { LevelUpModal } from './LevelUpModal';
 import { useMilestoneToast } from '../hooks/useMilestoneToast';
 import { A1PathVisitTracker } from './path/A1PathVisitTracker';
+import { ScrollReset } from './ScrollReset';
 
 import { Header } from './layout/Header';
 import { OfflineBanner } from './layout/OfflineBanner';
 import { LevelUpToast } from './layout/LevelUpToast';
+import { UpdateToast } from './layout/UpdateToast';
 import { AnnouncementBanner } from './layout/AnnouncementBanner';
 
 /**
@@ -46,12 +50,20 @@ import { subscribeDailySessionActive } from '../lib/dailySessionSignal';
  * extends to `lg` so tablet keeps primary navigation without them.
  */
 export function Layout() {
-  const { pathname } = useLocation();
+  // `location`, not just `pathname`: the <Outlet /> key below is built from the
+  // FULL location so that a query-string change (e.g. /practice?skill=alphabet)
+  // is treated as a new screen. See ScrollReset for why that matters.
+  const location = useLocation();
+  const { pathname } = location;
   const { langMode } = useLang();
   useAuth(); // Initializes auth state; isAuthenticated not needed here
   const { isOnline } = useOnlineStatus();
   const { rememberModule } = useLastModule();
   const { rank, onLevelUp } = useXp();
+  // Same source the Practice tab's badge reads, so the home-screen icon can
+  // never show a different number than the tab does.
+  const { dueQueue } = useReviewQueue();
+  useAppBadge(dueQueue.length);
   const [levelUpModalOpen, setLevelUpModalOpen] = useState(false);
   const [newLevel, setNewLevel] = useState(1);
   const { toast, showToast, dismissToast } = useMilestoneToast();
@@ -180,8 +192,17 @@ export function Layout() {
         />
       )}
 
+      {/* New-version offer (service worker staged a build). Non-blocking, and
+          deliberately separate from the milestone toast above so a deploy and a
+          level-up arriving together cannot collide in one slot. */}
+      <UpdateToast />
+
       {/* A1 path visit tracking (lesson-complete rule A) — renders nothing */}
       <A1PathVisitTracker />
+
+      {/* Start each new screen at the top (path changes only, never ?query
+          filters) — renders nothing */}
+      <ScrollReset />
 
       {/* Skip to main content link for keyboard navigation */}
       <a href="#main-content" className="skip-to-main">
@@ -219,7 +240,13 @@ export function Layout() {
                   breadcrumb would duplicate that navigation context (UI-clutter fix). */}
               {pathname !== '/auth' && !isModuleRoute && <Breadcrumb />}
               {isModuleRoute && <ModuleChrome />}
-              <Outlet />
+              {/* Keyed on the FULL location, not the path. React Router keeps an
+                  element's state while the route still matches, so without this a
+                  /practice?skill=… change would reuse the previous page AND leave
+                  its scroll offset in place. Re-keying makes a query-string change
+                  a genuine new screen. ScrollReset deliberately still watches only
+                  the path, so the new screen starts at the top. */}
+              <Outlet key={location.pathname + location.search} />
             </>
           );
           // Both columns ride the SAME max-w-7xl wrapper so the rail sits on

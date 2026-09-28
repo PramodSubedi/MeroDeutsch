@@ -96,18 +96,22 @@ export const PRIMARY_NAV: readonly NavDestination[] = [
     // The spine itself, the checkpoint route, and every learning module — so a
     // deep link like /articles keeps "Learn" lit instead of needing a shortcut
     // row to steal the active state.
-    matchPaths: [...new Set(['/learn', '/checkpoint', ...modulePaths('learning')])],
+    //
+    // `/levels` is in this list too: the CEFR grid is a destination under
+    // Learn, and leaving it out meant clicking through to it from the course
+    // header unlit the tab you were already in.
+    matchPaths: [...new Set(['/learn', '/levels', '/checkpoint', ...modulePaths('learning')])],
     guest: {
-      // Guests now get the REAL spine, the same as signed-in learners. This
-      // used to send them to `/home#learning-path` — a flat card grid with its
-      // own hardcoded lesson list — while `/learn` stayed reachable by URL, so
-      // the app shipped two learning paths and contradicted the locked decision
+      // Guests get the REAL spine, the same as signed-in learners. This used to
+      // send them to `/home#learning-path` — a flat card grid with its own
+      // hardcoded lesson list — while `/learn` stayed reachable by URL, so the
+      // app shipped two learning paths and contradicted the locked decision
       // that the path is the spine. `useA1Path` already supports a 'guest'
       // identity, so the spine works signed-out and keeps progress on-device.
       to: '/learn',
       label: { en: 'Learn', de: 'Lernen' },
       short: { en: 'Learn', de: 'Lernen' },
-      matchPaths: [...new Set(['/learn', '/checkpoint', ...modulePaths('learning')])],
+      matchPaths: [...new Set(['/learn', '/levels', '/checkpoint', ...modulePaths('learning')])],
     },
   },
   {

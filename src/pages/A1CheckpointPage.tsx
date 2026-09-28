@@ -35,6 +35,7 @@ import { useExerciseSession, type ExerciseQuestion } from '../hooks/useExerciseS
 import { playAudioUrl } from '../hooks/useSpeech';
 import { MultipleChoice } from '../components/exercises/MultipleChoice';
 import { useAssessmentActive } from '../hooks/useAssessmentActive';
+import { triggerHaptic } from '../utils/haptic';
 import { buildOptions, isUsableQuestion, toVocabEntry } from '../lib/checkpointDeck';
 import { theme } from '../config/theme';
 import { GenderBadge } from '../components/ui/GenderBadge';
@@ -546,9 +547,30 @@ export function A1CheckpointPage() {
       // them. `results` maps question key -> boolean (the engine's own record),
       // so this cannot drift from what the learner was shown.
       const missed = questions.filter((q) => results[q.key] === false).map((q) => q.key);
+      // The gate verdict, as a single tactile event. This is the highest-value
+      // haptic in the app: a pass unlocks a unit, a fail sends work to the
+      // review queue, and either way the learner should feel the outcome
+      // arrive rather than read it. It rides the existing once-per-run guard
+      // above, so it can neither double-fire under StrictMode nor fire again
+      // on a re-render of the result screen.
+      //
+      // The threshold test is the SCREEN's expression, verbatim, and that is
+      // load-bearing rather than incidental. An exact `ratio >= 0.8` is not
+      // equivalent to the displayed `Math.round(ratio * 100) >= 80`: the rounding
+      // can promote a 79.5% run to a pass. They disagree for deck sizes of 44,
+      // 49, 54 and 59 items — far above the 10-15 decks the curriculum builds
+      // today, but reachable if the item count is ever raised. Recomputing the
+      // verdict here would let the buzz say "fail" while the screen says
+      // "passed", which is worse than having no haptic at all.
+      const ratio = questions.length > 0 ? score / questions.length : 0;
+      triggerHaptic(
+        Math.round(ratio * 100) >= Math.round(CHECKPOINT_PASS_THRESHOLD * 100)
+          ? 'success'
+          : 'error'
+      );
       markCheckpointResult(
         unitIndex,
-        questions.length > 0 ? score / questions.length : 0,
+        ratio,
         missed
       );
     }

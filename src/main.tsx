@@ -10,6 +10,7 @@ import { LanguageProvider } from './context/LanguageContext';
 import { XpProvider } from './context/XpContext';
 import { A1PathProvider } from './hooks/useA1Path';
 import { VocabularyStatusProvider } from './hooks/useVocabularyStatus';
+import { setUpdateAvailable } from './hooks/useUpdatePrompt';
 
 /**
  * Service-worker registration — MAIN APP ONLY.
@@ -24,8 +25,29 @@ import { VocabularyStatusProvider } from './hooks/useVocabularyStatus';
  * flag, which resolves `injectRegister` to `null` and suppresses HTML injection
  * entirely — leaving registration to this explicit, per-entry call. The admin
  * entry (`src/admin/main.tsx`) intentionally never imports it.
+ *
+ * HOW THE UPDATE IS OFFERED, AND WHY IT IS THIS SHAPE
+ * ───────────────────────────────────────────────────
+ * In `registerType: 'prompt'` mode a newly installed worker WAITS instead of
+ * activating, and the plugin signals that through `onNeedRefresh`. The
+ * signature of that callback is `() => void` — the function that actually
+ * applies the update is NOT passed to it. That function is the RETURN VALUE of
+ * `registerSW()`. So both halves are needed: the callback is the event, the
+ * return value is the action. Wiring only the callback (an easy mistake, and the
+ * type error that catches it) would surface a Reload button that reloads
+ * nothing.
+ *
+ * Captured lazily, because `onNeedRefresh` may fire before React has mounted and
+ * the hook that consumes this lives in the component tree.
+ *
+ * `onOfflineReady` is deliberately a no-op: the OfflineBanner already covers the
+ * offline case the learner actually experiences, and announcing a precache they
+ * never asked for is noise.
  */
-registerSW({ immediate: true });
+const updateSW = registerSW({
+  immediate: true,
+  onNeedRefresh: () => setUpdateAvailable(() => updateSW(true)),
+});
 
 /**
  * ── THE BOOT GATE ───────────────────────────────────────────────────────────
@@ -46,6 +68,27 @@ registerSW({ immediate: true });
  * but the dynamic import itself is wrapped anyway, because a chunk that fails to
  * load would otherwise leave a permanently blank page with no error shown.
  */
+/**
+ * Hand off from the static boot splash in index.html to the real React tree.
+ *
+ * The splash is painted by the HTML parser, so it is on screen BEFORE any
+ * module script runs — which is the entire point, since `boot()` below awaits
+ * the curriculum gate and then a dynamic import of App. Something has to take
+ * it down, and it must not be React: `createRoot` on a container with existing
+ * children would warn and leave the splash composited over the app.
+ *
+ * Called on the failure path too, for a different reason: the catch block
+ * assigns to `root.textContent`, which destroys every child node. Removing the
+ * splash first keeps the two paths honest about who owns the container — after
+ * it returns, `#root` holds the app, or the error string, and nothing else.
+ *
+ * The node is removed, not hidden, so `getElementById` on a later call is a
+ * reliable "already handed off" signal.
+ */
+function clearBootSplash(): void {
+  document.getElementById('app-splash')?.remove();
+}
+
 async function boot() {
   let source = 'bundle';
   try {
@@ -70,11 +113,15 @@ async function boot() {
     // deserves to be told rather than shown a blank screen.
     const root = document.getElementById('root');
     if (root) {
+      clearBootSplash();
       root.textContent = 'The app could not be loaded. Check your connection and reload.';
       console.error('[boot] App chunk failed to load', err);
     }
     return;
   }
+
+  // Take the splash down immediately before React takes the container over.
+  clearBootSplash();
 
   createRoot(document.getElementById('root')!).render(
     <StrictMode>

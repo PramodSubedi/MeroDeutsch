@@ -31,13 +31,13 @@ import { usePageTitle } from '../hooks/usePageTitle';
 import { A1_UNITS } from '../data/a1Path';
 import { ProgressRing } from '../components/path/ProgressRing';
 import { summarizeLevelProgress } from '../components/path/moduleProgress';
-import { CEFR_LEVELS, COMING_SOON_LABEL, cefrLevelHref } from '../data/cefrLevels';
+import { A1_PATH_ROUTE, CEFR_LEVELS, COMING_SOON_LABEL, cefrLevelHref } from '../data/cefrLevels';
 import { theme } from '../config/theme';
 import type { CefrLevel } from '../data/cefrLevels';
 import type { CefrLevelProgress } from '../components/path/moduleProgress';
 
 export function CefrLevelIndexPage() {
-  usePageTitle('Learn');
+  usePageTitle('Levels');
   const { langMode } = useLang();
   const isDE = langMode === 'german';
   const { isNodeComplete, isCheckpointComplete, getUnitPhase } = useA1Path();
@@ -45,11 +45,14 @@ export function CefrLevelIndexPage() {
   return (
     <div className={theme.page.container}>
       <header className="mb-6">
+        {/* Points at the COURSE, not Home. This page is now reached from
+            inside /learn ("All levels"), so "Back to Home" threw the learner
+            out of their own course to answer a question they did not ask. */}
         <Link
-          to="/home"
+          to={A1_PATH_ROUTE}
           className="-ml-1 inline-flex min-h-11 items-center gap-1 rounded-sm px-1 text-body text-accent-600 hover:text-accent-800 dark:text-accent-300 dark:hover:text-accent-200"
         >
-          ← {isDE ? 'Zurück zur Startseite' : 'Back to Home'}
+          ← {isDE ? 'Zurück zum Kurs' : 'Back to your course'}
         </Link>
         <p className={`${theme.type.kicker} mt-3`}>
           {isDE ? 'Deutsch lernen' : 'Learn German'}
@@ -59,8 +62,8 @@ export function CefrLevelIndexPage() {
         </h1>
         <p className="mt-2 max-w-prose text-body text-ink-500 dark:text-ink-400">
           {isDE
-            ? 'Jedes Niveau ist ein eigener Kurs. Wähle eines und starte dort, wo du stehst.'
-            : 'Each level is its own course. Pick one and start where you are.'}
+            ? 'A1 ist startklar. Weitere Niveaus sind in Arbeit — hier ist, was geplant ist.'
+            : 'A1 is ready to start. Further levels are in the works — here is what is planned.'}
         </p>
       </header>
 

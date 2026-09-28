@@ -288,39 +288,58 @@ export function RapidBlitzPage() {
 
               {!selectedMode && (
                 <div className="space-y-3 mb-4">
-                  {/* Mixed card */}
-                  <div
+                  {/* WHAT CHANGED — both cards were `<div onClick>`, which the
+                      Web Interface Guidelines call out as an anti-pattern: a
+                      div is not focusable, not in the tab order, and not
+                      announced as a control, so the entire mode picker was
+                      unreachable by keyboard. A real `<button>` gets all three
+                      for free — no `role`, no `tabIndex`, no hand-rolled
+                      `onKeyDown` that only handles one key.
+
+                      `aria-pressed` is deliberate: the mode rows are a
+                      single-select group where the picked row stays visible
+                      and highlighted, so they are toggle buttons that report
+                      their state, not links that navigate.
+
+                      `transition-all` → explicit properties. `all` animates
+                      every animatable property, including ones a later edit
+                      might add; the guidelines require naming them. */}
+                  <button
+                    type="button"
                     onClick={() => setSelectedMode(null)}
-                    className={`flex cursor-pointer items-center gap-4 rounded-lg border-2 p-4 transition-all hover:scale-[1.02] ${MIXED_INFO.bg} border-ink-300`}
+                    aria-pressed={selectedMode === null}
+                    className={`flex w-full cursor-pointer items-center gap-4 rounded-lg border-2 p-4 text-left transition-[transform,border-color,box-shadow] duration-200 hover:scale-[1.02] ${MIXED_INFO.bg} border-ink-300`}
                   >
                     <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-md bg-white dark:bg-ink-800">
-                      <MIXED_INFO.icon className={`h-6 w-6 ${MIXED_INFO.color}`} />
+                      <MIXED_INFO.icon className={`h-6 w-6 ${MIXED_INFO.color}`} aria-hidden="true" />
                     </div>
                     <div className="flex-1">
                       <span className="block text-lg font-bold text-ink-900 dark:text-white">{isDE ? MIXED_INFO.titleDe : MIXED_INFO.title}</span>
                       <span className="text-body text-ink-500 dark:text-ink-400">{isDE ? MIXED_INFO.descriptionDe : MIXED_INFO.description}</span>
                     </div>
-                  </div>
+                  </button>
 
                   {CHALLENGE_MODES.map((mode) => {
                     const info = MODE_INFO[mode.split('-')[0]];
                     const Icon = info.icon;
                     return (
-                      <div
+                      <button
                         key={mode}
+                        type="button"
                         onClick={() => setSelectedMode(mode)}
-                        className={`flex cursor-pointer items-center gap-4 rounded-lg border-2 p-4 transition-all hover:scale-[1.02] ${
+                        aria-pressed={selectedMode === mode}
+                        className={`flex w-full cursor-pointer items-center gap-4 rounded-lg border-2 p-4 text-left transition-[transform,border-color,box-shadow] duration-200 hover:scale-[1.02] ${
                           selectedMode === mode ? 'border-warning-500 ring-2 ring-warning-400' : 'border-ink-300 dark:border-ink-600'
                         } ${info.bg}`}
                       >
                         <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-md bg-white dark:bg-ink-800">
-                          <Icon className={`h-6 w-6 ${info.color}`} />
+                          <Icon className={`h-6 w-6 ${info.color}`} aria-hidden="true" />
                         </div>
                         <div className="flex-1">
                           <span className="block text-lg font-bold text-ink-900 dark:text-white">{isDE ? info.titleDe : info.title}</span>
                           <span className="text-body text-ink-500 dark:text-ink-400">{isDE ? info.descriptionDe : info.description}</span>
                         </div>
-                      </div>
+                      </button>
                     );
                   })}
                 </div>

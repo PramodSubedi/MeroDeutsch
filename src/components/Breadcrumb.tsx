@@ -20,6 +20,11 @@ interface BreadcrumbItem {
  *                            of a back link the page already shows.
  *  - `/privacy`, `/terms`  → legal pages render their own "Back to Home" link.
  *
+ * `/levels` is deliberately ABSENT: it is an ordinary sub-page of Learn, and a
+ * "Home / Levels" trail there is genuinely useful rather than a restatement.
+ * It is also the page that most needs the context, since the course header's
+ * only route back to it is a link that otherwise looks like a dead end.
+ *
  * Module routes are handled separately below: Layout swaps the breadcrumb for
  * <ModuleChrome /> there, so a breadcrumb would duplicate that back-link.
  */

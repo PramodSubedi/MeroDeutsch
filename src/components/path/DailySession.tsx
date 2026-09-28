@@ -145,7 +145,18 @@ export function DailySession() {
   // ── Summary step after the review batch ──────────────────────────
   if (sessionComplete) {
     return (
-      <section id={ANCHORS.dailySession} className="rounded-lg border border-ink-200 bg-white p-4 shadow-sm dark:bg-ink-900 dark:border-ink-800">
+    // `aria-live="polite"` on the summary: finishing the batch is an
+    // asynchronous state change the user did not navigate to, so without a
+    // live region a screen-reader user is told nothing - the CTA they just
+    // pressed silently replaced itself with a success panel and two new
+    // buttons. `polite` (not `assertive`) because it is a confirmation, not
+    // an error, and it must not interrupt whatever is still being read.
+      <section
+        id={ANCHORS.dailySession}
+        role="status"
+        aria-live="polite"
+        className="rounded-lg border border-ink-200 bg-white p-4 shadow-sm dark:bg-ink-900 dark:border-ink-800"
+      >
         <div className="mb-3 flex items-center justify-between gap-3">
           <h2 className="text-lg font-semibold text-ink-950 dark:text-white">
             {isDE ? 'Heutige Sitzung' : "Today's session"}

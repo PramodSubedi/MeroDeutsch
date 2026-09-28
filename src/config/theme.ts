@@ -129,12 +129,16 @@ export const theme = {
     // NOTE: no `max-w-*` here — the shell owns the single content column
     // (theme.layout.main), so the header and body share one axis.
     headerInner: 'h-16 px-4 sm:px-6 flex items-center justify-between gap-3',
-    brand: 'text-lg font-bold flex items-center gap-1',
-    nav: 'flex items-center gap-1',
-    // Nav links: 44px touch target (was h-9 = 36px), quiet until active.
-    navLinkActive: 'flex h-11 items-center rounded-md px-3 text-body font-semibold bg-accent-50 text-accent-700 transition focus-visible:outline-none dark:bg-accent-950/50 dark:text-accent-300',
-    navLink: 'flex h-11 items-center rounded-md px-3 text-body font-medium text-ink-600 transition hover:bg-ink-100 hover:text-ink-900 focus-visible:outline-none dark:text-ink-300 dark:hover:bg-ink-800 dark:hover:text-ink-50',
-    toggleButton: 'inline-flex h-11 w-11 items-center justify-center rounded-md text-xs font-semibold text-ink-500 transition hover:bg-ink-100 hover:text-ink-700 focus-visible:outline-none dark:text-ink-400 dark:hover:bg-ink-800 dark:hover:text-ink-200',
+    // NOTE: `nav`, `navLink`, `navLinkActive`, `toggleButton` and `brand` used
+    // to live here. They are GONE, deliberately, and that is a finding rather
+    // than a cleanup: the shell converged on `config/navigation.ts` as the
+    // single source of truth for destinations, so a generic "nav link" class had
+    // no caller left — AppSidebar and BottomNav both build their rows from the
+    // nav table and style the active state with a local `activeClass` helper —
+    // and the brand mark is its own component (`common/Logo`). A token with zero
+    // call sites is a second place to update when the nav changes, and nobody
+    // would remember it exists. Reintroduce these only with the surface that
+    // consumes them.
     // Two-state language switch (segmented control) — shows CURRENT mode via
     // the highlighted side, unlike the old target-state toggle button.
     langSwitch: {
@@ -144,8 +148,6 @@ export const theme = {
     },
     // Header icon buttons: ONE 44px touch target sitewide (was 42/44/56).
     themeButton: 'inline-flex h-11 w-11 items-center justify-center rounded-md text-base text-ink-500 transition hover:bg-ink-100 hover:text-ink-700 focus-visible:outline-none active:scale-95 dark:text-ink-400 dark:hover:bg-ink-800 dark:hover:text-ink-200',
-    // Header context chip — shows the current section on lg+ (Converged Shell).
-    contextChip: 'inline-flex h-9 max-w-[260px] items-center gap-1.5 truncate rounded-full border border-ink-200 bg-ink-100 px-3 text-meta font-medium text-ink-700 dark:border-ink-800 dark:bg-ink-800/60 dark:text-ink-300',
     // Pinned bottom bar in the rail — the expand/collapse control lives WITH
     // the rail it toggles (never stranded in the header).
     sidebarToggleBar: 'flex h-12 shrink-0 items-center border-t border-ink-200 px-2 dark:border-ink-800',

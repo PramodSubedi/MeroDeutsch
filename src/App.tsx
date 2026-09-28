@@ -139,15 +139,20 @@ export default function App() {
                 <Route path="pronunciation" element={<PronunciationPage />} />
                 <Route path="roleplay" element={<RoleplayPage />} />
                 <Route path="dashboard" element={<DashboardPage />} />
-                {/* THE COURSE IS A HUB AND A PATH.
-                    /learn          the CEFR level GRID (the chooser).
-                    /learn/:levelId one LEVEL's page — its roadmap, stages and
-                                    checkpoint gates. A1 today; A2/B1 render
-                                    their coming-soon page. Declared before the
-                                    dynamic segment so `learn` is never swallowed
-                                    as a level id. */}
-                <Route path="learn" element={<CefrLevelIndexPage />} />
+                {/* THE COURSE IS THE PATH. `/learn` IS the campaign.
+                    /learn           the A1 course — the spine, its stages and its
+                                     80% checkpoint gates. `:levelId` is optional,
+                                     so this route serves the bare path AND any
+                                     named level through ONE component; there is
+                                     no second page to drift out of sync.
+                    /levels          the CEFR grid — a deliberate "more levels"
+                                     step, not a gate in front of the course.
+                    Declared before the dynamic segment so `learn` is never
+                                    swallowed as a level id. */}
+                <Route path="learn" element={<ContinueLearningPage />} />
                 <Route path="learn/:levelId" element={<ContinueLearningPage />} />
+                <Route path="levels" element={<CefrLevelIndexPage />} />
+                <Route path="levels/:levelId" element={<ContinueLearningPage />} />
                 {/* A1 unit checkpoint — additive route; soft-locked by unit unlock */}
                 <Route path="checkpoint/:unitIndex" element={<A1CheckpointPage />} />
                 {/* A unit's full lesson — the imported document content (lexicon,

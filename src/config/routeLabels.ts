@@ -14,17 +14,21 @@ import { CEFR_LEVELS } from '../data/cefrLevels';
  *
  * Order matters and is not cosmetic: `contextLabelFor` / `labelForPath` return
  * the FIRST prefix match, so `/learn/a1` has to be tried before the bare
- * `/learn`. With the list reversed, the A1 course would be labelled "Levels"
- * in the header chip — the exact "two registries disagree" bug this file
+ * `/learn`. With the list reversed, the A1 course would be labelled "Learning
+ * Path" in the header chip — the exact "two registries disagree" bug this file
  * exists to prevent, reintroduced one level down.
  *
  * Generated rather than hand-written so a new level cannot exist in
  * cefrLevels.ts and be missing from here.
+ *
+ * The label is the course's own name plus the level, because `/learn/a1` and
+ * the bare `/learn` render the SAME page. Naming one "A1 Path" and the other
+ * "Learning Path" would imply two different screens.
  */
 const CEFR_LEVEL_LABELS: ReadonlyArray<readonly [string, { en: string; de: string }]> =
   CEFR_LEVELS.map((level) => [
     `/learn/${level.id}`,
-    { en: `${level.code} Path`, de: `${level.code}-Lernpfad` },
+    { en: `Learning Path · ${level.code}`, de: `Lernpfad · ${level.code}` },
   ]);
 
 export const ROUTE_LABELS: ReadonlyArray<readonly [string, { en: string; de: string }]> = [
@@ -33,9 +37,14 @@ export const ROUTE_LABELS: ReadonlyArray<readonly [string, { en: string; de: str
   // lookup returns the first PREFIX match. With `/learn` first, `/learn/a1`
   // matches it and the A1 course is labelled "Levels" in the header chip.
   ...CEFR_LEVEL_LABELS,
-  // The level GRID — the chooser, not a course. It used to be labelled
-  // "A1 Path" because /learn WAS the A1 path; it is now the parent of them all.
-  ['/learn', { en: 'Levels', de: 'Niveaus' }],
+  // `/learn` IS the A1 course now, so it is labelled as a course, not as a
+  // chooser. It used to read "Levels" because /learn WAS the grid; that
+  // mapping is inverted and had to move to `/levels` with the page.
+  ['/learn', { en: 'Learning Path', de: 'Lernpfad' }],
+  // The level GRID, now the secondary `/levels` route. Must stay AFTER
+  // `/learn` for the same prefix-ordering reason: `/levels` is a child of the
+  // learn destination, and this list resolves the first match.
+  ['/levels', { en: 'Levels', de: 'Niveaus' }],
   ['/dashboard', { en: 'Dashboard', de: 'Übersicht' }],
   ['/practice', { en: 'Practice', de: 'Übung' }],
   // A1 learning modules

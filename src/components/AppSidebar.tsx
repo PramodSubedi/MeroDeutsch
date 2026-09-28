@@ -8,6 +8,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useHasA1Campaign } from '../hooks/usePremium';
 import { useLang } from '../hooks/useLang';
 import { useReviewQueue } from '../hooks/useReviewQueue';
+import { triggerHaptic } from '../utils/haptic';
 import {
   SECONDARY_NAV,
   getActiveSecondary,
@@ -20,7 +21,11 @@ import { LearnerWaypoint } from './path/LearnerWaypoint';
 
 /** Map of route paths to their lazy import functions for preloading (desktop rail) */
 const railPreloadMap: Record<string, () => Promise<any>> = {
-  '/learn': () => import('../pages/CefrLevelIndexPage'),
+  // The COURSE, not the grid. `/learn` stopped being CefrLevelIndexPage when the
+  // grid moved to `/levels`; preloading the grid here would warm the wrong chunk
+  // and the course would still be loading when the learner arrived.
+  '/learn': () => import('../pages/ContinueLearningPage'),
+  '/levels': () => import('../pages/CefrLevelIndexPage'),
   '/dashboard': () => import('../pages/DashboardPage'),
   '/practice': () => import('../pages/PracticeHubPage'),
 };
@@ -80,6 +85,7 @@ function NavRow({ row, collapsed, onNavigate }: { row: RailRow; collapsed?: bool
         to={row.to}
         className={linkClass}
         onClick={onNavigate}
+        onPointerDown={() => triggerHaptic('light')}
         onMouseEnter={() => preloadRoute(row.to)}
         onFocus={() => preloadRoute(row.to)}
         aria-label={row.label}
@@ -96,6 +102,7 @@ function NavRow({ row, collapsed, onNavigate }: { row: RailRow; collapsed?: bool
       to={row.to}
       className={linkClass}
       onClick={onNavigate}
+      onPointerDown={() => triggerHaptic('light')}
       onMouseEnter={() => preloadRoute(row.to)}
       onFocus={() => preloadRoute(row.to)}
       aria-label={row.label}
@@ -164,7 +171,10 @@ export function AppSidebar({
   const { pathname } = useLocation();
   const { langMode } = useLang();
   const { isAuthenticated } = useAuth();
-  const { hasCampaign, isLoading: campaignLoading } = useHasA1Campaign();
+  // Only the loading flag is read now. `hasCampaign` used to gate the
+  // waypoint and was dropped when `/learn` became the course for every tier —
+  // see the note above the <LearnerWaypoint /> call.
+  const { isLoading: campaignLoading } = useHasA1Campaign();
   const { dueQueue } = useReviewQueue();
   const isDE = langMode === 'german';
   const mobileDrawerRef = useRef<HTMLElement>(null);
@@ -242,24 +252,29 @@ export function AppSidebar({
         </Link>
       </div>
 
-      {/* Learner waypoint — Premium only, and it is the A1 CAMPAIGN waypoint:
-          the module ring, the stage code, "Next: <A1 node>" and a course
-          percentage, all linking into the 15-module spine.
+      {/* Learner waypoint — the A1 course waypoint: the module ring, the stage
+          code, "Next: <node>" and a course percentage, linking into the spine.
 
-          Gating on `isAuthenticated` alone was a tier leak: a signed-in FREE
-          learner was shown "M04 · Next: Greetings · 40%" for a campaign their
-          /learn does not give them, so the shell advertised a roadmap the page
-          contradicted. `useHasA1Campaign` is the single place that rule lives.
+          THE `hasCampaign` GATE IS GONE, and it is now wrong to keep.
 
-          A free signed-in learner has a real roadmap too — the numbered
-          `LearningPath` on /learn — but it has no per-module percentage to
-          ring, so there is nothing honest to put in this slot. They get the
-          sign-in/progress card below instead, exactly as a guest does.
+          It used to read `isAuthenticated && hasCampaign`, added to stop a tier
+          leak: a signed-in FREE learner was shown "M04 · Next: Greetings · 40%"
+          for a campaign their `/learn` did not give them, so the shell
+          advertised a roadmap the page contradicted. That reasoning was sound
+          THEN. It is not now, because `/learn` IS the course for every tier
+          (see `CEFR_LEVELS_ROUTE`): a free learner gets the same spine
+          position, and `getPushNode()` returns a `/lesson/:n` target —
+          `LessonModulePage`, which is free and always reachable.
 
-          `isLoading` renders nothing rather than guessing, matching
-          `PremiumGate`: a waypoint that appears for a free learner and vanishes
-          for a Premium one is worse than one that arrives 100ms late. */}
-      {isAuthenticated && !campaignLoading && hasCampaign && (
+          So the waypoint now states the same thing the page will show. Keeping
+          the gate would hide "where am I / what next?" from exactly the
+          learners standing on a 15-lesson course with no course position in
+          their rail — the question this component exists to answer.
+
+          `isLoading` still renders nothing rather than guessing, matching
+          `PremiumGate`: a waypoint that appears for one learner and vanishes
+          for another is worse than one that arrives 100ms late. */}
+      {isAuthenticated && !campaignLoading && (
         <div className="px-3 pt-4">
           <LearnerWaypoint collapsed={collapsed} />
         </div>

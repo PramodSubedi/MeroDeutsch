@@ -162,6 +162,10 @@ export const INTENSITY_DIRECTIVE: Record<PersonalityIntensity, string> = {
 const LEARNING_ROUTE_PREFIXES: readonly string[] = [
   '/home',
   '/learn',
+  // The level grid sits under Learn, and `/learn` is a prefix that no longer
+  // covers it. Without this the companion vanished on the one page where a
+  // learner is most likely to ask "is A2 worth waiting for?".
+  '/levels',
   '/alphabet',
   '/numbers',
   '/calendar',

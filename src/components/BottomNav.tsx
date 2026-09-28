@@ -9,10 +9,13 @@ import {
   navTarget,
 } from '../config/navigation';
 import { BAR_SAFE_AREA_PADDING, MOBILE_BAR_HEIGHT_CLASS } from '../config/mobileShell';
+import { triggerHaptic } from '../utils/haptic';
 
 /** Map of route paths to their lazy import functions for preloading */
 const routePreloadMap: Record<string, () => Promise<any>> = {
-  '/learn': () => import('../pages/CefrLevelIndexPage'),
+  // The COURSE, not the grid — see the identical map in AppSidebar.tsx.
+  '/learn': () => import('../pages/ContinueLearningPage'),
+  '/levels': () => import('../pages/CefrLevelIndexPage'),
   '/dashboard': () => import('../pages/DashboardPage'),
   '/practice': () => import('../pages/PracticeHubPage'),
 };
@@ -91,6 +94,15 @@ export function BottomNav() {
               aria-current={item.active ? 'location' : undefined}
               onMouseEnter={() => preloadRoute(item.to)}
               onFocus={() => preloadRoute(item.to)}
+              // Haptic on POINTERDOWN, not click. A click only fires on release,
+              // so the buzz would land after the screen had already started
+              // changing — by which point the user is looking at the new page
+              // and the tap feels like it belonged to it. pointerdown fires on
+              // contact, which is where a native tab bar's feedback lives.
+              // `light` only: switching tabs is navigation, not an outcome, and
+              // a heavier buzz on every tab press is the kind of thing that
+              // makes people turn haptics off permanently.
+              onPointerDown={() => triggerHaptic('light')}
               className="relative flex min-h-11 min-w-0 flex-1 flex-col items-center justify-center gap-1 px-1 py-1.5 transition-colors"
             >
               <span

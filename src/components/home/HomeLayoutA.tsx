@@ -160,45 +160,64 @@ export function HomeLayoutA() {
                 create, feeds addWrongAnswer/XP — no new system introduced. */}
             {isAuthenticated && <DailyChallenge />}
             {isAuthenticated && <DailyQuestsWidget />}
+
+            {/* The four headline stats, folded in from the band that used to sit
+                between the loop and the badges. Same components, same selectors
+                (useProgressMetrics / useReviewQueue / useXp — the shared source
+                of truth with DashboardPage), same `/dashboard` link on the review
+                count. See the note where they used to live. */}
+            <div className="grid gap-4 sm:grid-cols-2">
+              <StatTile
+                label={isDE ? 'Fortschritt' : 'Progress'}
+                value={`${progressPct}%`}
+                subValue={`${progressCount}/26`}
+                progressPct={progressPct}
+                color="blue"
+                icon={TrendingUp}
+              />
+              <StatTile
+                label={isDE ? 'Genauigkeit' : 'Accuracy'}
+                value={`${quizPct}%`}
+                subValue="Quiz"
+                progressPct={quizPct}
+                color="emerald"
+                icon={Target}
+              />
+              <StatTile
+                label={isDE ? 'Review' : 'Review queue'}
+                value={String(reviewCount)}
+                subValue={isDE ? 'Wartend' : 'Queued'}
+                to="/dashboard"
+                color="blue"
+                icon={RefreshCw}
+              />
+              <StatTile
+                label="Level & XP"
+                value={String(level)}
+                subValue={`${totalXp} XP`}
+                progressPct={xpProgress}
+                color="violet"
+                icon={Zap}
+              />
+            </div>
           </div>
         </details>
       )}
 
-      {/* Shared StatTile component — same source of truth as DashboardPage */}
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatTile
-          label={isDE ? 'Fortschritt' : 'Progress'}
-          value={`${progressPct}%`}
-          subValue={`${progressCount}/26`}
-          progressPct={progressPct}
-          color="blue"
-          icon={TrendingUp}
-        />
-        <StatTile
-          label={isDE ? 'Genauigkeit' : 'Accuracy'}
-          value={`${quizPct}%`}
-          subValue="Quiz"
-          progressPct={quizPct}
-          color="emerald"
-          icon={Target}
-        />
-        <StatTile
-          label={isDE ? 'Review' : 'Review queue'}
-          value={String(reviewCount)}
-          subValue={isDE ? 'Wartend' : 'Queued'}
-          to="/dashboard"
-          color="blue"
-          icon={RefreshCw}
-        />
-        <StatTile
-          label="Level & XP"
-          value={String(level)}
-          subValue={`${totalXp} XP`}
-          progressPct={xpProgress}
-          color="violet"
-          icon={Zap}
-        />
-      </section>
+      {/*
+        THE STATS ROW MOVED INTO "MORE FOR TODAY" ABOVE.
+
+        It was the last full-width band on the page and the only one that
+        answered no question the learner had arrived with. The three above it —
+        the daily loop, the disclosure, and the achievements card — are the
+        reason someone opens Home. Four tiles of alphabet-progress percentages
+        sat between the loop and the badges, so the loop was visible on arrival
+        but nothing after it was reachable without scrolling.
+
+        Every tile still renders, from the same selectors, with the same
+        `/dashboard` link on the review count. Nothing is computed differently;
+        it is simply no longer competing with the primary action for the fold.
+      */}
 
       {/* Daily quests now live in the "More for today" disclosure above, next
           to the word of the day and the daily challenge — they are the same

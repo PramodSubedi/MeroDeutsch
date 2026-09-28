@@ -38,8 +38,15 @@
  *   /practice (it IS an index)
  *
  * Related but separate: `DashboardPage` renders `<A1PathProgress />` in full
- * mode, which shows the same per-band list `UnitSpine` shows on /learn. That
- * duplication is pre-existing and is NOT addressed here.
+ * mode, which rings all fifteen A1 units — the same lessons `UnitSpine` shows
+ * on /learn. That is a different page answering the same question at a
+ * different granularity (a glanceable strip vs. the roadmap), and its
+ * `hasCampaign` gate is DELIBERATE and still correct after the grid moved to
+ * /levels: a free learner's /learn shows the six-module `LearningPath`, not the
+ * fifteen-unit spine, so ringing all fifteen for them would be exactly the tier
+ * leak that gate exists to prevent. Note the contrast with the rail's
+ * `LearnerWaypoint`, whose Premium gate WAS removed — it shows a single push
+ * node whose target (/lesson/:n) is free, so it is honest for every tier.
  *
  * SECOND ENTRY: /lesson/:n. The lesson page is the study surface, and the
  * practice tools are deliberately NOT on it — they are optional reinforcement

@@ -31,9 +31,152 @@
     <meta name="twitter:title" content="MeroDeutsch – Learn German" />
     <meta name="twitter:description" content="Learn A1 German with Nepali and English support — interactive exercises, speech recognition, and daily challenges." />
     <meta name="twitter:image" content="/pwa-512x512.png" />
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         FIRST-PAINT THEME — runs before the body is parsed.
+         ──────────────────────────────────────────────────────────────────────
+         `.dark` was otherwise only toggled inside a useEffect in useDarkMode.ts,
+         which cannot run before first paint. A dark-mode learner therefore saw a
+         full white flash on every load, then a snap to dark. This sets the
+         class up front so the very first painted pixel is already correct.
+
+         IT MIRRORS useDarkMode EXACTLY, and that is the whole trick:
+           useDarkMode: dark = getItem('germanDarkMode') === '1'
+         so the ONLY dark signal is the stored '1'. There is deliberately NO
+         prefers-color-scheme fallback here even though index.html ships
+         media-scoped theme-color tags. Adding one would make the splash dark for
+         an OS-dark user whose in-app preference is light — and React would then
+         correct it on mount, trading a white flash for a dark one. The hook is
+         the single source of truth; this script is a fast path for it, not a
+         second opinion.
+
+         The try/catch is not defensive noise: utils/safeStorage falls back to an
+         in-memory Map when localStorage throws (private mode, blocked storage).
+         That Map is empty at boot, so getItem() returns null → light. Leaving
+         `.dark` off here is exactly what the hook will decide, so the two agree
+         even when storage is unavailable.
+         ══════════════════════════════════════════════════════════════════════ -->
+    <script>
+      (function () {
+        try {
+          if (window.localStorage.getItem('germanDarkMode') === '1') {
+            document.documentElement.classList.add('dark');
+          }
+        } catch (err) {
+          /* storage blocked → the hook resolves light too; stay silent */
+        }
+      })();
+    </script>
+    <!-- ══════════════════════════════════════════════════════════════════════
+         BOOT SPLASH STYLES — inline, and duplicated on purpose.
+         index.css is imported by main.tsx, and module scripts are deferred, so
+         that stylesheet is NOT applied yet at this point in the parse. Waiting
+         for it would defeat the entire purpose of a splash. These values are
+         the design-system tokens, copied:
+           canvas #f7f9fb / #0d1219  (--app-canvas / --app-canvas-dark)
+           accent #2563eb            (--color-accent-600)
+           ink    #171d26            (--color-ink-900)
+         The splash sets its OWN background because `body` only goes dark via
+         .app-shell (index.css:191-207) — inheriting it would give a light
+         canvas behind dark-mode branding.
+         ══════════════════════════════════════════════════════════════════════ -->
+    <style>
+      #app-splash {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: #f7f9fb;
+        font-family: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      }
+      html.dark #app-splash { background: #0d1219; }
+
+      #app-splash .app-splash-mark {
+        width: 4rem;
+        height: 4rem;
+        animation: app-splash-breathe 1.8s ease-in-out infinite;
+      }
+      #app-splash .app-splash-word {
+        display: flex;
+        align-items: baseline;
+        margin-top: 1.25rem;
+        font-size: 1.5rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        line-height: 1;
+      }
+      /* .mero is --color-danger-600, matching Logo.tsx on on-light */
+      #app-splash .app-splash-word .mero { color: #dc2626; }
+      #app-splash .app-splash-word .deutsch { color: #171d26; }
+      html.dark #app-splash .app-splash-word .deutsch { color: #ffffff; }
+
+      #app-splash .app-splash-rule {
+        display: flex;
+        width: 8.5rem;
+        height: 3px;
+        margin-top: 0.5rem;
+        overflow: hidden;
+        border-radius: 9999px;
+      }
+      #app-splash .app-splash-rule i { flex: 1; }
+      #app-splash .app-splash-rule i:nth-child(1) { background: #dc2626; }
+      #app-splash .app-splash-rule i:nth-child(2) { background: #2563eb; }
+      #app-splash .app-splash-rule i:nth-child(3) { background: #ef4444; }
+      #app-splash .app-splash-rule i:nth-child(4) { background: #fbbf24; }
+
+      @keyframes app-splash-breathe {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50%      { opacity: 0.55; transform: scale(0.94); }
+      }
+      /* The pulse is decoration. Honour the OS preference instead of animating
+         regardless — a reduced-motion learner gets a still brand mark. */
+      @media (prefers-reduced-motion: reduce) {
+        #app-splash .app-splash-mark { animation: none; }
+      }
+    </style>
+
+    <!-- The splash renders before any module script runs, so its mark is the
+         one asset the parser discovers on its own. Preloading it here means the
+         hydration handover never shows a half-drawn logo. -->
+    <link rel="preload" as="image" href="/logo.svg" type="image/svg+xml" />
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- ════════════════════════════════════════════════════════════════════
+           BOOT SPLASH — why this exists
+           ────────────────────────────────────────────────────────────────────
+           main.tsx runs an ASYNC boot gate (curriculum source resolution) and
+           only then dynamically imports App, and only then calls createRoot.
+           Before this the page was a bare <div id="root"></div> on the default
+           white canvas: one to three seconds of nothing on a cold or slow
+           connection, with no signal that a German-learning app had even
+           started loading.
+
+           This is painted straight from the HTML parser, so it costs no network
+           request and no JS module — it is the first thing on screen, and it is
+           the app's own brand rather than a white rectangle.
+
+           main.tsx removes #app-splash immediately before createRoot. The
+           handover is explicit rather than left to React to clear, so it cannot
+           regress into a double-render if this markup ever changes.
+           ════════════════════════════════════════════════════════════════════ -->
+      <div id="app-splash" role="status" aria-label="Loading MeroDeutsch">
+        <!-- Inline <img> rather than a duplicated <svg>: /logo.svg is already
+             precached by workbox (globPatterns covers .svg) and preloaded
+             below, so this adds no extra round trip and cannot drift from the
+             real logo. -->
+        <img class="app-splash-mark" src="/logo.svg" alt="" width="64" height="64" />
+        <span class="app-splash-word">
+          <span class="mero">Mero</span><span class="deutsch">Deutsch</span>
+        </span>
+        <span class="app-splash-rule" aria-hidden="true">
+          <i></i><i></i><i></i><i></i>
+        </span>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

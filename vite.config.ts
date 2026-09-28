@@ -78,6 +78,9 @@ export default defineConfig({
         '/roleplay',
         '/dashboard',
         '/learn',
+        // The CEFR grid. It is a real, indexable page, so it belongs in the
+        // sitemap — it just stopped being the thing `/learn` points at.
+        '/levels',
         '/practice',
         '/stories',
         '/analytics',
@@ -91,7 +94,14 @@ export default defineConfig({
       ],
     }),
     VitePWA({
-      registerType: 'autoUpdate',
+      // A staged worker means a NEW BUILD is downloaded and installed but NOT
+      // active. Under `autoUpdate` (the previous value) it activated silently the
+      // moment it finished, reloading the page underneath the learner — mid
+      // checkpoint, mid answer, with typed input discarded and no warning.
+      // `prompt` hands the decision to the app instead: useUpdatePrompt listens
+      // for `needRefresh` and offers it as a toast, so the reload happens at a
+      // moment the learner chose rather than a moment they didn't notice.
+      registerType: 'prompt',
       injectRegister: 'auto',
       devOptions: {
         // Generate + serve /sw.js during `vite dev` so the Worker registers
@@ -156,6 +166,67 @@ export default defineConfig({
         short_name: 'MeroDeutsch',
         description: 'Learn German from zero — with Nepali support.',
         theme_color: '#2563eb',
+
+        // WHY AN EXPLICIT `id`
+        // Without `id`, the browser derives app identity from `start_url`. That
+        // makes the start URL the app's permanent name: if it ever changes, every
+        // existing install is treated as a DIFFERENT app and the user ends up with
+        // two copies of MeroDeutsch on their home screen, each with separate
+        // storage. Pinning the id to the scope decouples identity from the URL, so
+        // start_url can be tuned later without stranding current installs.
+        id: '/',
+
+        // `standalone` is the app-like surface. `minimal-ui` is the declared
+        // FALLBACK: on a browser that cannot do standalone (some in-app webviews,
+        // older Firefox Android) the app still loses the browser's URL bar and
+        // reads as an app rather than a page. Without display_override a browser
+        // that does not support standalone falls all the way back to a full
+        // browser UI, which is the single most "this is a website" tell there is.
+        display: 'standalone',
+        display_override: ['standalone', 'minimal-ui'],
+
+        // The app's own canvas, NOT white. The manifest's background_color is
+        // what fills the screen between the splash and the first React paint, and
+        // on an install launched in dark mode a #ffffff here produces a hard white
+        // flash before the app shell arrives. It mirrors --app-canvas in index.css.
+        background_color: '#f7f9fb',
+
+        // Long-press the home-screen icon. This is the most app-like affordance
+        // available on the web, and it costs no client code at all.
+        //
+        // Each target is a REAL route verified against App.tsx:
+        //   /learn       the A1 spine — the only sensible "resume" destination
+        //   /rapid-fire  the canonical Blitz route (/rapid-blitz is a legacy
+        //                alias that 302s here, so linking the alias would work
+        //                but would pay an extra redirect on every tap)
+        //   /practice    the tool grid, which already carries the due badge
+        //
+        // Android caps this at 4 and Chrome requires short_name on every entry;
+        // three is deliberate headroom for one more without a redesign.
+        shortcuts: [
+          {
+            name: 'Continue learning',
+            short_name: 'Continue',
+            description: 'Resume your A1 German course',
+            url: '/learn',
+            icons: [{ src: '/logo.svg', sizes: '512x512', type: 'image/svg+xml' }],
+          },
+          {
+            name: 'Rapid Blitz',
+            short_name: 'Blitz',
+            description: 'Start a fast mixed challenge',
+            url: '/rapid-fire',
+            icons: [{ src: '/logo.svg', sizes: '512x512', type: 'image/svg+xml' }],
+          },
+          {
+            name: 'Practice tools',
+            short_name: 'Practice',
+            description: 'Drills, dictation and roleplay',
+            url: '/practice',
+            icons: [{ src: '/logo.svg', sizes: '512x512', type: 'image/svg+xml' }],
+          },
+        ],
+
         icons: [
           {
             src: 'pwa-192x192.png',

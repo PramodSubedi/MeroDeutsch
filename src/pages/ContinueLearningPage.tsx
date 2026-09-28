@@ -1,4 +1,5 @@
 import { Link, Navigate, useParams } from 'react-router-dom';
+import { Layers } from 'lucide-react';
 import { useLang } from '../hooks/useLang';
 import { useA1Path } from '../hooks/useA1Path';
 import { A1_CURRICULUM, A1_UNIT_COUNT } from '../data/a1Path';
@@ -15,6 +16,7 @@ import { PathModeToggle } from '../components/path/PathModeToggle';
 import { CefrComingSoonPanel } from '../components/path/CefrComingSoonPanel';
 import {
   CEFR_LEVELS_ROUTE,
+  DEFAULT_CEFR_LEVEL_ID,
   getCefrLevel,
   isCefrLevelAvailable,
   parseCefrLevel,
@@ -23,9 +25,13 @@ import { PracticeToolsGrid } from '../components/PracticeToolsGrid';
 import { theme } from '../config/theme';
 
 /**
- * A single CEFR LEVEL's page — `/learn/:levelId` (A1 today, A2/B1 as they
- * arrive). The chooser lives one level up at `/learn` (CefrLevelIndexPage);
- * this page is where you actually study.
+ * A single CEFR LEVEL's page — `/learn` (A1 today) and `/learn/:levelId`.
+ *
+ * THE COURSE IS THE DEFAULT ROUTE
+ *   `/learn` is the A1 campaign and `DEFAULT_CEFR_LEVEL_ID` fills the absent
+ *   `:levelId`, so this one component renders the bare course, `/learn/a1` and
+ *   `/learn/a2`. The level GRID is a separate, deliberately secondary route
+ *   (`/levels`, `CefrLevelIndexPage`) — see the note on `CEFR_LEVELS_ROUTE`.
  *
  * THE LEVEL IS A ROUTE, NOT A FLAG
  *   `:levelId` comes from the router, so Back/forward and a pasted link both
@@ -59,7 +65,15 @@ export function ContinueLearningPage() {
   const { levelId: levelIdParam } = useParams<{ levelId: string }>();
   // Null for a level that does not exist. Resolved BEFORE the title so a bad
   // link never flashes this level's content on its way to the grid.
-  const levelId = parseCefrLevel(levelIdParam);
+  //
+  // ABSENT is not the same as null. `/learn` (no segment) is the A1 COURSE
+  // itself now, so an absent param resolves to the default level and the page
+  // renders normally. `null` still means "you asked for a level that does not
+  // exist" and must redirect. The route is declared twice in App.tsx — bare and
+  // with `:levelId` — so this one component serves `/learn`, `/learn/a1` and
+  // `/learn/a2` identically, which is what keeps the deep links alive after the
+  // grid moved to `/levels`.
+  const levelId = levelIdParam === undefined ? DEFAULT_CEFR_LEVEL_ID : parseCefrLevel(levelIdParam);
   usePageTitle(levelId ? `Learn · ${getCefrLevel(levelId).code}` : 'Learn');
   const { langMode } = useLang();
   const { isAuthenticated } = useAuth();
@@ -143,9 +157,10 @@ export function ContinueLearningPage() {
         <header className="mb-5">
           <Link
             to={CEFR_LEVELS_ROUTE}
-            className="-ml-1 inline-flex min-h-11 items-center gap-1 rounded-sm px-1 text-body text-accent-600 hover:text-accent-800 dark:text-accent-300 dark:hover:text-accent-200"
+            className="-ml-1 inline-flex min-h-11 items-center gap-1.5 rounded-sm px-1 text-meta font-semibold text-ink-500 transition hover:text-accent-700 dark:text-ink-400 dark:hover:text-accent-300"
           >
-            ← {isDE ? 'Alle Niveaus' : 'All levels'}
+            <Layers className="h-4 w-4" aria-hidden="true" />
+            {isDE ? 'Niveaus' : 'Levels'}
           </Link>
           <p className={`${theme.type.kicker} mt-3`}>
             {isDE ? `${level.code} · Dein Kurs` : `${level.code} · Your course`}
@@ -169,11 +184,15 @@ export function ContinueLearningPage() {
       <div className={theme.page.container}>
         <header className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
+            {/* Same "Levels" affordance as the Premium header below — the free
+                tier and the campaign are the same course at two depths, so they
+                must not offer different navigation. */}
             <Link
               to={CEFR_LEVELS_ROUTE}
-              className="-ml-1 inline-flex min-h-11 items-center gap-1 rounded-sm px-1 text-body text-accent-600 hover:text-accent-800 dark:text-accent-300 dark:hover:text-accent-200"
+              className="-ml-1 inline-flex min-h-11 items-center gap-1.5 rounded-sm px-1 text-meta font-semibold text-ink-500 transition hover:text-accent-700 dark:text-ink-400 dark:hover:text-accent-300"
             >
-              ← {isDE ? 'Alle Niveaus' : 'All levels'}
+              <Layers className="h-4 w-4" aria-hidden="true" />
+              {isDE ? 'Niveaus' : 'Levels'}
             </Link>
             <p className={`${theme.type.kicker} mt-3`}>
               {isDE ? `${level.code} · Dein Kurs` : `${level.code} · Your course`}
@@ -236,11 +255,16 @@ export function ContinueLearningPage() {
       {/* Page header — back-to-home + title + due chip + Resume CTA */}
       <header className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
+          {/* "All levels" became "Levels" and lost its arrow. This page IS the
+              course now, so a back-link pointing at the grid described a
+              hierarchy that no longer exists — it read as "return to the thing
+              you came from" when it is actually "see what else exists". */}
           <Link
             to={CEFR_LEVELS_ROUTE}
-            className="-ml-1 inline-flex min-h-11 items-center gap-1 rounded-sm px-1 text-body text-accent-600 hover:text-accent-800 dark:text-accent-300 dark:hover:text-accent-200"
+            className="-ml-1 inline-flex min-h-11 items-center gap-1.5 rounded-sm px-1 text-meta font-semibold text-ink-500 transition hover:text-accent-700 dark:text-ink-400 dark:hover:text-accent-300"
           >
-            ← {isDE ? 'Alle Niveaus' : 'All levels'}
+            <Layers className="h-4 w-4" aria-hidden="true" />
+            {isDE ? 'Niveaus' : 'Levels'}
           </Link>
           {/* Editorial voice: kicker names the stage, display names the thing.
               The code comes from the registry, not a literal, so the header

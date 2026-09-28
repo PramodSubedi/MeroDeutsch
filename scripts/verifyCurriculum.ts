@@ -199,12 +199,21 @@ console.log('\n=== 3. path nodes point at real routes ===');
   const ROUTES = new Set([
     '/', '/welcome', '/auth', '/home', '/alphabet', '/numbers', '/calendar',
     '/articles', '/greetings', '/glossary', '/vocab-trainer', '/dictation',
-    '/grammar', '/pronunciation', '/roleplay', '/dashboard', '/learn',
+    '/grammar', '/pronunciation', '/roleplay', '/dashboard', '/learn', '/levels',
     '/sentence-builder', '/games', '/email-builder', '/practice',
     '/article-sprint', '/rapid-fire', '/rapid-blitz', '/stories', '/analytics',
     '/import', '/settings', '/privacy', '/terms', '/help', '/feedback',
   ]);
-  const DYNAMIC = [/^\/checkpoint\/\d+$/, /^\/games(\?|$)/, /^\/rapid-fire(\?|$)/];
+  const DYNAMIC = [
+    /^\/checkpoint\/\d+$/,
+    /^\/games(\?|$)/,
+    /^\/rapid-fire(\?|$)/,
+    // Level pages: /learn/a2 and /levels/a2. The bare /learn and /levels are
+    // static above; these carry an id segment. Added with the grid move so a
+    // node pointing at a future level is caught here rather than 404ing.
+    /^\/learn\/[a-z0-9]+$/i,
+    /^\/levels\/[a-z0-9]+$/i,
+  ];
 
   let clean = true;
   for (const node of A1_LEARN_NODES) {

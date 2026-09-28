@@ -34,7 +34,16 @@ export function LetterCard({ item, practiced, langMode, onPracticed, onOpenDetai
       onClick={flip}
       role="button"
       tabIndex={0}
-      onKeyDown={(e) => e.key === 'Enter' && flip()}
+      // Enter AND Space. Space is the native activation key for a button, so a
+      // screen-reader user who reaches for "press space to activate" got
+      // nothing before — it only scrolled the page. `e.preventDefault()` on
+      // Space is required, or the page scrolls under the card mid-flip.
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          flip();
+        }
+      }}
     >
       <div
         className={`relative h-full w-full transition-transform duration-400 [transform-style:preserve-3d] ${

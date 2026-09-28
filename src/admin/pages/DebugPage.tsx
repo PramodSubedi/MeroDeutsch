@@ -29,22 +29,23 @@ import { A1_UNIT_COUNT } from '../../data/a1Path';
 /**
  * Paths worth checking per mode — where a tier or identity bug would show.
  *
- * `/learn/a1` is THE important one and it is easy to get wrong: `/learn` is the
- * CEFR level GRID (`CefrLevelIndexPage`), not the campaign. The 15-module spine
- * only renders on a level page, so linking to `/learn` and concluding "premium
- * shows no lessons" is a false negative — the tier was right, the URL was wrong.
+ * `/learn` and `/learn/a1` are the SAME page (the A1 campaign); the level grid
+ * moved to `/levels`. The 15-module spine only renders on Premium, so linking
+ * to a free-mode path and concluding "premium shows no lessons" is a false
+ * negative — the tier was right, the URL was wrong.
  */
 const MODE_PATHS: Record<DebugMode, string[]> = {
   real: ['/', '/learn', '/dashboard'],
   guest: ['/', '/welcome', '/practice'],
-  free: ['/', '/learn/a1', '/settings'],
-  premium: ['/', '/learn/a1', '/lesson/0/notes'],
+  free: ['/', '/learn', '/settings'],
+  premium: ['/', '/learn', '/lesson/0/notes'],
 };
 
 /** A short, readable label for a path (the full path is too long for a chip). */
 function pathLabel(path: string): string {
   if (path === '/') return 'Home';
-  if (path === '/learn') return 'Level grid';
+  if (path === '/learn') return `A1 · ${A1_UNIT_COUNT} units`;
+  if (path === '/levels') return 'Level grid';
   if (path === '/learn/a1') return `A1 · ${A1_UNIT_COUNT} units`;
   return path;
 }

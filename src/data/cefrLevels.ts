@@ -90,8 +90,27 @@ export const COMING_SOON_LABEL: CefrLevelCopy = {
 /** The level shown when a level is required but none was named. */
 export const DEFAULT_CEFR_LEVEL_ID: CefrLevelId = 'a1';
 
-/** The level GRID — the chooser. Also the route every "Learn" nav item points at. */
-export const CEFR_LEVELS_ROUTE = '/learn';
+/**
+ * THE LEVEL GRID — now the SECONDARY route `/levels`.
+ *
+ * WHAT MOVED AND WHY
+ * `/learn` used to be this chooser, with the actual A1 course one hop away at
+ * `/learn/a1`. That ordering was the defect: every "Learn" nav entry landed on
+ * a chooser whose best option is "A1 — start here", so the course was never
+ * more than one unnecessary click away, and 3 of the 4 cards on the page were
+ * levels that do not exist. It also contradicted the locked decision that
+ * `/learn` IS the campaign (.clinerules Part B / C1.3).
+ *
+ * So the two routes swapped roles rather than being merged:
+ *   /learn   the A1 COURSE — the spine, the 80% gates, "you are here"
+ *   /levels  the grid      — a "more levels" disclosure, reached deliberately
+ *
+ * A chooser that nobody must pass through is a map, not a gate. Nothing is
+ * lost: `/levels` is still a real route with the same cards, still soft-locked
+ * (a coming-soon level is a link to a page that says what it will contain), and
+ * still reachable from the course header.
+ */
+export const CEFR_LEVELS_ROUTE = '/levels';
 
 export const CEFR_LEVELS: readonly CefrLevel[] = [
   {
@@ -177,27 +196,49 @@ export function isCefrLevelAvailable(id: CefrLevelId): boolean {
   return getCefrLevel(id).status === 'available';
 }
 
-/** The level page for an id: `/learn/a1`. */
+/**
+ * The level PAGE for an id — `/learn/a1`.
+ *
+ * NOTE this is no longer `CEFR_LEVELS_ROUTE + '/' + id`. The grid moved to
+ * `/levels` but the level PAGES did not move with it: they hang off `/learn`,
+ * which is now the course itself. Deriving a level page from the grid route
+ * would have silently rewritten all 54 "back to the path" links to
+ * `/levels/a1`, which serves nothing.
+ *
+ * The DEFAULT level is expressed as the bare `/learn` — the course root, with
+ * no redundant `/a1` segment. `/learn/a1` still works (it is the same
+ * component; see `parseCefrLevel` usage in ContinueLearningPage) so a pasted
+ * deep link is never a 404.
+ */
+export const LEARN_ROUTE = '/learn';
+
 export function cefrLevelHref(id: CefrLevelId): string {
-  return `${CEFR_LEVELS_ROUTE}/${id}`;
+  return id === DEFAULT_CEFR_LEVEL_ID ? LEARN_ROUTE : `${LEARN_ROUTE}/${id}`;
 }
 
 /**
- * THE "TAKE ME TO MY COURSE" CONSTANT.
+ * THE "TAKE ME TO MY COURSE" CONSTANT — now `/learn`.
  *
  * Used by everything that means "back to the path" — a module's back link, the
- * checkpoint's "back to map", the dashboard's "continue learning". It is a
- * PATH page, not the grid, so a learner already studying A1 is never dropped
- * onto a chooser. Import this instead of typing `/learn`; typing `/learn` is
- * how the two got conflated in the first place.
+ * checkpoint's "back to map", the dashboard's "continue learning". 54 call
+ * sites read this, and none of them needed editing: the course simply became
+ * the default route, so "back to the course" and "learn" are the same URL and
+ * the old distinction between a PATH page and a GRID page has dissolved.
+ *
+ * Import this instead of typing the path by hand.
  */
 export const A1_PATH_ROUTE = cefrLevelHref(DEFAULT_CEFR_LEVEL_ID);
 
 /**
- * True when a pathname is one of the level PAGES (`/learn/a1`, not `/learn`).
+ * True when a pathname is a level PAGE carrying an explicit id
+ * (`/learn/a2`, not the bare `/learn`).
+ *
  * The level pages carry their own header and an explicit "all levels" back
  * link, so the shell breadcrumb is suppressed for them (see Breadcrumb.tsx).
+ * The bare `/learn` course root is NOT matched here — it is the primary
+ * destination and gets no breadcrumb, same as the old grid did.
  */
 export function isCefrLevelPath(pathname: string): boolean {
-  return pathname.startsWith(`${CEFR_LEVELS_ROUTE}/`) && isCefrLevelId(pathname.slice(CEFR_LEVELS_ROUTE.length + 1));
+  if (!pathname.startsWith(`${LEARN_ROUTE}/`)) return false;
+  return isCefrLevelId(pathname.slice(LEARN_ROUTE.length + 1));
 }

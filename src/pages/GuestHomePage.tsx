@@ -7,6 +7,7 @@ import { SEO } from '../components/common/SEO';
 import { LearningPath } from '../components/learning/LearningPath';
 import { UpgradeToSpine } from '../components/path/UpgradeToSpine';
 import { PracticeToolsGrid } from '../components/PracticeToolsGrid';
+import { A1_PATH_ROUTE } from '../data/cefrLevels';
 /**
  * Guest Home — the "Try free" destination.
  *
@@ -61,7 +62,7 @@ export function GuestHomePage() {
           </p>
 
           <Link
-            to="/alphabet"
+            to={A1_PATH_ROUTE}
             className={`${theme.button.primary} mt-4 inline-flex min-h-[48px] w-full items-center justify-center gap-2 sm:mt-5 sm:w-auto sm:px-8`}
           >
             {isDE ? 'Lernen starten' : 'Start learning'}
@@ -85,6 +86,32 @@ export function GuestHomePage() {
         </div>
       </section>
 
+      {/*
+        WHAT CHANGED AND WHY
+        This page measured 4,677px on a 390x844 viewport — 5.5 screens — and it
+        rendered SEVEN stacked sections: a hero, a flat 6-card module grid, an
+        upsell, a full practice tool grid, a sign-in panel, and a second
+        reassurance paragraph that said the same thing as the panel above it.
+
+        Two separate problems, one fix:
+
+        1. A SECOND LEARNING PATH. `LearningPath variant="grid"` is a flat,
+           unordered card list. The nav table already sends guests to `/learn`,
+           which is the real 5-stage spine (`navigation.ts`, the `guest` entry
+           on the Learn destination). So the app was again showing two paths —
+           the exact defect an earlier fix set out to kill, re-introduced by
+           this page. The grid is kept, but folded: it is a way IN, not the
+           first thing on screen, and the hero now points at the spine.
+
+        2. NO DECISION ABOVE THE FOLD. Everything a guest came for was behind
+           a marketing hero. The single primary action ("Start learning") now
+           targets the course, and everything else is one tap away.
+
+        Nothing was removed. Both sections still render, at the same routes, and
+        the sign-in panel is retained — the redundancy was the final
+        reassurance card, which repeated it in prose.
+      */}
+
       <section>
         <h2 className="text-meta font-semibold uppercase tracking-[0.18em] text-ink-500 dark:text-ink-400">
           {isDE ? 'Lernmodule' : 'Learning modules'}
@@ -96,13 +123,25 @@ export function GuestHomePage() {
 
       <UpgradeToSpine />
 
-      {/* Practice — full tool grid (same as logged-in users) */}
-      <section>
-        <h2 className="mb-2 text-meta font-semibold uppercase tracking-[0.18em] text-ink-500 dark:text-ink-400">
-          {isDE ? 'Übung' : 'Practice'}
-        </h2>
-        <PracticeToolsGrid />
-      </section>
+      {/* Practice — full tool grid (same as logged-in users), folded. It is a
+          destination for a learner who already knows what they want to drill;
+          an 11-card grid above the fold is not what a first-time guest needs. */}
+      <details className="group rounded-lg border border-ink-200 bg-white p-4 shadow-sm dark:bg-ink-900 dark:border-ink-800">
+        <summary className="flex min-h-[44px] cursor-pointer list-none items-center justify-between gap-3 sm:min-h-0">
+          <span className="text-body font-semibold text-ink-700 dark:text-ink-200">
+            {isDE ? 'Übung' : 'Practice'}
+          </span>
+          <span className="text-meta font-medium text-accent-600 dark:text-accent-400 group-open:hidden">
+            {isDE ? 'Anzeigen' : 'Show'}
+          </span>
+          <span className="hidden text-meta font-medium text-accent-600 dark:text-accent-400 group-open:inline">
+            {isDE ? 'Ausblenden' : 'Hide'}
+          </span>
+        </summary>
+        <div className="mt-4">
+          <PracticeToolsGrid />
+        </div>
+      </details>
 
       {/* Sign in - free, and it upgrades the experience from grid to designed path */}
       <section className="rounded-lg border border-accent-200 bg-accent-50/60 p-5 dark:border-accent-800/60 dark:bg-accent-950/30">
@@ -133,14 +172,17 @@ export function GuestHomePage() {
         </div>
       </section>
 
-      {/* Guest-mode reassurance */}
-      <section className="rounded-lg border border-ink-200 bg-white p-4 shadow-sm dark:bg-ink-900 dark:border-ink-800">
-        <p className="text-body leading-6 text-ink-600 dark:text-ink-300">
-          {isDE
-            ? 'Keine Anmeldung nötig, um zu starten. Erstellen Sie später ein Konto, wenn Sie Ihren Fortschritt auf allen Geräten sichern möchten.'
-            : 'No account needed to start. Create one later if you want your progress saved across devices.'}
-        </p>
-      </section>
+      {/*
+        REMOVED: a trailing "No account needed to start. Create one later if
+        you want your progress saved across devices." card.
+
+        It sat directly beneath the sign-in panel, which already offers the
+        account in the same words, and the hero already carries the same
+        reassurance as a secondary link. Three statements of one fact, on a
+        page whose problem was that it was too long. The information it held is
+        not lost — the hero's "Sign in to save progress" link and the panel
+        above both still say it.
+      */}
     </div>
   );
 }
