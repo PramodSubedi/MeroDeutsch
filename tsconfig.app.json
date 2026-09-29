@@ -30,6 +30,16 @@
   },
   "include": ["src"],
   /* Node-only self-checks (*.check.ts) and tests are run with `npx tsx`/`vitest`,
-     not bundled into the app. Keeping them in `include` would break `tsc -b`. */
+     not bundled into the app. Keeping them in `include` would break `tsc -b`.
+
+     These globs are the ONLY thing allowing Node-only code to live under `src/`.
+     A Node-only file that is NOT named `*.check.ts` slips past them, lands in the
+     app project, and fails the build with `TS2591: Cannot find name 'fs'`.
+
+     The fix for that is to MOVE the file to `scripts/` — never to add `"node"` to
+     the `types` field above, which would make `process` and `fs` typecheck in real
+     app code and relocate the failure into the browser, where nothing catches it.
+     `scripts/ci/appNodeBoundary.check.ts` fails CI if that boundary is crossed, and
+     its exemption list must stay in lockstep with this one. */
   "exclude": ["src/**/*.check.ts", "src/**/*.test.ts", "src/test/**"]
 }

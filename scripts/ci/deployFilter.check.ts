@@ -93,11 +93,21 @@ console.log('\n=== not build inputs: must NOT wake both projects ===');
 scope('supabase/migrations/20260929000000_add_profiles_role.sql', 'learner');
 scope('scripts/curriculum/validate.ts', 'learner');
 scope('scripts/ci/deployFilter.ts', 'learner');
+// These two were `src/data/curriculum/*`, so they classified as `shared` and
+// woke BOTH Vercel projects on any edit — for gates that run in CI and change
+// not one byte of either bundle. They are Node-only modules (they read the
+// filesystem), so `src/` was the wrong home for them in the first place; see
+// `scripts/ci/appNodeBoundary.check.ts`.
+scope('scripts/curriculum/vocabCategoryIndex.ts', 'learner');
+scope('scripts/curriculum/vocabCategories.check.ts', 'learner');
 skips('admin', ['supabase/migrations/20260929010000_admin_tables.sql'], 'migration only');
 skips('admin', ['scripts/seedCurriculum.ts'], 'maintenance script only');
 // A shared file inside scripts/ still builds the learner, because that is the
 // project whose build pipeline owns the script surface.
 builds('learner', ['scripts/curriculum/validate.ts'], 'script change builds learner');
+// Editing a content gate must not deploy the app — the gate cannot be a build
+// input, and treating it as one ships a rebuild for nothing.
+skips('admin', ['scripts/curriculum/vocabCategoryIndex.ts'], 'vocab gate change alone');
 
 console.log('\n=== path normalisation ===');
 check('leading ./ is stripped', classify('./src/admin/main.tsx') === 'admin');

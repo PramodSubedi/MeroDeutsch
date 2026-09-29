@@ -22,7 +22,7 @@ import { GRAMMAR_TABS } from '../../src/config/grammarTabs';
 import {
   buildVocabCategoryIndex,
   realVocabCategories,
-} from '../../src/data/curriculum/vocabCategoryIndex';
+} from './vocabCategoryIndex';
 
 const issues: CurriculumIssue[] = [...CURRICULUM_ISSUES];
 
