@@ -945,5 +945,988 @@
         "de": ""
       }
     }
-  ]
+  ],
+  "steps": [
+    {
+      "type": "intro",
+      "objectives": {
+        "en": [
+          "Order food and beverages politely in German",
+          "Apply the Accusative case to food orders ('Ich möchte einen Salat')",
+          "Ask for the bill and handle payment interactions"
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "bestellen",
+        "en": "to order",
+        "ne": "अर्डर गर्नु",
+        "examples": [
+          {
+            "de": "Ich möchte bestellen.",
+            "en": "I would like to order."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "der Salat",
+        "en": "salad",
+        "ne": "सलाद",
+        "examples": [
+          {
+            "de": "Ich möchte einen Salat.",
+            "en": "I would like a salad."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "die Suppe",
+        "en": "soup",
+        "ne": "सूप",
+        "examples": [
+          {
+            "de": "Ich nehme eine Suppe.",
+            "en": "I'll take a soup."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "das Wasser",
+        "en": "water",
+        "ne": "पानी",
+        "examples": [
+          {
+            "de": "Ein Wasser, bitte.",
+            "en": "A water, please."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "explain",
+      "title": {
+        "en": "Ordering Food with Accusative Case"
+      },
+      "body": "When ordering food with **möchte** (would like) or **nehmen** (take), your item is the **Accusative Direct Object**:\n\n- Masculine: Ich möchte **einen** Salat / **einen** Kaffee.\n- Feminine: Ich möchte **eine** Suppe.\n- Neuter: Ich möchte **ein** Wasser / **ein** Brot."
+    },
+    {
+      "type": "typed",
+      "ask": "fill-blank",
+      "prompt": "Ich möchte ___ (a) Salat, bitte.",
+      "answer": "einen",
+      "accepted": [
+        "einen"
+      ],
+      "note": "Salat is masculine -> einen"
+    },
+    {
+      "type": "typed",
+      "ask": "fill-blank",
+      "prompt": "Ich nehme ___ (a) Suppe.",
+      "answer": "eine",
+      "accepted": [
+        "eine"
+      ],
+      "note": "Suppe is feminine -> eine"
+    },
+    {
+      "type": "mcq",
+      "prompt": "What is the correct order for a masculine item like 'Tee'?",
+      "options": [
+        "Ich möchte einen Tee.",
+        "Ich möchte ein Tee.",
+        "Ich möchte eine Tee."
+      ],
+      "answer": "Ich möchte einen Tee.",
+      "hintReason": "Masculine direct objects take 'einen'."
+    },
+    {
+      "type": "match",
+      "pairs": [
+        {
+          "id": "0",
+          "de": "einen Salat",
+          "en": "a salad (masc acc)"
+        },
+        {
+          "id": "1",
+          "de": "eine Suppe",
+          "en": "a soup (fem acc)"
+        },
+        {
+          "id": "2",
+          "de": "ein Wasser",
+          "en": "a water (neut acc)"
+        }
+      ],
+      "columnLabels": {
+        "left": "Deutsch",
+        "right": "English"
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "die Rechnung",
+        "en": "bill / check",
+        "ne": "बिल",
+        "examples": [
+          {
+            "de": "Die Rechnung, bitte.",
+            "en": "The bill, please."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "zusammen",
+        "en": "together",
+        "ne": "सँगै",
+        "examples": [
+          {
+            "de": "Zahlen wir zusammen?",
+            "en": "Are we paying together?"
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "mcq",
+      "prompt": "Which word means 'the bill' in German?",
+      "options": [
+        "die Rechnung",
+        "das Essen",
+        "der Teller"
+      ],
+      "answer": "die Rechnung",
+      "hintReason": "die Rechnung = the bill"
+    },
+    {
+      "type": "dialogue",
+      "title": {
+        "en": "In the Restaurant",
+        "de": "Im Restaurant"
+      },
+      "turns": [
+        {
+          "speaker": "Waiter",
+          "de": "Guten Abend! Was möchten Sie bestellen?",
+          "en": "Good evening! What would you like to order?"
+        },
+        {
+          "speaker": "Guest",
+          "de": "Ich möchte einen Salat und ein Wasser, bitte.",
+          "en": "I would like a salad and a water, please."
+        },
+        {
+          "speaker": "Waiter",
+          "de": "Sehr gerne. Kommt sofort!",
+          "en": "With pleasure. Coming right up!"
+        },
+        {
+          "speaker": "Guest",
+          "de": "Die Rechnung, bitte.",
+          "en": "The bill, please."
+        }
+      ]
+    },
+    {
+      "type": "typed",
+      "ask": "translate-en-de",
+      "prompt": "The bill, please.",
+      "answer": "Die Rechnung, bitte",
+      "accepted": [
+        "Die Rechnung, bitte."
+      ],
+      "note": "Rechnung is feminine -> Die."
+    },
+    {
+      "type": "arrange",
+      "prompt": "Order the restaurant request:",
+      "tokens": [
+        "Ich",
+        "möchte",
+        "einen",
+        "Salat."
+      ]
+    },
+    {
+      "type": "dictation",
+      "text": "Die Rechnung, bitte.",
+      "instruction": "Listen and type what you hear."
+    },
+    {
+      "type": "culture",
+      "body": "In German restaurants, paying separately ('getrennt zahlen') is extremely common. The waiter will ask: 'Zusammen oder getrennt?' (Together or separately?). Tipping around 5-10% by rounding up is standard."
+    },
+    {
+      "type": "typed",
+      "ask": "correct",
+      "prompt": "Ich möchte ein Salat.",
+      "answer": "Ich möchte einen Salat",
+      "accepted": [
+        "Ich möchte einen Salat."
+      ],
+      "note": "Salat is masculine -> einen Salat."
+    },
+    {
+      "type": "mcq",
+      "prompt": "What does 'Getrennt, bitte' mean when paying?",
+      "options": [
+        "Separately, please.",
+        "Together, please.",
+        "Keep the change."
+      ],
+      "answer": "Separately, please.",
+      "hintReason": "Getrennt = separately."
+    },
+    {
+      "type": "typed",
+      "ask": "fill-blank",
+      "prompt": "Ich trinke ___ (a) Wasser.",
+      "answer": "ein",
+      "accepted": [
+        "ein"
+      ],
+      "note": "Wasser is neuter -> ein"
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Essen",
+        "en": "Food / Meal",
+        "ne": "खाना",
+        "article": "das",
+        "plural": "-",
+        "ipa": "/ˈɛsn̩/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Das Essen ist sehr lecker.",
+            "en": "The food is very delicious.",
+            "ne": "खाना धेरै मीठो छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Trinken / Getränk",
+        "en": "Drink / Beverage",
+        "ne": "पेय पदार्थ",
+        "article": "das",
+        "plural": "Getränke",
+        "ipa": "/ɡəˈtʁɛŋk/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Was möchten Sie trinken?",
+            "en": "What would you like to drink?",
+            "ne": "तपाईं के पिउन चाहनुहुन्छ?"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Wasser",
+        "en": "Water",
+        "ne": "पानी",
+        "article": "das",
+        "plural": "-",
+        "ipa": "/ˈvasɐ/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Ein Glas Wasser, bitte.",
+            "en": "A glass of water, please.",
+            "ne": "एक ग्लास पानी, कृपया।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Kaffee",
+        "en": "Coffee",
+        "ne": "कफी",
+        "article": "der",
+        "plural": "Kaffees",
+        "ipa": "/ˈkafe/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Ich trinke morgens einen Kaffee.",
+            "en": "I drink a coffee in the morning.",
+            "ne": "म बिहान कफी पिउँछु।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Tee",
+        "en": "Tea",
+        "ne": "चिया",
+        "article": "der",
+        "plural": "Tees",
+        "ipa": "/teː/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Möchten Sie einen Tee?",
+            "en": "Would you like a tea?",
+            "ne": "तपाईं चिया लिनुहुन्छ?"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Milch",
+        "en": "Milk",
+        "ne": "दूध",
+        "article": "die",
+        "plural": "-",
+        "ipa": "/mɪlç/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Der Kaffee ist mit Milch.",
+            "en": "The coffee is with milk.",
+            "ne": "कफी दूधसँग छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Saft",
+        "en": "Juice",
+        "ne": "जुस / रस",
+        "article": "der",
+        "plural": "Säfte",
+        "ipa": "/zaft/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Einen Apfelsaft, bitte.",
+            "en": "An apple juice, please.",
+            "ne": "एक ग्लास स्याउको जुस, कृपया।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Bier",
+        "en": "Beer",
+        "ne": "बियर",
+        "article": "das",
+        "plural": "Biere",
+        "ipa": "/biːɐ̯/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Ein kaltes Bier, bitte.",
+            "en": "A cold beer, please.",
+            "ne": "एउटा चिसो बियर, कृपया।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Wein",
+        "en": "Wine",
+        "ne": "वाइन",
+        "article": "der",
+        "plural": "Weine",
+        "ipa": "/vaɪ̯n/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Ein Glas Rotwein, bitte.",
+            "en": "A glass of red wine, please.",
+            "ne": "एक ग्लास रातो वाइन, कृपया।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Brot",
+        "en": "Bread",
+        "ne": "रोटी / ब्रेड",
+        "article": "das",
+        "plural": "Brote",
+        "ipa": "/bʁoːt/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Ich esse Brot mit Käse.",
+            "en": "I eat bread with cheese.",
+            "ne": "म चीजसँग रोटी खान्छु।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Brötchen",
+        "en": "Bread roll",
+        "ne": "सानो पाउरोटी",
+        "article": "das",
+        "plural": "Brötchen",
+        "ipa": "/ˈbʁøːtçn̩/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Zwie Brötchen, bitte.",
+            "en": "Two bread rolls, please.",
+            "ne": "दुई वटा सानो पाउरोटी, कृपया।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Käse",
+        "en": "Cheese",
+        "ne": "चीज",
+        "article": "der",
+        "plural": "-",
+        "ipa": "/ˈkɛːzə/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Der Käse schmeckt gut.",
+            "en": "The cheese tastes good.",
+            "ne": "चीजको स्वाद राम्रो छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Wurst",
+        "en": "Sausage / Cold cuts",
+        "ne": "ससेज",
+        "article": "die",
+        "plural": "Würste",
+        "ipa": "/vʊʁst/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Eine Bratwurst, bitte.",
+            "en": "A sausage, please.",
+            "ne": "एउटा ससेज, कृपया।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Fleisch",
+        "en": "Meat",
+        "ne": "मासु",
+        "article": "das",
+        "plural": "-",
+        "ipa": "/flaɪ̯ʃ/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Ich esse kein Fleisch.",
+            "en": "I eat no meat.",
+            "ne": "म मासु खाँदिनँ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Fisch",
+        "en": "Fish",
+        "ne": "माछा",
+        "article": "der",
+        "plural": "Fische",
+        "ipa": "/fɪʃ/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Der Fisch ist frisch.",
+            "en": "The fish is fresh.",
+            "ne": "माछा ताजा छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Ei",
+        "en": "Egg",
+        "ne": "अण्डा",
+        "article": "das",
+        "plural": "Eier",
+        "ipa": "/aɪ̯/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Zum Frühstück esse ich ein Ei.",
+            "en": "For breakfast I eat an egg.",
+            "ne": "बिहानको खाजामा म अण्डा खान्छु।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Apfel",
+        "en": "Apple",
+        "ne": "स्याउ",
+        "article": "der",
+        "plural": "Äpfel",
+        "ipa": "/ˈapfl̩/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Ich esse einen Apfel.",
+            "en": "I eat an apple.",
+            "ne": "म एउटा स्याउ खान्छु।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Banane",
+        "en": "Banana",
+        "ne": "केरा",
+        "article": "die",
+        "plural": "Bananen",
+        "ipa": "/baˈnaːnə/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Die Banane ist gelb.",
+            "en": "The banana is yellow.",
+            "ne": "केरा पहेँलो छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Gemüses",
+        "en": "Vegetables",
+        "ne": "तरकारी",
+        "article": "das",
+        "plural": "-",
+        "ipa": "/ɡəˈmyːzə/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Gemüse ist gesund.",
+            "en": "Vegetables are healthy.",
+            "ne": "तरकारी स्वास्थ्यवर्धक हुन्छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Kartoffel",
+        "en": "Potato",
+        "ne": "आलु",
+        "article": "die",
+        "plural": "Kartoffeln",
+        "ipa": "/kaʁˈtɔfl̩/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Ich mag Kartoffeln.",
+            "en": "I like potatoes.",
+            "ne": "मलाई आलु मन पर्छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Reis",
+        "en": "Rice",
+        "ne": "भात / चामल",
+        "article": "der",
+        "plural": "-",
+        "ipa": "/ʁaɪ̯s/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "In Nepal essen wir oft Reis.",
+            "en": "In Nepal we often eat rice.",
+            "ne": "नेपालमा हामी प्रायः भात खान्छौँ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Suppe",
+        "en": "Soup",
+        "ne": "सुप / झोल",
+        "article": "die",
+        "plural": "Suppen",
+        "ipa": "/ˈzʊpə/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Die Suppe ist heiß.",
+            "en": "The soup is hot.",
+            "ne": "सुप तातो छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Salat",
+        "en": "Salad",
+        "ne": "सलाद",
+        "article": "der",
+        "plural": "Salate",
+        "ipa": "/zaˈlaːt/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Ich bestelle einen Salat.",
+            "en": "I order a salad.",
+            "ne": "म सलाद मगाउँछु।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Kuchen",
+        "en": "Cake",
+        "ne": "केक",
+        "article": "der",
+        "plural": "Kuchen",
+        "ipa": "/ˈkuːxn̩/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Ein Stück Kuchen, bitte.",
+            "en": "A piece of cake, please.",
+            "ne": "एक टुक्रा केक, कृपया।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Zucker",
+        "en": "Sugar",
+        "ne": "चिनी",
+        "article": "der",
+        "plural": "-",
+        "ipa": "/ˈtsʊkɐ/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Ohne Zucker, bitte.",
+            "en": "Without sugar, please.",
+            "ne": "चिनी बिना, कृपया।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Salz",
+        "en": "Salt",
+        "ne": "नुन",
+        "article": "das",
+        "plural": "-",
+        "ipa": "/zalts/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Das Salz steht auf dem Tisch.",
+            "en": "The salt is on the table.",
+            "ne": "नुन टेबलमा छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Pfeffer",
+        "en": "Pepper",
+        "ne": "मरिच",
+        "article": "der",
+        "plural": "-",
+        "ipa": "/ˈpfɛfɐ/",
+        "frequency": "passive",
+        "examples": [
+          {
+            "de": "Reichen Sie mir bitte den Pfeffer.",
+            "en": "Please pass me the pepper.",
+            "ne": "कृपया मलाई मरिच दिनुहोस्।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Speisekarte",
+        "en": "Menu",
+        "ne": "मेनु",
+        "article": "die",
+        "plural": "Speisekarten",
+        "ipa": "/ˈʃpaɪ̯zə_kaʁtə/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Die Speisekarte, bitte.",
+            "en": "The menu, please.",
+            "ne": "मेनु, कृपया।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Rechnung",
+        "en": "Bill / Check",
+        "ne": "बिल",
+        "article": "die",
+        "plural": "Rechnungen",
+        "ipa": "/ˈʁɛçnʊŋ/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Die Rechnung, bitte.",
+            "en": "The bill, please.",
+            "ne": "बिल, कृपया।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Kellner",
+        "en": "Waiter",
+        "ne": "वेटर",
+        "article": "der",
+        "plural": "Kellner",
+        "ipa": "/ˈkɛlnɐ/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Der Kellner bringt die Speisekarte.",
+            "en": "The waiter brings the menu.",
+            "ne": "वेटरले मेनु ल्याउँछ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "möchten",
+        "en": "would like (modal)",
+        "ne": "चाहनु",
+        "plural": "möchte / möchtest / möchte",
+        "ipa": "/ˈmœçtn̩/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Ich möchte bitte einen Tee.",
+            "en": "I would like a tea, please.",
+            "ne": "म चिया लिन चाहन्छु, कृपया।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "trinken",
+        "en": "to drink",
+        "ne": "पिउनु",
+        "plural": "trinkt / trank / getrunken",
+        "ipa": "/ˈtʁɪŋkn̩/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Er trinkt ein Glas Wasser.",
+            "en": "He drinks a glass of water.",
+            "ne": "उहाँ एक ग्लास पानी पिउनुहुन्छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "schmecken",
+        "en": "to taste",
+        "ne": "स्वाद हुनु",
+        "plural": "schmeckt / schmeckte / geschmeckt",
+        "ipa": "/ˈʃmɛkn̩/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Das Essen schmeckt sehr gut!",
+            "en": "The food tastes very good!",
+            "ne": "खानाको स्वाद धेरै राम्रो छ!"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "bezahlen",
+        "en": "to pay",
+        "ne": "भुक्तानी गर्नु",
+        "plural": "bezahlt / bezahlte / bezahlt",
+        "ipa": "/bəˈtsaːlən/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Wir möchten bitte bezahlen.",
+            "en": "We would like to pay, please.",
+            "ne": "हामी बिल भुक्तानी गर्न चाहन्छौँ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "lecker",
+        "en": "Delicious / Tasty",
+        "ne": "मीठो",
+        "plural": "-",
+        "ipa": "/ˈlɛkɐ/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Das Hähnchen ist sehr lecker.",
+            "en": "The chicken is very delicious.",
+            "ne": "कुखुराको मासु धेरै मीठो छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "hungrig",
+        "en": "Hungry",
+        "ne": "भोक लागेको",
+        "plural": "-",
+        "ipa": "/ˈhʊŋʁɪç/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Ich bin sehr hungrig.",
+            "en": "I am very hungry.",
+            "ne": "मलाई धेरै भोक लागेको छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "durstig",
+        "en": "Thirsty",
+        "ne": "प्यास लागेको",
+        "plural": "-",
+        "ipa": "/ˈdʊʁstɪç/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Ich bin durstig, ich brauche Wasser.",
+            "en": "I am thirsty, I need water.",
+            "ne": "मलाई प्यास लागेको छ, मलाई पानी चाहिन्छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Trinkgeld",
+        "en": "Tip (gratuity)",
+        "ne": "टिप (पुरस्कार रकम)",
+        "article": "das",
+        "plural": "Trinkgelder",
+        "ipa": "/ˈtʁɪŋk_ɡɛlt/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Hier ist das Trinkgeld.",
+            "en": "Here is the tip.",
+            "ne": "यहाँ टिप रकम छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "summary"
+    }
+  ],
+  "stepsSource": "imported"
 }

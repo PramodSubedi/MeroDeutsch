@@ -400,7 +400,12 @@ Deno.serve(async (req: Request) => {
     // `.trim().toLowerCase()`, which silently corrupted every case-sensitive
     // string key (`Qwen2.5:3b` → `qwen2.5:3b`). The rule now lives in
     // `normalizeConfigValue`, next to the validator that gated it.
-    const value = normalizeConfigValue(key, cfg!.value as string | boolean);
+    //
+    // The RAW payload is passed, not a string cast: `app_config.value` is JSONB
+    // and an object key carries a structured value. Casting through `string`
+    // would have made every object payload fail validation as a type error
+    // rather than as the shape problem it actually was.
+    const value = normalizeConfigValue(key, cfg!.value);
 
     const { data: before } = await db.from('app_config').select('value').eq('key', key).maybeSingle();
     const { error } = await db
@@ -770,6 +775,75 @@ Deno.serve(async (req: Request) => {
       ok: false,
       code: 'not-implemented',
       message: 'vocab.clear_flag is not implemented yet. No change was made.',
+    });
+  }
+
+  // ── 10. system.selftest — prove the privilege boundary is reachable ───────
+  //
+  // EVERY `admin-action` call made so far has returned `401 unauthenticated`,
+  // which proves the auth wall and NOTHING ELSE. Roughly a thousand lines of
+  // deployed, unit-tested, never-executed privileged code sit behind it: ban,
+  // promote, `config.set`, `unit.publish`, `vocab.repair`. A deployment that
+  // 401s is indistinguishable from a deployment that would have worked, and a
+  // key rotation or a bad redeploy is exactly as invisible.
+  //
+  // This walks the real path an admin action takes — CORS, identify,
+  // `loadActor`, `countActiveAdmins`, `evaluateAction`, and the audit write —
+  // and reports each step's outcome. Every step below has ALREADY run and been
+  // checked by the time this handler is reached, so the `checks` array is a
+  // record rather than a new risk: reaching this point at all is itself the
+  // strongest signal, and the array says WHICH stage is sound if it is not.
+  //
+  // It changes no user, no config, and no curriculum. The single row it writes is
+  // the audit entry, which is the point: an operator must be able to see that
+  // the self-test ran, and an audit log that silently swallowed a probe would
+  // be a worse problem than the one being diagnosed.
+  if (action === 'system.selftest') {
+    const checks = [
+      { step: 'cors', ok: true, detail: `${req.headers.get('origin') ?? '(none)'} reached the handler` },
+      { step: 'identify', ok: true, detail: 'the verified token resolved to a user' },
+      {
+        step: 'load-actor',
+        ok: actor.role === 'admin',
+        detail: `role = ${actor.role}`,
+      },
+      {
+        step: 'not-suspended',
+        ok: actor.banned === false,
+        detail: actor.banned ? 'this admin is suspended' : 'banned_at is null',
+      },
+      {
+        step: 'active-admin-count',
+        ok: guardInput.activeAdminCount >= 1,
+        detail: `${guardInput.activeAdminCount} live admin(s)`,
+      },
+      { step: 'guard', ok: true, detail: `evaluateAction allowed it (${decision.code ?? 'no code'})` },
+      {
+        step: 'audit-write',
+        ok: true,
+        detail: 'this row is the audit entry the probe writes',
+      },
+    ];
+
+    await audit(db, {
+      adminId: actorId,
+      action: 'system.selftest',
+      targetId: null,
+      before: null,
+      after: { checks: checks.length },
+      userAgent,
+    });
+
+    const failed = checks.filter((c) => !c.ok);
+    return json(200, {
+      ok: failed.length === 0,
+      action,
+      message:
+        failed.length === 0
+          ? `The privileged path is reachable end to end. ${checks.length} checks passed, and this audit row is the only thing this probe wrote.`
+          : `${failed.length} of ${checks.length} checks failed. Everything before the last green step is sound; start there.`,
+      checks,
+      activeAdminCount: guardInput.activeAdminCount,
     });
   }
 

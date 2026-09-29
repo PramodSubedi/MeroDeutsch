@@ -45,17 +45,24 @@ check('addWeeks(4) crosses into the next month', addWeeks('2026-09-28', 4) === '
 
 console.log('\n=== 2. DENSE DAILY SERIES (no gaps) ===');
 const dense = denseDaily(new Map([['2026-09-27', 3], ['2026-09-25', 1]]), 3, '2026-09-27');
-check('series length is days+1', dense.length === 4, String(dense.length));
+// `days` is the number of POINTS. It used to be `days + 1`, which is how the
+// Analytics page plotted a 31-point series under the heading "Last 30 days" and
+// the Dashboard printed "31" beside a "30d" label. Both labels were honest
+// descriptions of the number and wrong about the window.
+check('series length is exactly days', dense.length === 3, String(dense.length));
 check('ends on the requested today', dense[dense.length - 1].date === '2026-09-27');
-check('starts days earlier', dense[0].date === '2026-09-24', dense[0].date);
+check('starts days-1 earlier', dense[0].date === '2026-09-25', dense[0].date);
 // A missing day must be a REAL zero. A sparse series would draw a straight line
 // through a three-day absence and hide it.
-// today = 2026-09-27, days = 3  ->  [09-24, 09-25, 09-26, 09-27]
-// so the 09-25 entry is at index 1, and today is at index 3.
-check('a day with no activity is zero, not missing', dense[0].active === 0, String(dense[0].active));
-check('recorded activity is carried through', dense[1].active === 1, String(dense[1].active));
-check("today's count is used", dense[3].active === 3, String(dense[3].active));
+// today = 2026-09-27, days = 3  ->  [09-25, 09-26, 09-27]
+// so 09-26 has no activity and must read 0, and today is the last index.
+check('a day with no activity is zero, not missing', dense[1].active === 0, String(dense[1].active));
+check('recorded activity is carried through', dense[0].active === 1, String(dense[0].active));
+check("today's count is used", dense[2].active === 3, String(dense[2].active));
 check('the series is in ascending date order', dense.every((d, i) => i === 0 || d.date > dense[i - 1].date));
+check('a 30-day request yields 30 points', denseDaily(new Map(), 30, '2026-09-27').length === 30);
+check('a 1-day request yields 1 point', denseDaily(new Map(), 1, '2026-09-27').length === 1);
+check('an activity date outside the window is excluded', denseDaily(new Map([['2026-01-01', 99]]), 3, '2026-09-27').every((p) => p.active === 0));
 
 console.log('\n=== 3. RETENTION: TRAILING ZEROS ARE NOT CHURN ===');
 {

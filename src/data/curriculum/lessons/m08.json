@@ -503,5 +503,426 @@
       "Why it happens: The masculine is the only gender whose article differs between nominative and accusative, so a learner who shifts everything by pattern-matching looks consistent but is wrong three times out of four.",
       "XP Reward: 100 XP | Badge Unlocked: 🎯 Accusative Shift Specialist"
     ]
-  }
+  },
+  "steps": [
+    {
+      "type": "intro",
+      "objectives": {
+        "en": [
+          "Understand the difference between Subject (Nominative) and Direct Object (Accusative)",
+          "Master the Masculine Accusative Article Shift (der -> den, ein -> einen, kein -> keinen)",
+          "Recognize that Feminine, Neuter, and Plural articles do NOT change in Accusative"
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "der Kaffee",
+        "en": "coffee",
+        "ne": "कफी",
+        "examples": [
+          {
+            "de": "Der Kaffee ist heiß.",
+            "en": "The coffee is hot."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "der Tee",
+        "en": "tea",
+        "ne": "चिया",
+        "examples": [
+          {
+            "de": "Ich trinke einen Tee.",
+            "en": "I drink a tea."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "der Hund",
+        "en": "dog",
+        "ne": "कुकुर",
+        "examples": [
+          {
+            "de": "Ich habe einen Hund.",
+            "en": "I have a dog."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "explain",
+      "title": {
+        "en": "The Accusative Masculine Shift Rule"
+      },
+      "body": "When a noun is the **direct object** of an action, it is in the **Accusative case**.\n\n**CRITICAL RULE**: ONLY Masculine articles change!\n\n- **Masculine**: der -> **den** | ein -> **einen** | kein -> **keinen**\n- **Feminine**: die -> **die** | eine -> **eine** | keine -> **keine** (No change)\n- **Neuter**: das -> **das** | ein -> **ein** | kein -> **kein** (No change)\n\nExamples:\n- Ich trinke **einen** Tee (masculine shift!).\n- Ich trinke **eine** Milch (feminine, no shift).\n- Ich esse **ein** Brot (neuter, no shift)."
+    },
+    {
+      "type": "typed",
+      "ask": "fill-blank",
+      "prompt": "Ich trinke ___ (a) Kaffee.",
+      "answer": "einen",
+      "accepted": [
+        "einen"
+      ],
+      "note": "Kaffee is masculine direct object -> einen"
+    },
+    {
+      "type": "typed",
+      "ask": "fill-blank",
+      "prompt": "Ich habe ___ (a) Hund.",
+      "answer": "einen",
+      "accepted": [
+        "einen"
+      ],
+      "note": "Hund is masculine direct object -> einen"
+    },
+    {
+      "type": "typed",
+      "ask": "choose-article",
+      "prompt": "Kaffee",
+      "answer": "der",
+      "accepted": [
+        "der"
+      ],
+      "note": "Kaffee is masculine in nominative"
+    },
+    {
+      "type": "mcq",
+      "prompt": "Which article changes in the Accusative case?",
+      "options": [
+        "Only masculine (der -> den / einen)",
+        "Only feminine (die -> der)",
+        "All articles change"
+      ],
+      "answer": "Only masculine (der -> den / einen)",
+      "hintReason": "Only masculine articles change in the accusative."
+    },
+    {
+      "type": "match",
+      "pairs": [
+        {
+          "id": "0",
+          "de": "einen Kaffee",
+          "en": "a coffee (accusative)"
+        },
+        {
+          "id": "1",
+          "de": "eine Milch",
+          "en": "a milk (accusative)"
+        },
+        {
+          "id": "2",
+          "de": "ein Wasser",
+          "en": "a water (accusative)"
+        }
+      ],
+      "columnLabels": {
+        "left": "Deutsch",
+        "right": "English"
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "brauchen",
+        "en": "to need",
+        "ne": "चाहिनु / आवश्यकता हुनु",
+        "examples": [
+          {
+            "de": "Ich brauche einen Stuhl.",
+            "en": "I need a chair."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "kaufen",
+        "en": "to buy",
+        "ne": "किन्नु",
+        "examples": [
+          {
+            "de": "Ich kaufe ein Buch.",
+            "en": "I buy a book."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "dialogue",
+      "title": {
+        "en": "In the Shop",
+        "de": "Im Geschäft"
+      },
+      "turns": [
+        {
+          "speaker": "Customer",
+          "de": "Ich brauche einen Tisch.",
+          "en": "I need a table."
+        },
+        {
+          "speaker": "Seller",
+          "de": "Wir haben einen Tisch hier.",
+          "en": "We have a table here."
+        },
+        {
+          "speaker": "Customer",
+          "de": "Gut, ich kaufe den Tisch.",
+          "en": "Good, I'll buy the table."
+        }
+      ]
+    },
+    {
+      "type": "typed",
+      "ask": "translate-en-de",
+      "prompt": "I drink a coffee.",
+      "answer": "Ich trinke einen Kaffee",
+      "accepted": [
+        "Ich trinke einen Kaffee."
+      ],
+      "note": "Kaffee is masculine -> einen Kaffee."
+    },
+    {
+      "type": "arrange",
+      "prompt": "Order the accusative sentence:",
+      "tokens": [
+        "Ich",
+        "trinke",
+        "einen",
+        "Tee."
+      ]
+    },
+    {
+      "type": "dictation",
+      "text": "Ich brauche einen Stuhl.",
+      "instruction": "Listen and type what you hear."
+    },
+    {
+      "type": "culture",
+      "body": "Transitive verbs like 'haben', 'brauchen', 'kaufen', 'trinken', and 'essen' always require direct objects in the Accusative case."
+    },
+    {
+      "type": "typed",
+      "ask": "correct",
+      "prompt": "Ich trinke ein Kaffee.",
+      "answer": "Ich trinke einen Kaffee",
+      "accepted": [
+        "Ich trinke einen Kaffee."
+      ],
+      "note": "Kaffee is masculine direct object -> einen Kaffee."
+    },
+    {
+      "type": "mcq",
+      "prompt": "Does 'das Wasser' change in the Accusative case?",
+      "options": [
+        "No, neuter stays 'das Wasser'.",
+        "Yes, it becomes 'den Wasser'.",
+        "Yes, it becomes 'dem Wasser'."
+      ],
+      "answer": "No, neuter stays 'das Wasser'.",
+      "hintReason": "Neuter nouns do not change in the accusative."
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Wasser",
+        "en": "Water",
+        "ne": "पानी",
+        "article": "das",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "Ein Glas Wasser, bitte.",
+            "en": "A glass of water, please.",
+            "ne": "एक ग्लास पानी, कृपया।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Kaffee",
+        "en": "Coffee",
+        "ne": "कफी",
+        "article": "der",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "Ich trinke gerne Kaffee.",
+            "en": "I like to drink coffee.",
+            "ne": "म कफी पिउन मन पर्छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Tee",
+        "en": "Tea",
+        "ne": "चिया",
+        "article": "der",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "Der Tee ist heiß.",
+            "en": "The tea is hot.",
+            "ne": "चिया तातो छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Brot",
+        "en": "Bread",
+        "ne": "पाउरोटी",
+        "article": "das",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "Das Brot ist frisch.",
+            "en": "The bread is fresh.",
+            "ne": "पाउरोटी ताजा छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Käse",
+        "en": "Cheese",
+        "ne": "चीज",
+        "article": "der",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "Der Käse schmeckt gut.",
+            "en": "The cheese tastes good.",
+            "ne": "चीजको स्वाद राम्रो छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Apfel",
+        "en": "Apple",
+        "ne": "स्याउ",
+        "article": "der",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "Ich esse einen Apfel.",
+            "en": "I eat an apple.",
+            "ne": "म एउटा स्याउ खान्छु।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Suppe",
+        "en": "Soup",
+        "ne": "सूप",
+        "article": "die",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "Die Suppe ist warm.",
+            "en": "The soup is warm.",
+            "ne": "सूप न्यानो छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Salat",
+        "en": "Salad",
+        "ne": "सलाद",
+        "article": "der",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "Ich bestelle einen Salat.",
+            "en": "I order a salad.",
+            "ne": "म सलाद मगाउँछु।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "bestellen",
+        "en": "to order",
+        "ne": "अर्डर गर्नु",
+        "partOfSpeech": "Verb",
+        "examples": [
+          {
+            "de": "Wir möchten bestellen.",
+            "en": "We would like to order.",
+            "ne": "हामी अर्डर गर्न चाहन्छौँ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "trinken",
+        "en": "to drink",
+        "ne": "पिउनु",
+        "partOfSpeech": "Verb",
+        "examples": [
+          {
+            "de": "Was möchten Sie trinken?",
+            "en": "What would you like to drink?",
+            "ne": "तपाईं के पिउन चाहनुहुन्छ?"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "essen",
+        "en": "to eat",
+        "ne": "खानु",
+        "partOfSpeech": "Verb",
+        "examples": [
+          {
+            "de": "Was isst du gerne?",
+            "en": "What do you like to eat?",
+            "ne": "तिमीलाई के खान मन पर्छ?"
+          }
+        ]
+      }
+    },
+    {
+      "type": "summary"
+    }
+  ],
+  "stepsSource": "imported"
 }

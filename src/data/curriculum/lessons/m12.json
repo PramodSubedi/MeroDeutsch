@@ -662,5 +662,550 @@
     "body": [
       "*Rules and Regulations (Ordnung muss sein): German culture places high value on rules (Regeln). Signs like \"Rauchen verboten\" (Smoking forbidden) or \"Ruhezeit\" (Quiet hours) are strictly enforced by authorities and citizens alike."
     ]
-  }
+  },
+  "steps": [
+    {
+      "type": "intro",
+      "objectives": {
+        "en": [
+          "Express professions and form female titles using the suffix '-in'",
+          "Use modal verbs 'können' (can), 'müssen' (must), and 'wollen' (want)",
+          "Construct modal verb infinitives at the end of clauses"
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "der Lehrer",
+        "en": "teacher (male)",
+        "ne": "शिक्षक",
+        "examples": [
+          {
+            "de": "Er ist Lehrer.",
+            "en": "He is a teacher."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "die Lehrerin",
+        "en": "teacher (female)",
+        "ne": "शिक्षिका",
+        "examples": [
+          {
+            "de": "Sie ist Lehrerin.",
+            "en": "She is a teacher."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "der Arzt",
+        "en": "doctor (male)",
+        "ne": "डाक्टर (पुरुष)",
+        "examples": [
+          {
+            "de": "Er ist Arzt.",
+            "en": "He is a doctor."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "die Ärztin",
+        "en": "doctor (female)",
+        "ne": "डाक्टर (महिला)",
+        "examples": [
+          {
+            "de": "Sie ist Ärztin.",
+            "en": "She is a doctor."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "explain",
+      "title": {
+        "en": "Professions & Female Suffix '-in'"
+      },
+      "body": "To form female professional titles, add **-in** to the masculine noun (often adding an umlaut):\n\n- **Lehrer** -> **Lehrerin**\n- **Student** -> **Studentin**\n- **Arzt** -> **Ärztin**\n\nNote: When stating your profession, do NOT use an article:\n- **Ich bin Lehrerin.** (NOT: Ich bin eine Lehrerin)."
+    },
+    {
+      "type": "typed",
+      "ask": "fill-blank",
+      "prompt": "Ich bin ___ (teacher, female).",
+      "answer": "Lehrerin",
+      "accepted": [
+        "Lehrerin"
+      ],
+      "note": "Female teacher = Lehrerin"
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "können",
+        "en": "can / to be able to",
+        "ne": "सक्नु",
+        "examples": [
+          {
+            "de": "Ich kann Deutsch sprechen.",
+            "en": "I can speak German."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "müssen",
+        "en": "must / to have to",
+        "ne": "पर्नु / अनिवार्य हुनु",
+        "examples": [
+          {
+            "de": "Ich muss heute arbeiten.",
+            "en": "I must work today."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "explain",
+      "title": {
+        "en": "Modal Verbs & Infinitive Sentence Bracket"
+      },
+      "body": "Modal verbs (*können, müssen, wollen*) sit in **Position 2** conjugated, and push the **main verb in infinitive to the VERY END**:\n\n- Ich **kann** [Pos 2] Deutsch **sprechen** [END].\n- Wir **müssen** [Pos 2] morgen **arbeiten** [END]."
+    },
+    {
+      "type": "typed",
+      "ask": "conjugate",
+      "prompt": "ich (können) Deutsch sprechen.",
+      "answer": "kann",
+      "accepted": [
+        "kann"
+      ],
+      "note": "ich form of können is kann"
+    },
+    {
+      "type": "typed",
+      "ask": "conjugate",
+      "prompt": "er (müssen) heute arbeiten.",
+      "answer": "muss",
+      "accepted": [
+        "muss"
+      ],
+      "note": "er form of müssen is muss"
+    },
+    {
+      "type": "mcq",
+      "prompt": "Where does the second verb go when using a modal verb?",
+      "options": [
+        "At the very end of the sentence in infinitive",
+        "Right after the modal verb",
+        "In Position 1"
+      ],
+      "answer": "At the very end of the sentence in infinitive",
+      "hintReason": "The second verb goes to the end in infinitive."
+    },
+    {
+      "type": "match",
+      "pairs": [
+        {
+          "id": "0",
+          "de": "können",
+          "en": "can / able to"
+        },
+        {
+          "id": "1",
+          "de": "müssen",
+          "en": "must / have to"
+        },
+        {
+          "id": "2",
+          "de": "wollen",
+          "en": "want to"
+        },
+        {
+          "id": "3",
+          "de": "dürfen",
+          "en": "may / allowed to"
+        }
+      ],
+      "columnLabels": {
+        "left": "Deutsch",
+        "right": "English"
+      }
+    },
+    {
+      "type": "dialogue",
+      "title": {
+        "en": "Job & Skills",
+        "de": "Beruf und Fähigkeiten"
+      },
+      "turns": [
+        {
+          "speaker": "Interviewer",
+          "de": "Was sind Sie von Beruf?",
+          "en": "What is your profession?"
+        },
+        {
+          "speaker": "Applicant",
+          "de": "Ich bin Lehrerin. Ich kann Deutsch sprechen.",
+          "en": "I am a teacher. I can speak German."
+        },
+        {
+          "speaker": "Interviewer",
+          "de": "Sehr gut!",
+          "en": "Very good!"
+        }
+      ]
+    },
+    {
+      "type": "typed",
+      "ask": "translate-en-de",
+      "prompt": "I can speak German.",
+      "answer": "Ich kann Deutsch sprechen",
+      "accepted": [
+        "Ich kann Deutsch sprechen."
+      ],
+      "note": "Modal verb bracket: kann ... sprechen"
+    },
+    {
+      "type": "arrange",
+      "prompt": "Build the modal sentence:",
+      "tokens": [
+        "Ich",
+        "kann",
+        "Gut",
+        "Deutsch",
+        "sprechen."
+      ]
+    },
+    {
+      "type": "dictation",
+      "text": "Ich kann Deutsch sprechen.",
+      "instruction": "Listen and type what you hear."
+    },
+    {
+      "type": "culture",
+      "body": "In German job interviews and formal introduction, stating your exact job title without articles ('Ich bin Ingenieur') is the standard standard format."
+    },
+    {
+      "type": "typed",
+      "ask": "correct",
+      "prompt": "Ich bin eine Lehrerin.",
+      "answer": "Ich bin Lehrerin",
+      "accepted": [
+        "Ich bin Lehrerin."
+      ],
+      "note": "No article used when stating profession after 'sein'."
+    },
+    {
+      "type": "mcq",
+      "prompt": "What is the 'ich' form of 'müssen'?",
+      "options": [
+        "muss",
+        "müsse",
+        "müsst"
+      ],
+      "answer": "muss",
+      "hintReason": "ich muss = I must"
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "wollen",
+        "en": "to want",
+        "ne": "चाहनु",
+        "partOfSpeech": "Modal Verb",
+        "examples": [
+          {
+            "de": "Er will nach Deutschland fliegen.",
+            "en": "He wants to fly to Germany.",
+            "ne": "उहाँ जर्मनी उड्न चाहनुहुन्छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "möchten",
+        "en": "would like",
+        "ne": "इच्छा हुनु",
+        "partOfSpeech": "Modal Verb",
+        "examples": [
+          {
+            "de": "Ich möchte einen Kaffee.",
+            "en": "I would like a coffee.",
+            "ne": "म कफी चाहन्छु।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "dürfen",
+        "en": "may / to be allowed to",
+        "ne": "अनुमति पाउनु",
+        "partOfSpeech": "Modal Verb",
+        "examples": [
+          {
+            "de": "Hier darf man nicht rauchen.",
+            "en": "One is not allowed to smoke here.",
+            "ne": "यहाँ धुम्रपान गर्न पाइँदैन।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "sollen",
+        "en": "should",
+        "ne": "उचित हुनु",
+        "partOfSpeech": "Modal Verb",
+        "examples": [
+          {
+            "de": "Der Arzt sagt, ich soll schlafen.",
+            "en": "The doctor says I should sleep.",
+            "ne": "डाक्टरले मलाई सुत्न भन्नुभएको छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Lehrer",
+        "en": "Teacher (male)",
+        "ne": "शिक्षक (पुरुष)",
+        "article": "der",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "Ich arbeite als Lehrer.",
+            "en": "I work as a teacher.",
+            "ne": "म शिक्षकको रूपमा काम गर्छु।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Lehrerin",
+        "en": "Teacher (female)",
+        "ne": "शिक्षक (महिला)",
+        "article": "die",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "Sie ist Lehrerin.",
+            "en": "She is a teacher.",
+            "ne": "उनी शिक्षक हुनुहुन्छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Arzt",
+        "en": "Doctor (male)",
+        "ne": "डाक्टर (पुरुष)",
+        "article": "der",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "Er ist Arzt.",
+            "en": "He is a doctor.",
+            "ne": "उहाँ डाक्टर हुनुहुन्छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Ärztin",
+        "en": "Doctor (female)",
+        "ne": "डाक्टर (महिला)",
+        "article": "die",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "Sie ist Ärztin.",
+            "en": "She is a doctor.",
+            "ne": "उनी डाक्टर हुनुहुन्छन्।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Student",
+        "en": "Student (male)",
+        "ne": "विद्यार्थी (पुरुष)",
+        "article": "der",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "Ich bin Student.",
+            "en": "I am a student.",
+            "ne": "म विद्यार्थी छु।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Studentin",
+        "en": "Student (female)",
+        "ne": "विद्यार्थी (महिला)",
+        "article": "die",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "Sie ist Studentin.",
+            "en": "She is a student.",
+            "ne": "उनी विद्यार्थी हुनुहुन्छन्।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Ingenieur",
+        "en": "Engineer (male)",
+        "ne": "इन्जिनियर (पुरुष)",
+        "article": "der",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "Er arbeitet als Ingenieur.",
+            "en": "He works as an engineer.",
+            "ne": "उहाँ इन्जिनियरको रूपमा काम गर्छन्।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Ingenieurin",
+        "en": "Engineer (female)",
+        "ne": "इन्जिनियर (महिला)",
+        "article": "die",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "Sie ist Ingenieurin.",
+            "en": "She is an engineer.",
+            "ne": "उनी इन्जिनियर हुनुहुन्छन्।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "arbeiten",
+        "en": "to work",
+        "ne": "काम गर्नु",
+        "partOfSpeech": "Verb",
+        "examples": [
+          {
+            "de": "Ich muss heute arbeiten.",
+            "en": "I have to work today.",
+            "ne": "म आज काम गर्नु पर्छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "lernen",
+        "en": "to learn / study",
+        "ne": "सिक्नु / पढ्नु",
+        "partOfSpeech": "Verb",
+        "examples": [
+          {
+            "de": "Ich kann gut Deutsch lernen.",
+            "en": "I can learn German well.",
+            "ne": "म जर्मन राम्रोसँग सिक्न सक्छु।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "kommen",
+        "en": "to come",
+        "ne": "आउनु",
+        "partOfSpeech": "Verb",
+        "examples": [
+          {
+            "de": "Kannst du am Samstag kommen?",
+            "en": "Can you come on Saturday?",
+            "ne": "के तिमी शनिबार आउन सक्छौ?"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "fahren",
+        "en": "to drive / travel",
+        "ne": "यात्रा गर्नु",
+        "partOfSpeech": "Verb",
+        "examples": [
+          {
+            "de": "Wir wollen nach Berlin fahren.",
+            "en": "We want to travel to Berlin.",
+            "ne": "हामी बर्लिन जान चाहन्छौँ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "mitkommen",
+        "en": "to come along",
+        "ne": "सँगै आउनु",
+        "partOfSpeech": "Verb (sep)",
+        "examples": [
+          {
+            "de": "Möchtest du mitkommen?",
+            "en": "Would you like to come along?",
+            "ne": "के तिमी सँगै आउन चाहन्छौ?"
+          }
+        ]
+      }
+    },
+    {
+      "type": "summary"
+    }
+  ],
+  "stepsSource": "imported"
 }

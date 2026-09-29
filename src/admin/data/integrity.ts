@@ -16,17 +16,35 @@
  *     gehen     noun            "Ich"
  *     böse      noun            "Sie"      ← an adjective
  *
- * All 47 are a contiguous run with `part_of_speech = 'noun'` and an empty Nepali
- * translation — the signature of an IMPORT ROW MISALIGNMENT, where `word[i]`
- * was paired with `translation_en[i+k]`. 47 words are currently teaching
- * learners the wrong translation, and nothing in the app would ever have said so.
+ * All 47 sit in a run with `part_of_speech = 'noun'` and an empty Nepali
+ * translation, which is the signature of an IMPORT ROW MISALIGNMENT, where
+ * `word[i]` was paired with `translation_en[i+k]`. 47 rows currently LOOK wrong,
+ * and nothing in the app would ever have said so.
+ *
+ * ── "LOOK WRONG" IS NOT "WRONG", AND THAT DISTINCTION IS LOAD-BEARING ────────
+ * This header used to conclude "47 words are currently teaching learners the
+ * wrong translation", and the finding's `detail` told the operator that learners
+ * are being taught the wrong meaning for "every one of these".
+ *
+ * Both overstated the heuristic, which is a CANDIDATE GENERATOR and not an
+ * oracle. A live SQL check showed at least two of the 47 are correct —
+ * `Fahrkarte → ticket` and `schlecht → bad` — which trip the detector only
+ * because "ticket" and "bad" happen to be unrelated German headwords in the same
+ * table. The constant-row-offset explanation was tested and rejected, so there is
+ * no bulk repair: every value needs a human.
+ *
+ * Telling an operator "every one of these" is the failure this project has hit
+ * three times in another form — a confident claim that survives the evidence
+ * contradicting it, because nothing in the same file disagreed with it.
  *
  * ── WHY THE HEURISTIC IS "IS THE ENGLISH ALSO A GERMAN WORD" ────────────────
  * A dictionary check would need a lexicon this app does not have. But German
  * vocabulary has ~1,000 rows in `word`, so a translation that is *itself* a
- * known German headword is almost certainly a misalignment. The one safe
- * exclusion is when the translation equals the word it translates (a legitimate
- * cognate pair like "Arm"/"arm"), which is filtered out.
+ * known German headword is worth REVIEWING. The one safe exclusion is when the
+ * translation equals the word it translates (a legitimate cognate pair like
+ * "Arm"/"arm"), which is filtered out. That exclusion cannot catch the
+ * coincidental collisions above, which is why the finding is worded as a
+ * candidate list.
  */
 import { supabase } from '../../lib/supabase';
 
@@ -129,7 +147,10 @@ export function buildFindings(rows: VocabRow[], sampleSize = 12): Finding[] {
       detail:
         'These rows look like an import row misalignment: the word came from one source and the ' +
         'translation from another. Most are tagged `noun`, which is wrong for most of them. ' +
-        'Learners are being taught the wrong meaning for every one of these.',
+        'TREAT EVERY ROW AS A CANDIDATE, NOT A VERDICT: at least two of the 47 in the live table ' +
+        'are correct and trip the detector only because the translation coincides with an ' +
+        'unrelated German word. A constant-row-offset explanation was tested and rejected, so ' +
+        'there is no bulk fix — each value has to be checked and supplied by hand.',
       samples: misaligned.slice(0, sampleSize).map((r) => ({
         id: r.id,
         label: `${r.word} → ${r.translationEn} (${r.partOfSpeech ?? 'no part of speech'})`,

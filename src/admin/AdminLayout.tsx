@@ -15,7 +15,7 @@
  * The control center has no quiz surface, so there is no "toast above content"
  * requirement to satisfy here.
  */
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import {
   Activity,
@@ -41,44 +41,40 @@ import { useDarkMode } from '../hooks/useDarkMode';
 import { useAdminAuth } from './hooks/useAdminAuth';
 import { ModeSwitcher } from './components/ModeSwitcher';
 import { SearchPalette } from './components/SearchPalette';
+import { ReadBoundary } from './components/ReadBoundary';
 import { fetchAuditLog } from './data/auditLog';
 import { fetchContentItems, fetchUnitDocs } from './data/contentItems';
-import { fetchUsers } from './data/users';
+import { fetchUsersIndex } from './data/users';
 import { fetchVocabulary } from './data/vocabulary';
 import type { SearchIndexInput } from './data/search';
-import { startCurriculumResolution } from '../data/curriculum/resolveActive';
-
-interface NavItem {
-  to: string;
-  label: string;
-  icon: LucideIcon;
-  /** Ships in a later phase; rendered disabled so the map is honest. */
-  planned?: boolean;
-}
+import { NAV_ITEMS, SEARCH_SOURCES } from './data/search';
 
 /**
- * The full route map. `planned: true` renders a disabled "Soon" chip rather than
- * a dead link — a nav item that pretends to work is worse than one that says it
- * isn't ready.
+ * Icons live here, keyed by route, not in `data/search.ts`.
+ *
+ * The route table itself is shared with the palette — it was duplicated, and the
+ * copy in `search.ts` was missing `/debug` entirely, so the QA simulator could
+ * not be found by searching for it. The ICONS are React components and belong in
+ * the component that renders them; keeping them out of `search.ts` also keeps
+ * that module importable by a pure check suite with no DOM.
+ *
+ * The `planned` flag is gone. Every destination in this table is a live route,
+ * and nothing in the app was in the "Soon" state — so the flag was a code path
+ * that no input could ever reach, guarded by a comment describing a condition
+ * that had not been true for several phases.
  */
-/**
- * The full route map. Every destination is live; `planned` now only ever marks
- * something genuinely unbuilt, and nothing in the app is in that state.
- */
-const NAV_ITEMS: readonly NavItem[] = [
-  { to: '/', label: 'Dashboard', icon: LayoutDashboard },
-  { to: '/users', label: 'Users', icon: Users },
-  { to: '/curriculum', label: 'Curriculum', icon: BookOpen },
-  { to: '/vocabulary', label: 'Vocabulary', icon: Type },
-  { to: '/chatbot', label: 'Chatbot', icon: Bot },
-  { to: '/integrity', label: 'Integrity', icon: ShieldAlert },
-  { to: '/audit-log', label: 'Audit log', icon: ScrollText },
-  { to: '/analytics', label: 'Analytics', icon: Activity },
-  { to: '/system', label: 'System', icon: SettingsIcon },
-  // The QA simulator reaches into the learner app, so it is listed with the
-  // real tools rather than deferred.
-  { to: '/debug', label: 'QA simulator', icon: Wrench },
-];
+const NAV_ICONS: Readonly<Record<string, LucideIcon>> = {
+  '/': LayoutDashboard,
+  '/users': Users,
+  '/curriculum': BookOpen,
+  '/vocabulary': Type,
+  '/chatbot': Bot,
+  '/integrity': ShieldAlert,
+  '/audit-log': ScrollText,
+  '/analytics': Activity,
+  '/system': SettingsIcon,
+  '/debug': Wrench,
+};
 
 /** The host this build is served from, shown so an admin always knows which app they are in. */
 function useAdminHost(): string {
@@ -86,6 +82,21 @@ function useAdminHost(): string {
   return window.location.host;
 }
 
+export { NAV_ITEMS };
+
+/**
+ * ── REMOVED: `startCurriculumResolution()` on mount ──────────────────────────
+ * This called the learner app's curriculum resolver, with a comment explaining
+ * that it "makes `curriculum_source` real". On the ADMIN origin it does nothing
+ * observable: the control centre's own read model (`data/curriculum.ts`) imports
+ * `RESOLVED_PATH` directly as a module constant, and nothing in `src/admin`
+ * calls `getActivePath()`. It set module state that nothing read.
+ *
+ * It read as load-bearing, which is the real cost — a reader would reasonably
+ * conclude that removing it would serve the bundle to learners. The flag is
+ * genuinely inert until the LEARNER app boots, and `src/main.tsx` is where that
+ * happens, via `runBootGate()`.
+ */
 export function AdminLayout() {
   const { profile, session, signOut } = useAdminAuth();
   const { dark, toggle } = useDarkMode();
@@ -99,68 +110,91 @@ export function AdminLayout() {
     setDrawerOpen(false);
   }, [location.pathname]);
 
-  // Data for the global palette. Loaded once at mount and refreshed when the
-  // palette is opened after a navigation, so a user who just banned someone can
-  // still find them. Failures are ignored: a search index that fails to load
-  // must not take the shell down with it, and navigation hits still work.
+  // ── THE PALETTE INDEX ───────────────────────────────────────────────────────
+  //
+  // This used to rebuild on EVERY route change (`useEffect(refreshIndex,
+  // [location.pathname])`), which is twelve queries — users alone is six —
+  // fired again every time an admin clicked a nav item. It also threw away the
+  // `errors` array that all five loaders already return, so an RLS regression
+  // that emptied one group produced a palette that quietly stopped finding
+  // users, with nothing anywhere saying so.
+  //
+  // Now: build once at mount, and rebuild only when the palette is actually
+  // opened and the index is older than a minute. Same freshness for the one
+  // moment it is read, a fraction of the cost everywhere else.
   const [searchIndex, setSearchIndex] = useState<SearchIndexInput>({});
+  const [indexErrors, setIndexErrors] = useState<string[]>([]);
+  const builtAt = useRef(0);
+  const building = useRef(0);
 
-  const refreshIndex = async () => {
-    const [users, vocab, audit, content, units] = await Promise.all([
-      fetchUsers().catch(() => ({ rows: [] })),
-      fetchVocabulary().catch(() => ({ rows: [] })),
-      fetchAuditLog(200).catch(() => ({ entries: [] })),
-      fetchContentItems().catch(() => ({ rows: [] })),
-      fetchUnitDocs().catch(() => ({ docs: [] })),
+  const refreshIndex = useCallback(async () => {
+    // A run id, so a slow response from a superseded refresh cannot overwrite a
+    // newer one. Without it, opening the palette twice quickly races and the
+    // slower first response wins.
+    const run = building.current + 1;
+    building.current = run;
+
+    const results = await Promise.allSettled([
+      fetchUsersIndex(),
+      fetchVocabulary(),
+      fetchAuditLog(200),
+      fetchContentItems(),
+      fetchUnitDocs(),
     ]);
+    if (building.current !== run) return;
+
+    const [users, vocab, audit, content, units] = results.map((r) =>
+      r.status === 'fulfilled' ? r.value : null,
+    ) as [
+      Awaited<ReturnType<typeof fetchUsersIndex>> | null,
+      Awaited<ReturnType<typeof fetchVocabulary>> | null,
+      Awaited<ReturnType<typeof fetchAuditLog>> | null,
+      Awaited<ReturnType<typeof fetchContentItems>> | null,
+      Awaited<ReturnType<typeof fetchUnitDocs>> | null,
+    ];
+
+    // Surfaced rather than swallowed. A palette missing a group should say which.
+    setIndexErrors(
+      results.flatMap((r, i) =>
+        r.status === 'rejected'
+          ? [`${SEARCH_SOURCES[i]}: ${r.reason instanceof Error ? r.reason.message : String(r.reason)}`]
+          : [],
+      ),
+    );
+
     setSearchIndex({
-      users: users.rows,
-      vocabulary: vocab.rows,
-      audit: audit.entries,
-      content: content.rows,
-      unitDocs: units.docs,
-    });
-  };
+      // `.catch(() => ({ rows: [] }))` used to make a rejected read look identical
+      // to an empty table, so a failure and a genuinely empty group rendered
+      // the same silent absence.
+      users: users?.rows,
+      vocabulary: vocab?.rows,
+      audit: audit?.entries,
+      content: content?.rows,
+      unitDocs: units?.docs,
+    });    builtAt.current = Date.now();
+  }, []);
 
   useEffect(() => {
     void refreshIndex();
-  }, [location.pathname]);
+  }, [refreshIndex]);
 
-  // Make `curriculum_source` real. Until this runs the flag is inert: the
-  // resolution rules exist in `data/curriculum/source.ts` but nothing invokes
-  // them. Runs after mount rather than at import time, because ~50 importers
-  // read the spine synchronously and a boot-time fetch would make them async.
-  // Any failure leaves the bundled curriculum in place.
-  useEffect(() => {
-    startCurriculumResolution();
-  }, []);
+  const openPalette = useCallback(() => {
+    if (Date.now() - builtAt.current > 60_000) void refreshIndex();
+  }, [refreshIndex]);
 
   const displayName = profile?.full_name || profile?.username || session?.user.email || 'Admin';
 
   const nav = (
     <nav className="flex flex-col gap-1 p-3" aria-label="Admin sections">
       {NAV_ITEMS.map((item) => {
-        const Icon = item.icon;
+        const Icon = NAV_ICONS[item.to];
         const classes = (active: boolean) =>
           [
             'flex min-h-[44px] items-center gap-3 rounded-md px-3 text-body font-medium transition',
             active
               ? 'bg-accent-50 text-accent-700 dark:bg-accent-950/50 dark:text-accent-300'
               : 'text-ink-600 hover:bg-ink-100 hover:text-ink-900 dark:text-ink-300 dark:hover:bg-ink-800 dark:hover:text-ink-50',
-            item.planned ? 'opacity-55' : '',
           ].join(' ');
-
-        // Planned destinations stay real anchors so the URL is inspectable, but
-        // they are aria-disabled and cannot be activated.
-        if (item.planned) {
-          return (
-            <span key={item.to} aria-disabled="true" title="Not shipped yet" className={classes(false)}>
-              <Icon className="h-5 w-5 shrink-0" aria-hidden="true" />
-              <span className="flex-1">{item.label}</span>
-              <span className="text-micro font-semibold uppercase tracking-wide text-ink-400">Soon</span>
-            </span>
-          );
-        }
 
         return (
           <NavLink key={item.to} to={item.to} end className={({ isActive }) => classes(isActive)}>
@@ -275,12 +309,18 @@ export function AdminLayout() {
 
         <main className="flex-1 px-4 py-6 sm:px-6">
           <div className="mx-auto w-full max-w-content">
-            <Outlet />
+            {/* A panel that throws costs you that panel, not the shell.
+                A rejected read in a `useEffect` unmounts the whole React tree by
+                default, which is how one missing database function once turned
+                the entire control centre into a blank page. */}
+            <ReadBoundary label="This page">
+              <Outlet />
+            </ReadBoundary>
           </div>
         </main>
       </div>
 
-      <SearchPalette index={searchIndex} />
+      <SearchPalette index={searchIndex} onOpen={openPalette} errors={indexErrors} />
     </div>
   );
 }

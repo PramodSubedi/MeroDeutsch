@@ -75,6 +75,32 @@ jobs:
         run: npm run check:qabridge
       - name: check:userfilters
         run: npm run check:userfilters
+      # The two client predicates that decide whether someone may act as an admin,
+      # plus the unit editor's stale-write guard. `isAdminProfile` used to ignore
+      # the `banned_at` in its own type; the guard compared a server timestamp
+      # against a client clock.
+      - name: check:adminaccess
+        run: npm run check:adminaccess
+      # The guard contract for every admin RPC: SECURITY DEFINER, pinned
+      # search_path, an in-body admin re-check, a RAISE rather than an empty
+      # return, and revoked from anon. This is the check that would have caught
+      # both shipped bugs of that shape — a key the UI could write and the server
+      # could not, and an action the server had and the client could not send.
+      # Its final section states plainly that it does NOT verify SQL semantics:
+      # that needs a database, and is blocked on replayable migrations.
+      - name: check:adminrpcs
+        run: npm run check:adminrpcs
+      # The one behaviour that decides whether an admin page degrades. A
+      # REFUSAL must never fall back to the legacy RLS read, or a demoted admin
+      # gets an empty table instead of an explicit denial — the exact silent
+      # failure the RPCs were built to fix, reintroduced by the safety net.
+      - name: check:rpcfallback
+        run: npm run check:rpcfallback
+      # Calendar arithmetic, extracted from four identical private copies. Pins
+      # the `days-1` window bound — `gte` is inclusive, so `isoDaysAgo(30)` made
+      # every "30-day" figure a 31-day one and "active in 7 days" an 8-day one.
+      - name: check:daymath
+        run: npm run check:daymath
       - name: check:answers
         run: npm run check:answers
       - name: check:chatbot
@@ -111,6 +137,22 @@ jobs:
         run: npm run check:cors
       - name: check:currstore
         run: npm run check:currstore
+      # The writable-config allow-list is shared by the Edge Function and the admin
+      # UI. This pins its own invariants; the next one pins the UI against it.
+      - name: check:currdiff
+        run: npm run check:currdiff
+      # The bundle-vs-database comparison that makes the `db` switch reviewable.
+      # Notably pins that a cluster-only change is NOT reported as "identical"
+      # while every unit row reads clean.
+      - name: check:configkeys
+        run: npm run check:configkeys
+      # Closes the class of bug that shipped the Announcement Banner: a page wrote
+      # a key the server rejected, so every save 400'd and 1 267 checks stayed
+      # green. Static, because nothing in the type system connects a written key
+      # to an allowed one — `ConfigWritePayload.key` is a plain `string` on
+      # purpose, and `announcement_banner` type-checked perfectly.
+      - name: check:adminconfig
+        run: npm run check:adminconfig
       - name: check:currsource
         run: npm run check:currsource
       - name: check:currresolve
@@ -134,6 +176,28 @@ jobs:
         run: npm run check:deployfilter
       - name: check:routes
         run: npm run check:routes
+      # Keeps `src/config/learnerRoutes.ts` (which the curriculum validator
+      # checks every authored `to` against) in step with the real router in
+      # App.tsx. Both directions: a new page that was never registered, and a
+      # stale entry that would make the validator report a false failure.
+      - name: check:learnerroutes
+        run: npm run check:learnerroutes
+      # The rollout switch for the step-flow lesson renderer. The property under
+      # test is that the EXISTING lesson page still renders when the flag is
+      # absent, misspelled or unreachable — so a typo in one config row cannot
+      # break every lesson. Includes the assertion that switching back works,
+      # because a switch that cannot be turned back is a migration, not a
+      # rollout.
+      - name: check:lessonrender
+        run: npm run check:lessonrender
+      # The step-flow content gate. `steps[]` is GENERATED, so checking its shape
+      # would only prove the generator ran; this asserts AGREEMENT instead — every
+      # authored practice item is represented, every check step can actually be
+      # answered, and every mcq answer is selectable from its own options. That
+      # last one is the check that has never existed here: a question with no
+      # correct choice scores as a pass forever.
+      - name: check:steps
+        run: npm run check:steps
 
       # ── Gates ────────────────────────────────────────────────────────────
       - name: typecheck

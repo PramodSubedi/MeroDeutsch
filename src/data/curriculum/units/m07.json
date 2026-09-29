@@ -17,21 +17,120 @@
     "de": "Richtige deutsche Hauptsätze bilden: konjugiertes Verb auf Position 2, Inversion bei Zeit/Ort vorne beherrschen."
   },
   "nodes": [
-    { "id": "m07-learn", "kind": "learn", "label": { "en": "V2 Word Order", "de": "V2-Wortstellung" }, "to": "/grammar?tab=v2", "xp": 10 },
-    { "id": "m07-practice", "kind": "practice", "label": { "en": "Sentence Builder", "de": "Satzbau" }, "to": "/sentence-builder", "xp": 20 },
-    { "id": "m07-checkpoint", "kind": "checkpoint", "label": { "en": "Module 7 Checkpoint", "de": "Modul 7 Prüfung" } }
+    {
+      "id": "m07-learn",
+      "kind": "learn",
+      "label": {
+        "en": "V2 Word Order",
+        "de": "V2-Wortstellung"
+      },
+      "to": "/lesson/6",
+      "xp": 10
+    },
+    {
+      "id": "m07-practice",
+      "kind": "practice",
+      "label": {
+        "en": "V2 Reference",
+        "de": "V2-Referenz"
+      },
+      "to": "/sentence-builder",
+      "xp": 20
+    },
+    {
+      "id": "m07-checkpoint",
+      "kind": "checkpoint",
+      "label": {
+        "en": "Module 7 Checkpoint",
+        "de": "Modul 7 Prüfung"
+      }
+    },
+    {
+      "id": "m07-tool",
+      "kind": "bonus",
+      "label": {
+        "en": "V2 Reference",
+        "de": "V2-Referenz"
+      },
+      "to": "/grammar?tab=v2"
+    }
   ],
   "checkpoint": {
     "moduleType": "a1-checkpoint",
     "specs": [
-      { "type": "grammar-drill", "count": 10 },
-      { "type": "vocab-translation", "count": 4 }
+      {
+        "type": "grammar-drill",
+        "count": 10
+      },
+      {
+        "type": "vocab-translation",
+        "count": 4
+      }
     ]
   },
   "pedagogy": {
     "grammarNote": {
-      "en": "The conjugated verb is pinned to Position 2. Put a time or place phrase first and the SUBJECT moves to Position 3 — never the verb. Main clause (Hauptsatz): conjugated verb ALWAYS in Position 2. Position 1 can be: Subject, Time, Place, Object, or Adverb. When non-subject takes Position 1, subject moves to Position 3 (INVERSION). Multiple adverbials follow TeKaMoLo order: Temporal → Kausal → Modal → Lokal. The verb NEVER moves from Position 2 in a main clause — this is the GOLDEN RULE! Inversion is MANDATORY: 'Heute lerne ich' NOT 'Heute ich lerne'. Subordinate clauses (weil, dass, wenn) push verb to the END — different rule!",
-      "de": "Das konjugierte Verb steht fest auf Position 2. Steht zuerst eine Zeit- oder Ortsangabe, rückt das SUBJEKT auf Position 3 — niemals das Verb. Hauptsatz: konjugiertes Verb IMMER an Position 2. Position 1 kann sein: Subjekt, Zeit, Ort, Objekt oder Adverb. Wenn Nicht-Subjekt Position 1 einnimmt, rückt Subjekt auf Position 3 (INVERSION). Mehrere Adverbiale folgen TeKaMoLo-Reihenfolge: Temporal → Kausal → Modal → Lokal. Das Verb bewegt sich NIEMALS von Position 2 im Hauptsatz — das ist die GOLDENE REGEL! Inversion ist PFLICHT: 'Heute lerne ich' NICHT 'Heute ich lerne'. Nebensätze (weil, dass, wenn) schieben das Verb ans ENDE — andere Regel!"
+      "en": "The conjugated verb is pinned to Position 2. If a time or place phrase takes Position 1, the SUBJECT moves to Position 3 — never the verb. Multiple adverbials follow TeKaMoLo: Temporal → Kausal → Modal → Lokal. Subordinate clauses (weil, dass, wenn) are the exception: the verb goes last.",
+      "de": "Das konjugierte Verb steht fest auf Position 2. Steht zuerst eine Zeit- oder Ortsangabe, rückt das SUBJEKT auf Position 3 — niemals das Verb. Mehrere Adverbiale folgen TeKaMoLo: Temporal → Kausal → Modal → Lokal. Nebensätze (weil, dass, wenn) sind die Ausnahme: das Verb steht am Ende."
+    },
+    "grammarComparison": {
+      "title": {
+        "en": "Your word order vs. German",
+        "de": "Deine Wortstellung vs. Deutsch"
+      },
+      "rows": [
+        {
+          "language": {
+            "en": "English",
+            "ne": "नेपाली",
+            "de": "Englisch"
+          },
+          "order": {
+            "en": "SVO (Subject–Verb–Object)",
+            "ne": "SOV (विषय–वस्तु–क्रिया)",
+            "de": "SVO (Subjekt–Verb–Objekt)"
+          },
+          "example": {
+            "en": "I drink tea.",
+            "ne": "म चिया पिउँछु।",
+            "de": "Ich trinke Tee."
+          }
+        },
+        {
+          "language": {
+            "en": "Nepali",
+            "ne": "नेपाली",
+            "de": "Nepali"
+          },
+          "order": {
+            "en": "SOV",
+            "ne": "SOV (विषय–वस्तु–क्रिया)",
+            "de": "SOV"
+          },
+          "example": {
+            "en": "I drink tea.",
+            "ne": "म चिया पिउँछु।",
+            "de": "Ich trinke Tee."
+          }
+        },
+        {
+          "language": {
+            "en": "German",
+            "ne": "नेपाली",
+            "de": "Deutsch"
+          },
+          "order": {
+            "en": "V2 in the main clause; verb-final in the subordinate",
+            "ne": "V2 (मुख्य वाक्य); अंतिम स्थान (उपवाक्य)",
+            "de": "V2 im Hauptsatz; Verb am Ende im Nebensatz"
+          },
+          "example": {
+            "en": "Today I drink tea.",
+            "ne": "आज म चिया पिउँछु।",
+            "de": "Heute trinke ich Tee."
+          }
+        }
+      ]
     },
     "ruleTable": {
       "title": {
@@ -39,16 +138,101 @@
         "de": "V2-Positions-Matrix"
       },
       "rows": [
-        { "label": { "en": "Ich", "de": "Ich" }, "usage": { "en": "Subject in Position 1", "de": "Subjekt an Position 1" }, "example": { "en": "Ich trinke heute Tee.", "de": "Ich trinke heute Tee." } },
-        { "label": { "en": "Heute", "de": "Heute" }, "usage": { "en": "Time in Position 1 (inversion)", "de": "Zeit an Position 1 (Inversion)" }, "example": { "en": "Heute trinke ich Tee.", "de": "Heute trinke ich Tee." } },
-        { "label": { "en": "In Berlin", "de": "In Berlin" }, "usage": { "en": "Place in Position 1 (inversion)", "de": "Ort an Position 1 (Inversion)" }, "example": { "en": "In Berlin wohnt meine Schwester.", "de": "In Berlin wohnt meine Schwester." } },
-        { "label": { "en": "Gestern", "de": "Gestern" }, "usage": { "en": "Time in Position 1 (inversion)", "de": "Zeit an Position 1 (Inversion)" }, "example": { "en": "Gestern war ich müde.", "de": "Gestern war ich müde." } },
-        { "label": { "en": "Morgen", "de": "Morgen" }, "usage": { "en": "Time in Position 1 (inversion)", "de": "Zeit an Position 1 (Inversion)" }, "example": { "en": "Morgen fahre ich nach München.", "de": "Morgen fahre ich nach München." } },
-        { "label": { "en": "Den Apfel", "de": "Den Apfel" }, "usage": { "en": "Object in Position 1 (inversion)", "de": "Objekt an Position 1 (Inversion)" }, "example": { "en": "Den Apfel isst er gerne.", "de": "Den Apfel isst er gerne." } }
+        {
+          "label": {
+            "en": "Ich",
+            "de": "Ich"
+          },
+          "usage": {
+            "en": "Subject in Position 1",
+            "de": "Subjekt an Position 1"
+          },
+          "example": {
+            "en": "Ich trinke heute Tee.",
+            "de": "Ich trinke heute Tee."
+          }
+        },
+        {
+          "label": {
+            "en": "Heute",
+            "de": "Heute"
+          },
+          "usage": {
+            "en": "Time in Position 1 (inversion)",
+            "de": "Zeit an Position 1 (Inversion)"
+          },
+          "example": {
+            "en": "Heute trinke ich Tee.",
+            "de": "Heute trinke ich Tee."
+          }
+        },
+        {
+          "label": {
+            "en": "In Berlin",
+            "de": "In Berlin"
+          },
+          "usage": {
+            "en": "Place in Position 1 (inversion)",
+            "de": "Ort an Position 1 (Inversion)"
+          },
+          "example": {
+            "en": "In Berlin wohnt meine Schwester.",
+            "de": "In Berlin wohnt meine Schwester."
+          }
+        },
+        {
+          "label": {
+            "en": "Gestern",
+            "de": "Gestern"
+          },
+          "usage": {
+            "en": "Time in Position 1 (inversion)",
+            "de": "Zeit an Position 1 (Inversion)"
+          },
+          "example": {
+            "en": "Gestern war ich müde.",
+            "de": "Gestern war ich müde."
+          }
+        },
+        {
+          "label": {
+            "en": "Morgen",
+            "de": "Morgen"
+          },
+          "usage": {
+            "en": "Time in Position 1 (inversion)",
+            "de": "Zeit an Position 1 (Inversion)"
+          },
+          "example": {
+            "en": "Morgen fahre ich nach München.",
+            "de": "Morgen fahre ich nach München."
+          }
+        },
+        {
+          "label": {
+            "en": "Den Apfel",
+            "de": "Den Apfel"
+          },
+          "usage": {
+            "en": "Object in Position 1 (inversion)",
+            "de": "Objekt an Position 1 (Inversion)"
+          },
+          "example": {
+            "en": "Den Apfel isst er gerne.",
+            "de": "Den Apfel isst er gerne."
+          }
+        }
       ]
     }
   },
-  "vocabCategories": ["v2-order", "action-verbs", "nature-time"],
-  "grammarCategories": ["v2", "wordOrder"],
+  "vocabCategories": [
+    "v2-order",
+    "action-verbs",
+    "nature-time"
+  ],
+  "grammarCategories": [
+    "v2",
+    "wordOrder"
+  ],
   "hasLesson": true
 }

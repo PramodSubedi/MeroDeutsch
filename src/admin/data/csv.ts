@@ -49,13 +49,21 @@ export function csvDocument(header: string[], rows: unknown[][]): string {
 /**
  * Trigger a client-side file download.
  *
- * Shared for the same reason `csvCell` is: `VocabularyPage` carried its own copy
- * and a second would have been a second place for the blob type or the
- * object-URL cleanup to differ.
+ * Shared for the same reason `csvCell` is: `VocabularyPage` carried its own copy,
+ * and a second is a second place for the blob type or the object-URL cleanup to
+ * differ.
  *
- * The `revokeObjectURL` is not optional bookkeeping — without it every export
- * pins its blob in memory for the lifetime of the tab, and an admin exporting
- * the user list repeatedly would leak a copy of the table each time.
+ * The local copy that lived there is the reason two of these lines are load-
+ * bearing rather than tidy. It called `a.click()` on a DETACHED anchor and then
+ * revoked the URL SYNCHRONOUSLY, in the same task, so the download could lose the
+ * race against the revoke and silently produce nothing — the failure the comment
+ * below exists to prevent, present in the code the comment said had been fixed.
+ * Appending to the document and deferring the revoke costs two lines and removes
+ * the race.
+ *
+ * The `revokeObjectURL` is not optional bookkeeping either: without it every
+ * export pins its blob for the lifetime of the tab, and an admin exporting the
+ * user list repeatedly would leak a copy of the table each time.
  */
 export function downloadTextFile(filename: string, content: string, type: string): void {
   const blob = new Blob([content], { type });

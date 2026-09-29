@@ -148,32 +148,199 @@ export function summariseDue(dueAts: readonly (string | null)[], now: Date): Due
 }
 
 /**
- * Load only what the four Dashboard figures need.
+ * The Dashboard's four queue figures, counted in the database.
  *
- * One column, one query, no join. Fails soft to `null` rather than throwing, and
- * the caller renders a muted em dash — the same contract as every other admin
- * read model, because a denied table must leave the page working.
+ * This was `.select('due_at').limit(20000)` with NO `.order()` and no count,
+ * which is not a slow query but an UNDEFINED one: PostgREST returns an
+ * unspecified subset, so the backlog changed between two reloads of an unchanged
+ * database and the totals were whatever happened to arrive.
+ *
+ * It also now REFUSES. RLS can only exclude rows, so a non-admin previously got
+ * `total: 0` — a Dashboard figure that reads as "the backlog is empty" rather
+ * than "you may not see this". A `SECURITY DEFINER` function can raise.
  */
 export async function fetchQueueKpis(): Promise<{
   kpis: DueSummary | null;
   error: string | null;
 }> {
-  const { data, error } = await supabase.from('review_queue').select('due_at').limit(20000);
+  const outcome = await callAdminRpc<
+    { totals: { total: number; overdue: number; stale: number; oldestDue: string | null } }[]
+  >(supabase, 'admin_review_queue_page', QUEUE_RPC_ARGS(1));
 
+  if (outcome.kind === 'absent') {
+    // The RPC is not deployed. The old read was `.select('due_at').limit(20000)`
+    // with no order and no count — a nondeterministic subset whose totals were
+    // whatever happened to arrive. It is the fallback, and it says so.
+    const legacy = await fetchQueueKpisLegacy();
+    return { ...legacy, error: `${LEGACY_PATH_NOTICE} (${legacy.error})` };
+  }
+  if (outcome.kind !== 'ok') {
+    return { kpis: null, error: `admin_review_queue_page: ${outcome.message}` };
+  }
+
+  const row = (outcome.data as { totals: { total: number; overdue: number; stale: number; oldestDue: string | null } }[] | null)?.[0];
+  if (!row?.totals) return { kpis: null, error: 'admin_review_queue_page returned no totals' };
+
+  const t = row.totals;
+  const num = (v: unknown): number => (typeof v === 'number' && Number.isFinite(v) ? v : 0);
+  return {
+    kpis: {
+      total: num(t.total),
+      overdue: num(t.overdue),
+      // NOT aliased to `overdue`. "Stale" means overdue by more than
+      // `STALE_AFTER_DAYS` (30) — a much smaller and much more alarming number
+      // than "overdue". Reporting one as the other turns a real backlog into a
+      // thirtyfold overstatement.
+      stale: num(t.stale),
+      oldestDue: t.oldestDue ?? null,
+    },
+    error: null,
+  };
+}
+
+/** The previous read, kept as a fallback. Bounded, and reports the bound. */
+async function fetchQueueKpisLegacy(): Promise<{ kpis: DueSummary | null; error: string | null }> {
+  const { data, error } = await supabase.from('review_queue').select('due_at').limit(20_000);
   if (error) return { kpis: null, error: `review_queue: ${error.message}` };
-
-  const dueAts = ((data ?? []) as unknown as Array<{ due_at: string | null }>).map(
-    (r) => r.due_at,
-  );
+  const dueAts = ((data ?? []) as unknown as Array<{ due_at: string | null }>).map((r) => r.due_at);
   return { kpis: summariseDue(dueAts, new Date()), error: null };
 }
 
+/** The RPC's argument shape, so the two call sites cannot drift apart. */
+const QUEUE_RPC_ARGS = (limit: number) => ({
+  p_search: '',
+  p_module: '',
+  p_box: null,
+  p_overdue_only: false,
+  p_limit: limit,
+  p_cursor_due: null,
+  p_cursor_id: null,
+});
+
+/** A keyset cursor into the queue. */
+export interface QueueCursor {
+  dueAt: string;
+  id: string;
+}
+
+/** The page size the queue asks for. The RPC clamps to 500. */
+export const QUEUE_PAGE_SIZE = 100;
+
 /**
- * Aggregate a flat item list into every figure the page shows.
+ * ONE page of the work queue, most-overdue first, filtered in the database.
  *
- * Pure, so the totals are testable without a database — and because "49 of 50
- * overdue" is a claim worth being able to prove.
+ * Ascending `due_at`, because this is a work queue and the most overdue item is
+ * the one an admin is looking for. The `id` tiebreak is mandatory — `due_at` is
+ * not unique, and a cursor without one silently skips and repeats rows.
+ *
+ * ── KNOWN GAP, STATED ────────────────────────────────────────────────────────
+ * `buildTotals` also produces `byModule`, `byUser` and `byBand` breakdowns, and
+ * those need the WHOLE set rather than a page — so they are not served here.
+ * They still work for any caller holding a full item list, and adding them is a
+ * follow-up aggregate column on the RPC. What is deliberately NOT done is
+ * computing them from the page, which would report a breakdown of the visible
+ * slice as though it were the backlog.
  */
+export async function fetchQueuePage(args: {
+  search?: string;
+  module?: string;
+  box?: number | null;
+  overdueOnly?: boolean;
+  limit?: number;
+  cursor?: QueueCursor | null;
+} = {}): Promise<{
+  items: (QueueItem & { due: DueState; overdueDays: number })[];
+  total: number;
+  errors: string[];
+  nextCursor: QueueCursor | null;
+}> {
+  const outcome = await callAdminRpc<
+    { items: QueueItem[]; total: number; next_cursor: QueueCursor | null }[]
+  >(supabase, 'admin_review_queue_page', {
+    p_search: args.search ?? '',
+    p_module: args.module ?? '',
+    p_box: args.box ?? null,
+    p_overdue_only: args.overdueOnly ?? false,
+    p_limit: args.limit ?? QUEUE_PAGE_SIZE,
+    p_cursor_due: args.cursor?.dueAt ?? null,
+    p_cursor_id: args.cursor?.id ?? null,
+  });
+
+  if (outcome.kind === 'absent') {
+    // Fall back to the flat read, filtered in the browser, and report the cap.
+    const legacy = await fetchQueueLegacy(args);
+    return { ...legacy, errors: [LEGACY_PATH_NOTICE, ...legacy.errors] };
+  }
+  if (outcome.kind !== 'ok') {
+    return { items: [], total: 0, errors: [`admin_review_queue_page: ${outcome.message}`], nextCursor: null };
+  }
+
+  const row = (outcome.data as { items: QueueItem[]; total: number; next_cursor: QueueCursor | null }[] | null)?.[0];
+  const now = new Date();
+  const items = (Array.isArray(row?.items) ? row.items : []).map((it) => ({
+    ...it,
+    due: dueState(it.dueAt, now),
+    overdueDays: typeof it.dueAt === 'string'
+      ? Math.max(0, Math.floor((now.getTime() - new Date(it.dueAt).getTime()) / 86_400_000))
+      : 0,
+  }));
+
+  return {
+    items,
+    total: typeof row?.total === 'number' ? row.total : items.length,
+    errors: [],
+    nextCursor: row?.next_cursor ?? null,
+  };
+}
+
+/** The previous flat read, kept as a fallback. */
+async function fetchQueueLegacy(args: {
+  search?: string;
+  module?: string;
+  box?: number | null;
+  overdueOnly?: boolean;
+  limit?: number;
+}): Promise<{
+  items: (QueueItem & { due: DueState; overdueDays: number })[];
+  total: number;
+  errors: string[];
+  nextCursor: null;
+}> {
+  const errors: string[] = [];
+  const now = new Date();
+  const { data, error } = await supabase
+    .from('review_queue')
+    .select(
+      'id, user_id, item_key, module_type, box, error_count, success_count, last_reviewed_at, due_at, created_at, user_answer, correct_answer, interval_days, last_result, box_level, error_tag',
+    )
+    .limit(20_000);
+  if (error) {
+    return { items: [], total: 0, errors: [`review_queue: ${error.message}`], nextCursor: null };
+  }
+
+  let rows = ((data ?? []) as unknown as QueueItem[]).map((it) => ({
+    ...it,
+    due: dueState(it.dueAt, now),
+    overdueDays: typeof it.dueAt === 'string'
+      ? Math.max(0, Math.floor((now.getTime() - new Date(it.dueAt).getTime()) / 86_400_000))
+      : 0,
+  }));
+
+  if (args.module) rows = rows.filter((r) => r.moduleType === args.module);
+  if (args.box != null) rows = rows.filter((r) => r.boxLevel === args.box);
+  if (args.overdueOnly) rows = rows.filter((r) => r.due === 'overdue');
+  if (args.search) {
+    const needle = args.search.toLowerCase();
+    rows = rows.filter(
+      (r) =>
+        (r.itemKey ?? '').toLowerCase().includes(needle) ||
+        (r.userAnswer ?? '').toLowerCase().includes(needle),
+    );
+  }
+  rows.sort((a, b) => (a.dueAt ?? '').localeCompare(b.dueAt ?? ''));
+
+  return { items: rows, total: rows.length, errors, nextCursor: null };
+}
 export function buildTotals(items: QueueItem[], now: Date): QueueTotals {
   const byModule = new Map<string, { total: number; overdue: number }>();
   const byUser = new Map<string, { username: string | null; total: number; overdue: number }>();
@@ -241,6 +408,8 @@ export function buildTotals(items: QueueItem[], now: Date): QueueTotals {
  * exactly ONE implementation. Two divergent encoders is how a formula-injection
  * fix ends up applied to one export and not the other.
  */
+import { callAdminRpc, LEGACY_PATH_NOTICE } from './rpc';
+
 export { csvCell, csvLine, csvDocument } from './csv';
 
 export function toCsv(items: (QueueItem & { due: DueState; overdueDays: number })[]): string {

@@ -11,6 +11,7 @@
  * service-role Edge Function, which is invoked via `runAdminAction`.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import type { Virtualizer } from '@tanstack/react-virtual';
 import { AlertTriangle, ArrowDownUp, Download, RefreshCw, Search, MoreHorizontal, ShieldX, ShieldCheck, UserPlus, UserMinus } from 'lucide-react';
@@ -18,13 +19,19 @@ import { theme } from '../../config/theme';
 import { KpiCard } from '../components/KpiCard';
 import { UserDetailDrawer } from '../components/UserDetailDrawer';
 import { downloadTextFile } from '../data/csv';
-import { fetchUsers, usersToCsv, type AdminUserRow } from '../data/users';
+import {
+  fetchUsersPage,
+  usersToCsv,
+  USERS_PAGE_SIZE,
+  type AdminUserRow,
+  type UserFacets,
+  EMPTY_USER_FACETS,
+  type UsersCursor,
+  type UsersResult,
+} from '../data/users';
 import { runAdminAction, type AdminActionResult } from '../data/adminActions';
 import {
   DEFAULT_FILTERS,
-  facetCounts,
-  filterUsers,
-  sortUsers,
   type PlanFilter,
   type RoleFilter,
   type SortKey,
@@ -104,7 +111,12 @@ function UserActionMenu({
   const actions = [
     { action: 'user.ban' as const, label: 'Ban', icon: ShieldX, danger: true, disabled: isBanned },
     { action: 'user.unban' as const, label: 'Unban', icon: ShieldCheck, danger: false, disabled: !isBanned },
-    { action: 'user.promote' as const, label: 'Promote', icon: UserPlus, danger: false, disabled: isAdmin },
+    // Promote is marked `danger` so it takes the two-step confirm. It grants full
+    // control-centre access — a role, a ban button, the ability to publish
+    // curriculum to every learner — and it was previously the ONE privileged
+    // action here that applied on a single click, with no confirm and (because
+    // the reason field only renders for existing admins) no written reason.
+    { action: 'user.promote' as const, label: 'Promote', icon: UserPlus, danger: true, disabled: isAdmin },
     { action: 'user.demote' as const, label: 'Demote', icon: UserMinus, danger: true, disabled: !isAdmin },
   ].filter((a) => !a.disabled);
 
@@ -116,13 +128,18 @@ function UserActionMenu({
     setResult(r);
     if (r.ok) {
       setReason('');
-      setOpen(false);
+      setConfirming(null);
       onAction(action, reason);
+    } else {
+      // Only close the popover on success. A refusal is something an operator
+      // needs to read, and closing the popover closed the only element that
+      // could report it.
+      setConfirming(null);
     }
   }
 
   return (
-    <div className="relative">
+    <div className="relative flex flex-col items-end">
       <button
         type="button"
         onClick={(e) => { e.stopPropagation(); setOpen(!open); }}
@@ -135,12 +152,24 @@ function UserActionMenu({
 
       {open && (
         <>
+          {/* ── EVERY CLICK HERE MUST STOP PROPAGATING ──────────────────────────
+              The whole menu lives inside the row's own click target, which opens
+              the 360 drawer. Without `stopPropagation` on these two elements,
+              pressing "Promote" wrote the privilege change AND navigated into
+              the drawer, and dismissing the menu by clicking the backdrop did
+              the same. Keyboard was worse: the row's `onKeyDown` fired on
+              Enter, so activating a focused menu item ran both. */}
           <div
             className="fixed inset-0 z-10"
-            onClick={() => setOpen(false)}
+            onClick={(e) => { e.stopPropagation(); setOpen(false); }}
+            onKeyDown={(e) => e.stopPropagation()}
             aria-hidden="true"
           />
-          <div className="absolute right-0 z-20 mt-1 min-w-[14rem] rounded-md border border-ink-200 bg-white shadow-lg dark:border-ink-800 dark:bg-ink-900">
+          <div
+            className="absolute right-0 z-20 mt-1 min-w-[14rem] rounded-md border border-ink-200 bg-white shadow-lg dark:border-ink-800 dark:bg-ink-900"
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => e.stopPropagation()}
+          >
             {isAdmin && (
               <div className="border-b border-ink-100 p-2 dark:border-ink-800">
                 <label className="flex flex-col gap-1">
@@ -162,7 +191,8 @@ function UserActionMenu({
                   <button
                     type="button"
                     role="menuitem"
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.stopPropagation();
                       if (danger) setConfirming(action);
                       else execute(action);
                     }}
@@ -172,7 +202,7 @@ function UserActionMenu({
                     } hover:bg-ink-50 dark:hover:bg-ink-800 disabled:opacity-50`}
                   >
                     <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
-                    {confirming === action ? `Confirm ${label}` : busy ? 'Working…' : label}
+                    {busy ? 'Working…' : label}
                   </button>
                 </li>
               ))}
@@ -181,7 +211,7 @@ function UserActionMenu({
                   <button
                     type="button"
                     role="menuitem"
-                    onClick={() => execute(confirming)}
+                    onClick={(e) => { e.stopPropagation(); void execute(confirming); }}
                     disabled={busy}
                     className="w-full flex items-center gap-2 px-2 py-1.5 text-left text-body text-danger-600 dark:text-danger-400 hover:bg-danger-50 dark:hover:bg-danger-900/30 disabled:opacity-50"
                   >
@@ -191,34 +221,60 @@ function UserActionMenu({
                 </li>
               )}
             </ul>
-
-            {result && (
-              <div className="border-t border-ink-100 p-2 dark:border-ink-800">
-                <p
-                  role="status"
-                  className={`text-meta ${
-                    result.ok
-                      ? 'text-success-700 dark:text-success-300'
-                      : 'text-danger-700 dark:text-danger-300'
-                  }`}
-                >
-                  {result.message}
-                </p>
-              </div>
-            )}
           </div>
         </>
+      )}
+
+      {/* ── THE RESULT LIVES OUTSIDE `{open && …}` ──────────────────────────────
+          The popover closed on success, and the banner used to live inside it —
+          so a successful ban, promote or demote reported nothing at all, and
+          `result.message` was only ever readable on failure. The operator's
+          question after a privileged write is "did that work?", and the answer
+          has to survive the UI deciding it is done. */}
+      {result && (
+        <p
+          role="status"
+          className={`mt-1 max-w-[16rem] text-right text-micro ${
+            result.ok ? 'text-success-700 dark:text-success-300' : 'text-danger-700 dark:text-danger-300'
+          }`}
+        >
+          <span className="font-semibold">{result.ok ? 'Done. ' : 'Not applied. '}</span>
+          {result.message}
+        </p>
       )}
     </div>
   );
 }
 
-// Satisfy noUnusedLocals — used as JSX in UsersTable
-void UserActionMenu;
+// `UserActionMenu` is rendered as JSX in `UsersTable` below. The old
+// `void UserActionMenu;` and its "satisfy noUnusedLocals" comment claimed the
+// component was otherwise unused, which was false — it is referenced at the row
+// level. The statement did nothing and the comment actively misled.
 
 export function UsersPage() {
+  // ── SERVER-SIDE FILTERING AND PAGINATION ───────────────────────────────────
+  //
+  // This used to pull every user into the browser (capped at 5,000, with no error
+  // — so the table rendered "5,000 of 5,000" above a set that was quietly missing
+  // everyone past the cap), then filter and sort the result in JavaScript. The
+  // filter, the sort, the join and the total now happen in one RPC call.
+  //
+  // That is not only a performance change. It changes what the numbers MEAN:
+  //
+  //   · `total` is the exact matching population, so the count under the table
+  //     is a fact rather than a cap
+  //   · a filter is applied to the whole set, not to a page — filtering page 3
+  //     answers a different question than filtering the table
+  //   · a non-admin gets a REFUSAL. RLS can only exclude rows, so the old read
+  //     handed a demoted or suspended admin an empty table with no error.
   const [rows, setRows] = useState<AdminUserRow[]>([]);
   const [errors, setErrors] = useState<string[]>([]);
+  const [total, setTotal] = useState(0);
+  const [facets, setFacets] = useState<UserFacets>(EMPTY_USER_FACETS);
+  const [cursor, setCursor] = useState<UsersCursor | null>(null);
+  const [exporting, setExporting] = useState(false);
+  const [exportError, setExportError] = useState<string | null>(null);
+  const [truncated, setTruncated] = useState<UsersResult['truncated']>([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState<UserFilters>(DEFAULT_FILTERS);
   const scrollRef = useRef<HTMLDivElement | null>(null);
@@ -232,64 +288,140 @@ export function UsersPage() {
     setOpenName(name);
   }, []);
 
-  const load = useCallback(async () => {
-    setLoading(true);
-    const result = await fetchUsers();
-    setRows(result.rows);
-    setErrors(result.errors);
-    setLoading(false);
-  }, []);
+  // ── ONE effect, ONE fetch ──────────────────────────────────────────────────
+  // There were two effects here — `useEffect(load, [load])` and
+  // `useEffect(load, [load, reloadToken])` — and both ran on mount. The read was
+  // SIX queries, so every visit issued twelve, and whichever response landed last
+  // won. The reload token is the only thing the first effect was missing.
+  //
+  // It is now ONE query, and it re-runs whenever a FILTER changes — which is the
+  // behaviour that makes the filter correct rather than merely fast.
+  const [reloadToken, setReloadToken] = useState(0);
 
   useEffect(() => {
-    void load();
-  }, [load]);
+    let cancelled = false;
+    // Guards a slow response from an earlier run overwriting a fresher one after
+    // a manual refresh or a fast filter change.
+    setLoading(true);
+    void fetchUsersPage({
+      search: filters.search,
+      plan: filters.plan,
+      role: filters.role,
+      status: filters.status,
+      sort: filters.sort,
+      desc: filters.desc,
+      limit: USERS_PAGE_SIZE,
+    }).then((result) => {
+      if (cancelled) return;
+      setRows(result.rows);
+      setErrors(result.errors);
+      setTotal(result.total);
+      setFacets(result.facets);
+      setCursor(result.nextCursor);
+      setTruncated(result.truncated);
+      setLoading(false);
+    });
+    return () => {
+      cancelled = true;
+    };
+    // `filters` is the dependency, and `filters.search` is deliberately NOT
+    // debounced here: the RPC is indexed, and a debounce would be the kind of
+    // optimisation that makes a filter feel broken.
+  }, [filters, reloadToken]);
 
-  const counts = useMemo(() => facetCounts(rows, filters.search), [rows, filters.search]);
-  const filtered = useMemo(() => filterUsers(rows, filters), [rows, filters]);
-  const sorted = useMemo(
-    () => sortUsers(filtered.rows, filters.sort, filters.desc),
-    [filtered.rows, filters.sort, filters.desc]
+  const load = useCallback(() => setReloadToken((n) => n + 1), []);
+  const handleAction = useCallback(() => load(), [load]);
+
+  // ── THE `?q=` DEEP LINK ─────────────────────────────────────────────────────
+  // The ⌘K palette navigates to `/users?q=<id>` on the stated grounds that each
+  // hit "navigates to the page that CAN filter for it". No admin page read the
+  // parameter, so a palette result for a learner landed on the unfiltered table
+  // and the search appeared to do nothing. `matchesSearch` deliberately PREFIX-
+  // matches the id, so the id the palette carries is exactly what this expects.
+  const [params, setParams] = useSearchParams();
+  const deepLink = params.get('q');
+  useEffect(() => {
+    if (deepLink) setFilters((prev) => ({ ...prev, search: deepLink }));
+  }, [deepLink]);
+
+  const clearDeepLink = useCallback(() => {
+    if (!deepLink) return;
+    const next = new URLSearchParams(params);
+    next.delete('q');
+    setParams(next, { replace: true });
+  }, [deepLink, params, setParams]);
+
+  // ── NOTHING IS FILTERED OR SORTED HERE ANYMORE ─────────────────────────────
+  // `counts` comes from the RPC's facets, which are computed over the SEARCH
+  // result so the chips agree with each other. Computing them from the rows on
+  // screen would make every count describe the visible page.
+  const counts = facets;
+
+  const kpis = useMemo(
+    () => ({
+      total: facets.total,
+      premium: facets.premium,
+      admins: facets.admin,
+      suspended: facets.suspended,
+    }),
+    [facets]
   );
 
   const virtualizer = useVirtualizer({
-    count: sorted.length,
+    count: rows.length,
     getScrollElement: () => scrollRef.current,
     estimateSize: () => ROW_HEIGHT,
     overscan: OVERSCAN,
   });
 
-  const set = <K extends keyof UserFilters>(key: K, value: UserFilters[K]) =>
+  const loadMore = useCallback(() => {
+    if (!cursor || loading) return;
+    setLoading(true);
+    void fetchUsersPage({
+      search: filters.search,
+      plan: filters.plan,
+      role: filters.role,
+      status: filters.status,
+      sort: filters.sort,
+      desc: filters.desc,
+      limit: USERS_PAGE_SIZE,
+      cursor,
+    }).then((result) => {
+      setLoading(false);
+      if (result.errors.length > 0) {
+        setErrors(result.errors);
+        return;
+      }
+      // Append, and de-duplicate on id. A keyset cursor should make overlap
+      // impossible; the Set makes a row that slipped through idempotent rather
+      // than a duplicated key that crashes React's list rendering.
+      setRows((prev) => {
+        const seen = new Set(prev.map((r) => r.id));
+        return [...prev, ...result.rows.filter((r) => !seen.has(r.id))];
+      });
+      setCursor(result.nextCursor);
+    });
+  }, [cursor, loading, filters]);
+
+  const set = <K extends keyof UserFilters>(key: K, value: UserFilters[K]) => {
+    // Typing in the search box retires the deep link, so a later re-render
+    // cannot restore the palette's term over what the admin just replaced it
+    // with.
+    if (key === 'search') clearDeepLink();
     setFilters((prev) => ({ ...prev, [key]: value }));
+  };
 
   // Clicking the active column toggles direction; a new column starts
   // descending, which is the useful default for every numeric column here.
+  //
+  // Changing the sort also drops the cursor. A keyset cursor is only valid for
+  // the ordering it was taken from, so carrying it across a sort change would
+  // page from a position that means nothing under the new order.
   const onSort = (key: SortKey) => {
     setFilters((prev) =>
       prev.sort === key ? { ...prev, desc: !prev.desc } : { ...prev, sort: key, desc: true }
     );
   };
-
-  const kpis = useMemo(
-    () => ({
-      total: rows.length,
-      premium: rows.filter((r) => r.plan === 'premium').length,
-      admins: rows.filter((r) => r.role === 'admin').length,
-      suspended: rows.filter((r) => r.bannedAt !== null).length,
-    }),
-    [rows]
-  );
-
-  const [reloadToken, setReloadToken] = useState(0);
-
-  const handleAction = useCallback((_action: string, _reason: string) => {
-    // Trigger a reload to get fresh data from the server
-    setReloadToken((n) => n + 1);
-  }, []);
-
-  // Re-run load when reloadToken changes
-  useEffect(() => {
-    void load();
-  }, [load, reloadToken]);
 
   return (
     <div className="space-y-6">
@@ -305,28 +437,59 @@ export function UsersPage() {
         <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
-            // Exports the CURRENTLY SORTED + FILTERED set, not the whole table.
-            // Re-querying here would quietly hand over rows the operator had
-            // filtered out.
-            onClick={() => downloadTextFile('users.csv', usersToCsv(sorted), 'text/csv;charset=utf-8')}
-            className={theme.button.secondary}
-            disabled={loading || sorted.length === 0}
-          >
-            <Download className="h-4 w-4" aria-hidden="true" />
-            CSV ({sorted.length})
-          </button>
-          <button
-            type="button"
-            // Export ALL users (re-fetches full dataset)
-            onClick={async () => {
-              const result = await fetchUsers();
-              downloadTextFile('users-all.csv', usersToCsv(result.rows), 'text/csv;charset=utf-8');
-            }}
+            // Exports the rows currently LOADED, not the whole matching set.
+            // "CSV All" below is the one that goes looking for more, and it says
+            // so when it stops.
+            onClick={() => downloadTextFile('users.csv', usersToCsv(rows), 'text/csv;charset=utf-8')}
             className={theme.button.secondary}
             disabled={loading || rows.length === 0}
           >
             <Download className="h-4 w-4" aria-hidden="true" />
-            CSV All ({rows.length})
+            CSV ({rows.length})
+          </button>
+          <button
+            type="button"
+            // Exports the WHOLE matching set by paging the RPC. The busy guard is
+            // local: `loading` is not set during this walk, so `disabled` covered
+            // only the page's own load and a second click could start a second
+            // read.
+            onClick={async () => {
+              setExporting(true);
+              setExportError(null);
+              const collected: AdminUserRow[] = [];
+              let cursor: UsersCursor | null = null;
+              for (;;) {
+                const page = await fetchUsersPage({
+                  search: filters.search,
+                  plan: filters.plan,
+                  role: filters.role,
+                  status: filters.status,
+                  sort: filters.sort,
+                  desc: filters.desc,
+                  limit: USERS_PAGE_SIZE,
+                  cursor,
+                });
+                if (page.errors.length > 0) {
+                  setExporting(false);
+                  // Refuse rather than write a partial file, which would look
+                  // exactly like a complete one to whoever opens it.
+                  setExportError(`Refusing to export a partial table: ${page.errors.join('; ')}`);
+                  return;
+                }
+                collected.push(...page.rows);
+                cursor = page.nextCursor;
+                // The ranked sorts return no cursor — they are the top N by
+                // definition, and that N is the whole answer.
+                if (!cursor) break;
+              }
+              setExporting(false);
+              downloadTextFile('users-all.csv', usersToCsv(collected), 'text/csv;charset=utf-8');
+            }}
+            className={theme.button.secondary}
+            disabled={loading || exporting || total === 0}
+          >
+            <Download className="h-4 w-4" aria-hidden="true" />
+            CSV All ({total.toLocaleString()})
           </button>
           <button
             type="button"
@@ -341,6 +504,45 @@ export function UsersPage() {
       </header>
 
       {errors.length > 0 && <ErrorsPanel errors={errors} />}
+      {exportError && (
+        <p
+          role="alert"
+          className="rounded-md border border-warning-200 bg-warning-50 p-3 text-meta text-warning-900 dark:border-warning-900 dark:bg-warning-950/40 dark:text-warning-200"
+        >
+          {exportError}
+        </p>
+      )}
+
+      {/*
+        NO CAPPED-READ BANNER, and that is a deletion rather than a deprecation.
+
+        It existed because the read was capped at 5,000 with no error, so the
+        table could not tell you it was missing anyone. The RPC returns an exact
+        total, so the cap is gone — and the pagination footer below is the honest
+        replacement, because "showing 50 of 3,214" is a better statement than
+        either "5,000 of 5,000" or nothing at all.
+      */}
+
+      {/*
+        THE CAPPED-READ BANNER, REINSTATED FOR THE FALLBACK ONLY.
+
+        It is gone on the RPC path — `admin_users_page` returns an exact total,
+        so the cap is a state the data cannot be in. It comes back on the legacy
+        path, where the read IS capped, because "5,000 of 5,000" reads as
+        complete and is not. The distinction between a failed read and a capped
+        one is the whole reason this was ever written.
+      */}
+      {truncated.length > 0 && (
+        <p
+          role="status"
+          className="rounded-md border border-ink-300 bg-ink-50 p-3 text-meta text-ink-700 dark:border-ink-700 dark:bg-ink-900 dark:text-ink-200"
+        >
+          <strong>Capped read.</strong> This table holds {rows.length.toLocaleString()} of{' '}
+          {Math.max(...truncated.map((t) => t.total)).toLocaleString()} accounts:{' '}
+          {truncated.map((t) => `${t.source} ${t.shown.toLocaleString()}/${t.total.toLocaleString()}`).join(', ')}.
+          Counts below cover the rows on screen.
+        </p>
+      )}
 
       <section aria-label="Totals" className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <KpiCard label="Users" value={String(kpis.total)} hint="rows in profiles" loading={loading} />
@@ -360,19 +562,44 @@ export function UsersPage() {
         counts={counts}
         onSet={set}
         onSort={onSort}
-        shown={sorted.length}
-        total={rows.length}
+        shown={rows.length}
+        total={total}
       />
 
       <UsersTable
-        rows={sorted}
+        rows={rows}
         loading={loading}
-        totalRows={rows.length}
+        totalRows={total}
         scrollRef={scrollRef}
         virtualizer={virtualizer}
         onOpen={openUser}
         onAction={handleAction}
       />
+
+      {/* ── PAGINATION ───────────────────────────────────────────────────────
+          A keyset cursor, not page numbers. There is no OFFSET anywhere in this
+          system, and the reason is not fashion: an offset skips and repeats rows
+          as the underlying set changes, so paging through a live table gives you
+          duplicates and gaps for free.
+
+          The footer states the real position — "showing 50 of 3,214" — because
+          that number is now available, and it is the number the old table got
+          wrong. */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-meta text-ink-500 dark:text-ink-400" role="status">
+          Showing <strong className="text-ink-800 dark:text-ink-100">{rows.length.toLocaleString()}</strong>{' '}
+          of <strong className="text-ink-800 dark:text-ink-100">{total.toLocaleString()}</strong>{' '}
+          matching {total === 1 ? 'account' : 'accounts'}
+        </p>
+        <button
+          type="button"
+          onClick={loadMore}
+          disabled={!cursor || loading}
+          className={theme.button.secondary}
+        >
+          {loading ? 'Loading…' : cursor ? 'Load more' : 'All loaded'}
+        </button>
+      </div>
 
       <UserDetailDrawer
         userId={openId}
@@ -448,7 +675,7 @@ function FilterBar({
   total,
 }: {
   filters: UserFilters;
-  counts: ReturnType<typeof facetCounts>;
+  counts: UserFacets;
   onSet: <K extends keyof UserFilters>(key: K, value: UserFilters[K]) => void;
   onSort: (key: SortKey) => void;
   shown: number;

@@ -1,19 +1,25 @@
 /**
  * src/admin/pages/CurriculumPage.tsx
  *
- * The authored curriculum, as the APP SEES IT.
+ * The curriculum control surface: the authored bundle on one side, the published
+ * database store on the other.
  *
- * ── WHY THIS IS A READER, NOT AN EDITOR ────────────────────────────────────
- * The curriculum is bundled JSON (`src/data/curriculum/units/*.json`), not
- * database rows — there is no `curriculum_units` table. An "editor" that wrote to
- * the database would be editing a copy the app never reads, the worst possible
- * outcome: an admin believes a change shipped and nothing changed. So this
- * surface is honest about what it is — validation, structure and version
- * history.
+ * ── WHAT THIS PAGE IS NOT ───────────────────────────────────────────────────
+ * This file's header used to say "there is no `curriculum_units` table" and that
+ * an editor writing to the database "would be editing a copy the app never
+ * reads". Both were true when written and are now false — `curriculum_units`
+ * exists (migration `20260930020000`), and `unit.publish` writes to it — and
+ * they sat directly above a `<CurriculumStorePanel />` that does exactly that.
+ * A comment contradicting the code six lines below it is worse than no comment:
+ * a reader deciding whether to trust the component below has to work out which
+ * of the two is lying.
  *
- * To change content, the files are edited in the repo and checked by
- * `npm run curriculum:validate` — the same validator that runs at app boot, so a
- * broken edit is caught before it reaches a learner.
+ * ── WHY THE DB SIDE IS NOT A ONE-CLICK TOGGLE ───────────────────────────────
+ * Switching to `db` with no verified backfill would serve an empty course. The
+ * boot gate falls back to the bundle, so the app keeps working — but an admin
+ * would be toggling a flag they cannot see the effect of. The store panel
+ * therefore reports the flag, the resolved source and the gate's reason
+ * SEPARATELY, because they diverge in five ways and four of them are invisible.
  */
 import { useCallback, useEffect, useState } from 'react';
 import { AlertTriangle, BookOpen, CheckCircle2, History, RefreshCw } from 'lucide-react';
@@ -46,7 +52,8 @@ export function CurriculumPage() {
           <h1 className={theme.page.heading}>Curriculum</h1>
           <p className={theme.page.description}>
             The authored spine, read from the same bundled JSON the app runs on. The database store
-            below is a second source, currently not being served.
+            below is the editable copy the <code className="font-mono">curriculum_source</code> flag
+            selects between — and the store panel shows which one the app is actually serving.
           </p>
         </div>
         <button

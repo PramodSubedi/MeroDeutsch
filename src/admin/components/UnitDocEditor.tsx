@@ -3,15 +3,6 @@
  *
  * Authors a unit DRAFT in the control centre.
  *
- * So `db` is only offered when there are published units to serve, and the
- * disabled state says why. A UI-level safety rail on top of the server's
- * validation, not a replacement for it.
- */
-/**
- * src/admin/components/UnitDocEditor.tsx
- *
- * Authors a unit DRAFT in the control centre.
- *
  * ── WHY THIS EDITS JSON RATHER THAN FIELDS ─────────────────────────────────
  * A unit is `{ id, order, title: {en, ne, de}, goals, nodes: [...] }` and the
  * node shape is the curriculum's own — a form per node kind would be a second,
@@ -24,23 +15,12 @@
  * still select the unit in the list and press Publish. That two-step separation
  * is the reason a draft edit is safe to hand to someone: the worst a mistake can
  * do is sit in an unpublished row.
- *
- * ── WHY THE STALE-WRITE GUARD ───────────────────────────────────────────────
- * Two admins open m07, both see the same document, both save. The second save
- * silently discards the first — no error, no audit trail of a lost edit, and
- * the first admin has no way of knowing their work is gone.
- *
- * `updated_at` is the revision. The editor records the one it read and refuses
- * to write if the row has moved since. It is a client-side courtesy check, not
- * a lock: it catches the realistic case (two humans in one session) and says so
- * plainly, rather than implying a guarantee the schema cannot provide. A
- * server-side `WHERE updated_at = ...` would be the real fix and needs a column
- * contract this table does not have yet.
  */
 import { useEffect, useState } from 'react';
 import { AlertTriangle, Save } from 'lucide-react';
 import { theme } from '../../config/theme';
 import { runAdminAction, type AdminActionResult } from '../data/adminActions';
+import { isStaleRevision } from '../data/revisions';
 import type { StoredUnit } from '../data/curriculumStore';
 
 export function UnitDocEditor({
@@ -57,12 +37,16 @@ export function UnitDocEditor({
   const [busy, setBusy] = useState(false);
   // The revision this text was loaded from. Reset whenever the unit changes, so
   // switching units never carries another unit's guard with it.
-  const [baseRevision, setBaseRevision] = useState(unit.updatedAt);
+  const [baseRevision, setBaseRevision] = useState<string | null>(unit.updatedAt);
+  /** When this text was last written, in epoch ms. NOT a revision — see
+   *  `data/revisions.ts` for why a client clock cannot be one. */
+  const [savedAt, setSavedAt] = useState<number | null>(null);
 
   useEffect(() => {
     setText(JSON.stringify(unit.doc, null, 2));
     setParseError(null);
     setBaseRevision(unit.updatedAt);
+    setSavedAt(null);
   }, [unit.id, unit.doc, unit.updatedAt]);
 
   async function save() {
@@ -76,10 +60,17 @@ export function UnitDocEditor({
     setParseError(null);
 
     // The guard. Refuse BEFORE calling the server, and say what to do about it.
-    if (unit.updatedAt !== baseRevision) {
-      setParseError(
-        `${unit.id} was changed by someone else after you opened it. Reload the store to see their version before saving, or your edit would discard theirs.`,
-      );
+    // The rule itself lives in `data/revisions.ts` — it used to live here, and
+    // a predicate about a server's revision semantics is not something a React
+    // component should be the only place to look for.
+    const stale = isStaleRevision({
+      current: unit.updatedAt,
+      base: baseRevision,
+      savedAt,
+      now: Date.now(),
+    });
+    if (stale.stale) {
+      setParseError(stale.reason);
       return;
     }
 
@@ -92,7 +83,10 @@ export function UnitDocEditor({
     setBusy(false);
     onResult(r);
     if (r.ok) {
-      setBaseRevision(new Date().toISOString());
+      // The revision baseline is deliberately NOT advanced here. It changes only
+      // when a different read arrives, via the effect above — advancing it from
+      // a client clock is what made this guard lie.
+      setSavedAt(Date.now());
       onSaved();
     }
   }

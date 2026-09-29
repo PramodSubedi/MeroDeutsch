@@ -17,15 +17,55 @@
     "de": "Zeit, Daten, Termine ausdrücken und deutsche Umgangsuhrzeit beherrschen (halb neun = 8:30)."
   },
   "nodes": [
-    { "id": "m11-learn", "kind": "learn", "label": { "en": "Calendar & Time", "de": "Kalender & Zeit" }, "to": "/calendar", "xp": 10 },
-    { "id": "m11-practice", "kind": "practice", "label": { "en": "Time & Date Blitz", "de": "Zeit-&-Datum-Blitz" }, "to": "/rapid-fire?mode=vocabulary-translation", "xp": 20 },
-    { "id": "m11-checkpoint", "kind": "checkpoint", "label": { "en": "Module 11 Checkpoint", "de": "Modul 11 Prüfung" } }
+    {
+      "id": "m11-learn",
+      "kind": "learn",
+      "label": {
+        "en": "Calendar & Time",
+        "de": "Kalender & Zeit"
+      },
+      "to": "/lesson/10",
+      "xp": 10
+    },
+    {
+      "id": "m11-practice",
+      "kind": "practice",
+      "label": {
+        "en": "Calendar Practice",
+        "de": "Kalenderübungen"
+      },
+      "to": "/rapid-fire?mode=vocabulary-translation",
+      "xp": 20
+    },
+    {
+      "id": "m11-checkpoint",
+      "kind": "checkpoint",
+      "label": {
+        "en": "Module 11 Checkpoint",
+        "de": "Modul 11 Prüfung"
+      }
+    },
+    {
+      "id": "m11-tool",
+      "kind": "bonus",
+      "label": {
+        "en": "Calendar Practice",
+        "de": "Kalenderübungen"
+      },
+      "to": "/calendar"
+    }
   ],
   "checkpoint": {
     "moduleType": "a1-checkpoint",
     "specs": [
-      { "type": "calendar-translation", "count": 7 },
-      { "type": "vocab-translation", "count": 5 }
+      {
+        "type": "calendar-translation",
+        "count": 7
+      },
+      {
+        "type": "vocab-translation",
+        "count": 5
+      }
     ]
   },
   "pedagogy": {
@@ -39,14 +79,72 @@
         "de": "Zeit-Präposition-Spickzettel"
       },
       "rows": [
-        { "label": { "en": "am", "de": "am" }, "usage": { "en": "Days, dates, parts of day", "de": "Tage, Daten, Tageszeiten" }, "example": { "en": "am Montag, am 15. Mai, am Morgen", "de": "am Montag, am 15. Mai, am Morgen" } },
-        { "label": { "en": "im", "de": "im" }, "usage": { "en": "Months, seasons, years", "de": "Monate, Jahreszeiten, Jahre" }, "example": { "en": "im Juli, im Sommer, im Jahr 2026", "de": "im Juli, im Sommer, im Jahr 2026" } },
-        { "label": { "en": "um", "de": "um" }, "usage": { "en": "Exact clock times", "de": "Genauen Uhrzeiten" }, "example": { "en": "um 8 Uhr, um 14:30 Uhr", "de": "um 8 Uhr, um 14:30 Uhr" } },
-        { "label": { "en": "in der", "de": "in der" }, "usage": { "en": "Night (exception)", "de": "Nacht (Ausnahme)" }, "example": { "en": "in der Nacht", "de": "in der Nacht" } }
+        {
+          "label": {
+            "en": "am",
+            "de": "am"
+          },
+          "usage": {
+            "en": "Days, dates, parts of day",
+            "de": "Tage, Daten, Tageszeiten"
+          },
+          "example": {
+            "en": "am Montag, am 15. Mai, am Morgen",
+            "de": "am Montag, am 15. Mai, am Morgen"
+          }
+        },
+        {
+          "label": {
+            "en": "im",
+            "de": "im"
+          },
+          "usage": {
+            "en": "Months, seasons, years",
+            "de": "Monate, Jahreszeiten, Jahre"
+          },
+          "example": {
+            "en": "im Juli, im Sommer, im Jahr 2026",
+            "de": "im Juli, im Sommer, im Jahr 2026"
+          }
+        },
+        {
+          "label": {
+            "en": "um",
+            "de": "um"
+          },
+          "usage": {
+            "en": "Exact clock times",
+            "de": "Genauen Uhrzeiten"
+          },
+          "example": {
+            "en": "um 8 Uhr, um 14:30 Uhr",
+            "de": "um 8 Uhr, um 14:30 Uhr"
+          }
+        },
+        {
+          "label": {
+            "en": "in der",
+            "de": "in der"
+          },
+          "usage": {
+            "en": "Night (exception)",
+            "de": "Nacht (Ausnahme)"
+          },
+          "example": {
+            "en": "in der Nacht",
+            "de": "in der Nacht"
+          }
+        }
       ]
     }
   },
-  "vocabCategories": ["nature-time", "travel-questions", "weather-wishes"],
-  "grammarCategories": ["prepositions"],
+  "vocabCategories": [
+    "nature-time",
+    "travel-questions",
+    "weather-wishes"
+  ],
+  "grammarCategories": [
+    "prepositions"
+  ],
   "hasLesson": true
 }

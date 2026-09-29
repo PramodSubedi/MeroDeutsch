@@ -21,17 +21,17 @@
       "id": "m04-family",
       "kind": "learn",
       "label": {
-        "en": "Family Vocabulary",
-        "de": "Familien-Wortschatz"
+        "en": "Family & Relationships",
+        "de": "Familie & Beziehungen"
       },
-      "to": "/vocab-trainer?category=family"
+      "to": "/lesson/3"
     },
     {
       "id": "m04-stories",
       "kind": "practice",
       "label": {
-        "en": "Family Stories",
-        "de": "Familiengeschichten"
+        "en": "Family Vocabulary",
+        "de": "Familienvokabeln"
       },
       "to": "/stories"
     },
@@ -42,6 +42,15 @@
         "en": "Module 4 Checkpoint",
         "de": "Modul 4 Prüfung"
       }
+    },
+    {
+      "id": "m04-tool",
+      "kind": "bonus",
+      "label": {
+        "en": "Family Vocabulary",
+        "de": "Familienvokabeln"
+      },
+      "to": "/vocab-trainer?category=family"
     }
   ],
   "checkpoint": {

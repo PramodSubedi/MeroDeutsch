@@ -568,5 +568,510 @@
       "In German shops, it's polite to ask \"Kann ich das anprobieren?\" before trying clothes. Sales staff use formal 'Sie' — respond with 'Sie' as well.",
       "German sizing uses EU numbers (36, 38, 40...) or S/M/L/XL. Always good to know your EU size!"
     ]
-  }
+  },
+  "steps": [
+    {
+      "type": "intro",
+      "objectives": {
+        "en": [
+          "Vocabulary for clothing items and common colors",
+          "Use demonstrative pronouns 'dieser' (this masc), 'diese' (this fem), and 'dieses' (this neut)",
+          "Express preferences when shopping"
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "die Hose",
+        "en": "trousers / pants",
+        "ne": "प्यान्ट",
+        "examples": [
+          {
+            "de": "Die Hose ist blau.",
+            "en": "The trousers are blue."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "das Hemd",
+        "en": "shirt",
+        "ne": "शर्ट",
+        "examples": [
+          {
+            "de": "Das Hemd ist weiß.",
+            "en": "The shirt is white."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "der Mantel",
+        "en": "coat",
+        "ne": "कोट",
+        "examples": [
+          {
+            "de": "Der Mantel ist schwarz.",
+            "en": "The coat is black."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "blau",
+        "en": "blue",
+        "ne": "नीलो",
+        "examples": [
+          {
+            "de": "Das Hemd ist blau.",
+            "en": "The shirt is blue."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "rot",
+        "en": "red",
+        "ne": "रातो",
+        "examples": [
+          {
+            "de": "Die Hose ist rot.",
+            "en": "The trousers are red."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "explain",
+      "title": {
+        "en": "Demonstrative Pronouns: dieser, diese, dieses"
+      },
+      "body": "To say **'this'** specific item, use **dies-** with gender endings:\n\n- Masculine: **dieser** Mantel (this coat)\n- Feminine: **diese** Hose (these trousers)\n- Neuter: **dieses** Hemd (this shirt)\n- Plural: **diese** Schuhe (these shoes)"
+    },
+    {
+      "type": "typed",
+      "ask": "fill-blank",
+      "prompt": "___ (this) Hose gefällt mir.",
+      "answer": "Diese",
+      "accepted": [
+        "Diese"
+      ],
+      "note": "Hose is feminine -> Diese"
+    },
+    {
+      "type": "typed",
+      "ask": "fill-blank",
+      "prompt": "___ (this) Hemd ist schön.",
+      "answer": "Dieses",
+      "accepted": [
+        "Dieses"
+      ],
+      "note": "Hemd is neuter -> Dieses"
+    },
+    {
+      "type": "typed",
+      "ask": "fill-blank",
+      "prompt": "___ (this) Mantel ist warm.",
+      "answer": "Dieser",
+      "accepted": [
+        "Dieser"
+      ],
+      "note": "Mantel is masculine -> Dieser"
+    },
+    {
+      "type": "mcq",
+      "prompt": "Which demonstrative matches 'das Buch'?",
+      "options": [
+        "dieses",
+        "dieser",
+        "diese"
+      ],
+      "answer": "dieses",
+      "hintReason": "Neuter nouns take 'dieses'."
+    },
+    {
+      "type": "match",
+      "pairs": [
+        {
+          "id": "0",
+          "de": "dieser Mantel",
+          "en": "this coat"
+        },
+        {
+          "id": "1",
+          "de": "diese Hose",
+          "en": "these pants"
+        },
+        {
+          "id": "2",
+          "de": "dieses Hemd",
+          "en": "this shirt"
+        },
+        {
+          "id": "3",
+          "de": "diese Schuhe",
+          "en": "these shoes"
+        }
+      ],
+      "columnLabels": {
+        "left": "Deutsch",
+        "right": "English"
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "gefallen",
+        "en": "to please / to like",
+        "ne": "मन पर्नु",
+        "examples": [
+          {
+            "de": "Das Hemd gefällt mir.",
+            "en": "I like the shirt."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "dialogue",
+      "title": {
+        "en": "In the Clothes Shop",
+        "de": "Im Kleidergeschäft"
+      },
+      "turns": [
+        {
+          "speaker": "Customer",
+          "de": "Guten Tag! Was kostet dieser Mantel?",
+          "en": "Good day! How much is this coat?"
+        },
+        {
+          "speaker": "Clerk",
+          "de": "Dieser Mantel kostet 80 Euro.",
+          "en": "This coat costs 80 Euros."
+        },
+        {
+          "speaker": "Customer",
+          "de": "Er ist sehr schön. Ich nehme ihn!",
+          "en": "It is very nice. I'll take it!"
+        }
+      ]
+    },
+    {
+      "type": "typed",
+      "ask": "translate-en-de",
+      "prompt": "How much is this shirt?",
+      "answer": "Was kostet dieses Hemd?",
+      "accepted": [
+        "Was kostet dieses Hemd"
+      ],
+      "note": "Hemd is neuter -> dieses Hemd"
+    },
+    {
+      "type": "arrange",
+      "prompt": "Build the shopping question:",
+      "tokens": [
+        "Was",
+        "kostet",
+        "dieses",
+        "Hemd?"
+      ]
+    },
+    {
+      "type": "dictation",
+      "text": "Dieses Hemd ist schön.",
+      "instruction": "Listen and type what you hear."
+    },
+    {
+      "type": "culture",
+      "body": "In clothing stores across Germany, sales taxes (19% MwSt.) are always included in the tag price. What you see on the tag is the exact amount you pay at the register!"
+    },
+    {
+      "type": "typed",
+      "ask": "correct",
+      "prompt": "Was kostet diese Hemd?",
+      "answer": "Was kostet dieses Hemd?",
+      "accepted": [
+        "Was kostet dieses Hemd"
+      ],
+      "note": "Hemd is neuter -> dieses Hemd."
+    },
+    {
+      "type": "mcq",
+      "prompt": "What color is 'schwarz'?",
+      "options": [
+        "black",
+        "white",
+        "red"
+      ],
+      "answer": "black",
+      "hintReason": "schwarz = black"
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Kleidung",
+        "en": "Clothing",
+        "ne": "लुगा",
+        "article": "die",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "Die Kleidung ist schön.",
+            "en": "The clothing is beautiful.",
+            "ne": "लुगा राम्रो छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Hemd",
+        "en": "Shirt",
+        "ne": "कमिज",
+        "article": "das",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "Das Hemd ist weiß.",
+            "en": "The shirt is white.",
+            "ne": "कमिज सेतो छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Hose",
+        "en": "Trousers / Pants",
+        "ne": "प्यान्ट",
+        "article": "die",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "Die Hose ist blau.",
+            "en": "The trousers are blue.",
+            "ne": "प्यान्ट नीलो छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Jacke",
+        "en": "Jacket",
+        "ne": "ज्याकेट",
+        "article": "die",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "Die Jacke ist warm.",
+            "en": "The jacket is warm.",
+            "ne": "ज्याकेट न्यानो छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Schuh",
+        "en": "Shoe",
+        "ne": "जुत्ता",
+        "article": "der",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "Die Schuhe sind neu.",
+            "en": "The shoes are new.",
+            "ne": "जुत्ता नयाँ छन्।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Farbe",
+        "en": "Color",
+        "ne": "रंग",
+        "article": "die",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "Welche Farbe gefällt dir?",
+            "en": "Which color do you like?",
+            "ne": "केही रंग मन पर्छ?"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "grün",
+        "en": "green",
+        "ne": "हरियो",
+        "partOfSpeech": "Adjective",
+        "examples": [
+          {
+            "de": "Der Schrank ist grün.",
+            "en": "The wardrobe is green.",
+            "ne": "अलमारी हरियो छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "schwarz",
+        "en": "black",
+        "ne": "कालो",
+        "partOfSpeech": "Adjective",
+        "examples": [
+          {
+            "de": "Die Schuhe sind schwarz.",
+            "en": "The shoes are black.",
+            "ne": "जुत्ता कालो छन्।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "weiß",
+        "en": "white",
+        "ne": "सेतो",
+        "partOfSpeech": "Adjective",
+        "examples": [
+          {
+            "de": "Das Hemd ist weiß.",
+            "en": "The shirt is white.",
+            "ne": "कमिज सेतो छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "dieser",
+        "en": "this (masculine)",
+        "ne": "यो (पुरुष)",
+        "article": "der",
+        "partOfSpeech": "Demonstrative",
+        "examples": [
+          {
+            "de": "Dieser Pullover ist schön.",
+            "en": "This sweater is beautiful.",
+            "ne": "यो स्वेटर राम्रो छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Größe",
+        "en": "Size (clothing)",
+        "ne": "साइज",
+        "article": "die",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "Welche Größe haben Sie?",
+            "en": "What size do you have?",
+            "ne": "तपाईंको साइज के हो?"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "anprobieren",
+        "en": "to try on",
+        "ne": "लगाउनु / परीक्षण गर्नु",
+        "partOfSpeech": "Verb (sep)",
+        "examples": [
+          {
+            "de": "Kann ich sie anprobieren?",
+            "en": "Can I try it on?",
+            "ne": "के म यो लगाउन सक्छु?"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "kosten",
+        "en": "to cost",
+        "ne": "खर्च हुनु",
+        "partOfSpeech": "Verb",
+        "examples": [
+          {
+            "de": "Was kostet die Jacke?",
+            "en": "How much does the jacket cost?",
+            "ne": "ज्याकेटको कति खर्च हुन्छ?"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "passen",
+        "en": "to fit",
+        "ne": "बस्नु",
+        "partOfSpeech": "Verb",
+        "examples": [
+          {
+            "de": "Die Hose passt gut.",
+            "en": "The trousers fit well.",
+            "ne": "प्यान्ट राम्रो बस्छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "tragen",
+        "en": "to wear / to carry",
+        "ne": "लगाउनु / बोक्नु",
+        "partOfSpeech": "Verb",
+        "examples": [
+          {
+            "de": "Welche Größe tragen Sie?",
+            "en": "What size do you wear?",
+            "ne": "तपाईं कति नम्बरको साइज लगाउनुहुन्छ?"
+          }
+        ]
+      }
+    },
+    {
+      "type": "summary"
+    }
+  ],
+  "stepsSource": "imported"
 }

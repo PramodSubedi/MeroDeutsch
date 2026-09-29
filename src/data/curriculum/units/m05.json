@@ -24,14 +24,14 @@
         "en": "Articles",
         "de": "Artikel"
       },
-      "to": "/articles"
+      "to": "/lesson/4"
     },
     {
       "id": "m05-housing",
       "kind": "practice",
       "label": {
-        "en": "Housing Drill",
-        "de": "Wohnungs-Drill"
+        "en": "Articles Practice",
+        "de": "Artikelübungen"
       },
       "to": "/vocab-trainer?category=housing"
     },
@@ -42,6 +42,15 @@
         "en": "Module 5 Checkpoint",
         "de": "Modul 5 Prüfung"
       }
+    },
+    {
+      "id": "m05-tool",
+      "kind": "bonus",
+      "label": {
+        "en": "Articles Practice",
+        "de": "Artikelübungen"
+      },
+      "to": "/articles"
     }
   ],
   "bonus": [

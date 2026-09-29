@@ -405,5 +405,525 @@
       "🧠 Memory Hook: Notice the spelling of dreißig (30) — it is the ONLY decade that uses -ßig instead of -zig!",
       "🇩🇪 *Cultural Insight (Kulturtipp): Cash is still king (Bargeld ist König*) in small German bakeries and kiosks. Always carry coins!"
     ]
-  }
+  },
+  "steps": [
+    {
+      "type": "intro",
+      "objectives": {
+        "en": [
+          "Count from 0 to 20 in German",
+          "Master the unit-inversion rule for double-digit numbers (e.g. 'einsundzwanzig')",
+          "Understand Euro prices and phone numbers in everyday transactions"
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "eins",
+        "en": "one",
+        "ne": "एक",
+        "examples": [
+          {
+            "de": "Ich habe eins.",
+            "en": "I have one."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "zwei",
+        "en": "two",
+        "ne": "दुई",
+        "examples": [
+          {
+            "de": "Zwei Kaffee, bitte.",
+            "en": "Two coffees, please."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "drei",
+        "en": "three",
+        "ne": "तीन",
+        "examples": [
+          {
+            "de": "Es ist drei Uhr.",
+            "en": "It is three o'clock."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "vier",
+        "en": "four",
+        "ne": "चार",
+        "examples": [
+          {
+            "de": "Vier Euro, bitte.",
+            "en": "Four Euros, please."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "fünf",
+        "en": "five",
+        "ne": "पाँच",
+        "examples": [
+          {
+            "de": "Ich habe fünf Euro.",
+            "en": "I have five Euros."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "mcq",
+      "prompt": "Which number comes after 'drei'?",
+      "options": [
+        "vier",
+        "zwei",
+        "fünf"
+      ],
+      "answer": "vier",
+      "hintReason": "vier = 4"
+    },
+    {
+      "type": "match",
+      "pairs": [
+        {
+          "id": "0",
+          "de": "eins",
+          "en": "one"
+        },
+        {
+          "id": "1",
+          "de": "zwei",
+          "en": "two"
+        },
+        {
+          "id": "2",
+          "de": "drei",
+          "en": "three"
+        },
+        {
+          "id": "3",
+          "de": "vier",
+          "en": "four"
+        }
+      ],
+      "columnLabels": {
+        "left": "Deutsch",
+        "right": "English"
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "zehn",
+        "en": "ten",
+        "ne": "दश",
+        "examples": [
+          {
+            "de": "Zehn Euro, bitte.",
+            "en": "Ten Euros, please."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "zwanzig",
+        "en": "twenty",
+        "ne": "बीस",
+        "examples": [
+          {
+            "de": "Das kostet zwanzig Euro.",
+            "en": "That costs twenty Euros."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "explain",
+      "title": {
+        "en": "Double-Digit Inversion Rule"
+      },
+      "body": "In German, numbers from 21 to 99 are spoken **units first, then tens**, linked by **und** ('and'):\n\n- 21 = **einsundzwanzig** (one-and-twenty)\n- 22 = **zweiundzwanzig** (two-and-twenty)\n- 35 = **fünfunddreißig** (five-and-thirty)"
+    },
+    {
+      "type": "typed",
+      "ask": "short-answer",
+      "prompt": "How do you write '21' in German words?",
+      "answer": "einsundzwanzig",
+      "accepted": [
+        "einsundzwanzig."
+      ],
+      "note": "Unit first + und + decade."
+    },
+    {
+      "type": "mcq",
+      "prompt": "What does 'fünfzehn' mean in English?",
+      "options": [
+        "fifteen",
+        "fifty",
+        "five"
+      ],
+      "answer": "fifteen",
+      "hintReason": "'fünf' (5) + 'zehn' (10) = 15."
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "kostet",
+        "en": "costs",
+        "ne": "मूल्य पर्छ",
+        "examples": [
+          {
+            "de": "Was kostet das?",
+            "en": "How much does that cost?"
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Euro",
+        "en": "Euro",
+        "ne": "युरो",
+        "examples": [
+          {
+            "de": "Das kostet drei Euro.",
+            "en": "That costs three Euros."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "dialogue",
+      "title": {
+        "en": "At the Bakery",
+        "de": "Beim Bäcker"
+      },
+      "turns": [
+        {
+          "speaker": "Customer",
+          "de": "Guten Tag! Was kostet das Brot?",
+          "en": "Good day! How much does the bread cost?"
+        },
+        {
+          "speaker": "Baker",
+          "de": "Guten Tag! Das Brot kostet drei Euro.",
+          "en": "Good day! The bread costs three Euros."
+        },
+        {
+          "speaker": "Customer",
+          "de": "Hier sind drei Euro. Danke!",
+          "en": "Here are three Euros. Thank you!"
+        },
+        {
+          "speaker": "Baker",
+          "de": "Danke schön! Auf Wiedersehen!",
+          "en": "Thank you very much! Goodbye!"
+        }
+      ]
+    },
+    {
+      "type": "typed",
+      "ask": "fill-blank",
+      "prompt": "Das Brot kostet ___ Euro.",
+      "answer": "drei",
+      "accepted": [
+        "drei"
+      ],
+      "note": "drei = three"
+    },
+    {
+      "type": "typed",
+      "ask": "translate-en-de",
+      "prompt": "How much does that cost?",
+      "answer": "Was kostet das?",
+      "accepted": [
+        "Was kostet das"
+      ],
+      "note": "'Was kostet das?' asks for the price."
+    },
+    {
+      "type": "arrange",
+      "prompt": "Order the price question:",
+      "tokens": [
+        "Was",
+        "kostet",
+        "das?"
+      ]
+    },
+    {
+      "type": "dictation",
+      "text": "Das kostet fünf Euro.",
+      "instruction": "Listen and type what you hear."
+    },
+    {
+      "type": "culture",
+      "body": "In Germany and Austria, cash ('Bargeld') is still widely preferred at small bakeries, markets, and cafés. Always carry some Euro coins or small notes!"
+    },
+    {
+      "type": "typed",
+      "ask": "correct",
+      "prompt": "Das kostet drei Euros.",
+      "answer": "Das kostet drei Euro",
+      "accepted": [
+        "Das kostet drei Euro."
+      ],
+      "note": "'Euro' remains singular after numbers when stating prices."
+    },
+    {
+      "type": "mcq",
+      "prompt": "Which number is 'zweiundzwanzig'?",
+      "options": [
+        "22",
+        "12",
+        "202"
+      ],
+      "answer": "22",
+      "hintReason": "'zwei' (2) + 'und' + 'zwanzig' (20) = 22."
+    },
+    {
+      "type": "mcq",
+      "prompt": "How do you say 'three' in German?",
+      "options": [
+        "drei",
+        "vier",
+        "fünf"
+      ],
+      "answer": "drei",
+      "hintReason": "drei = 3"
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "sechs",
+        "en": "six",
+        "ne": "छ",
+        "partOfSpeech": "Number",
+        "examples": [
+          {
+            "de": "Sechs Personen.",
+            "en": "",
+            "ne": ""
+          }
+        ],
+        "frequency": "active"
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "sieben",
+        "en": "seven",
+        "ne": "सात",
+        "partOfSpeech": "Number",
+        "examples": [
+          {
+            "de": "Sieben Tage.",
+            "en": "",
+            "ne": ""
+          }
+        ],
+        "frequency": "active"
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "acht",
+        "en": "eight",
+        "ne": "आठ",
+        "partOfSpeech": "Number",
+        "examples": [
+          {
+            "de": "Acht Uhr.",
+            "en": "",
+            "ne": ""
+          }
+        ],
+        "frequency": "active"
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "neun",
+        "en": "nine",
+        "ne": "नौ",
+        "partOfSpeech": "Number",
+        "examples": [
+          {
+            "de": "Neun Euro.",
+            "en": "",
+            "ne": ""
+          }
+        ],
+        "frequency": "active"
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "elf",
+        "en": "eleven",
+        "ne": "एघार",
+        "partOfSpeech": "Number",
+        "examples": [
+          {
+            "de": "Elf Monate.",
+            "en": "",
+            "ne": ""
+          }
+        ],
+        "frequency": "active"
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "zwölf",
+        "en": "twelve",
+        "ne": "बारह",
+        "partOfSpeech": "Number",
+        "examples": [
+          {
+            "de": "Zwölf Monate.",
+            "en": "",
+            "ne": ""
+          }
+        ],
+        "frequency": "active"
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "einsundzwanzig",
+        "en": "twenty-one",
+        "ne": "एक्काइस",
+        "partOfSpeech": "Number",
+        "examples": [
+          {
+            "de": "Einundzwanzig Jahre alt.",
+            "en": "",
+            "ne": ""
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "hundert",
+        "en": "one hundred",
+        "ne": "एक सय",
+        "partOfSpeech": "Number",
+        "examples": [
+          {
+            "de": "Hundert Prozent.",
+            "en": "",
+            "ne": ""
+          }
+        ],
+        "frequency": "active"
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Cent",
+        "en": "Cent",
+        "ne": "सेन्ट",
+        "article": "der",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "Fünfzig Cent.",
+            "en": "",
+            "ne": ""
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "kosten",
+        "en": "to cost",
+        "ne": "मूल्य पर्नु",
+        "partOfSpeech": "Verb",
+        "examples": [
+          {
+            "de": "Was kostet das?",
+            "en": "",
+            "ne": ""
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Preis",
+        "en": "Price",
+        "ne": "मूल्य",
+        "article": "der",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "Der Preis ist gut.",
+            "en": "",
+            "ne": ""
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Zahl",
+        "en": "Number",
+        "ne": "संख्या",
+        "article": "die",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "Schreib die Zahl auf.",
+            "en": "",
+            "ne": ""
+          }
+        ]
+      }
+    },
+    {
+      "type": "summary"
+    }
+  ],
+  "stepsSource": "imported"
 }

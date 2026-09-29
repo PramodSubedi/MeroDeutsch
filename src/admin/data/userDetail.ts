@@ -23,6 +23,8 @@
  * Edge Function (Phase 2). Nothing here writes.
  */
 import { supabase } from '../../lib/supabase';
+import { callAdminRpc, LEGACY_PATH_NOTICE } from './rpc';
+import { isoDaysAgo } from './dayMath';
 import type { AdminProfile } from '../../lib/adminRole';
 
 // ── Row shapes, one per source table ────────────────────────────────────────
@@ -153,9 +155,7 @@ export interface UserDetail {
 export const ACTIVITY_WINDOW_DAYS = 119; // 17 weeks — a GitHub-style grid.
 
 function isoDay(offsetFromToday: number, now: Date): string {
-  const d = new Date(now);
-  d.setUTCDate(d.getUTCDate() - offsetFromToday);
-  return d.toISOString().slice(0, 10);
+  return isoDaysAgo(offsetFromToday, now);
 }
 
 /**
@@ -267,15 +267,124 @@ export function summariseQueue(rows: UserQueueRow[], now: Date): QueueSummary {
   };
 }
 
+/** The composite `admin_user_detail` returns. */
+interface UserDetailRpc {
+  profile: AdminProfile;
+  progress: UserProgressRow | null;
+  xp: UserXpRow | null;
+  streak: UserStreakRow | null;
+  path: UserPathRow | null;
+  activity: { activeDays: number; lastActiveAt: string | null; daily: { date: string; count: number }[] };
+  achievements: { badgeId: string; unlockedAt: string | null }[];
+  queue: {
+    size: number;
+    errors: number;
+    dueNow: number;
+    oldestDue: string | null;
+    items: UserQueueRow[];
+  };
+}
+
 /**
- * Load one learner's full picture.
+ * One learner's full picture, in ONE call.
  *
- * Fails soft per source, same contract as `fetchUsers`: a denied table leaves
- * that SECTION empty and records a line in `errors`, rather than rejecting the
- * whole drawer. An admin who cannot read `user_achievements` should still see
- * the learner's progress and queue.
+ * Was EIGHT per-user queries assembled in JavaScript (`userDetail.ts:282-295`),
+ * so a viewer waited for the slowest of eight. `user_activity_days` was the slow
+ * one — one row per active DAY, thousands for a long-lived account — and the
+ * drawer only ever showed a COUNT and the most recent DATE, both of which the
+ * database now computes.
+ *
+ * ── THE FAIL-SOFT CONTRACT IS DELIBERATELY GONE ──────────────────────────────
+ * The old version recorded a line in `errors` and left that SECTION empty, so an
+ * admin who could not read `user_achievements` still saw progress and queue.
+ * That reasoning was sound, and the RLS it ran under made it unsafe: RLS can
+ * only EXCLUDE rows, so a denied table produced an empty object that rendered
+ * as "this learner has no progress" — a statement about the LEARNER, produced by
+ * a permission failure, and indistinguishable from the truth.
+ *
+ * A `SECURITY DEFINER` function can REFUSE, so it does. The drawer now shows one
+ * error for the whole read, which is a worse partial-failure story and a correct
+ * one: no figure on this screen can be a permission failure wearing data.
  */
 export async function fetchUserDetail(userId: string): Promise<UserDetail | null> {
+  const now = new Date();
+
+  const outcome = await callAdminRpc<UserDetailRpc>(supabase, 'admin_user_detail', { p_user_id: userId });
+
+  if (outcome.kind === 'absent') {
+    // The RPC is not deployed. The previous implementation was eight per-user
+    // reads, and it is correct — it just cannot distinguish "this learner has no
+    // progress" from "you may not see their progress", which is the one thing
+    // the RPC was built to fix. The fallback therefore announces itself.
+    const legacy = await fetchUserDetailLegacy(userId);
+    if (!legacy) return null;
+    return { ...legacy, errors: [LEGACY_PATH_NOTICE, ...legacy.errors] };
+  }
+  if (outcome.kind !== 'ok') {
+    return {
+      profile: { id: userId } as AdminProfile,
+      progress: null,
+      xp: null,
+      streak: null,
+      achievements: [],
+      activity: [],
+      activeDayCount: null,
+      totalEvents: null,
+      path: null,
+      completedNodeCount: null,
+      queue: summariseQueue([], now),
+      errors: [`admin_user_detail: ${outcome.message}`],
+    } as unknown as UserDetail;
+  }
+
+  const raw = outcome.data as UserDetailRpc[] | UserDetailRpc | null;
+  const row = Array.isArray(raw) ? raw[0] : raw;
+  if (!row) return null;
+
+  // The strip is rebuilt from the RPC's WINDOWED daily counts rather than from
+  // every activity row the learner ever had. The all-time `activeDays` is the
+  // RPC's own count and is not clipped to the window — "how many days has this
+  // learner ever been active" is the question an admin actually asks, and
+  // clipping it would quietly understate a long-tenured account.
+  const activitySummary = buildActivity(
+    (row.activity?.daily ?? []).map((d) => ({ activity_date: d.date, event_count: d.count })),
+    now,
+  );
+  const activeDayCount = row.activity?.activeDays ?? null;
+
+  return {
+    profile: row.profile,
+    progress: row.progress ?? null,
+    xp: row.xp ?? null,
+    streak: row.streak ?? null,
+    achievements: (row.achievements ?? []).map((a) => ({
+      badge_id: a.badgeId,
+      unlocked_at: a.unlockedAt,
+    })),
+    activity: activitySummary.cells,
+    activeDayCount,
+    // The RPC aggregates the activity table rather than listing it, so the event
+    // total is not available. It is `null` rather than a guess, and the drawer
+    // renders an em dash — which is what it did for any read failure before.
+    totalEvents: null,
+    path: row.path ?? null,
+    completedNodeCount: Array.isArray(row.path?.completed_node_ids)
+      ? row.path.completed_node_ids.length
+      : null,
+    queue: summariseQueue(row.queue?.items ?? [], now),
+    errors: [],
+  };
+}
+
+/**
+ * The previous implementation: eight per-user reads, assembled in JavaScript.
+ *
+ * Kept as a fallback for when `admin_user_detail` is not deployed, and only
+ * reachable when the function is ABSENT. It fails soft per source, exactly as
+ * it always did — which under RLS means a denied table renders as an empty
+ * section, and that is the behaviour the RPC replaces.
+ */
+async function fetchUserDetailLegacy(userId: string): Promise<UserDetail | null> {
   const errors: string[] = [];
   const now = new Date();
 
@@ -305,12 +414,9 @@ export async function fetchUserDetail(userId: string): Promise<UserDetail | null
   if (path.error) errors.push(`a1_path_state: ${path.error.message}`);
   if (queue.error) errors.push(`review_queue: ${queue.error.message}`);
 
-  // No profile is the one unrecoverable case: the identity the drawer is
-  // ABOUT does not exist (deleted account, or RLS hides it). Null says "no such
-  // user" rather than rendering an empty shell for someone who does not exist.
   if (profile.error || !profile.data) return null;
 
-  const activitySummary = buildActivity(activity.data ?? [], now);
+  const activitySummary = buildActivity((activity.data ?? []) as UserActivityRow[], now);
 
   return {
     profile: profile.data as AdminProfile,

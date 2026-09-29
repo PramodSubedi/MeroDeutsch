@@ -60,6 +60,31 @@ export const CHATBOT_CONFIG_KEYS: readonly string[] = Object.freeze(
 /** The prefix the reader filters `app_config` on. */
 export const CHATBOT_KEY_PREFIX = 'chatbot_';
 
+/**
+ * The stored stand-in for "no allow-list".
+ *
+ * ── WHY THIS EXISTS, AND WHY IT USED TO BE A ONE-WAY DOOR ─────────────────────
+ * `validateConfigWrite` refuses a blank string for every string key, and an
+ * EMPTY model list is a legitimate, meaningful value: it means "unrestricted".
+ * So the admin page cannot express "unrestricted" by clearing the field — it has
+ * to write something, and it writes this sentinel.
+ *
+ * That was fine on the way out and broken on the way back. `parseModelList`
+ * returned `['any']` — a list of length ONE — and `isModelAllowed` compares
+ * membership, so a learner who had stored this was restricted to a model
+ * literally named `any`. Every other model was refused. Worse, it locked the
+ * ADMIN out too: `validateDefaultModel` runs the same comparison, so after
+ * clearing the allow-list they could no longer save any default model at all,
+ * and the only way out was to re-type the list by hand.
+ *
+ * So the sentinel is now a named constant honoured by BOTH readers. It is
+ * compared case-insensitively because the admin can type `Any` and the value
+ * round-trips through `normalizeConfigValue`, which lowercases any string key
+ * that declares a closed vocabulary — this one deliberately does not, but a
+ * hand-written row may still be quoted.
+ */
+export const UNRESTRICTED_MODELS_SENTINEL = 'any';
+
 /** The resolved global configuration an admin has published. */
 export interface ChatbotDefaults {
   /** The global kill switch. A learner's personal toggle is ANDed with this. */
@@ -129,10 +154,33 @@ export function parseText(raw: unknown): string | null {
   return v === '' ? null : v;
 }
 
+/**
+ * Strip one layer of surrounding double quotes, if present.
+ *
+ * A JSONB column unwraps `'"any"'` to the bare `any` on read, so a quoted value
+ * only reaches the reader when somebody hand-wrote the row in the dashboard.
+ * That is the same situation `parseBool` already handles for `"true"`, and the
+ * module's stance is to tolerate it rather than let a legitimate-looking row read
+ * as a different value.
+ */
+function unquote(value: string): string {
+  const trimmed = value.trim();
+  return trimmed.length >= 2 && trimmed.startsWith('"') && trimmed.endsWith('"')
+    ? trimmed.slice(1, -1).trim()
+    : trimmed;
+}
+
 /** Comma-separated → trimmed, non-empty entries. Order is preserved. */
 export function parseModelList(raw: unknown): string[] | null {
   const text = parseText(raw);
   if (text === null) return null;
+
+  // The stored "unrestricted" sentinel is NOT a model. Reading it back as
+  // `['any']` is what restricted every learner to a model named `any`; reading
+  // it as `[]` is what the admin meant when they cleared the field. This is the
+  // half of the round trip that was missing.
+  if (unquote(text).toLowerCase() === UNRESTRICTED_MODELS_SENTINEL) return [];
+
   const parts = text
     .split(',')
     .map((s) => s.trim())
@@ -203,5 +251,12 @@ export function resolveChatbotConfig(
  */
 export function isModelAllowed(model: string, allowedModels: readonly string[]): boolean {
   if (allowedModels.length === 0) return true;
+  // A lone `any` may survive in a row written before `parseModelList` learned
+  // the sentinel. Treating it as unrestricted is the reading the admin intended
+  // when they cleared the field, and it is strictly better than silently
+  // forbidding every model a learner actually owns.
+  if (allowedModels.length === 1 && unquote(allowedModels[0]).toLowerCase() === UNRESTRICTED_MODELS_SENTINEL) {
+    return true;
+  }
   return allowedModels.includes(model.trim());
 }

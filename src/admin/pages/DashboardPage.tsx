@@ -106,6 +106,18 @@ export function DashboardPage() {
         </div>
       )}
 
+      {/*
+        NO TRUNCATION BANNER, and that is a deletion rather than a deprecation.
+
+        It existed because each KPI was a browser-side aggregate over a capped
+        read, so a capped read could not tell you what it was missing. The KPIs
+        are now exact COUNTs computed by `admin_dashboard_kpis`, so there is no
+        cap to admit to. Keeping the banner would mean maintaining a
+        "showing N of M" path for a condition the data can no longer be in — and
+        the next person to read it would have to work out which of the two was
+        true.
+      */}
+
       <section aria-label="Audience" className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCard
           label="Total users"
@@ -115,12 +127,12 @@ export function DashboardPage() {
           loading={loading}
         />
         <KpiCard
-          label="Active 24h"
-          value={kpis.active24h.toLocaleString()}
-          hint="distinct user_activity_days"
+          label="Active today"
+          value={kpis.activeToday.toLocaleString()}
+          hint="distinct users with an activity row dated today"
           icon={UserCheck}
           loading={loading}
-          tone={kpis.active24h > 0 ? 'good' : 'neutral'}
+          tone={kpis.activeToday > 0 ? 'good' : 'neutral'}
         />
         <KpiCard
           label="Premium"
@@ -218,7 +230,13 @@ export function DashboardPage() {
         <dl className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-4">
           <Stat label="Total XP awarded" value={loading ? '—' : kpis.totalXp.toLocaleString()} />
           <Stat label="Administrators" value={loading ? '—' : kpis.adminCount.toLocaleString()} />
-          <Stat label="Daily actives · 30d" value={loading ? '—' : kpis.dauSeries.length.toString()} />
+          {/* The series length, not the active-user total — labelled for exactly
+              what it is. It used to read "31" under "30d", because the builder
+              emitted `days + 1` points; it is now exactly 30. */}
+          <Stat
+            label="Daily-active series"
+            value={loading ? '—' : `${kpis.dauSeries.length} days`}
+          />
           <Stat label="Unit count" value={String(A1_UNIT_COUNT)} />
         </dl>
         <p className="mt-4 text-meta text-ink-500 dark:text-ink-400">

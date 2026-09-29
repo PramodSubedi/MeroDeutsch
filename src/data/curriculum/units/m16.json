@@ -17,9 +17,36 @@
     "de": "Die gesamte A1-Sequenz mit fünf integrierten Übungsgruppen und einem vollständigen DE/EN/NE-Lösungsschlüssel prüfen."
   },
   "nodes": [
-    { "id": "m16-learn", "kind": "learn", "label": { "en": "Review Map", "de": "Wiederholungskarte" }, "to": "/grammar", "xp": 10 },
-    { "id": "m16-practice", "kind": "practice", "label": { "en": "Final Practice Set", "de": "Abschlussübung" }, "to": "/rapid-fire?mode=mixed", "xp": 30 },
-    { "id": "m16-bonus", "kind": "bonus", "label": { "en": "A1 Mastery Checklist", "de": "A1-Beherrschungs-Checkliste" }, "to": "/grammar?tab=review", "xp": 15 }
+    {
+      "id": "m16-learn",
+      "kind": "learn",
+      "label": {
+        "en": "Review Map",
+        "de": "Wiederholungskarte"
+      },
+      "to": "/lesson/15",
+      "xp": 10
+    },
+    {
+      "id": "m16-practice",
+      "kind": "practice",
+      "label": {
+        "en": "Grammar Reference",
+        "de": "Grammatik-Referenz"
+      },
+      "to": "/rapid-fire?mode=mixed",
+      "xp": 30
+    },
+    {
+      "id": "m16-bonus",
+      "kind": "bonus",
+      "label": {
+        "en": "A1 Mastery Checklist",
+        "de": "A1-Beherrschungs-Checkliste"
+      },
+      "to": "/grammar?tab=review",
+      "xp": 15
+    }
   ],
   "pedagogy": {
     "grammarNote": {
@@ -32,23 +59,204 @@
         "de": "A1-Beherrschungs-Checkliste"
       },
       "rows": [
-        { "label": { "en": "Gender + Nominative", "de": "Genus + Nominativ" }, "usage": { "en": "Give the article for any noun (der/die/das)", "de": "Gib jedem Nomen den richtigen Artikel (der/die/das)" }, "example": { "en": "M04–M05", "de": "M04–M05" } },
-        { "label": { "en": "kein / keine", "de": "kein / keine" }, "usage": { "en": "Negate a noun phrase in the nominative", "de": "Verneine eine Nominalphrase im Nominativ" }, "example": { "en": "M05", "de": "M05" } },
-        { "label": { "en": "Present conjugation", "de": "Präsenskonjugation" }, "usage": { "en": "Conjugate any regular verb for all 6 persons", "de": "Konjugiere ein regelmäßiges Verb in allen 6 Personen" }, "example": { "en": "M06", "de": "M06" } },
-        { "label": { "en": "Stem changes", "de": "Stammveränderungen" }, "usage": { "en": "Apply e→ie, e→i, a→ä in du/er only", "de": "Wende e→ie, e→i, a→ä nur in du/er an" }, "example": { "en": "M06", "de": "M06" } },
-        { "label": { "en": "V2 word order", "de": "V2-Wortstellung" }, "usage": { "en": "Place the conjugated verb in Position 2", "de": "Setze das konjugierte Verb auf Position 2" }, "example": { "en": "M07", "de": "M07" } },
-        { "label": { "en": "Inversion", "de": "Inversion" }, "usage": { "en": "Shift the subject to Position 3 after a time/place phrase", "de": "Rücke das Subjekt nach einer Zeit-/Ortsangabe auf Position 3" }, "example": { "en": "M07", "de": "M07" } },
-        { "label": { "en": "Accusative", "de": "Akkusativ" }, "usage": { "en": "Shift only masculine articles (der→den, ein→einen, kein→keinen)", "de": "Wechsle nur maskuline Artikel (der→den, ein→einen, kein→keinen)" }, "example": { "en": "M08", "de": "M08" } },
-        { "label": { "en": "Separable verbs", "de": "Trennbare Verben" }, "usage": { "en": "Send the prefix to the clause end", "de": "Schicke die Vorsilbe an das Satzende" }, "example": { "en": "M09", "de": "M09" } },
-        { "label": { "en": "Modals", "de": "Modalverben" }, "usage": { "en": "Put the infinitive at the end after a modal", "de": "Setze den Infinitiv nach dem Modalverb ans Ende" }, "example": { "en": "M12", "de": "M12" } },
-        { "label": { "en": "Demonstratives", "de": "Demonstrativartikel" }, "usage": { "en": "Match dieser/diese/dieses to gender", "de": "Ordne dieser/diese/dieses dem Genus zu" }, "example": { "en": "M13", "de": "M13" } },
-        { "label": { "en": "Dative prepositions", "de": "Dativpräpositionen" }, "usage": { "en": "Use mit + dem/der for transport", "de": "Benutze mit + dem/der für den Verkehr" }, "example": { "en": "M14", "de": "M14" } },
-        { "label": { "en": "Two-way prepositions", "de": "Wechselpräpositionen" }, "usage": { "en": "Choose acc (Wohin?) vs. dat (Wo?)", "de": "Wähle Akk. (Wohin?) vs. Dat. (Wo?)" }, "example": { "en": "M14", "de": "M14" } },
-        { "label": { "en": "Perfekt", "de": "Perfekt" }, "usage": { "en": "Pick haben/sein and form Partizip II", "de": "Wähle haben/sein und bilde Partizip II" }, "example": { "en": "M15", "de": "M15" } }
+        {
+          "label": {
+            "en": "Gender + Nominative",
+            "de": "Genus + Nominativ"
+          },
+          "usage": {
+            "en": "Give the article for any noun (der/die/das)",
+            "de": "Gib jedem Nomen den richtigen Artikel (der/die/das)"
+          },
+          "example": {
+            "en": "M04–M05",
+            "de": "M04–M05"
+          }
+        },
+        {
+          "label": {
+            "en": "kein / keine",
+            "de": "kein / keine"
+          },
+          "usage": {
+            "en": "Negate a noun phrase in the nominative",
+            "de": "Verneine eine Nominalphrase im Nominativ"
+          },
+          "example": {
+            "en": "M05",
+            "de": "M05"
+          }
+        },
+        {
+          "label": {
+            "en": "Present conjugation",
+            "de": "Präsenskonjugation"
+          },
+          "usage": {
+            "en": "Conjugate any regular verb for all 6 persons",
+            "de": "Konjugiere ein regelmäßiges Verb in allen 6 Personen"
+          },
+          "example": {
+            "en": "M06",
+            "de": "M06"
+          }
+        },
+        {
+          "label": {
+            "en": "Stem changes",
+            "de": "Stammveränderungen"
+          },
+          "usage": {
+            "en": "Apply e→ie, e→i, a→ä in du/er only",
+            "de": "Wende e→ie, e→i, a→ä nur in du/er an"
+          },
+          "example": {
+            "en": "M06",
+            "de": "M06"
+          }
+        },
+        {
+          "label": {
+            "en": "V2 word order",
+            "de": "V2-Wortstellung"
+          },
+          "usage": {
+            "en": "Place the conjugated verb in Position 2",
+            "de": "Setze das konjugierte Verb auf Position 2"
+          },
+          "example": {
+            "en": "M07",
+            "de": "M07"
+          }
+        },
+        {
+          "label": {
+            "en": "Inversion",
+            "de": "Inversion"
+          },
+          "usage": {
+            "en": "Shift the subject to Position 3 after a time/place phrase",
+            "de": "Rücke das Subjekt nach einer Zeit-/Ortsangabe auf Position 3"
+          },
+          "example": {
+            "en": "M07",
+            "de": "M07"
+          }
+        },
+        {
+          "label": {
+            "en": "Accusative",
+            "de": "Akkusativ"
+          },
+          "usage": {
+            "en": "Shift only masculine articles (der→den, ein→einen, kein→keinen)",
+            "de": "Wechsle nur maskuline Artikel (der→den, ein→einen, kein→keinen)"
+          },
+          "example": {
+            "en": "M08",
+            "de": "M08"
+          }
+        },
+        {
+          "label": {
+            "en": "Separable verbs",
+            "de": "Trennbare Verben"
+          },
+          "usage": {
+            "en": "Send the prefix to the clause end",
+            "de": "Schicke die Vorsilbe an das Satzende"
+          },
+          "example": {
+            "en": "M09",
+            "de": "M09"
+          }
+        },
+        {
+          "label": {
+            "en": "Modals",
+            "de": "Modalverben"
+          },
+          "usage": {
+            "en": "Put the infinitive at the end after a modal",
+            "de": "Setze den Infinitiv nach dem Modalverb ans Ende"
+          },
+          "example": {
+            "en": "M12",
+            "de": "M12"
+          }
+        },
+        {
+          "label": {
+            "en": "Demonstratives",
+            "de": "Demonstrativartikel"
+          },
+          "usage": {
+            "en": "Match dieser/diese/dieses to gender",
+            "de": "Ordne dieser/diese/dieses dem Genus zu"
+          },
+          "example": {
+            "en": "M13",
+            "de": "M13"
+          }
+        },
+        {
+          "label": {
+            "en": "Dative prepositions",
+            "de": "Dativpräpositionen"
+          },
+          "usage": {
+            "en": "Use mit + dem/der for transport",
+            "de": "Benutze mit + dem/der für den Verkehr"
+          },
+          "example": {
+            "en": "M14",
+            "de": "M14"
+          }
+        },
+        {
+          "label": {
+            "en": "Two-way prepositions",
+            "de": "Wechselpräpositionen"
+          },
+          "usage": {
+            "en": "Choose acc (Wohin?) vs. dat (Wo?)",
+            "de": "Wähle Akk. (Wohin?) vs. Dat. (Wo?)"
+          },
+          "example": {
+            "en": "M14",
+            "de": "M14"
+          }
+        },
+        {
+          "label": {
+            "en": "Perfekt",
+            "de": "Perfekt"
+          },
+          "usage": {
+            "en": "Pick haben/sein and form Partizip II",
+            "de": "Wähle haben/sein und bilde Partizip II"
+          },
+          "example": {
+            "en": "M15",
+            "de": "M15"
+          }
+        }
       ]
     }
   },
-  "vocabCategories": ["conjugation", "v2-order", "modal-verbs", "dative-prepositions", "perfekt"],
-  "grammarCategories": ["v2", "modals", "accusative", "prepositions", "perfekt"],
+  "vocabCategories": [
+    "conjugation",
+    "v2-order",
+    "modal-verbs",
+    "dative-prepositions",
+    "perfekt"
+  ],
+  "grammarCategories": [
+    "v2",
+    "modals",
+    "accusative",
+    "prepositions",
+    "perfekt"
+  ],
   "hasLesson": true
 }

@@ -17,14 +17,51 @@
     "de": "Im Restaurant höflich Essen/Trinken bestellen, Akkusativ bei Essenswörtern anwenden."
   },
   "nodes": [
-    { "id": "m10-learn", "kind": "learn", "label": { "en": "Café Ordering", "de": "Café-Bestellung" }, "to": "/roleplay?scene=cafe", "xp": 10 },
-    { "id": "m10-practice", "kind": "practice", "label": { "en": "Restaurant Roleplay", "de": "Restaurant-Rollenspiel" }, "to": "/roleplay?scene=restaurant", "xp": 20 },
-    { "id": "m10-checkpoint", "kind": "checkpoint", "label": { "en": "Module 10 Checkpoint", "de": "Modul 10 Prüfung" } }
+    {
+      "id": "m10-learn",
+      "kind": "learn",
+      "label": {
+        "en": "Café Ordering",
+        "de": "Café-Bestellung"
+      },
+      "to": "/lesson/9",
+      "xp": 10
+    },
+    {
+      "id": "m10-practice",
+      "kind": "practice",
+      "label": {
+        "en": "Café Roleplay",
+        "de": "Café-Rollenspiel"
+      },
+      "to": "/roleplay?scene=restaurant",
+      "xp": 20
+    },
+    {
+      "id": "m10-checkpoint",
+      "kind": "checkpoint",
+      "label": {
+        "en": "Module 10 Checkpoint",
+        "de": "Modul 10 Prüfung"
+      }
+    },
+    {
+      "id": "m10-tool",
+      "kind": "bonus",
+      "label": {
+        "en": "Café Roleplay",
+        "de": "Café-Rollenspiel"
+      },
+      "to": "/roleplay?scene=cafe"
+    }
   ],
   "checkpoint": {
     "moduleType": "a1-checkpoint",
     "specs": [
-      { "type": "vocab-translation", "count": 12 }
+      {
+        "type": "vocab-translation",
+        "count": 12
+      }
     ]
   },
   "pedagogy": {
@@ -38,17 +75,115 @@
         "de": "Restaurant-Phrasen & Akkusativ-Anwendung"
       },
       "rows": [
-        { "label": { "en": "Order drink (masc)", "de": "Getränk bestellen (mask)" }, "usage": { "en": "Ich möchte einen Kaffee.", "de": "Ich möchte einen Kaffee." }, "example": { "en": "der Kaffee → einen", "de": "der Kaffee → einen" } },
-        { "label": { "en": "Order drink (neut)", "de": "Getränk bestellen (neutr)" }, "usage": { "en": "Ich möchte ein Wasser.", "de": "Ich möchte ein Wasser." }, "example": { "en": "das Wasser → ein (no change)", "de": "das Wasser → ein (kein Wechsel)" } },
-        { "label": { "en": "Order food (masc)", "de": "Essen bestellen (mask)" }, "usage": { "en": "Ich nehme einen Salat.", "de": "Ich nehme einen Salat." }, "example": { "en": "der Salat → einen", "de": "der Salat → einen" } },
-        { "label": { "en": "Order food (fem)", "de": "Essen bestellen (fem)" }, "usage": { "en": "Ich bestelle eine Suppe.", "de": "Ich bestelle eine Suppe." }, "example": { "en": "die Suppe → eine (no change)", "de": "die Suppe → eine (kein Wechsel)" } },
-        { "label": { "en": "Ask for bill", "de": "Rechnung fragen" }, "usage": { "en": "Die Rechnung, bitte.", "de": "Die Rechnung, bitte." }, "example": { "en": "—", "de": "—" } },
-        { "label": { "en": "Pay together", "de": "Zusammen zahlen" }, "usage": { "en": "Zusammen, bitte.", "de": "Zusammen, bitte." }, "example": { "en": "—", "de": "—" } },
-        { "label": { "en": "Pay separate", "de": "Getrennt zahlen" }, "usage": { "en": "Getrennt, bitte.", "de": "Getrennt, bitte." }, "example": { "en": "—", "de": "—" } }
+        {
+          "label": {
+            "en": "Order drink (masc)",
+            "de": "Getränk bestellen (mask)"
+          },
+          "usage": {
+            "en": "Ich möchte einen Kaffee.",
+            "de": "Ich möchte einen Kaffee."
+          },
+          "example": {
+            "en": "der Kaffee → einen",
+            "de": "der Kaffee → einen"
+          }
+        },
+        {
+          "label": {
+            "en": "Order drink (neut)",
+            "de": "Getränk bestellen (neutr)"
+          },
+          "usage": {
+            "en": "Ich möchte ein Wasser.",
+            "de": "Ich möchte ein Wasser."
+          },
+          "example": {
+            "en": "das Wasser → ein (no change)",
+            "de": "das Wasser → ein (kein Wechsel)"
+          }
+        },
+        {
+          "label": {
+            "en": "Order food (masc)",
+            "de": "Essen bestellen (mask)"
+          },
+          "usage": {
+            "en": "Ich nehme einen Salat.",
+            "de": "Ich nehme einen Salat."
+          },
+          "example": {
+            "en": "der Salat → einen",
+            "de": "der Salat → einen"
+          }
+        },
+        {
+          "label": {
+            "en": "Order food (fem)",
+            "de": "Essen bestellen (fem)"
+          },
+          "usage": {
+            "en": "Ich bestelle eine Suppe.",
+            "de": "Ich bestelle eine Suppe."
+          },
+          "example": {
+            "en": "die Suppe → eine (no change)",
+            "de": "die Suppe → eine (kein Wechsel)"
+          }
+        },
+        {
+          "label": {
+            "en": "Ask for bill",
+            "de": "Rechnung fragen"
+          },
+          "usage": {
+            "en": "Die Rechnung, bitte.",
+            "de": "Die Rechnung, bitte."
+          },
+          "example": {
+            "en": "—",
+            "de": "—"
+          }
+        },
+        {
+          "label": {
+            "en": "Pay together",
+            "de": "Zusammen zahlen"
+          },
+          "usage": {
+            "en": "Zusammen, bitte.",
+            "de": "Zusammen, bitte."
+          },
+          "example": {
+            "en": "—",
+            "de": "—"
+          }
+        },
+        {
+          "label": {
+            "en": "Pay separate",
+            "de": "Getrennt zahlen"
+          },
+          "usage": {
+            "en": "Getrennt, bitte.",
+            "de": "Getrennt, bitte."
+          },
+          "example": {
+            "en": "—",
+            "de": "—"
+          }
+        }
       ]
     }
   },
-  "vocabCategories": ["food-drink", "restaurant", "taste-texture-adjectives"],
-  "grammarCategories": ["accusative", "modals"],
+  "vocabCategories": [
+    "food-drink",
+    "restaurant",
+    "taste-texture-adjectives"
+  ],
+  "grammarCategories": [
+    "accusative",
+    "modals"
+  ],
   "hasLesson": true
 }

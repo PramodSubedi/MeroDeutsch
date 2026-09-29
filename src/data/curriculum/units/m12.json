@@ -17,15 +17,55 @@
     "de": "Beruf angeben, Modalverben für Fähigkeit/Pflicht/Erlaubnis/Wünsche nutzen, Modalsatzklammern bilden."
   },
   "nodes": [
-    { "id": "m12-learn", "kind": "learn", "label": { "en": "Modal Verbs", "de": "Modalverben" }, "to": "/grammar?tab=modals", "xp": 10 },
-    { "id": "m12-practice", "kind": "practice", "label": { "en": "Tic-Tac-Toe", "de": "Tic-Tac-Toe" }, "to": "/games?game=tictactoe", "xp": 20 },
-    { "id": "m12-checkpoint", "kind": "checkpoint", "label": { "en": "Module 12 Checkpoint", "de": "Modul 12 Prüfung" } }
+    {
+      "id": "m12-learn",
+      "kind": "learn",
+      "label": {
+        "en": "Modal Verbs",
+        "de": "Modalverben"
+      },
+      "to": "/lesson/11",
+      "xp": 10
+    },
+    {
+      "id": "m12-practice",
+      "kind": "practice",
+      "label": {
+        "en": "Modals Reference",
+        "de": "Modalverben-Referenz"
+      },
+      "to": "/games?game=tictactoe",
+      "xp": 20
+    },
+    {
+      "id": "m12-checkpoint",
+      "kind": "checkpoint",
+      "label": {
+        "en": "Module 12 Checkpoint",
+        "de": "Modul 12 Prüfung"
+      }
+    },
+    {
+      "id": "m12-tool",
+      "kind": "bonus",
+      "label": {
+        "en": "Modals Reference",
+        "de": "Modalverben-Referenz"
+      },
+      "to": "/grammar?tab=modals"
+    }
   ],
   "checkpoint": {
     "moduleType": "a1-checkpoint",
     "specs": [
-      { "type": "grammar-drill", "count": 6 },
-      { "type": "vocab-translation", "count": 6 }
+      {
+        "type": "grammar-drill",
+        "count": 6
+      },
+      {
+        "type": "vocab-translation",
+        "count": 6
+      }
     ]
   },
   "pedagogy": {
@@ -39,15 +79,86 @@
         "de": "Weibliche Berufsbildung"
       },
       "rows": [
-        { "label": { "en": "der Lehrer", "de": "der Lehrer" }, "usage": { "en": "Teacher (masc)", "de": "Lehrer (mask)" }, "example": { "en": "die Lehrerin, die Lehrerinnen", "de": "die Lehrerin, die Lehrerinnen" } },
-        { "label": { "en": "der Arzt", "de": "der Arzt" }, "usage": { "en": "Doctor (masc)", "de": "Arzt (mask)" }, "example": { "en": "die Ärztin, die Ärztinnen", "de": "die Ärztin, die Ärztinnen" } },
-        { "label": { "en": "der Student", "de": "der Student" }, "usage": { "en": "Student (masc)", "de": "Student (mask)" }, "example": { "en": "die Studentin, die Studentinnen", "de": "die Studentin, die Studentinnen" } },
-        { "label": { "en": "der Ingenieur", "de": "der Ingenieur" }, "usage": { "en": "Engineer (masc)", "de": "Ingenieur (mask)" }, "example": { "en": "die Ingenieurin, die Ingenieurinnen", "de": "die Ingenieurin, die Ingenieurinnen" } },
-        { "label": { "en": "der Verkäufer", "de": "der Verkäufer" }, "usage": { "en": "Salesperson (masc)", "de": "Verkäufer (mask)" }, "example": { "en": "die Verkäuferin, die Verkäuferinnen", "de": "die Verkäuferin, die Verkäuferinnen" } }
+        {
+          "label": {
+            "en": "der Lehrer",
+            "de": "der Lehrer"
+          },
+          "usage": {
+            "en": "Teacher (masc)",
+            "de": "Lehrer (mask)"
+          },
+          "example": {
+            "en": "die Lehrerin, die Lehrerinnen",
+            "de": "die Lehrerin, die Lehrerinnen"
+          }
+        },
+        {
+          "label": {
+            "en": "der Arzt",
+            "de": "der Arzt"
+          },
+          "usage": {
+            "en": "Doctor (masc)",
+            "de": "Arzt (mask)"
+          },
+          "example": {
+            "en": "die Ärztin, die Ärztinnen",
+            "de": "die Ärztin, die Ärztinnen"
+          }
+        },
+        {
+          "label": {
+            "en": "der Student",
+            "de": "der Student"
+          },
+          "usage": {
+            "en": "Student (masc)",
+            "de": "Student (mask)"
+          },
+          "example": {
+            "en": "die Studentin, die Studentinnen",
+            "de": "die Studentin, die Studentinnen"
+          }
+        },
+        {
+          "label": {
+            "en": "der Ingenieur",
+            "de": "der Ingenieur"
+          },
+          "usage": {
+            "en": "Engineer (masc)",
+            "de": "Ingenieur (mask)"
+          },
+          "example": {
+            "en": "die Ingenieurin, die Ingenieurinnen",
+            "de": "die Ingenieurin, die Ingenieurinnen"
+          }
+        },
+        {
+          "label": {
+            "en": "der Verkäufer",
+            "de": "der Verkäufer"
+          },
+          "usage": {
+            "en": "Salesperson (masc)",
+            "de": "Verkäufer (mask)"
+          },
+          "example": {
+            "en": "die Verkäuferin, die Verkäuferinnen",
+            "de": "die Verkäuferin, die Verkäuferinnen"
+          }
+        }
       ]
     }
   },
-  "vocabCategories": ["professions", "action-verbs", "modal-verbs"],
-  "grammarCategories": ["modals"],
+  "vocabCategories": [
+    "professions",
+    "action-verbs",
+    "modal-verbs"
+  ],
+  "grammarCategories": [
+    "modals"
+  ],
   "hasLesson": true
 }

@@ -19,6 +19,10 @@ import {
   type CurriculumIssue,
 } from '../../src/data/curriculum/schema';
 import { GRAMMAR_TABS } from '../../src/config/grammarTabs';
+import {
+  buildVocabCategoryIndex,
+  realVocabCategories,
+} from '../../src/data/curriculum/vocabCategoryIndex';
 
 const issues: CurriculumIssue[] = [...CURRICULUM_ISSUES];
 
@@ -152,6 +156,54 @@ function checkRoute(where: string, to: string | undefined): void {
 for (const unit of CURRICULUM_FILE.units) {
   for (const node of unit.nodes) checkRoute(`${unit.id}.nodes.${node.id}.to`, node.to);
   for (const bonus of unit.bonus ?? []) checkRoute(`${unit.id}.bonus.${bonus.id}.to`, bonus.to);
+}
+
+/* ── vocabCategories resolve against real vocabulary cards ───────────────────── */
+
+/**
+ * A `vocabCategories` entry that matches no card is NOT a crash and NOT an empty
+ * deck: `getVocabularyByCategories` falls through to an unthemed "first 60 A1
+ * cards" fill. Nothing is logged, nothing throws, and the build is green — the
+ * unit simply serves generic words instead of its theme, forever.
+ *
+ * That is the exact failure the category rewrite caused, and it reached the repo
+ * because the only guard was `check:vocabcats`, which nothing in the authoring
+ * loop consulted. This block is the guard AT THE GATE: `curriculum:validate` runs
+ * in pre-commit and CI (checks.yml), so a bad name is now refused at the moment it
+ * is written rather than discovered by a learner.
+ *
+ * The vocabulary is derived by the shared module, not restated here — a second
+ * copy of the category list would drift, and a drifted list is this same defect in
+ * a different hat.
+ */
+try {
+  const vocabIndex = buildVocabCategoryIndex();
+  const real = realVocabCategories(vocabIndex);
+
+  for (const unit of CURRICULUM_FILE.units) {
+    const declared = unit.vocabCategories ?? [];
+    if (declared.length === 0) continue;
+
+    const unknown = declared.filter((c) => !vocabIndex.counts.has(c));
+    if (unknown.length > 0) {
+      issues.push({
+        level: 'error',
+        where: `${unit.id}.vocabCategories`,
+        message:
+          `no vocabulary card is tagged ${unknown.map((c) => `"${c}"`).join(', ')} — ` +
+          'getVocabularyByCategories will silently fall back to a generic A1 fill, so this ' +
+          `unit's checkpoint stops being themed. Real categories: ${real.join(', ')}.`,
+      });
+    }
+  }
+} catch (err) {
+  // A gate that cannot check must say so, and must not pass silently. Same rule
+  // as the empty-source case inside the module.
+  issues.push({
+    level: 'error',
+    where: 'vocabCategories',
+    message: `could not verify — ${(err as Error).message}`,
+  });
 }
 
 /* ── lesson documents ───────────────────────────────────────────────────────── */

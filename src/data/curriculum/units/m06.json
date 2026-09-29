@@ -17,14 +17,55 @@
     "de": "Jedes regelmäßige Verb konjugieren, Stammwechsel-Muster beherrschen, sein/haben im Präsens richtig anwenden."
   },
   "nodes": [
-    { "id": "m06-learn", "kind": "learn", "label": { "en": "Conjugation Tables", "de": "Konjugationstabellen" }, "to": "/grammar?tab=conjugation", "xp": 10 },
-    { "id": "m06-practice", "kind": "practice", "label": { "en": "Verb Dice", "de": "Verben-Würfel" }, "to": "/games?game=dice", "xp": 20 },
-    { "id": "m06-checkpoint", "kind": "checkpoint", "label": { "en": "Module 6 Checkpoint", "de": "Modul 6 Prüfung" } }
+    {
+      "id": "m06-learn",
+      "kind": "learn",
+      "label": {
+        "en": "Conjugation Tables",
+        "de": "Konjugationstabellen"
+      },
+      "to": "/lesson/5",
+      "xp": 10
+    },
+    {
+      "id": "m06-practice",
+      "kind": "practice",
+      "label": {
+        "en": "Conjugation Reference",
+        "de": "Konjugations-Referenz"
+      },
+      "to": "/games?game=dice",
+      "xp": 20
+    },
+    {
+      "id": "m06-checkpoint",
+      "kind": "checkpoint",
+      "label": {
+        "en": "Module 6 Checkpoint",
+        "de": "Modul 6 Prüfung"
+      }
+    },
+    {
+      "id": "m06-tool",
+      "kind": "bonus",
+      "label": {
+        "en": "Conjugation Reference",
+        "de": "Konjugations-Referenz"
+      },
+      "to": "/grammar?tab=conjugation"
+    }
   ],
   "checkpoint": {
     "moduleType": "a1-checkpoint",
     "specs": [
-      { "type": "grammar-drill", "count": 12 }
+      {
+        "type": "grammar-drill",
+        "count": 10
+      },
+      {
+        "type": "vocab-translation",
+        "count": 4
+      }
     ]
   },
   "pedagogy": {
@@ -38,16 +79,101 @@
         "de": "Regelmäßige Verbendungen"
       },
       "rows": [
-        { "label": { "en": "ich", "de": "ich" }, "usage": { "en": "First person singular", "de": "1. Person Singular" }, "example": { "en": "wohne, lerne, mache", "de": "wohne, lerne, mache" } },
-        { "label": { "en": "du", "de": "du" }, "usage": { "en": "Second person singular informal", "de": "2. Person Singular informell" }, "example": { "en": "wohnst, lernst, machst", "de": "wohnst, lernst, machst" } },
-        { "label": { "en": "er/sie/es", "de": "er/sie/es" }, "usage": { "en": "Third person singular", "de": "3. Person Singular" }, "example": { "en": "wohnt, lernt, macht", "de": "wohnt, lernt, macht" } },
-        { "label": { "en": "wir", "de": "wir" }, "usage": { "en": "First person plural", "de": "1. Person Plural" }, "example": { "en": "wohnen, lernen, machen", "de": "wohnen, lernen, machen" } },
-        { "label": { "en": "ihr", "de": "ihr" }, "usage": { "en": "Second person plural informal", "de": "2. Person Plural informell" }, "example": { "en": "wohnt, lernt, macht", "de": "wohnt, lernt, macht" } },
-        { "label": { "en": "sie/Sie", "de": "sie/Sie" }, "usage": { "en": "Third person plural / formal", "de": "3. Person Plural / formell" }, "example": { "en": "wohnen, lernen, machen", "de": "wohnen, lernen, machen" } }
+        {
+          "label": {
+            "en": "ich",
+            "de": "ich"
+          },
+          "usage": {
+            "en": "First person singular",
+            "de": "1. Person Singular"
+          },
+          "example": {
+            "en": "wohne, lerne, mache",
+            "de": "wohne, lerne, mache"
+          }
+        },
+        {
+          "label": {
+            "en": "du",
+            "de": "du"
+          },
+          "usage": {
+            "en": "Second person singular informal",
+            "de": "2. Person Singular informell"
+          },
+          "example": {
+            "en": "wohnst, lernst, machst",
+            "de": "wohnst, lernst, machst"
+          }
+        },
+        {
+          "label": {
+            "en": "er/sie/es",
+            "de": "er/sie/es"
+          },
+          "usage": {
+            "en": "Third person singular",
+            "de": "3. Person Singular"
+          },
+          "example": {
+            "en": "wohnt, lernt, macht",
+            "de": "wohnt, lernt, macht"
+          }
+        },
+        {
+          "label": {
+            "en": "wir",
+            "de": "wir"
+          },
+          "usage": {
+            "en": "First person plural",
+            "de": "1. Person Plural"
+          },
+          "example": {
+            "en": "wohnen, lernen, machen",
+            "de": "wohnen, lernen, machen"
+          }
+        },
+        {
+          "label": {
+            "en": "ihr",
+            "de": "ihr"
+          },
+          "usage": {
+            "en": "Second person plural informal",
+            "de": "2. Person Plural informell"
+          },
+          "example": {
+            "en": "wohnt, lernt, macht",
+            "de": "wohnt, lernt, macht"
+          }
+        },
+        {
+          "label": {
+            "en": "sie/Sie",
+            "de": "sie/Sie"
+          },
+          "usage": {
+            "en": "Third person plural / formal",
+            "de": "3. Person Plural / formell"
+          },
+          "example": {
+            "en": "wohnen, lernen, machen",
+            "de": "wohnen, lernen, machen"
+          }
+        }
       ]
     }
   },
-  "vocabCategories": ["conjugation", "action-verbs"],
-  "grammarCategories": ["weakVerb", "stem", "sein"],
+  "vocabCategories": [
+    "conjugation",
+    "action-verbs"
+  ],
+  "grammarCategories": [
+    "weakVerb",
+    "stem",
+    "sein"
+  ],
   "hasLesson": true
 }

@@ -8,9 +8,11 @@
  * fastest interaction in the tool the slowest, and needs debouncing and
  * cancellation for what is, at most, 1,062 rows already in memory.
  *
- * The honest consequence: results are only as fresh as what the app has loaded,
- * so a user who never opened the Users page cannot find a user here. Each hit
- * therefore navigates to the page that CAN filter for it.
+ * The honest consequence: results are only as fresh as what the index holds, so
+ * `onOpen` is called on open and the SHELL decides whether a rebuild is due. Each
+ * hit navigates to the page that CAN filter for it, and both of those pages read
+ * the `?q=` parameter — which they did not until the deep link was wired, so
+ * every one of these links used to land on an unfiltered table.
  *
  * ── KEYBOARD AND FOCUS, DONE PROPERLY ──────────────────────────────────────
  * The hotkey is bound on `window` with `preventDefault` so it does not also fire
@@ -18,9 +20,9 @@
  * previously focused element on close. Without that last step the palette
  * strands keyboard users at the top of the document after one use.
  */
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CornerDownLeft, Search } from 'lucide-react';
+import { AlertTriangle, CornerDownLeft, Search } from 'lucide-react';
 import { isDismissKey, isOpenHotkey, searchAll, type SearchGroup, type SearchHit } from '../data/search';
 
 const GROUP_LABEL: Record<SearchGroup, string> = {
@@ -32,7 +34,17 @@ const GROUP_LABEL: Record<SearchGroup, string> = {
   unit: 'Curriculum unit',
 };
 
-export function SearchPalette({ index }: { index: Parameters<typeof searchAll>[0] }) {
+export function SearchPalette({
+  index,
+  onOpen,
+  errors,
+}: {
+  index: Parameters<typeof searchAll>[0];
+  /** Called each time the palette opens, so the shell can rebuild if stale. */
+  onOpen?: () => void;
+  /** Which index sources failed to load. Shown, not swallowed. */
+  errors?: string[];
+}) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [active, setActive] = useState(0);
@@ -40,7 +52,12 @@ export function SearchPalette({ index }: { index: Parameters<typeof searchAll>[0
   const restoreRef = useRef<HTMLElement | null>(null);
   const navigate = useNavigate();
 
-  const hits = useMemo(() => searchAll(index, query), [index, query]);
+  // A DEFERRED query. `unitDocText` walks every unit document on each scan, so
+  // typing at speed queued a full document walk per keystroke and the results
+  // trailed the caret. Deferring lets React drop intermediate queries when the
+  // next keystroke arrives first.
+  const deferredQuery = useDeferredValue(query);
+  const hits = useMemo(() => searchAll(index, deferredQuery), [index, deferredQuery]);
 
   const close = useCallback(() => {
     setOpen(false);
@@ -56,6 +73,16 @@ export function SearchPalette({ index }: { index: Parameters<typeof searchAll>[0
     navigate(hit.to);
   }, [navigate]);
 
+  // `onOpen` is read through a ref rather than listed as an effect dependency.
+  // The shell passes an inline `useCallback` whose identity is stable, but the
+  // keydown listener is registered ONCE and must not be torn down and rebuilt
+  // whenever the shell re-renders — the hotkey has to work the instant it is
+  // pressed, and a torn-down listener is a hotkey that silently does nothing.
+  const onOpenRef = useRef(onOpen);
+  useEffect(() => {
+    onOpenRef.current = onOpen;
+  }, [onOpen]);
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (isOpenHotkey(e)) {
@@ -64,6 +91,7 @@ export function SearchPalette({ index }: { index: Parameters<typeof searchAll>[0
         restoreRef.current = document.activeElement as HTMLElement | null;
         setOpen(true);
         setActive(0);
+        onOpenRef.current?.();
         // Focus after the render that mounts the input.
         requestAnimationFrame(() => inputRef.current?.focus());
         return;
@@ -123,6 +151,19 @@ export function SearchPalette({ index }: { index: Parameters<typeof searchAll>[0
             Esc
           </kbd>
         </div>
+
+        {errors && errors.length > 0 && (
+          <p
+            role="status"
+            className="flex items-start gap-2 border-b border-warning-200 bg-warning-50 px-3 py-2 text-meta text-warning-900 dark:border-warning-900 dark:bg-warning-950/40 dark:text-warning-200"
+          >
+            <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+            <span>
+              Part of the index could not be loaded, so these results are incomplete:{' '}
+              {errors.join('; ')}
+            </span>
+          </p>
+        )}
 
         {hits.length === 0 ? (
           <p className="px-3 py-6 text-center text-body text-ink-500 dark:text-ink-400">

@@ -872,5 +872,649 @@
       "🧠 *Memory Hook for stem-changes: Think of 'EAT' → 'isst' (e→i) and 'READ' → 'liest' (e→ie). The vowel changes like the meaning changes!*",
       "🇩🇪 *Cultural Insight: Germans value precision. Saying 'Ich kann Deutsch' (I can German) is understood but 'Ich kann Deutsch sprechen' (I can speak German) is correct.*"
     ]
-  }
+  },
+  "steps": [
+    {
+      "type": "intro",
+      "objectives": {
+        "en": [
+          "Conjugate regular verbs in the Present Tense (Präsens)",
+          "Master irregular core verbs 'sein' (to be) and 'haben' (to have)",
+          "Recognize stem vowel changes (e -> i, a -> ä) in 2nd and 3rd person singular"
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "lernen",
+        "en": "to learn",
+        "ne": "सिक्नु",
+        "examples": [
+          {
+            "de": "Ich lerne Deutsch.",
+            "en": "I learn German."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "wohnen",
+        "en": "to live / reside",
+        "ne": "बस्नु / बसोबास गर्नु",
+        "examples": [
+          {
+            "de": "Ich wohne in Berlin.",
+            "en": "I live in Berlin."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "trinken",
+        "en": "to drink",
+        "ne": "पिउनु",
+        "examples": [
+          {
+            "de": "Ich trinke Wasser.",
+            "en": "I drink water."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "explain",
+      "title": {
+        "en": "Regular Verb Endings in German"
+      },
+      "body": "Remove **-en** from the infinitive stem (*lern-*), then add personal endings:\n\n- **ich**: -e (*ich lerne*)\n- **du**: -st (*du lernst*)\n- **er/sie/es**: -t (*er lernt*)\n- **wir**: -en (*wir lernen*)\n- **ihr**: -t (*ihr lernt*)\n- **sie/Sie**: -en (*sie lernen*)"
+    },
+    {
+      "type": "typed",
+      "ask": "conjugate",
+      "prompt": "ich (wohnen) in Berlin.",
+      "answer": "wohne",
+      "accepted": [
+        "wohne"
+      ],
+      "note": "ich takes ending -e"
+    },
+    {
+      "type": "typed",
+      "ask": "conjugate",
+      "prompt": "du (lernen) Deutsch.",
+      "answer": "lernst",
+      "accepted": [
+        "lernst"
+      ],
+      "note": "du takes ending -st"
+    },
+    {
+      "type": "typed",
+      "ask": "conjugate",
+      "prompt": "er (trinken) Wasser.",
+      "answer": "trinkt",
+      "accepted": [
+        "trinkt"
+      ],
+      "note": "er takes ending -t"
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "sein",
+        "en": "to be",
+        "ne": "हुनु",
+        "examples": [
+          {
+            "de": "Ich bin Student.",
+            "en": "I am a student."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "haben",
+        "en": "to have",
+        "ne": "हुनु / हुनुसँग हुनु",
+        "examples": [
+          {
+            "de": "Ich habe Zeit.",
+            "en": "I have time."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "explain",
+      "title": {
+        "en": "Core Irregular Verbs: 'sein' & 'haben'"
+      },
+      "body": "These essential verbs are irregular:\n\n**sein (to be)**:\n- ich **bin**, du **bist**, er/sie/es **ist**, wir **sind**, ihr **seid**, sie/Sie **sind**.\n\n**haben (to have)**:\n- ich **habe**, du **hast**, er/sie/es **hat**, wir **haben**, ihr **habt**, sie/Sie **haben**."
+    },
+    {
+      "type": "mcq",
+      "prompt": "Which form completes: 'Er ___ Zeit'?",
+      "options": [
+        "hat",
+        "habe",
+        "hast"
+      ],
+      "answer": "hat",
+      "hintReason": "er/sie/es takes 'hat'."
+    },
+    {
+      "type": "match",
+      "pairs": [
+        {
+          "id": "0",
+          "de": "ich bin",
+          "en": "I am"
+        },
+        {
+          "id": "1",
+          "de": "du bist",
+          "en": "you are"
+        },
+        {
+          "id": "2",
+          "de": "er ist",
+          "en": "he is"
+        },
+        {
+          "id": "3",
+          "de": "wir sind",
+          "en": "we are"
+        }
+      ],
+      "columnLabels": {
+        "left": "Deutsch",
+        "right": "English"
+      }
+    },
+    {
+      "type": "dialogue",
+      "title": {
+        "en": "Getting Acquainted",
+        "de": "Kennenlernen"
+      },
+      "turns": [
+        {
+          "speaker": "Maria",
+          "de": "Wo wohnst du?",
+          "en": "Where do you live?"
+        },
+        {
+          "speaker": "Paul",
+          "de": "Ich wohne in München. Und du?",
+          "en": "I live in Munich. And you?"
+        },
+        {
+          "speaker": "Maria",
+          "de": "Ich wohne in Berlin. Ich lerne Deutsch.",
+          "en": "I live in Berlin. I am learning German."
+        },
+        {
+          "speaker": "Paul",
+          "de": "Das ist super!",
+          "en": "That is great!"
+        }
+      ]
+    },
+    {
+      "type": "typed",
+      "ask": "fill-blank",
+      "prompt": "Wo ___ du?",
+      "answer": "wohnst",
+      "accepted": [
+        "wohnst"
+      ],
+      "note": "du takes ending -st -> wohnst"
+    },
+    {
+      "type": "typed",
+      "ask": "translate-en-de",
+      "prompt": "I live in Berlin.",
+      "answer": "Ich wohne in Berlin",
+      "accepted": [
+        "Ich wohne in Berlin."
+      ],
+      "note": "wohnen with ich -> wohne"
+    },
+    {
+      "type": "arrange",
+      "prompt": "Order the sentence:",
+      "tokens": [
+        "Ich",
+        "lerne",
+        "heute",
+        "Deutsch."
+      ]
+    },
+    {
+      "type": "dictation",
+      "text": "Ich wohne in Berlin.",
+      "instruction": "Listen and type what you hear."
+    },
+    {
+      "type": "culture",
+      "body": "When filling out official registration forms ('Anmeldung') in Germany, stating your residence address accurately is required by law within 14 days of moving."
+    },
+    {
+      "type": "typed",
+      "ask": "correct",
+      "prompt": "Ich wohnst in Berlin.",
+      "answer": "Ich wohne in Berlin",
+      "accepted": [
+        "Ich wohne in Berlin."
+      ],
+      "note": "ich takes ending -e -> wohne"
+    },
+    {
+      "type": "mcq",
+      "prompt": "What is the 'du' form of 'sein'?",
+      "options": [
+        "bist",
+        "bin",
+        "ist"
+      ],
+      "answer": "bist",
+      "hintReason": "du bist = you are"
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "machen",
+        "article": "",
+        "plural": "",
+        "ipa": "[ˈmaxən]",
+        "en": "to do / make",
+        "ne": "गर्नु",
+        "partOfSpeech": "Verb",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Was machst du?",
+            "en": "What are you doing?",
+            "ne": "तिमी के गर्दैछौ?"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "spielen",
+        "article": "",
+        "plural": "",
+        "ipa": "[ˈʃpiːlən]",
+        "en": "to play",
+        "ne": "खेल्नु",
+        "partOfSpeech": "Verb",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Die Kinder spielen.",
+            "en": "The children are playing.",
+            "ne": "बच्चाहरु खेल्दैछन्।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "kommen",
+        "article": "",
+        "plural": "",
+        "ipa": "[ˈkɔmən]",
+        "en": "to come",
+        "ne": "आउनु",
+        "partOfSpeech": "Verb",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Er kommt morgen.",
+            "en": "He is coming tomorrow.",
+            "ne": "उहाँ भोलि आउँदैछन्।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "essen",
+        "article": "",
+        "plural": "",
+        "ipa": "[ˈɛsən]",
+        "en": "to eat",
+        "ne": "खानु",
+        "partOfSpeech": "Verb",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Wir essen Brot.",
+            "en": "We eat bread.",
+            "ne": "हामी पाउरोटी खान्छौं।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "lesen",
+        "article": "",
+        "plural": "",
+        "ipa": "[ˈleːzən]",
+        "en": "to read",
+        "ne": "पढ्नु",
+        "partOfSpeech": "Verb",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Sie liest ein Buch.",
+            "en": "She reads a book.",
+            "ne": "उहाँ एउटा किताब पढ्दैछिन्।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "sehen",
+        "article": "",
+        "plural": "",
+        "ipa": "[ˈzeːən]",
+        "en": "to see / watch",
+        "ne": "हेर्नु",
+        "partOfSpeech": "Verb",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Was siehst du?",
+            "en": "What do you see?",
+            "ne": "तिमी के हेर्दैछौ?"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "fahren",
+        "article": "",
+        "plural": "",
+        "ipa": "[ˈfaːʁən]",
+        "en": "to drive / travel",
+        "ne": "यात्रा गर्नु / ड्राइभ गर्नु",
+        "partOfSpeech": "Verb",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Wir fahren nach München.",
+            "en": "We are driving to Munich.",
+            "ne": "हामी म्युनिख जान सक्छौं।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "schlafen",
+        "article": "",
+        "plural": "",
+        "ipa": "[ˈʃlaːfən]",
+        "en": "to sleep",
+        "ne": "सुत्नु",
+        "partOfSpeech": "Verb",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Das Kind schläft.",
+            "en": "The child is sleeping.",
+            "ne": "बच्चा सुतिरहेको छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "geben",
+        "article": "",
+        "plural": "",
+        "ipa": "[ˈgeːbən]",
+        "en": "to give",
+        "ne": "दिनु",
+        "partOfSpeech": "Verb",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Er gibt mir das Buch.",
+            "en": "He gives me the book.",
+            "ne": "उहाँ मलाई किताब दिन्छन्।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "arbeiten",
+        "article": "",
+        "plural": "",
+        "ipa": "[ˈaʁbaɪtn̩]",
+        "en": "to work",
+        "ne": "काम गर्नु",
+        "partOfSpeech": "Verb",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Er arbeitet heute.",
+            "en": "He works today.",
+            "ne": "उहाँ आज काम गर्छन्।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "kaufen",
+        "article": "",
+        "plural": "",
+        "ipa": "[ˈkaʊfn̩]",
+        "en": "to buy",
+        "ne": "किन्नु",
+        "partOfSpeech": "Verb",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Ich kaufe einen Apfel.",
+            "en": "I buy an apple.",
+            "ne": "म एउटा स्याउ किन्छु।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "verstehen",
+        "article": "",
+        "plural": "",
+        "ipa": "[fɛɐ̯ˈʃteːən]",
+        "en": "to understand",
+        "ne": "बुझ्नु",
+        "partOfSpeech": "Verb",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Verstehst du?",
+            "en": "Do you understand?",
+            "ne": "के तिमी बुझ्यौ?"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "sprechen",
+        "article": "",
+        "plural": "",
+        "ipa": "[ˈʃpʁɛçən]",
+        "en": "to speak",
+        "ne": "बोल्नु",
+        "partOfSpeech": "Verb",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Sprechen Sie Deutsch?",
+            "en": "Do you speak German?",
+            "ne": "के तपाईं जर्मन बोल्नुहुन्छ?"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "heißen",
+        "article": "",
+        "plural": "",
+        "ipa": "[ˈhaɪsn̩]",
+        "en": "to be called",
+        "ne": "नाम हुनु",
+        "partOfSpeech": "Verb",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Wie heißt du?",
+            "en": "What is your name?",
+            "ne": "तिम्रो नाम के हो?"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Präfix",
+        "article": "das",
+        "plural": "Präfixe",
+        "ipa": "[pʁeːˈfɪks]",
+        "en": "prefix",
+        "ne": "उपसर्ग",
+        "partOfSpeech": "Noun",
+        "frequency": "passive",
+        "examples": [
+          {
+            "de": "Das Präfix 'auf-' ist trennbar.",
+            "en": "The prefix 'auf-' is separable.",
+            "ne": "उपसर्ग 'auf-' विभाज्य छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Stamm",
+        "article": "der",
+        "plural": "Stämme",
+        "ipa": "[ʃtam]",
+        "en": "stem (of verb)",
+        "ne": "मूल / धातु",
+        "partOfSpeech": "Noun",
+        "frequency": "passive",
+        "examples": [
+          {
+            "de": "Der Stamm von 'lernen' ist 'lern-'.",
+            "en": "The stem of 'lernen' is 'lern-'.",
+            "ne": "'लर्नेन' को मूल 'लर्न्-' हो।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Endung",
+        "article": "die",
+        "plural": "Endungen",
+        "ipa": "[ˈɛndʊŋ]",
+        "en": "ending",
+        "ne": "अन्त्य / प्रत्यय",
+        "partOfSpeech": "Noun",
+        "frequency": "passive",
+        "examples": [
+          {
+            "de": "Die Endung für 'ich' ist '-e'.",
+            "en": "The ending for 'ich' is '-e'.",
+            "ne": "'इच' को अन्त्य '-e' हो।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "regelmäßig",
+        "article": "",
+        "plural": "",
+        "ipa": "[ʁeːlˈmɛsɪç]",
+        "en": "regular",
+        "ne": "नियमित",
+        "partOfSpeech": "Adjective",
+        "frequency": "passive",
+        "examples": [
+          {
+            "de": "'Lernen' ist ein regelmäßiges Verb.",
+            "en": "'Lernen' is a regular verb.",
+            "ne": "'लर्नेन' एउटा नियमित क्रियापद हो।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "unregelmäßig",
+        "article": "",
+        "plural": "",
+        "ipa": "[ʊnʁeːlˈmɛsɪç]",
+        "en": "irregular",
+        "ne": "अनियमित",
+        "partOfSpeech": "Adjective",
+        "frequency": "passive",
+        "examples": [
+          {
+            "de": "'Sein' ist unregelmäßig.",
+            "en": "'Sein' is irregular.",
+            "ne": "'जीन' अनियमित क्रियापद हो।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "summary"
+    }
+  ],
+  "stepsSource": "imported"
 }

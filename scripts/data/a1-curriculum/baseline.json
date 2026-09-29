@@ -154,48 +154,63 @@
       "m01-greetings",
       "m01-dictation",
       "m01-gate",
+      "m01-tool",
       "m02-numbers",
       "m02-numbers-blitz",
       "m02-gate",
+      "m02-tool",
       "m03-alphabet",
       "m03-pronunciation",
       "m03-gate",
+      "m03-tool",
       "m04-family",
       "m04-stories",
       "m04-gate",
+      "m04-tool",
       "m05-articles",
       "m05-housing",
       "m05-gate",
+      "m05-tool",
       "m06-learn",
       "m06-practice",
       "m06-checkpoint",
+      "m06-tool",
       "m07-learn",
       "m07-practice",
       "m07-checkpoint",
+      "m07-tool",
       "m08-learn",
       "m08-practice",
       "m08-checkpoint",
+      "m08-tool",
       "m09-learn",
       "m09-practice",
       "m09-checkpoint",
+      "m09-tool",
       "m10-learn",
       "m10-practice",
       "m10-checkpoint",
+      "m10-tool",
       "m11-learn",
       "m11-practice",
       "m11-checkpoint",
+      "m11-tool",
       "m12-learn",
       "m12-practice",
       "m12-checkpoint",
+      "m12-tool",
       "m13-learn",
       "m13-practice",
       "m13-checkpoint",
+      "m13-tool",
       "m14-learn",
       "m14-practice",
       "m14-checkpoint",
+      "m14-tool",
       "m15-learn",
       "m15-practice",
       "m15-checkpoint",
+      "m15-tool",
       "m16-learn",
       "m16-practice",
       "m16-bonus",
@@ -279,14 +294,14 @@
       15
     ],
     "nodeByRoute": [
-      "m01-greetings",
-      "m01-greetings",
-      "m12-learn",
-      "m04-family",
-      "m10-learn",
+      "m01-tool",
+      "m01-tool",
+      "m12-tool",
+      "m04-tool",
+      "m10-tool",
       null,
       "m16-practice",
-      "m05-articles",
+      "m05-tool",
       null
     ],
     "remapBandToModuleIndex": [
@@ -311,484 +326,649 @@
   "learnNodes": [
     {
       "id": "m01-greetings",
+      "unitIndex": 0,
       "kind": "learn",
       "label": {
-        "de": "Grüße",
-        "en": "Greetings"
+        "en": "Greetings",
+        "de": "Grüße"
       },
-      "to": "/greetings",
-      "unitIndex": 0
+      "to": "/lesson/0"
     },
     {
       "id": "m01-dictation",
+      "unitIndex": 0,
       "kind": "practice",
       "label": {
-        "de": "Diktat",
-        "en": "Dictation"
+        "en": "Greetings Practice",
+        "de": "Begrüßungsübungen"
       },
-      "to": "/dictation",
-      "unitIndex": 0
+      "to": "/dictation"
     },
     {
       "id": "m01-gate",
+      "unitIndex": 0,
       "kind": "checkpoint",
       "label": {
-        "de": "Modul 1 Prüfung",
-        "en": "Module 1 Checkpoint"
+        "en": "Module 1 Checkpoint",
+        "de": "Modul 1 Prüfung"
       },
-      "to": "/checkpoint/0",
-      "unitIndex": 0
+      "to": "/checkpoint/0"
+    },
+    {
+      "id": "m01-tool",
+      "unitIndex": 0,
+      "kind": "bonus",
+      "label": {
+        "en": "Greetings Practice",
+        "de": "Begrüßungsübungen"
+      },
+      "to": "/greetings",
+      "bonus": true
     },
     {
       "id": "m02-numbers",
+      "unitIndex": 1,
       "kind": "learn",
       "label": {
-        "de": "Zahlen",
-        "en": "Numbers"
+        "en": "Numbers",
+        "de": "Zahlen"
       },
-      "to": "/numbers",
-      "unitIndex": 1
+      "to": "/lesson/1"
     },
     {
       "id": "m02-numbers-blitz",
+      "unitIndex": 1,
       "kind": "practice",
       "label": {
-        "de": "Zahlen-Blitz",
-        "en": "Number Blitz"
+        "en": "Numbers Practice",
+        "de": "Zahlenübungen"
       },
-      "to": "/rapid-fire?mode=number-conversion",
-      "unitIndex": 1
+      "to": "/rapid-fire?mode=number-conversion"
     },
     {
       "id": "m02-gate",
+      "unitIndex": 1,
       "kind": "checkpoint",
       "label": {
-        "de": "Modul 2 Prüfung",
-        "en": "Module 2 Checkpoint"
+        "en": "Module 2 Checkpoint",
+        "de": "Modul 2 Prüfung"
       },
-      "to": "/checkpoint/1",
-      "unitIndex": 1
+      "to": "/checkpoint/1"
+    },
+    {
+      "id": "m02-tool",
+      "unitIndex": 1,
+      "kind": "bonus",
+      "label": {
+        "en": "Numbers Practice",
+        "de": "Zahlenübungen"
+      },
+      "to": "/numbers",
+      "bonus": true
     },
     {
       "id": "m03-alphabet",
+      "unitIndex": 2,
       "kind": "learn",
       "label": {
-        "de": "Alphabet & Buchstabieren",
-        "en": "Alphabet & Spelling"
+        "en": "Alphabet & Spelling",
+        "de": "Alphabet & Buchstabieren"
       },
-      "to": "/alphabet",
-      "unitIndex": 2
+      "to": "/lesson/2"
     },
     {
       "id": "m03-pronunciation",
+      "unitIndex": 2,
       "kind": "practice",
       "label": {
-        "de": "Aussprache",
-        "en": "Pronunciation"
+        "en": "Alphabet Practice",
+        "de": "Alphabetübungen"
       },
-      "to": "/pronunciation",
-      "unitIndex": 2
+      "to": "/pronunciation"
     },
     {
       "id": "m03-gate",
+      "unitIndex": 2,
       "kind": "checkpoint",
       "label": {
-        "de": "Modul 3 Prüfung",
-        "en": "Module 3 Checkpoint"
+        "en": "Module 3 Checkpoint",
+        "de": "Modul 3 Prüfung"
       },
-      "to": "/checkpoint/2",
-      "unitIndex": 2
+      "to": "/checkpoint/2"
+    },
+    {
+      "id": "m03-tool",
+      "unitIndex": 2,
+      "kind": "bonus",
+      "label": {
+        "en": "Alphabet Practice",
+        "de": "Alphabetübungen"
+      },
+      "to": "/alphabet",
+      "bonus": true
     },
     {
       "id": "m04-family",
+      "unitIndex": 3,
       "kind": "learn",
       "label": {
-        "de": "Familien-Wortschatz",
-        "en": "Family Vocabulary"
+        "en": "Family & Relationships",
+        "de": "Familie & Beziehungen"
       },
-      "to": "/vocab-trainer?category=family",
-      "unitIndex": 3
+      "to": "/lesson/3"
     },
     {
       "id": "m04-stories",
+      "unitIndex": 3,
       "kind": "practice",
       "label": {
-        "de": "Familiengeschichten",
-        "en": "Family Stories"
+        "en": "Family Vocabulary",
+        "de": "Familienvokabeln"
       },
-      "to": "/stories",
-      "unitIndex": 3
+      "to": "/stories"
     },
     {
       "id": "m04-gate",
+      "unitIndex": 3,
       "kind": "checkpoint",
       "label": {
-        "de": "Modul 4 Prüfung",
-        "en": "Module 4 Checkpoint"
+        "en": "Module 4 Checkpoint",
+        "de": "Modul 4 Prüfung"
       },
-      "to": "/checkpoint/3",
-      "unitIndex": 3
+      "to": "/checkpoint/3"
+    },
+    {
+      "id": "m04-tool",
+      "unitIndex": 3,
+      "kind": "bonus",
+      "label": {
+        "en": "Family Vocabulary",
+        "de": "Familienvokabeln"
+      },
+      "to": "/vocab-trainer?category=family",
+      "bonus": true
     },
     {
       "id": "m05-articles",
+      "unitIndex": 4,
       "kind": "learn",
       "label": {
-        "de": "Artikel",
-        "en": "Articles"
+        "en": "Articles",
+        "de": "Artikel"
       },
-      "to": "/articles",
-      "unitIndex": 4
+      "to": "/lesson/4"
     },
     {
       "id": "m05-housing",
+      "unitIndex": 4,
       "kind": "practice",
       "label": {
-        "de": "Wohnungs-Drill",
-        "en": "Housing Drill"
+        "en": "Articles Practice",
+        "de": "Artikelübungen"
       },
-      "to": "/vocab-trainer?category=housing",
-      "unitIndex": 4
+      "to": "/vocab-trainer?category=housing"
     },
     {
       "id": "m05-gate",
+      "unitIndex": 4,
       "kind": "checkpoint",
       "label": {
-        "de": "Modul 5 Prüfung",
-        "en": "Module 5 Checkpoint"
+        "en": "Module 5 Checkpoint",
+        "de": "Modul 5 Prüfung"
       },
-      "to": "/checkpoint/4",
-      "unitIndex": 4
+      "to": "/checkpoint/4"
+    },
+    {
+      "id": "m05-tool",
+      "unitIndex": 4,
+      "kind": "bonus",
+      "label": {
+        "en": "Articles Practice",
+        "de": "Artikelübungen"
+      },
+      "to": "/articles",
+      "bonus": true
     },
     {
       "id": "m06-learn",
+      "unitIndex": 5,
       "kind": "learn",
       "label": {
-        "de": "Konjugationstabellen",
-        "en": "Conjugation Tables"
+        "en": "Conjugation Tables",
+        "de": "Konjugationstabellen"
       },
-      "to": "/grammar?tab=conjugation",
-      "unitIndex": 5
+      "to": "/lesson/5"
     },
     {
       "id": "m06-practice",
+      "unitIndex": 5,
       "kind": "practice",
       "label": {
-        "de": "Verben-Würfel",
-        "en": "Verb Dice"
+        "en": "Conjugation Reference",
+        "de": "Konjugations-Referenz"
       },
-      "to": "/games?game=dice",
-      "unitIndex": 5
+      "to": "/games?game=dice"
     },
     {
       "id": "m06-checkpoint",
+      "unitIndex": 5,
       "kind": "checkpoint",
       "label": {
-        "de": "Modul 6 Prüfung",
-        "en": "Module 6 Checkpoint"
+        "en": "Module 6 Checkpoint",
+        "de": "Modul 6 Prüfung"
       },
-      "to": "/checkpoint/5",
-      "unitIndex": 5
+      "to": "/checkpoint/5"
+    },
+    {
+      "id": "m06-tool",
+      "unitIndex": 5,
+      "kind": "bonus",
+      "label": {
+        "en": "Conjugation Reference",
+        "de": "Konjugations-Referenz"
+      },
+      "to": "/grammar?tab=conjugation",
+      "bonus": true
     },
     {
       "id": "m07-learn",
+      "unitIndex": 6,
       "kind": "learn",
       "label": {
-        "de": "V2-Wortstellung",
-        "en": "V2 Word Order"
+        "en": "V2 Word Order",
+        "de": "V2-Wortstellung"
       },
-      "to": "/grammar?tab=v2",
-      "unitIndex": 6
+      "to": "/lesson/6"
     },
     {
       "id": "m07-practice",
+      "unitIndex": 6,
       "kind": "practice",
       "label": {
-        "de": "Satzbau",
-        "en": "Sentence Builder"
+        "en": "V2 Reference",
+        "de": "V2-Referenz"
       },
-      "to": "/sentence-builder",
-      "unitIndex": 6
+      "to": "/sentence-builder"
     },
     {
       "id": "m07-checkpoint",
+      "unitIndex": 6,
       "kind": "checkpoint",
       "label": {
-        "de": "Modul 7 Prüfung",
-        "en": "Module 7 Checkpoint"
+        "en": "Module 7 Checkpoint",
+        "de": "Modul 7 Prüfung"
       },
-      "to": "/checkpoint/6",
-      "unitIndex": 6
+      "to": "/checkpoint/6"
+    },
+    {
+      "id": "m07-tool",
+      "unitIndex": 6,
+      "kind": "bonus",
+      "label": {
+        "en": "V2 Reference",
+        "de": "V2-Referenz"
+      },
+      "to": "/grammar?tab=v2",
+      "bonus": true
     },
     {
       "id": "m08-learn",
+      "unitIndex": 7,
       "kind": "learn",
       "label": {
-        "de": "Akkusativ-Bau",
-        "en": "Accusative Builder"
+        "en": "Accusative Case & Direct Objects",
+        "de": "Akkusativ & direkte Objekte"
       },
-      "to": "/sentence-builder?focus=akkusativ",
-      "unitIndex": 7
+      "to": "/lesson/7"
     },
     {
       "id": "m08-practice",
+      "unitIndex": 7,
       "kind": "practice",
       "label": {
-        "de": "Artikel-Sprint",
-        "en": "Article Sprint"
+        "en": "Accusative Builder",
+        "de": "Akkusativ-Baukasten"
       },
-      "to": "/article-sprint",
-      "unitIndex": 7
+      "to": "/article-sprint"
     },
     {
       "id": "m08-checkpoint",
+      "unitIndex": 7,
       "kind": "checkpoint",
       "label": {
-        "de": "Modul 8 Prüfung",
-        "en": "Module 8 Checkpoint"
+        "en": "Module 8 Checkpoint",
+        "de": "Modul 8 Prüfung"
       },
-      "to": "/checkpoint/7",
-      "unitIndex": 7
+      "to": "/checkpoint/7"
+    },
+    {
+      "id": "m08-tool",
+      "unitIndex": 7,
+      "kind": "bonus",
+      "label": {
+        "en": "Accusative Builder",
+        "de": "Akkusativ-Baukasten"
+      },
+      "to": "/sentence-builder?focus=akkusativ",
+      "bonus": true
     },
     {
       "id": "m09-learn",
+      "unitIndex": 8,
       "kind": "learn",
       "label": {
-        "de": "Trennbare Verben",
-        "en": "Separable Verbs"
+        "en": "Separable Verbs",
+        "de": "Trennbare Verben"
       },
-      "to": "/sentence-builder?focus=separable",
-      "unitIndex": 8
+      "to": "/lesson/8"
     },
     {
       "id": "m09-practice",
+      "unitIndex": 8,
       "kind": "practice",
       "label": {
-        "de": "Präfix-Drill",
-        "en": "Prefix Drill"
+        "en": "Separable Verb Builder",
+        "de": "Trennbare-Verben-Baukasten"
       },
-      "to": "/grammar?tab=prefix",
-      "unitIndex": 8
+      "to": "/grammar?tab=prefix"
     },
     {
       "id": "m09-checkpoint",
+      "unitIndex": 8,
       "kind": "checkpoint",
       "label": {
-        "de": "Modul 9 Prüfung",
-        "en": "Module 9 Checkpoint"
+        "en": "Module 9 Checkpoint",
+        "de": "Modul 9 Prüfung"
       },
-      "to": "/checkpoint/8",
-      "unitIndex": 8
+      "to": "/checkpoint/8"
+    },
+    {
+      "id": "m09-tool",
+      "unitIndex": 8,
+      "kind": "bonus",
+      "label": {
+        "en": "Separable Verb Builder",
+        "de": "Trennbare-Verben-Baukasten"
+      },
+      "to": "/sentence-builder?focus=separable",
+      "bonus": true
     },
     {
       "id": "m10-learn",
+      "unitIndex": 9,
       "kind": "learn",
       "label": {
-        "de": "Café-Bestellung",
-        "en": "Café Ordering"
+        "en": "Café Ordering",
+        "de": "Café-Bestellung"
       },
-      "to": "/roleplay?scene=cafe",
-      "unitIndex": 9
+      "to": "/lesson/9"
     },
     {
       "id": "m10-practice",
+      "unitIndex": 9,
       "kind": "practice",
       "label": {
-        "de": "Restaurant-Rollenspiel",
-        "en": "Restaurant Roleplay"
+        "en": "Café Roleplay",
+        "de": "Café-Rollenspiel"
       },
-      "to": "/roleplay?scene=restaurant",
-      "unitIndex": 9
+      "to": "/roleplay?scene=restaurant"
     },
     {
       "id": "m10-checkpoint",
+      "unitIndex": 9,
       "kind": "checkpoint",
       "label": {
-        "de": "Modul 10 Prüfung",
-        "en": "Module 10 Checkpoint"
+        "en": "Module 10 Checkpoint",
+        "de": "Modul 10 Prüfung"
       },
-      "to": "/checkpoint/9",
-      "unitIndex": 9
+      "to": "/checkpoint/9"
+    },
+    {
+      "id": "m10-tool",
+      "unitIndex": 9,
+      "kind": "bonus",
+      "label": {
+        "en": "Café Roleplay",
+        "de": "Café-Rollenspiel"
+      },
+      "to": "/roleplay?scene=cafe",
+      "bonus": true
     },
     {
       "id": "m11-learn",
+      "unitIndex": 10,
       "kind": "learn",
       "label": {
-        "de": "Kalender & Zeit",
-        "en": "Calendar & Time"
+        "en": "Calendar & Time",
+        "de": "Kalender & Zeit"
       },
-      "to": "/calendar",
-      "unitIndex": 10
+      "to": "/lesson/10"
     },
     {
       "id": "m11-practice",
+      "unitIndex": 10,
       "kind": "practice",
       "label": {
-        "de": "Zeit-&-Datum-Blitz",
-        "en": "Time & Date Blitz"
+        "en": "Calendar Practice",
+        "de": "Kalenderübungen"
       },
-      "to": "/rapid-fire?mode=vocabulary-translation",
-      "unitIndex": 10
+      "to": "/rapid-fire?mode=vocabulary-translation"
     },
     {
       "id": "m11-checkpoint",
+      "unitIndex": 10,
       "kind": "checkpoint",
       "label": {
-        "de": "Modul 11 Prüfung",
-        "en": "Module 11 Checkpoint"
+        "en": "Module 11 Checkpoint",
+        "de": "Modul 11 Prüfung"
       },
-      "to": "/checkpoint/10",
-      "unitIndex": 10
+      "to": "/checkpoint/10"
+    },
+    {
+      "id": "m11-tool",
+      "unitIndex": 10,
+      "kind": "bonus",
+      "label": {
+        "en": "Calendar Practice",
+        "de": "Kalenderübungen"
+      },
+      "to": "/calendar",
+      "bonus": true
     },
     {
       "id": "m12-learn",
+      "unitIndex": 11,
       "kind": "learn",
       "label": {
-        "de": "Modalverben",
-        "en": "Modal Verbs"
+        "en": "Modal Verbs",
+        "de": "Modalverben"
       },
-      "to": "/grammar?tab=modals",
-      "unitIndex": 11
+      "to": "/lesson/11"
     },
     {
       "id": "m12-practice",
+      "unitIndex": 11,
       "kind": "practice",
       "label": {
-        "de": "Tic-Tac-Toe",
-        "en": "Tic-Tac-Toe"
+        "en": "Modals Reference",
+        "de": "Modalverben-Referenz"
       },
-      "to": "/games?game=tictactoe",
-      "unitIndex": 11
+      "to": "/games?game=tictactoe"
     },
     {
       "id": "m12-checkpoint",
+      "unitIndex": 11,
       "kind": "checkpoint",
       "label": {
-        "de": "Modul 12 Prüfung",
-        "en": "Module 12 Checkpoint"
+        "en": "Module 12 Checkpoint",
+        "de": "Modul 12 Prüfung"
       },
-      "to": "/checkpoint/11",
-      "unitIndex": 11
+      "to": "/checkpoint/11"
+    },
+    {
+      "id": "m12-tool",
+      "unitIndex": 11,
+      "kind": "bonus",
+      "label": {
+        "en": "Modals Reference",
+        "de": "Modalverben-Referenz"
+      },
+      "to": "/grammar?tab=modals",
+      "bonus": true
     },
     {
       "id": "m13-learn",
+      "unitIndex": 12,
       "kind": "learn",
       "label": {
-        "de": "Kleidung & Farben",
-        "en": "Clothes & Colors"
+        "en": "Clothes & Colors",
+        "de": "Kleidung & Farben"
       },
-      "to": "/vocab-trainer?category=clothing",
-      "unitIndex": 12
+      "to": "/lesson/12"
     },
     {
       "id": "m13-practice",
+      "unitIndex": 12,
       "kind": "practice",
       "label": {
-        "de": "Einkaufs-Rollenspiel",
-        "en": "Shopping Roleplay"
+        "en": "Clothing Vocabulary",
+        "de": "Kleidungsvokabeln"
       },
-      "to": "/roleplay?scene=cloth",
-      "unitIndex": 12
+      "to": "/roleplay?scene=cloth"
     },
     {
       "id": "m13-checkpoint",
+      "unitIndex": 12,
       "kind": "checkpoint",
       "label": {
-        "de": "Modul 13 Prüfung",
-        "en": "Module 13 Checkpoint"
+        "en": "Module 13 Checkpoint",
+        "de": "Modul 13 Prüfung"
       },
-      "to": "/checkpoint/12",
-      "unitIndex": 12
+      "to": "/checkpoint/12"
+    },
+    {
+      "id": "m13-tool",
+      "unitIndex": 12,
+      "kind": "bonus",
+      "label": {
+        "en": "Clothing Vocabulary",
+        "de": "Kleidungsvokabeln"
+      },
+      "to": "/vocab-trainer?category=clothing",
+      "bonus": true
     },
     {
       "id": "m14-learn",
+      "unitIndex": 13,
       "kind": "learn",
       "label": {
-        "de": "Richtungen",
-        "en": "Directions"
+        "en": "Directions",
+        "de": "Richtungen"
       },
-      "to": "/roleplay?scene=directions",
-      "unitIndex": 13
+      "to": "/lesson/13"
     },
     {
       "id": "m14-practice",
+      "unitIndex": 13,
       "kind": "practice",
       "label": {
-        "de": "Stadt & Reisen",
-        "en": "City & Travel"
+        "en": "Directions Roleplay",
+        "de": "Wegbeschreibungs-Rollenspiel"
       },
-      "to": "/vocab-trainer?category=city-travel",
-      "unitIndex": 13
+      "to": "/vocab-trainer?category=city-travel"
     },
     {
       "id": "m14-checkpoint",
+      "unitIndex": 13,
       "kind": "checkpoint",
       "label": {
-        "de": "Modul 14 Prüfung",
-        "en": "Module 14 Checkpoint"
+        "en": "Module 14 Checkpoint",
+        "de": "Modul 14 Prüfung"
       },
-      "to": "/checkpoint/13",
-      "unitIndex": 13
+      "to": "/checkpoint/13"
+    },
+    {
+      "id": "m14-tool",
+      "unitIndex": 13,
+      "kind": "bonus",
+      "label": {
+        "en": "Directions Roleplay",
+        "de": "Wegbeschreibungs-Rollenspiel"
+      },
+      "to": "/roleplay?scene=directions",
+      "bonus": true
     },
     {
       "id": "m15-learn",
+      "unitIndex": 14,
       "kind": "learn",
       "label": {
-        "de": "Hobby, Wetter & Gesundheit",
-        "en": "Hobby, Weather & Health"
+        "en": "Hobby, Weather & Health",
+        "de": "Hobby, Wetter & Gesundheit"
       },
-      "to": "/stories",
-      "unitIndex": 14
+      "to": "/lesson/14"
     },
     {
       "id": "m15-practice",
+      "unitIndex": 14,
       "kind": "practice",
       "label": {
-        "de": "Wochenend-Blitz",
-        "en": "Weekend Blitz"
+        "en": "Reading Practice",
+        "de": "Leseübungen"
       },
-      "to": "/rapid-fire",
-      "unitIndex": 14
+      "to": "/rapid-fire"
     },
     {
       "id": "m15-checkpoint",
+      "unitIndex": 14,
       "kind": "checkpoint",
       "label": {
-        "de": "Modul 15 Prüfung",
-        "en": "Module 15 Checkpoint"
+        "en": "Module 15 Checkpoint",
+        "de": "Modul 15 Prüfung"
       },
-      "to": "/checkpoint/14",
-      "unitIndex": 14
+      "to": "/checkpoint/14"
+    },
+    {
+      "id": "m15-tool",
+      "unitIndex": 14,
+      "kind": "bonus",
+      "label": {
+        "en": "Reading Practice",
+        "de": "Leseübungen"
+      },
+      "to": "/stories",
+      "bonus": true
     },
     {
       "id": "m16-learn",
+      "unitIndex": 15,
       "kind": "learn",
       "label": {
-        "de": "Wiederholungskarte",
-        "en": "Review Map"
+        "en": "Review Map",
+        "de": "Wiederholungskarte"
       },
-      "to": "/grammar",
-      "unitIndex": 15
+      "to": "/lesson/15"
     },
     {
       "id": "m16-practice",
+      "unitIndex": 15,
       "kind": "practice",
       "label": {
-        "de": "Abschlussübung",
-        "en": "Final Practice Set"
+        "en": "Grammar Reference",
+        "de": "Grammatik-Referenz"
       },
-      "to": "/rapid-fire?mode=mixed",
-      "unitIndex": 15
+      "to": "/rapid-fire?mode=mixed"
     },
     {
-      "bonus": true,
       "id": "m16-bonus",
+      "unitIndex": 15,
       "kind": "bonus",
       "label": {
-        "de": "A1-Beherrschungs-Checkliste",
-        "en": "A1 Mastery Checklist"
+        "en": "A1 Mastery Checklist",
+        "de": "A1-Beherrschungs-Checkliste"
       },
       "to": "/grammar?tab=review",
-      "unitIndex": 15
+      "bonus": true
     }
   ],
   "note": "Baseline of the CURRENT spine, re-cut with `rebuild-baseline.ts --from-current` after a deliberate re-sequence. The pre-P0 baseline it replaced is kept, never overwritten, at baseline-pre-p0.json; differences between the two are the re-sequence.",
@@ -1170,7 +1350,59 @@
         }
       }
     ],
-    "WORD_ORDER_TABLE": []
+    "WORD_ORDER_TABLE": [
+      {
+        "example": {
+          "de": "Ich trinke Tee.",
+          "en": "I drink tea.",
+          "ne": "म चिया पिउँछु।"
+        },
+        "language": {
+          "de": "Englisch",
+          "en": "English",
+          "ne": "नेपाली"
+        },
+        "order": {
+          "de": "SVO (Subjekt–Verb–Objekt)",
+          "en": "SVO (Subject–Verb–Object)",
+          "ne": "SOV (विषय–वस्तु–क्रिया)"
+        }
+      },
+      {
+        "example": {
+          "de": "Ich trinke Tee.",
+          "en": "I drink tea.",
+          "ne": "म चिया पिउँछु।"
+        },
+        "language": {
+          "de": "Nepali",
+          "en": "Nepali",
+          "ne": "नेपाली"
+        },
+        "order": {
+          "de": "SOV",
+          "en": "SOV",
+          "ne": "SOV (विषय–वस्तु–क्रिया)"
+        }
+      },
+      {
+        "example": {
+          "de": "Heute trinke ich Tee.",
+          "en": "Today I drink tea.",
+          "ne": "आज म चिया पिउँछु।"
+        },
+        "language": {
+          "de": "Deutsch",
+          "en": "German",
+          "ne": "नेपाली"
+        },
+        "order": {
+          "de": "V2 im Hauptsatz; Verb am Ende im Nebensatz",
+          "en": "V2 in the main clause; verb-final in the subordinate",
+          "ne": "V2 (मुख्य वाक्य); अंतिम स्थान (उपवाक्य)"
+        }
+      }
+    ]
   },
   "predicates": {
     "sample": [
@@ -1246,7 +1478,8 @@
       "nodeIds": [
         "m01-greetings",
         "m01-dictation",
-        "m01-gate"
+        "m01-gate",
+        "m01-tool"
       ],
       "pedagogy": {
         "grammarNote": {
@@ -1335,7 +1568,8 @@
       "nodeIds": [
         "m02-numbers",
         "m02-numbers-blitz",
-        "m02-gate"
+        "m02-gate",
+        "m02-tool"
       ],
       "pedagogy": {
         "grammarNote": {
@@ -1383,7 +1617,8 @@
       "nodeIds": [
         "m03-alphabet",
         "m03-pronunciation",
-        "m03-gate"
+        "m03-gate",
+        "m03-tool"
       ],
       "pedagogy": {
         "umlautCallout": {
@@ -1434,7 +1669,8 @@
       "nodeIds": [
         "m04-family",
         "m04-stories",
-        "m04-gate"
+        "m04-gate",
+        "m04-tool"
       ],
       "pedagogy": {
         "grammarNote": {
@@ -1490,7 +1726,8 @@
       "nodeIds": [
         "m05-articles",
         "m05-housing",
-        "m05-gate"
+        "m05-gate",
+        "m05-tool"
       ],
       "pedagogy": {
         "genderLegend": {
@@ -1524,8 +1761,12 @@
         "moduleType": "a1-checkpoint",
         "specs": [
           {
-            "count": 12,
+            "count": 10,
             "type": "grammar-drill"
+          },
+          {
+            "count": 4,
+            "type": "vocab-translation"
           }
         ]
       },
@@ -1547,7 +1788,8 @@
       "nodeIds": [
         "m06-learn",
         "m06-practice",
-        "m06-checkpoint"
+        "m06-checkpoint",
+        "m06-tool"
       ],
       "pedagogy": {
         "grammarNote": {
@@ -1691,12 +1933,72 @@
       "nodeIds": [
         "m07-learn",
         "m07-practice",
-        "m07-checkpoint"
+        "m07-checkpoint",
+        "m07-tool"
       ],
       "pedagogy": {
+        "grammarComparison": {
+          "rows": [
+            {
+              "example": {
+                "de": "Ich trinke Tee.",
+                "en": "I drink tea.",
+                "ne": "म चिया पिउँछु।"
+              },
+              "language": {
+                "de": "Englisch",
+                "en": "English",
+                "ne": "नेपाली"
+              },
+              "order": {
+                "de": "SVO (Subjekt–Verb–Objekt)",
+                "en": "SVO (Subject–Verb–Object)",
+                "ne": "SOV (विषय–वस्तु–क्रिया)"
+              }
+            },
+            {
+              "example": {
+                "de": "Ich trinke Tee.",
+                "en": "I drink tea.",
+                "ne": "म चिया पिउँछु।"
+              },
+              "language": {
+                "de": "Nepali",
+                "en": "Nepali",
+                "ne": "नेपाली"
+              },
+              "order": {
+                "de": "SOV",
+                "en": "SOV",
+                "ne": "SOV (विषय–वस्तु–क्रिया)"
+              }
+            },
+            {
+              "example": {
+                "de": "Heute trinke ich Tee.",
+                "en": "Today I drink tea.",
+                "ne": "आज म चिया पिउँछु।"
+              },
+              "language": {
+                "de": "Deutsch",
+                "en": "German",
+                "ne": "नेपाली"
+              },
+              "order": {
+                "de": "V2 im Hauptsatz; Verb am Ende im Nebensatz",
+                "en": "V2 in the main clause; verb-final in the subordinate",
+                "ne": "V2 (मुख्य वाक्य); अंतिम स्थान (उपवाक्य)"
+              }
+            }
+          ],
+          "title": {
+            "de": "Deine Wortstellung vs. Deutsch",
+            "en": "Your word order vs. German"
+          }
+        },
         "grammarNote": {
-          "de": "Das konjugierte Verb steht fest auf Position 2. Steht zuerst eine Zeit- oder Ortsangabe, rückt das SUBJEKT auf Position 3 — niemals das Verb. Hauptsatz: konjugiertes Verb IMMER an Position 2. Position 1 kann sein: Subjekt, Zeit, Ort, Objekt oder Adverb. Wenn Nicht-Subjekt Position 1 einnimmt, rückt Subjekt auf Position 3 (INVERSION). Mehrere Adverbiale folgen TeKaMoLo-Reihenfolge: Temporal → Kausal → Modal → Lokal. Das Verb bewegt sich NIEMALS von Position 2 im Hauptsatz — das ist die GOLDENE REGEL! Inversion ist PFLICHT: 'Heute lerne ich' NICHT 'Heute ich lerne'. Nebensätze (weil, dass, wenn) schieben das Verb ans ENDE — andere Regel!",
-          "en": "The conjugated verb is pinned to Position 2. Put a time or place phrase first and the SUBJECT moves to Position 3 — never the verb. Main clause (Hauptsatz): conjugated verb ALWAYS in Position 2. Position 1 can be: Subject, Time, Place, Object, or Adverb. When non-subject takes Position 1, subject moves to Position 3 (INVERSION). Multiple adverbials follow TeKaMoLo order: Temporal → Kausal → Modal → Lokal. The verb NEVER moves from Position 2 in a main clause — this is the GOLDEN RULE! Inversion is MANDATORY: 'Heute lerne ich' NOT 'Heute ich lerne'. Subordinate clauses (weil, dass, wenn) push verb to the END — different rule!"
+          "de": "Das konjugierte Verb steht fest auf Position 2. Steht zuerst eine Zeit- oder Ortsangabe, rückt das SUBJEKT auf Position 3 — niemals das Verb. Mehrere Adverbiale folgen TeKaMoLo: Temporal → Kausal → Modal → Lokal. Nebensätze (weil, dass, wenn) sind die Ausnahme: das Verb steht am Ende.",
+          "en": "The conjugated verb is pinned to Position 2. If a time or place phrase takes Position 1, the SUBJECT moves to Position 3 — never the verb. Multiple adverbials follow TeKaMoLo: Temporal → Kausal → Modal → Lokal. Subordinate clauses (weil, dass, wenn) are the exception: the verb goes last."
         },
         "ruleTable": {
           "rows": [
@@ -1836,7 +2138,8 @@
       "nodeIds": [
         "m08-learn",
         "m08-practice",
-        "m08-checkpoint"
+        "m08-checkpoint",
+        "m08-tool"
       ],
       "pedagogy": {
         "grammarNote": {
@@ -1955,7 +2258,8 @@
       "nodeIds": [
         "m09-learn",
         "m09-practice",
-        "m09-checkpoint"
+        "m09-checkpoint",
+        "m09-tool"
       ],
       "pedagogy": {
         "grammarNote": {
@@ -2081,7 +2385,8 @@
       "nodeIds": [
         "m10-learn",
         "m10-practice",
-        "m10-checkpoint"
+        "m10-checkpoint",
+        "m10-tool"
       ],
       "pedagogy": {
         "grammarNote": {
@@ -2239,7 +2544,8 @@
       "nodeIds": [
         "m11-learn",
         "m11-practice",
-        "m11-checkpoint"
+        "m11-checkpoint",
+        "m11-tool"
       ],
       "pedagogy": {
         "grammarNote": {
@@ -2355,7 +2661,8 @@
       "nodeIds": [
         "m12-learn",
         "m12-practice",
-        "m12-checkpoint"
+        "m12-checkpoint",
+        "m12-tool"
       ],
       "pedagogy": {
         "grammarNote": {
@@ -2485,7 +2792,8 @@
       "nodeIds": [
         "m13-learn",
         "m13-practice",
-        "m13-checkpoint"
+        "m13-checkpoint",
+        "m13-tool"
       ],
       "pedagogy": {
         "grammarNote": {
@@ -2616,7 +2924,8 @@
       "nodeIds": [
         "m14-learn",
         "m14-practice",
-        "m14-checkpoint"
+        "m14-checkpoint",
+        "m14-tool"
       ],
       "pedagogy": {
         "grammarNote": {
@@ -2817,7 +3126,8 @@
       "nodeIds": [
         "m15-learn",
         "m15-practice",
-        "m15-checkpoint"
+        "m15-checkpoint",
+        "m15-tool"
       ],
       "pedagogy": {
         "grammarNote": {

@@ -934,5 +934,575 @@
     "body": [
       "*Public Transit Etiquette (Fahrkarten entwerten): In many German and Austrian cities, buying a transit ticket is not enough—you must validation-stamp (entwerten) the paper ticket at a small platform machine before boarding! Ticket inspectors (Kontrolleure) issue heavy fines for unvalidated tickets (Schwarzfahren)."
     ]
-  }
+  },
+  "steps": [
+    {
+      "type": "intro",
+      "objectives": {
+        "en": [
+          "Ask for directions and locate city places (Bahnhof, Bank, Apotheke)",
+          "Use spatial orientation terms: geradeaus, links, rechts",
+          "Master transport preposition 'mit' + Dative (mit dem Bus, mit der Bahn)"
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "der Bahnhof",
+        "en": "train station",
+        "ne": "रेल स्टेसन",
+        "examples": [
+          {
+            "de": "Wo ist der Bahnhof?",
+            "en": "Where is the train station?"
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "die Bank",
+        "en": "bank",
+        "ne": "बैंक",
+        "examples": [
+          {
+            "de": "Die Bank ist nah.",
+            "en": "The bank is near."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "geradeaus",
+        "en": "straight ahead",
+        "ne": "सिधा अगाडि",
+        "examples": [
+          {
+            "de": "Gehen Sie geradeaus.",
+            "en": "Go straight ahead."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "links",
+        "en": "left",
+        "ne": "बायाँ",
+        "examples": [
+          {
+            "de": "Biegen Sie links ab.",
+            "en": "Turn left."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "rechts",
+        "en": "right",
+        "ne": "दायाँ",
+        "examples": [
+          {
+            "de": "Die Bank ist rechts.",
+            "en": "The bank is on the right."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "explain",
+      "title": {
+        "en": "Transport Preposition 'mit' + Dative Case"
+      },
+      "body": "The preposition **mit** (by/with) ALWAYS governs the **Dative case**:\n\n- Masculine / Neuter: **mit dem** Bus / **mit dem** Zug / **mit dem** Auto.\n- Feminine: **mit der** Bahn / **mit der** U-Bahn."
+    },
+    {
+      "type": "typed",
+      "ask": "fill-blank",
+      "prompt": "Ich fahre mit ___ (the) Bus.",
+      "answer": "dem",
+      "accepted": [
+        "dem"
+      ],
+      "note": "mit + masculine Dative -> dem"
+    },
+    {
+      "type": "typed",
+      "ask": "fill-blank",
+      "prompt": "Ich fahre mit ___ (the) Bahn.",
+      "answer": "der",
+      "accepted": [
+        "der"
+      ],
+      "note": "mit + feminine Dative -> der"
+    },
+    {
+      "type": "mcq",
+      "prompt": "Which form completes 'mit ___ Auto'?",
+      "options": [
+        "dem",
+        "der",
+        "den"
+      ],
+      "answer": "dem",
+      "hintReason": "Auto is neuter -> mit dem Auto."
+    },
+    {
+      "type": "match",
+      "pairs": [
+        {
+          "id": "0",
+          "de": "geradeaus",
+          "en": "straight ahead"
+        },
+        {
+          "id": "1",
+          "de": "links",
+          "en": "left"
+        },
+        {
+          "id": "2",
+          "de": "rechts",
+          "en": "right"
+        },
+        {
+          "id": "3",
+          "de": "mit dem Bus",
+          "en": "by bus"
+        }
+      ],
+      "columnLabels": {
+        "left": "Deutsch",
+        "right": "English"
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "die Apotheke",
+        "en": "pharmacy",
+        "ne": "औषधि पसल",
+        "examples": [
+          {
+            "de": "Wo ist die Apotheke?",
+            "en": "Where is the pharmacy?"
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "mcq",
+      "prompt": "Which article does 'Apotheke' take?",
+      "options": [
+        "die",
+        "der",
+        "das"
+      ],
+      "answer": "die",
+      "hintReason": "Apotheke is feminine."
+    },
+    {
+      "type": "dialogue",
+      "title": {
+        "en": "Asking for Directions",
+        "de": "Nach dem Weg fragen"
+      },
+      "turns": [
+        {
+          "speaker": "Tourist",
+          "de": "Entschuldigung, wo ist der Bahnhof?",
+          "en": "Excuse me, where is the train station?"
+        },
+        {
+          "speaker": "Local",
+          "de": "Gehen Sie geradeaus und dann links.",
+          "en": "Go straight ahead and then left."
+        },
+        {
+          "speaker": "Tourist",
+          "de": "Vielen Dank!",
+          "en": "Thank you very much!"
+        },
+        {
+          "speaker": "Local",
+          "de": "Bitte schön!",
+          "en": "You're welcome!"
+        }
+      ]
+    },
+    {
+      "type": "typed",
+      "ask": "translate-en-de",
+      "prompt": "Where is the train station?",
+      "answer": "Wo ist der Bahnhof?",
+      "accepted": [
+        "Wo ist der Bahnhof"
+      ],
+      "note": "Bahnhof is masculine -> der Bahnhof"
+    },
+    {
+      "type": "arrange",
+      "prompt": "Order the direction phrase:",
+      "tokens": [
+        "Gehen",
+        "Sie",
+        "geradeaus."
+      ]
+    },
+    {
+      "type": "dictation",
+      "text": "Wo ist der Bahnhof?",
+      "instruction": "Listen and type what you hear."
+    },
+    {
+      "type": "culture",
+      "body": "Public transportation in Germany (DB / ÖBB / SBB) uses integrated ticketing system. Make sure to validate ('entwerten') paper tickets at platform stamping machines before boarding!"
+    },
+    {
+      "type": "typed",
+      "ask": "correct",
+      "prompt": "Ich fahre mit die Bahn.",
+      "answer": "Ich fahre mit der Bahn",
+      "accepted": [
+        "Ich fahre mit der Bahn."
+      ],
+      "note": "mit governs Dative -> mit der Bahn."
+    },
+    {
+      "type": "mcq",
+      "prompt": "What does 'geradeaus' mean?",
+      "options": [
+        "straight ahead",
+        "to the left",
+        "to the right"
+      ],
+      "answer": "straight ahead",
+      "hintReason": "geradeaus = straight ahead"
+    },
+    {
+      "type": "typed",
+      "ask": "fill-blank",
+      "prompt": "Gehen Sie ___ (left).",
+      "answer": "links",
+      "accepted": [
+        "links"
+      ],
+      "note": "links = left"
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Bahnhof",
+        "en": "Train station",
+        "ne": "रेल स्टेशन",
+        "article": "der",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "Wo ist der Bahnhof?",
+            "en": "Where is the train station?",
+            "ne": "रेल स्टेशन कहाँ छ?"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Flughafen",
+        "en": "Airport",
+        "ne": "विमानस्थल",
+        "article": "der",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "Der Flughafen ist groß.",
+            "en": "The airport is big.",
+            "ne": "विमानस्थल ठूलो छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Bus",
+        "en": "Bus",
+        "ne": "बस",
+        "article": "der",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "Ich fahre mit dem Bus.",
+            "en": "I travel by bus.",
+            "ne": "म बसद्वारा जान्छु।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Zug",
+        "en": "Train",
+        "ne": "रेल",
+        "article": "der",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "Der Zug kommt um 10 Uhr.",
+            "en": "The train arrives at 10 o'clock.",
+            "ne": "रेल १० बजे आइपुग्छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Taxi",
+        "en": "Taxi",
+        "ne": "ट्याक्सी",
+        "article": "das",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "Wir nehmen ein Taxi.",
+            "en": "We take a taxi.",
+            "ne": "हामी एउटा ट्याक्सी लिन्छौँ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Straße",
+        "en": "Street",
+        "ne": "सडक",
+        "article": "die",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "Gehen Sie geradeaus.",
+            "en": "Go straight ahead.",
+            "ne": "सीधा जानुहोस्।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "fahren",
+        "en": "to drive / travel",
+        "ne": "यात्रा गर्नु",
+        "partOfSpeech": "Verb",
+        "examples": [
+          {
+            "de": "Ich fahre nach Berlin.",
+            "en": "I travel to Berlin.",
+            "ne": "म बर्लिन जान्छु।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "gehen",
+        "en": "to walk / go",
+        "ne": "हिँड्नु / जानु",
+        "partOfSpeech": "Verb",
+        "examples": [
+          {
+            "de": "Ich gehe zu Fuß.",
+            "en": "I go on foot.",
+            "ne": "म पैदल जान्छु।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "nehmen",
+        "en": "to take",
+        "ne": "लिनु / लैजानु",
+        "partOfSpeech": "Verb",
+        "examples": [
+          {
+            "de": "Nehmen Sie die erste Straße rechts.",
+            "en": "Take the first street on the right.",
+            "ne": "पहिलो सडक दाहिनेतिर लिनुहोस्।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "abbiegen",
+        "en": "to turn (a corner)",
+        "ne": "मोड्नु",
+        "partOfSpeech": "Verb (sep)",
+        "examples": [
+          {
+            "de": "Biegen Sie an der Kreuzung links ab.",
+            "en": "Turn left at the intersection.",
+            "ne": "चौबाटोमा देब्रे मोड्नुहोस्।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "mit",
+        "en": "with / by (transport)",
+        "ne": "सँग / द्वारा",
+        "partOfSpeech": "Preposition",
+        "examples": [
+          {
+            "de": "Ich fahre mit dem Bus.",
+            "en": "I travel by bus.",
+            "ne": "म बसद्वारा जान्छु।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Kreuzung",
+        "en": "Intersection",
+        "ne": "चौबाटो",
+        "article": "die",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "An der Kreuzung geradeaus.",
+            "en": "Straight ahead at the intersection.",
+            "ne": "चौबाटोमा सीधा जानुहोस्।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Ampel",
+        "en": "Traffic light",
+        "ne": "ट्राफिक बत्ती",
+        "article": "die",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "An der Ampel nach links.",
+            "en": "At the traffic light, turn left.",
+            "ne": "ट्राफिक बत्तीमा देब्रे मोड्नुहोस्।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "in",
+        "en": "in / into (two-way: acc = into, dat = in)",
+        "ne": "मा / भित्र (दुवै अर्थ: अक्कुसेटिभ = भित्र, डेटिभ = मा)",
+        "partOfSpeech": "Preposition",
+        "examples": [
+          {
+            "de": "Ich gehe in den Park. / Ich bin im Park.",
+            "en": "I go into the park. / I am in the park.",
+            "ne": "म पार्कमा जान्छु। / म पार्कमा छु।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "an",
+        "en": "at / on / to (two-way: acc = to, dat = at)",
+        "ne": "मा / तिर (दुवै अर्थ: अक्कुसेटिभ = तिर, डेटिभ = मा)",
+        "partOfSpeech": "Preposition",
+        "examples": [
+          {
+            "de": "Wir fahren an den See. / Wir sind am See.",
+            "en": "We drive to the lake. / We are at the lake.",
+            "ne": "हामी तालमा जान्छौँ। / हामी तालमा छौँ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "auf",
+        "en": "on / onto (two-way: acc = onto, dat = on)",
+        "ne": "माथि / मा (दुवै अर्थ: अक्कुसेटिभ = माथि, डेटिभ = माथि)",
+        "partOfSpeech": "Preposition",
+        "examples": [
+          {
+            "de": "Das Buch liegt auf dem Tisch.",
+            "en": "The book is on the table.",
+            "ne": "किताब टेबलमा छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "See",
+        "en": "Lake",
+        "ne": "ताल",
+        "article": "der",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "Im Sommer fahren wir an den See.",
+            "en": "In summer we go to the lake.",
+            "ne": "ग्रीष्ममा हामी तालमा जान्छौँ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Garten",
+        "en": "Garden",
+        "ne": "बगैंचा/बाग",
+        "article": "der",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "Die Kinder spielen im Garten.",
+            "en": "The children play in the garden.",
+            "ne": "बालबालिकाहरू बगैंचामा खेल्छन्।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "summary"
+    }
+  ],
+  "stepsSource": "imported"
 }

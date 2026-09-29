@@ -18,20 +18,23 @@ import { SkillRadarChart } from '../components/SkillRadarChart';
 import { ReviewSessionManager, filterReviewQueue } from '../components/ReviewSessionManager';
 import { MasteryIndicator } from '../components/MasteryIndicator';
 import { SRSReviewWidget } from '../components/SRSReviewWidget';
-import { A1PathProgress } from '../components/path/A1PathProgress';
+import { CoursePosition } from '../components/dashboard/CoursePosition';
+import { MetricRow } from '../components/dashboard/MetricRow';
+import { CheckpointTrajectory } from '../components/dashboard/CheckpointTrajectory';
+import { ActivityTrend } from '../components/dashboard/ActivityTrend';
+import { QueueBreakdown } from '../components/dashboard/QueueBreakdown';
 import { useA1Path } from '../hooks/useA1Path';
 import { useHasA1Campaign } from '../hooks/usePremium';
 import { A1_UNITS } from '../data/a1Path';
 import { useXp } from '../hooks/useXp';
-import { DailyQuestsWidget } from '../components/DailyQuestsWidget';
-import { StatTile } from '../components/ui/StatTile';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { useAchievements } from '../hooks/useAchievements';
 import { Link } from 'react-router-dom';
-import { ArrowRight, BookOpen, ChevronDown, CircleCheck, Gauge, Flame, RefreshCw, Settings } from 'lucide-react';
+import { ArrowRight, ChevronDown, Gauge, Flame, RefreshCw, Settings } from 'lucide-react';
 import type { WrongAnswerItem } from '../types';
 import { ANCHORS } from '../lib/anchors';
 import { A1_PATH_ROUTE } from '../data/cefrLevels';
+import { activityCounts } from '../lib/activitySeries';
 
 /** Locale-aware number formatter shared by dashboard stats + review queue counts. */
 const numberFormatter = (locale: string) => new Intl.NumberFormat(locale);
@@ -52,7 +55,7 @@ export function DashboardPage() {
   const [confirmClearOpen, setConfirmClearOpen] = useState(false);
   const { langMode } = useLang();
   const { streakCount, longestStreak } = useStreak();
-  const { isCheckpointComplete, attemptsByUnit } = useA1Path();
+  const { attemptsByUnit } = useA1Path();
   const { hasCampaign } = useHasA1Campaign();
   const { totalXp, level, xpProgress } = useXp();
   const { unlockBadge } = useAchievements();
@@ -114,21 +117,39 @@ export function DashboardPage() {
    * including it would understate progress — the same trap ContextPanel
    * documents.
    */
-  // Plain consts, NOT useMemo: these iterate at most 5 bands, and the hook
-  // block above has an early `return <Navigate>`, so a hook here would be
-  // conditionally called. Memoising 5 array reads would be noise anyway.
-  const coreBands = A1_UNITS.filter((band) => band.kind === 'core');
-  const gatesPassed = coreBands.filter((band) => isCheckpointComplete(band.index)).length;
-  // Mean of the best score on every gate the learner has actually attempted.
-  // No attempts yet -> null, so the tile can say "—" instead of a fake 0%.
-  const attemptedScores = coreBands
-    .map((band) => attemptsByUnit[band.index]?.best)
+  /* ── Gate average ────────────────────────────────────────────────────────
+   * Mean of the best score on every gate the learner has actually attempted.
+   * No attempts yet -> null, so the caption can say "no checkpoint attempted"
+   * rather than showing a fake 0%.
+   *
+   * This is the ONLY aggregate the Dashboard still derives itself. The pass
+   * COUNT moved into `CoursePosition`, which reads it from the same
+   * `getUnitPhase`/`isCheckpointComplete` state the rings themselves use — so
+   * the number on screen and the strip drawn under it cannot drift.
+   *
+   * CORE units only: the `support` band has no gate, so including it would
+   * understate progress. That is the same trap `ContextPanel` documents.
+   */
+  // Plain consts, NOT useMemo: the hook block above has an early
+  // `return <Navigate>`, so a hook here would be conditionally called.
+  const coreUnits = A1_UNITS.filter((unit) => unit.kind === 'core');
+  const attemptedScores = coreUnits
+    .map((unit) => attemptsByUnit[unit.index]?.best)
     .filter((s): s is number => typeof s === 'number');
   const gateAveragePct =
     attemptedScores.length === 0
       ? null
       : Math.round((attemptedScores.reduce((a, b) => a + b, 0) / attemptedScores.length) * 100);
-  const gatesTotal = coreBands.length;
+
+  // The real 14-day activity series, for the stat-tile sparkline. Same shared
+  // builder the trend chart uses, so the tile and the chart can never disagree
+  // about which days had activity.
+  //
+  // A plain const, NOT useMemo, for the reason spelled out above: the hook
+  // block has an early `return <Navigate>`, so a hook here would be
+  // conditionally called. 14 iterations over a 120-entry array is not worth
+  // memoising anyway.
+  const activitySpark = activityCounts(activities, 14);
 
   const greeting = isDE ? 'Willkommen zurück' : 'Welcome back';
   const dashboardTitle = isDE ? 'Dashboard' : 'Dashboard';
@@ -139,7 +160,6 @@ export function DashboardPage() {
   const resolvedLabel = isDE ? 'Erledigt' : 'Resolved';
   const overallScoreLabel = isDE ? 'Gesamtpunktzahl' : 'Overall score';
   const streakLabel = isDE ? 'Serie' : 'Streak';
-  const streakSubtitle = isDE ? 'Aktuelle Serie und längste Rekord-Serie' : 'Current and longest streak';
   const lettersPracticed = isDE ? 'Alphabet-Buchstaben geübt' : 'Alphabet letters practiced';
   const spellingRounds = isDE ? 'Abgeschlossene Rechtschreibrunden' : 'Spelling rounds completed';
   const quizAttempts = isDE ? 'Quiz-Versuche' : 'Quiz attempts';
@@ -198,134 +218,78 @@ export function DashboardPage() {
       {/* Milestone/level-up feedback surfaces via the GLOBAL toast in <Layout />
           (single fixed z-[60] viewport) — no inline banner here. */}
 
-      {/* Headline tiles.
-          COURSE-scoped tiles (Modules "n/5 checkpoints passed" and Gate
-          average) are A1 CAMPAIGN state, so they render for Premium only. A
-          free learner has the `LearningPath` roadmap, where those numbers would
-          be permanently "0/5" and "No gate attempted yet" — two tiles
-          permanently lying about progress they are not even being measured on.
-          The Review and Level & XP tiles are tier-neutral and always show, so
-          the grid simply reflows from 4 to 2 rather than leaving holes. */}
-      <div className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-4">
-        {hasCampaign && (
-          <>
-            <StatTile
-              label={isDE ? 'Module' : 'Modules'}
-              value={`${gatesPassed}/${gatesTotal}`}
-              subValue={isDE ? 'Prüfungen bestanden' : 'checkpoints passed'}
-              progressPct={gatesTotal > 0 ? Math.round((gatesPassed / gatesTotal) * 100) : 0}
-              color="blue"
-              icon={BookOpen}
-            />
-            <StatTile
-              label={isDE ? 'Tor-Durchschnitt' : 'Gate average'}
-              value={gateAveragePct === null ? '—' : `${gateAveragePct}%`}
-              caption={
-                gateAveragePct === null
-                  ? isDE
-                    ? 'Noch kein Tor versucht.'
-                    : 'No gate attempted yet.'
-                  : isDE
-                    ? 'Bestwert je Tor.'
-                    : 'Best score per gate.'
-              }
-              progressPct={gateAveragePct ?? 0}
-              color="emerald"
-              icon={CircleCheck}
-            />
-          </>
-        )}
-        <StatTile
-          label={isDE ? 'Wiederholen' : 'Review'}
-          value={String(dueCount)}
-          subValue={isDE ? 'jetzt fällig' : 'due now'}
-          to="/dashboard#review-queue"
-          color="amber"
-          icon={RefreshCw}
-        />
-        <StatTile
-          label="Level & XP"
-          value={String(level)}
-          subValue={`${formatCount.format(totalXp)} XP`}
-          progressPct={xpProgress}
-          color="violet"
-          icon={Gauge}
-        />
-      </div>
+      {/* THE PAGE HIERARCHY, IN ONE LINE: course position -> peer metrics ->
+          the work. This used to open with FOUR equal-weight stat cards, two of
+          which restated the course ("Modules 3/15") that `A1PathProgress`
+          stated 400px lower with a DIFFERENT denominator ("3 of 16") — the
+          same "two competing truths" failure the comment above describes having
+          fixed for the Alphabet-era tiles, reintroduced one component down.
 
-      {/* The A1 band strip — the campaign's own progress view, so Premium only.
-          It is deliberately NOT swapped for a free-tier strip: the free roadmap
-          has no per-module completion to ring, so inventing one would be a
-          fiction. A free learner's course position lives on /learn. */}
-      {hasCampaign && (
-        <div className="mb-6">
-          <A1PathProgress />
-        </div>
-      )}
+          `CoursePosition` now owns the course figure outright: one number, one
+          denominator, matching the sixteen rings drawn directly beneath it. The
+          gate average moved from a peer card to a caption under that number,
+          because "am I passing" is a qualifier on progress, not a rival
+          headline.
 
-      {/* Streak + letter-practice details — wider cards.
-          The alphabet/quiz/spelling counters still matter, but they describe the
-          OPTIONAL side track, so they are framed as such instead of as the
-          course headline. */}
-      <div className="mb-6 grid gap-4 lg:grid-cols-2">
-        {/* Same vertical rhythm as StatTile: label → mt-3 bold value → mt-3 detail. */}
-        <div className={theme.panel.surface}>
-          <div className="flex items-center gap-2 text-meta font-semibold uppercase tracking-[0.14em] text-ink-500 dark:text-ink-400"><Flame className="h-4 w-4 text-warning-500" aria-hidden="true" />{streakLabel}</div>
-          <div className="mt-3 flex items-baseline gap-3">
-            <div className="text-3xl font-bold leading-none text-success-600">{formatCount.format(streakCount)}</div>
-            <div className="pb-0.5 text-body font-medium text-ink-500 dark:text-ink-400">
-              {isDE ? 'Längste' : 'Longest'}: {formatCount.format(longestStreak)}
-            </div>
-          </div>
-          <div className="mt-3 text-body text-ink-600 dark:text-ink-300">{streakSubtitle}</div>
-        </div>
+          Gated on `hasCampaign` for the same reason the old strip was: a free
+          learner is on the `LearningPath` roadmap, which has no per-unit rings,
+          no stage codes and no "next node" — rendering a course position for
+          them would invent a progress model they are not being measured on. */}
+      {hasCampaign && <CoursePosition gateAveragePct={gateAveragePct} />}
 
-        <div className={theme.panel.surface}>
-          <div className="text-meta font-semibold uppercase tracking-[0.18em] text-ink-500 dark:text-ink-400">
-            {isDE ? 'Buchstaben-Praxis' : 'Letter practice'}
-          </div>
-          <div className="mt-3 space-y-1.5 text-body text-ink-600 dark:text-ink-300">
-            <div>{lettersPracticed}: {formatCount.format(progress.practiced.length)}/26</div>
-            <div>{spellingRounds}: {formatCount.format(progress.spellCompleted)}</div>
-            <div>{quizAttempts}: {formatCount.format(progress.quizTotal)}</div>
-            <div>{overallScoreLabel}: {formatCount.format(overallScore)}%</div>
-          </div>
-          <p className="mt-2 text-meta text-ink-500 dark:text-ink-400">
-            {isDE
-              ? 'Alphabet & Rechtschreibung sind eine optionale Nebenstrecke (Band B).'
-              : 'Alphabet & spelling are an optional side track (Band B).'}
-          </p>
-        </div>
-      </div>
+      {/* Peer metrics. Due reviews, streak and XP answer three DIFFERENT
+          questions and none of them is "how far through the course", so none
+          competes with the block above. One hairline-divided surface rather than
+          three floating cards, so a secondary number cannot read as a headline.
+          Home keeps the card-style `StatTile` for the same figures — a
+          different role on a different page, not a restyled duplicate. */}
+      <MetricRow
+        label={isDE ? 'Deine Zahlen' : 'Your numbers'}
+        metrics={[
+          {
+            label: isDE ? 'Wiederholen' : 'Reviews due',
+            value: formatCount.format(dueCount),
+            detail: isDE ? 'jetzt fällig' : 'ready now',
+            icon: RefreshCw,
+            tone: 'warning',
+            to: `/dashboard#${ANCHORS.reviewQueue}`,
+            // The due count itself is a snapshot with no history, so the
+            // sparkline is the learner's overall 14-day effort, not a trend in
+            // "reviews due". Labelled as activity in the card below rather
+            // than implying this number moves.
+            spark: activitySpark,
+          },
+          {
+            label: streakLabel,
+            value: formatCount.format(streakCount),
+            detail: isDE
+              ? `längste ${formatCount.format(longestStreak)}`
+              : `longest ${formatCount.format(longestStreak)}`,
+            icon: Flame,
+            tone: 'success',
+          },
+          {
+            label: 'Level & XP',
+            value: String(level),
+            detail: `${formatCount.format(totalXp)} XP`,
+            icon: Gauge,
+            tone: 'accent',
+            // `xpProgress` was already available on this hook and was simply
+            // not being read. The gauge shows progress toward the NEXT level,
+            // which is the only reason a level number is interesting.
+            ring: xpProgress,
+          },
+        ]}
+      />
 
-      {/* Secondary analytics — collapsed by default so Review stays primary */}
-      <details className="group mb-4 rounded-lg border border-ink-200 bg-white p-4 shadow-sm dark:bg-ink-900 dark:border-ink-800">
-        <summary className="flex cursor-pointer items-center justify-between gap-3 list-none">
-          <span className="text-body font-semibold text-ink-700 dark:text-ink-200">
-            {isDE ? 'Detaillierte Analysen' : 'Detailed analytics'}
-          </span>
-          <span className="text-meta font-medium text-accent-600 dark:text-accent-400 group-open:hidden">
-            {isDE ? 'Anzeigen' : 'Show'}
-          </span>
-          <span className="hidden text-meta font-medium text-accent-600 dark:text-accent-400 group-open:inline">
-            {isDE ? 'Ausblenden' : 'Hide'}
-          </span>
-        </summary>
-        <div className="mt-4 space-y-4">
-          <ActivityHeatmap activities={activities} />
-          <SkillRadarChart />
-        </div>
-      </details>
-
-      {/* The path answers "where next" while the right rail answers "what today". */}
-      <div className="mb-6 grid items-start gap-4 xl:grid-cols-2">
-        <div className="min-w-0">
-          {/* Daily quests hub + compact SRS due-now widget */}
-          <DailyQuestsWidget />
-        </div>
-        <div className="min-w-0">
-          <SRSReviewWidget />
-        </div>
+      {/* "Where next" lives on the left rail; "what today" answers here.
+          The daily-quests hub is deliberately NOT repeated here: it renders on
+          Home (`HomeLayoutA`), and two copies of a claimable-XP widget on two
+          pages is one more place for a learner to think a quest can be claimed
+          twice. The SRS due-now widget below has no Home equivalent, so it
+          stays. */}
+      <div className="mb-6">
+        <SRSReviewWidget />
       </div>
 
       <div
@@ -478,6 +442,129 @@ export function DashboardPage() {
           </div>
         )}
       </div>
+
+      {/* ── ANALYSIS, BELOW THE WORK ───────────────────────────────────────
+          The four blocks above this comment are the page's jobs: where am I,
+          how are my numbers, what is due, and the review queue itself. Each is
+          an action the learner can take or a fact they can act on.
+
+          Everything from here down is REFLECTION — it describes past attempts
+          rather than offering anything to do. It is deliberately last, and the
+          ordering is a correction, not a preference.
+
+          WHAT WENT WRONG HERE: an earlier pass of this work put the letter-
+          practice card, the checkpoint trajectory and the skill radar between
+          the metrics and the review queue. That read fine in isolation — each
+          block is individually worth showing — but stacking them pushed the
+          review queue, the page's primary task and the target of the "44
+          reviews due" button in the header, roughly 600px further down. The
+          charts answered questions the learner had not asked yet, and the thing
+          they came to do was now below the fold on a laptop.
+
+          The rule this encodes: NEW information that requires a click to act on
+          (a gate score, a skill breakdown, a due-review list) ranks ABOVE OLD
+          information that only reports (a heatmap of days already studied).
+          Practice volume is the oldest, least actionable thing here, so it is
+          last of the three. */}
+
+      {/* ── THE THREE QUESTION-ANSWERING CHARTS ─────────────────────────────
+          Each of these turns a number that was already on the page into a
+          shape. None of them invents a metric, and each answers something the
+          text above it cannot:
+
+            review debt  -> "is this 44 stuff I ALMOST know, or never knew?"
+            activity     -> "is my effort rising, or did I stop?"
+            trajectory   -> "am I getting better, or just getting further?"
+
+          `ReviewBreakdown` goes first because it qualifies the review queue
+          directly above it; `ActivityTrend` second because its sparkline is
+          the same data in miniature in the stat row. */}
+
+      <div className="mb-6">
+        <QueueBreakdown queue={queue} />
+      </div>
+
+      <div className="mb-6">
+        <ActivityTrend activities={activities} />
+      </div>
+
+      {/* CHECKPOINT TRAJECTORY — the learner's score line, now under the work.
+          This is the one dataset that had NO surface at all: `attemptsByUnit`
+          carries a per-unit best score and attempt count that nothing ever
+          plotted, so "am I improving or just advancing?" had no answer.
+
+          The pass line here and the gate average in `CoursePosition` are both
+          derived from `CHECKPOINT_PASS_THRESHOLD`, so the headline up top and
+          the chart down here can never disagree about what "passing" is. */}
+      {hasCampaign && (
+        <div className="mb-6">
+          <CheckpointTrajectory />
+        </div>
+      )}
+
+      {/* SKILL ANALYSIS — PROMOTED OUT OF THE COLLAPSED BLOCK.
+          This used to live inside a `<details>` that was closed by default, on
+          the reasoning that "review stays primary". But a radar chart the
+          learner must click twice to find is not secondary content — it is the
+          one surface that answers "which skill do I need to work on", and the
+          drill-down links inside it go straight to the tool that fixes it.
+          It is now visible AND below the work, which satisfies both: it needs
+          no click to discover, and it no longer delays the review queue. */}
+      <div className="mb-6">
+        <SkillRadarChart />
+      </div>
+
+      {/* LETTER PRACTICE — the optional side track.
+          The streak card that used to sit here was DELETED rather than restyled:
+          it rendered the same two numbers (`streakCount`, `longestStreak`) that
+          the `MetricRow` now shows, in a bigger card, further down the page. Two
+          blocks stating one fact is the exact defect that made the course figure
+          appear as both "3/15" and "3 of 16" — so the fix is to have one of
+          each, not to make the duplicate prettier.
+
+          What remains is genuinely a different question: these four counters
+          describe the optional Alphabet/spelling track (the `support` band),
+          which the course headline deliberately does not count, so they are
+          framed as a side track rather than as course progress. It is last of
+          the three because it reports volume rather than naming a weakness. */}
+      <div className="mb-6">
+        <div className={theme.panel.surface}>
+          <div className="text-meta font-semibold uppercase tracking-[0.18em] text-ink-500 dark:text-ink-400">
+            {isDE ? 'Buchstaben-Praxis' : 'Letter practice'}
+          </div>
+          <div className="mt-3 space-y-1.5 text-body text-ink-600 dark:text-ink-300">
+            <div>{lettersPracticed}: {formatCount.format(progress.practiced.length)}/26</div>
+            <div>{spellingRounds}: {formatCount.format(progress.spellCompleted)}</div>
+            <div>{quizAttempts}: {formatCount.format(progress.quizTotal)}</div>
+            <div>{overallScoreLabel}: {formatCount.format(overallScore)}%</div>
+          </div>
+          <p className="mt-2 text-meta text-ink-500 dark:text-ink-400">
+            {isDE
+              ? 'Alphabet & Rechtschreibung sind eine optionale Nebenstrecke (Band B).'
+              : 'Alphabet & spelling are an optional side track (Band B).'}
+          </p>
+        </div>
+      </div>
+
+      {/* Activity history — genuinely secondary, so it stays behind a click.
+          A heatmap of days already studied reports the past and offers no
+          action, which is why it is the very last thing on the page. */}
+      <details className="group mb-4 rounded-lg border border-ink-200 bg-white p-4 shadow-sm dark:bg-ink-900 dark:border-ink-800">
+        <summary className="flex cursor-pointer items-center justify-between gap-3 list-none">
+          <span className="text-body font-semibold text-ink-700 dark:text-ink-200">
+            {isDE ? 'Aktivitätsverlauf' : 'Activity history'}
+          </span>
+          <span className="text-meta font-medium text-accent-600 dark:text-accent-400 group-open:hidden">
+            {isDE ? 'Anzeigen' : 'Show'}
+          </span>
+          <span className="hidden text-meta font-medium text-accent-600 dark:text-accent-400 group-open:inline">
+            {isDE ? 'Ausblenden' : 'Hide'}
+          </span>
+        </summary>
+        <div className="mt-4">
+          <ActivityHeatmap activities={activities} />
+        </div>
+      </details>
     </div>
   );
 }

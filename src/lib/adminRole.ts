@@ -64,9 +64,29 @@ export interface AdminIdentity {
   error: string | null;
 }
 
-/** Narrow an untrusted row to the two trusted values the UI branches on. */
+/**
+ * Is this a live admin?
+ *
+ * ── WHY THE SUSPENDED CASE IS INSIDE THIS, NOT BESIDE IT ────────────────────
+ * This used to read only `profile?.role === 'admin'` while accepting
+ * `banned_at` in its parameter type — so `AdminIdentity.isAdmin` came back
+ * `true` for a SUSPENDED admin. The database's own predicate does not:
+ * `is_active_admin()` requires `role = 'admin' AND banned_at IS NULL`, and the
+ * Edge Function re-reads privilege through it. The client was therefore
+ * strictly more permissive than the server on the one question that decides
+ * whether a banned operator should be inside the control centre at all.
+ *
+ * Nothing exploited it: `useAdminAuth` happened to check `isBanned` first, so
+ * the single existing consumer was correct by ORDERING rather than by the
+ * predicate it was reading. That is a coincidence, not a guarantee, and the next
+ * consumer of `AdminIdentity.isAdmin` would have inherited a hole.
+ *
+ * The mirror is now the rule: if the client and the SQL disagree about who is an
+ * admin, the client is wrong.
+ */
 export function isAdminProfile(profile: Pick<AdminProfile, 'role' | 'banned_at'> | null): boolean {
-  return profile?.role === 'admin';
+  if (!profile) return false;
+  return profile.role === 'admin' && !isSuspended(profile);
 }
 
 /** A banned admin is locked out too — suspension is not bypassed by privilege. */

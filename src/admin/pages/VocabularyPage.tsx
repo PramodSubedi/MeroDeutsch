@@ -11,12 +11,14 @@
  * import button that cannot succeed would be worse than not shipping it.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import type { Virtualizer } from '@tanstack/react-virtual';
 import { Download, RefreshCw, Search } from 'lucide-react';
 import { theme } from '../../config/theme';
 import { KpiCard } from '../components/KpiCard';
 import { fetchVocabulary, toCsv, type VocabRow, type VocabSource } from '../data/vocabulary';
+import { downloadTextFile } from '../data/csv';
 import { VocabularyRepair } from '../components/VocabularyRepair';
 
 const ROW_HEIGHT = 48;
@@ -46,16 +48,6 @@ function Word({ row }: { row: VocabRow }) {
       {row.word}
     </span>
   );
-}
-
-function download(filename: string, content: string, type: string): void {
-  const blob = new Blob([content], { type });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(url);
 }
 
 function Select({
@@ -287,6 +279,30 @@ export function VocabularyPage() {
   const [source, setSource] = useState<'all' | VocabSource>('all');
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
+  // ── THE `?q=` DEEP LINK ─────────────────────────────────────────────────────
+  // The ⌘K palette navigates here as `/vocabulary?q=<word>`, on the stated
+  // grounds that "each hit navigates to the page that CAN filter for it". Nothing
+  // read the parameter — there was no `useSearchParams` anywhere in `src/admin` —
+  // so every palette result landed on an unfiltered table and the search the
+  // admin had just typed appeared to do nothing.
+  //
+  // Read on mount AND on change, so a palette hit works whether it is the first
+  // thing that happened or a later navigation within the page.
+  const [params, setParams] = useSearchParams();
+  const deepLink = params.get('q');
+  useEffect(() => {
+    if (deepLink) setSearch(deepLink);
+  }, [deepLink]);
+
+  // Clear the parameter once it has been applied, so a later manual edit to the
+  // box is not undone by a re-render that still sees the old `?q=`.
+  const clearDeepLink = useCallback(() => {
+    if (!deepLink) return;
+    const next = new URLSearchParams(params);
+    next.delete('q');
+    setParams(next, { replace: true });
+  }, [deepLink, params, setParams]);
+
   const load = useCallback(async () => {
     setLoading(true);
     const result = await fetchVocabulary();
@@ -299,8 +315,19 @@ export function VocabularyPage() {
   const [reloadToken, setReloadToken] = useState(0);
 
   useEffect(() => {
-    void load();
-  }, [load, reloadToken]);
+    let cancelled = false;
+    setLoading(true);
+    void fetchVocabulary().then((result) => {
+      if (cancelled) return;
+      setRows(result.rows);
+      setFacets(result.facets);
+      setErrors(result.errors);
+      setLoading(false);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [reloadToken]);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -354,7 +381,7 @@ export function VocabularyPage() {
         <div className="flex flex-wrap gap-2">
           <button
             type="button"
-            onClick={() => download('vocabulary.csv', toCsv(filtered), 'text/csv;charset=utf-8')}
+            onClick={() => downloadTextFile('vocabulary.csv', toCsv(filtered), 'text/csv;charset=utf-8')}
             className={theme.button.secondary}
             disabled={filtered.length === 0}
           >
@@ -364,7 +391,7 @@ export function VocabularyPage() {
           <button
             type="button"
             onClick={() =>
-              download('vocabulary.json', JSON.stringify(filtered, null, 2), 'application/json')
+              downloadTextFile('vocabulary.json', JSON.stringify(filtered, null, 2), 'application/json')
             }
             className={theme.button.secondary}
             disabled={filtered.length === 0}
@@ -395,7 +422,10 @@ export function VocabularyPage() {
 
       <FilterBar
         search={search}
-        onSearch={setSearch}
+        onSearch={(v) => {
+          clearDeepLink();
+          setSearch(v);
+        }}
         source={source}
         onSource={(v) => setSource(v as 'all' | VocabSource)}
         counts={counts}

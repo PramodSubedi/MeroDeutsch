@@ -243,5 +243,379 @@
       "🧠 Memory Hook: If your keyboard lacks Umlauts, replace them with 'e': ä = ae, ö = oe, ü = ue, ß = ss.",
       "🇩🇪 *Cultural Insight (Kulturtipp): Germans use the DIN 5009 spelling alphabet over the phone (Anton, Berta, Cäsar, Dora...*)."
     ]
-  }
+  },
+  "steps": [
+    {
+      "type": "intro",
+      "objectives": {
+        "en": [
+          "Pronounce German special characters: Ä, Ö, Ü, and Eszett (ß)",
+          "Master German diphthongs like 'ei', 'ie', and 'eu'",
+          "Spell names and words accurately using German letter sounds"
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "buchstabieren",
+        "en": "to spell",
+        "ne": "अक्षर भन्नु / स्पेलिङ गर्नु",
+        "examples": [
+          {
+            "de": "Können Sie das buchstabieren?",
+            "en": "Can you spell that?"
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "explain",
+      "title": {
+        "en": "German Umlauts & Special Characters"
+      },
+      "body": "German has 4 unique characters:\n\n- **Ä / ä**: Sounds like 'e' in 'pet' (*Käse* = cheese).\n- **Ö / ö**: Form 'o' with lips, say 'e' (*Öl* = oil).\n- **Ü / ü**: Form 'u' with lips, say 'i' (*über* = over).\n- **ß (Eszett / Sharp S)**: Sounds like a double 'ss' (*heiß* = hot). Never appears at start of words."
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Käse",
+        "en": "cheese",
+        "ne": "चिज",
+        "examples": [
+          {
+            "de": "Der Käse ist lecker.",
+            "en": "The cheese is delicious."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Öl",
+        "en": "oil",
+        "ne": "तेल",
+        "examples": [
+          {
+            "de": "Das Öl ist heiß.",
+            "en": "The oil is hot."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "mcq",
+      "prompt": "Which character represents the sharp double-S sound in German?",
+      "options": [
+        "ß",
+        "ä",
+        "ö"
+      ],
+      "answer": "ß",
+      "hintReason": "ß (Eszett) is a sharp S sound."
+    },
+    {
+      "type": "explain",
+      "title": {
+        "en": "German Diphthong Rules"
+      },
+      "body": "German vowel combinations have strict sounds:\n\n- **ei**: Sounds like 'eye' (*heißen*, *nein*).\n- **ie**: Sounds like 'eee' (*Sie*, *hier*).\n- **eu / äu**: Sounds like 'oy' in 'boy' (*deutsch*, *Häuser*)."
+    },
+    {
+      "type": "mcq",
+      "prompt": "What sound does 'ie' in 'Sie' make?",
+      "options": [
+        "long 'eee'",
+        "like 'eye'",
+        "like 'ay'"
+      ],
+      "answer": "long 'eee'",
+      "hintReason": "'ie' sounds like long 'eee'."
+    },
+    {
+      "type": "match",
+      "pairs": [
+        {
+          "id": "0",
+          "de": "Käse",
+          "en": "cheese"
+        },
+        {
+          "id": "1",
+          "de": "Öl",
+          "en": "oil"
+        },
+        {
+          "id": "2",
+          "de": "deutsch",
+          "en": "German"
+        },
+        {
+          "id": "3",
+          "de": "nein",
+          "en": "no"
+        }
+      ],
+      "columnLabels": {
+        "left": "Deutsch",
+        "right": "English"
+      }
+    },
+    {
+      "type": "typed",
+      "ask": "short-answer",
+      "prompt": "How is 'ie' in 'Sie' pronounced in English phonetics?",
+      "answer": "eee",
+      "accepted": [
+        "ee",
+        "eee",
+        "long e"
+      ],
+      "note": "'ie' produces a long 'eee' sound."
+    },
+    {
+      "type": "dialogue",
+      "title": {
+        "en": "Spelling at Reception",
+        "de": "An der Rezeption"
+      },
+      "turns": [
+        {
+          "speaker": "Receptionist",
+          "de": "Wie ist Ihr Name?",
+          "en": "What is your name?"
+        },
+        {
+          "speaker": "Guest",
+          "de": "Ich heiße Müller.",
+          "en": "My name is Müller."
+        },
+        {
+          "speaker": "Receptionist",
+          "de": "Können Sie das bitte buchstabieren?",
+          "en": "Can you please spell that?"
+        },
+        {
+          "speaker": "Guest",
+          "de": "Ja: M - Ü - L - L - E - R.",
+          "en": "Yes: M - Ü - L - L - E - R."
+        }
+      ]
+    },
+    {
+      "type": "typed",
+      "ask": "fill-blank",
+      "prompt": "Können Sie das bitte ___?",
+      "answer": "buchstabieren",
+      "accepted": [
+        "buchstabieren"
+      ],
+      "note": "buchstabieren = to spell"
+    },
+    {
+      "type": "arrange",
+      "prompt": "Order the spelling question:",
+      "tokens": [
+        "Können",
+        "Sie",
+        "das",
+        "buchstabieren?"
+      ]
+    },
+    {
+      "type": "dictation",
+      "text": "Müller",
+      "instruction": "Listen and type what you hear."
+    },
+    {
+      "type": "culture",
+      "body": "In German keyboard layouts and official registration forms without Umlaut keys, 'ä' can be written as 'ae', 'ö' as 'oe', 'ü' as 'ue', and 'ß' as 'ss'."
+    },
+    {
+      "type": "typed",
+      "ask": "correct",
+      "prompt": "Ich heise Müller.",
+      "answer": "Ich heiße Müller",
+      "accepted": [
+        "Ich heiße Müller."
+      ],
+      "note": "'heißen' is written with 'ß'."
+    },
+    {
+      "type": "mcq",
+      "prompt": "What sound does 'ei' make in 'heißen'?",
+      "options": [
+        "like 'eye' in English",
+        "like 'ee' in English",
+        "like 'ay' in English"
+      ],
+      "answer": "like 'eye' in English",
+      "hintReason": "'ei' always sounds like 'eye' in German."
+    },
+    {
+      "type": "mcq",
+      "prompt": "How is 'ä' in 'Käse' pronounced?",
+      "options": [
+        "like 'e' in pet",
+        "like 'o' in pot",
+        "like 'u' in cup"
+      ],
+      "answer": "like 'e' in pet",
+      "hintReason": "'ä' sounds like 'e' in pet."
+    },
+    {
+      "type": "typed",
+      "ask": "translate-en-de",
+      "prompt": "no",
+      "answer": "nein",
+      "accepted": [
+        "nein."
+      ],
+      "note": "nein = no"
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Buchstabe",
+        "en": "Letter of alphabet",
+        "ne": "अक्षर",
+        "article": "der",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "Welcher Buchstabe ist das?",
+            "en": "",
+            "ne": ""
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Umlaut",
+        "en": "Umlaut (ä, ö, ü)",
+        "ne": "उमलाउट",
+        "article": "der",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "Ä, Ö und Ü sind Umlaute.",
+            "en": "",
+            "ne": ""
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Eszett",
+        "en": "Sharp S (ß)",
+        "ne": "एस-त्सेट (ß)",
+        "article": "das",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "Das Wort 'Fuß' hat ein ß.",
+            "en": "",
+            "ne": ""
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Vorname",
+        "en": "First name",
+        "ne": "पहिलो नाम",
+        "article": "der",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "Mein Vorname ist Anita.",
+            "en": "",
+            "ne": ""
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Nachname",
+        "en": "Surname",
+        "ne": "थर",
+        "article": "der",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "Mein Nachname ist Sharma.",
+            "en": "",
+            "ne": ""
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Äpfel",
+        "en": "Apples",
+        "ne": "स्याउहरू",
+        "article": "die",
+        "partOfSpeech": "Noun (pl)",
+        "examples": [
+          {
+            "de": "Die Äpfel sind süß.",
+            "en": "",
+            "ne": ""
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Übung",
+        "en": "Exercise",
+        "ne": "अभ्यास",
+        "article": "die",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "Übung macht den Meister.",
+            "en": "",
+            "ne": ""
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Straße",
+        "en": "Street",
+        "ne": "सडक",
+        "article": "die",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "Ich wohne in der Bahnhofstraße.",
+            "en": "",
+            "ne": ""
+          }
+        ]
+      }
+    },
+    {
+      "type": "summary"
+    }
+  ],
+  "stepsSource": "imported"
 }

@@ -17,15 +17,55 @@
     "de": "Direkte Objekte erkennen, maskulinen Akkusativ-Wechsel anwenden, transitive Verben richtig nutzen."
   },
   "nodes": [
-    { "id": "m08-learn", "kind": "learn", "label": { "en": "Accusative Builder", "de": "Akkusativ-Bau" }, "to": "/sentence-builder?focus=akkusativ", "xp": 10 },
-    { "id": "m08-practice", "kind": "practice", "label": { "en": "Article Sprint", "de": "Artikel-Sprint" }, "to": "/article-sprint", "xp": 20 },
-    { "id": "m08-checkpoint", "kind": "checkpoint", "label": { "en": "Module 8 Checkpoint", "de": "Modul 8 Prüfung" } }
+    {
+      "id": "m08-learn",
+      "kind": "learn",
+      "label": {
+        "en": "Accusative Case & Direct Objects",
+        "de": "Akkusativ & direkte Objekte"
+      },
+      "to": "/lesson/7",
+      "xp": 10
+    },
+    {
+      "id": "m08-practice",
+      "kind": "practice",
+      "label": {
+        "en": "Accusative Builder",
+        "de": "Akkusativ-Baukasten"
+      },
+      "to": "/article-sprint",
+      "xp": 20
+    },
+    {
+      "id": "m08-checkpoint",
+      "kind": "checkpoint",
+      "label": {
+        "en": "Module 8 Checkpoint",
+        "de": "Modul 8 Prüfung"
+      }
+    },
+    {
+      "id": "m08-tool",
+      "kind": "bonus",
+      "label": {
+        "en": "Accusative Builder",
+        "de": "Akkusativ-Baukasten"
+      },
+      "to": "/sentence-builder?focus=akkusativ"
+    }
   ],
   "checkpoint": {
     "moduleType": "a1-checkpoint",
     "specs": [
-      { "type": "grammar-drill", "count": 6 },
-      { "type": "vocab-translation", "count": 6 }
+      {
+        "type": "grammar-drill",
+        "count": 6
+      },
+      {
+        "type": "vocab-translation",
+        "count": 6
+      }
     ]
   },
   "pedagogy": {
@@ -39,14 +79,72 @@
         "de": "Akkusativ-Artikel-Wechsel-Matrix"
       },
       "rows": [
-        { "label": { "en": "Masculine", "de": "Maskulin" }, "usage": { "en": "der → den", "de": "der → den" }, "example": { "en": "der Tisch → den Tisch / einen Tisch / keinen Tisch", "de": "der Tisch → den Tisch / einen Tisch / keinen Tisch" } },
-        { "label": { "en": "Feminine", "de": "Feminin" }, "usage": { "en": "no change", "de": "kein Wechsel" }, "example": { "en": "die Suppe → die Suppe / eine Suppe / keine Suppe", "de": "die Suppe → die Suppe / eine Suppe / keine Suppe" } },
-        { "label": { "en": "Neuter", "de": "Neutrum" }, "usage": { "en": "no change", "de": "kein Wechsel" }, "example": { "en": "das Brot → das Brot / ein Brot / kein Brot", "de": "das Brot → das Brot / ein Brot / kein Brot" } },
-        { "label": { "en": "Plural", "de": "Plural" }, "usage": { "en": "no change", "de": "kein Wechsel" }, "example": { "en": "die Äpfel → die Äpfel / — Äpfel / keine Äpfel", "de": "die Äpfel → die Äpfel / — Äpfel / keine Äpfel" } }
+        {
+          "label": {
+            "en": "Masculine",
+            "de": "Maskulin"
+          },
+          "usage": {
+            "en": "der → den",
+            "de": "der → den"
+          },
+          "example": {
+            "en": "der Tisch → den Tisch / einen Tisch / keinen Tisch",
+            "de": "der Tisch → den Tisch / einen Tisch / keinen Tisch"
+          }
+        },
+        {
+          "label": {
+            "en": "Feminine",
+            "de": "Feminin"
+          },
+          "usage": {
+            "en": "no change",
+            "de": "kein Wechsel"
+          },
+          "example": {
+            "en": "die Suppe → die Suppe / eine Suppe / keine Suppe",
+            "de": "die Suppe → die Suppe / eine Suppe / keine Suppe"
+          }
+        },
+        {
+          "label": {
+            "en": "Neuter",
+            "de": "Neutrum"
+          },
+          "usage": {
+            "en": "no change",
+            "de": "kein Wechsel"
+          },
+          "example": {
+            "en": "das Brot → das Brot / ein Brot / kein Brot",
+            "de": "das Brot → das Brot / ein Brot / kein Brot"
+          }
+        },
+        {
+          "label": {
+            "en": "Plural",
+            "de": "Plural"
+          },
+          "usage": {
+            "en": "no change",
+            "de": "kein Wechsel"
+          },
+          "example": {
+            "en": "die Äpfel → die Äpfel / — Äpfel / keine Äpfel",
+            "de": "die Äpfel → die Äpfel / — Äpfel / keine Äpfel"
+          }
+        }
       ]
     }
   },
-  "vocabCategories": ["food-drink", "action-verbs"],
-  "grammarCategories": ["accusative", "cases"],
+  "vocabCategories": [
+    "food-drink",
+    "action-verbs"
+  ],
+  "grammarCategories": [
+    "accusative",
+    "cases"
+  ],
   "hasLesson": true
 }

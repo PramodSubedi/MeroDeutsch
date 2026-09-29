@@ -33,6 +33,7 @@ import {
   parseModelList,
   parseText,
   resolveChatbotConfig,
+  UNRESTRICTED_MODELS_SENTINEL,
 } from './config';
 import {
   __resetChatbotResolution,
@@ -151,6 +152,50 @@ check('a case-differing model is NOT permitted', !isModelAllowed('qwen2.5:3b', [
 check('the shipped default is permitted by the shipped list', isModelAllowed(BUNDLED_CHATBOT_DEFAULTS.model, BUNDLED_CHATBOT_DEFAULTS.allowedModels));
 check('surrounding space is tolerated', isModelAllowed('  a:1  ', ['a:1']));
 
+/* ── 6b. the "unrestricted" sentinel round trip ───────────────────────────── */
+console.log('\n=== 6b. THE UNRESTRICTED SENTINEL ===');
+// `validateConfigWrite` refuses a blank string for every string key, and an
+// EMPTY model list means "unrestricted" — a legitimate value with no way to
+// write it. So the admin page stores a sentinel instead.
+//
+// That was a ONE-WAY DOOR. `parseModelList` returned `['any']` and
+// `isModelAllowed` compares membership, so a learner who had stored it was
+// restricted to a model literally named `any` — and the admin's own
+// `validateDefaultModel` then refused every real model, locking them out of
+// saving a default at all until they retyped the list by hand.
+//
+// The invariant is the ROUND TRIP: clear the field, save, re-read, and get back
+// exactly the state that was meant. Both halves are asserted.
+const sentinelRow = UNRESTRICTED_MODELS_SENTINEL;
+const parsedSentinel = parseModelList(sentinelRow);
+check('the sentinel parses to an EMPTY list, not a one-entry list', parsedSentinel !== null && parsedSentinel.length === 0, JSON.stringify(parsedSentinel));
+check('the sentinel permits any model', isModelAllowed('qwen2.5:3b', parsedSentinel ?? ['x']));
+check('the sentinel permits a model it certainly does not contain', isModelAllowed('something-else:70b', parsedSentinel ?? ['x']));
+check('a quoted sentinel parses the same', (parseModelList(`"${sentinelRow}"`) ?? ['x']).length === 0);
+check('a differently-cased sentinel parses the same', (parseModelList('ANY') ?? ['x']).length === 0);
+check('a padded sentinel parses the same', (parseModelList('  any  ') ?? ['x']).length === 0);
+
+// Resolution is where a learner actually meets the value.
+const resolvedSentinel = resolveChatbotConfig({ [CHATBOT_KEYS.allowedModels]: sentinelRow });
+check('resolution yields an unrestricted list', resolvedSentinel.allowedModels.length === 0, JSON.stringify(resolvedSentinel.allowedModels));
+check('the default model is permitted after clearing the list', isModelAllowed(resolvedSentinel.model, resolvedSentinel.allowedModels));
+
+// A LEGACY row — one written before the reader understood the sentinel — must
+// still behave as unrestricted, because the alternative is the bug itself.
+check('a legacy lone-sentinel list is treated as unrestricted', isModelAllowed('qwen2.5:3b', [UNRESTRICTED_MODELS_SENTINEL]));
+check('a legacy quoted lone-sentinel is treated as unrestricted', isModelAllowed('qwen2.5:3b', ['"any"']));
+// But only as a LONE entry. A genuine list that happens to contain a model
+// called `any` alongside others is a real list and must be enforced.
+check('a sentinel alongside a real model is a real list', !isModelAllowed('qwen2.5:3b', [UNRESTRICTED_MODELS_SENTINEL, 'llama3.2:3b']));
+check('a real list still refuses an unlisted model', !isModelAllowed('x:1', [UNRESTRICTED_MODELS_SENTINEL, 'llama3.2:3b']));
+// A real model that is genuinely NAMED `any` must still be selectable.
+check('a genuine list containing a model named "any" still permits it', isModelAllowed('any', ['any', 'llama3.2:3b']));
+
+// A real list must not be swallowed by the sentinel rule.
+const realList = parseModelList('qwen2.5:3b, llama3.2:3b');
+check('a real list is unaffected by the sentinel', realList?.length === 2, JSON.stringify(realList));
+check('a real list round-trips through resolution', resolveChatbotConfig({ [CHATBOT_KEYS.allowedModels]: 'qwen2.5:3b, llama3.2:3b' }).allowedModels.length === 2);
+
 /* ── 7. the resolver holds state correctly ────────────────────────────────── */
 console.log('\n=== 7. THE RESOLVER ===');
 __resetChatbotResolution();
@@ -209,13 +254,28 @@ console.log('\n=== 8. THE SERVER ALLOW-LIST AGREES ===');
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 const read = (rel: string): string => fs.readFileSync(path.join(ROOT, rel), 'utf8');
 
+// The allow-list moved to `src/shared/configKeys.ts` so the Edge Function and
+// the admin UI read the SAME list rather than two hand-kept copies — which is
+// how `announcement_banner` came to be writable from a page and unknown to the
+// validator. This section therefore asserts BOTH halves of that arrangement:
+//
+//   1. the shared list has exactly the companion keys the app uses, and
+//   2. the Edge Function really does import from it, so the validator cannot
+//      quietly drift back onto a private copy.
+//
+// The second half is the one that matters. A shared module nothing imports is
+// no better than two private ones.
+const SHARED = 'src/shared/configKeys.ts';
 const PUBLISH = 'supabase/functions/admin-action/publish.ts';
 const MIGRATION = 'supabase/migrations/20260930030000_seed_chatbot_config.sql';
+
+const sharedSource = read(SHARED);
+const publishSource = read(PUBLISH);
 
 // The extraction is itself asserted: a regex that silently matched nothing would
 // make every comparison below vacuously true — the same failure mode as an
 // unwired suite, one level deeper.
-const serverKeys = [...read(PUBLISH).matchAll(/^\s{2}(chatbot_\w+):\s*\{/gm)].map((m) => m[1]);
+const serverKeys = [...sharedSource.matchAll(/^\s{2}(chatbot_\w+):\s*\{/gm)].map((m) => m[1]);
 check('the server keys were found', serverKeys.length > 0, `found ${serverKeys.length}`);
 check('the server allow-list has the same seven keys', serverKeys.length === 7, String(serverKeys.length));
 check(
@@ -226,6 +286,9 @@ check(
 for (const key of CHATBOT_CONFIG_KEYS) {
   check(`${key} is writable server-side`, serverKeys.includes(key));
 }
+check('publish.ts imports the shared allow-list', /from\s+'.*configKeys\.ts'/.test(publishSource));
+check('publish.ts no longer declares its own CONFIG_KEYS', !/export const CONFIG_KEYS/.test(publishSource));
+check('publish.ts still re-exports the name its suites import', /export\s*\{[^}]*CONFIG_KEYS/.test(publishSource));
 
 console.log('\n=== 9. THE SEED MIGRATION AGREES ===');
 const migration = read(MIGRATION);

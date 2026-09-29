@@ -33,7 +33,7 @@ import { useHasA1Campaign } from '../../hooks/usePremium';
 import { useLastModule } from '../../hooks/useLastModule';
 import { useReviewQueue } from '../../hooks/useReviewQueue';
 import { labelForPath } from '../../config/routeLabels';
-import { A1_PATH_ROUTE } from '../../data/cefrLevels';
+import { resolvePushTarget } from '../../lib/pushTarget';
 import { ReviewSessionManager } from '../ReviewSessionManager';
 import { setDailySessionActive } from '../../lib/dailySessionSignal';
 import { ANCHORS } from '../../lib/anchors';
@@ -69,17 +69,18 @@ export function DailySession() {
    * both languages. `labelForPath` returns '' for an unknown path, in which case
    * we drop the label rather than render a blank.
    *
-   * A null `continueTarget` therefore means "campaign genuinely finished" -
-   * the only case where the all-clear branch should fire.
+   * The CAMPAIGN case is delegated to `resolvePushTarget`, the same helper
+   * `/learn` uses for its Resume button, so the finished state reads identically
+   * on both surfaces. That also fixes the self-link this used to have: a learner
+   * sitting on Home was offered "All caught up - go to path" linking back to
+   * Home, which is a button that goes nowhere.
    */
   const continueTarget = hasCampaign
-    ? a1PushNode
-      ? { to: a1PushNode.to, label: isDE ? a1PushNode.label.de : a1PushNode.label.en }
-      : null
+    ? resolvePushTarget(a1PushNode, isDE)
     : (() => {
         const to = getLastModule();
         const label = labelForPath(to, isDE);
-        return { to, label: label || null };
+        return { to, label: label || null, isComplete: false };
       })();
 
   // U6: tell the global Layout a review batch is active (non-blocking toast
@@ -222,8 +223,19 @@ export function DailySession() {
             {dueCount}
           </span>
         </button>
-      ) : continueTarget ? (
-        /* 0 due — CTA goes straight to the next thing for THIS tier: the A1
+      ) : continueTarget.isComplete ? (
+        /* The campaign is finished. This used to be a `continueTarget ? ... : ...`
+           fallback pointing at A1_PATH_ROUTE, which on Home is a link back to
+           the page already open - a dead button. `resolvePushTarget` sends it to
+           the CEFR level grid instead, matching /learn's Resume button exactly. */
+        <Link
+          to={continueTarget.to}
+          className="inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-lg border border-success-200 bg-success-50 px-4 py-3 text-body font-bold text-success-800 transition hover:bg-success-100 active:scale-95 dark:border-success-900/50 dark:bg-success-950/30 dark:text-success-300"
+        >
+          ✅ {continueTarget.label}
+        </Link>
+      ) : (
+        /* 0 due - CTA goes straight to the next thing for THIS tier: the A1
            campaign node on Premium, the last-opened roadmap module on free. */
         <Link
           to={continueTarget.to}
@@ -235,13 +247,6 @@ export function DailySession() {
               {continueTarget.label}
             </span>
           )}
-        </Link>
-      ) : (
-        <Link
-          to={A1_PATH_ROUTE}
-          className="inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-lg border border-success-200 bg-success-50 px-4 py-3 text-body font-bold text-success-800 transition hover:bg-success-100 active:scale-95 dark:border-success-900/50 dark:bg-success-950/30 dark:text-success-300"
-        >
-          ✅ {isDE ? 'Alles erledigt — zum Lernpfad' : 'All caught up — go to path'}
         </Link>
       )}
     </section>

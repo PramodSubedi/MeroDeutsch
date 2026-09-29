@@ -205,14 +205,21 @@ and every `<Route>` element is imported. That catches the realistic failure mode
 
 ## 6. Standing caveats — do not skip these
 
-1. **Nothing has run live.** Every `admin-action` call returns `401
+1. **Nothing has run live.** Every `admin-action` call made so far returns `401
    unauthenticated`. That proves the auth wall and **nothing else**. Ban,
    promote, `config.set`, `unit.publish`, `vocab.repair` are unit-tested and
    deployed, never executed end-to-end.
 
-   **First thing to do: a smoke test on a throwaway user.** Sign in → ban →
-   confirm in the UI → check `/audit-log` produces its first row. ~5 minutes, and
-   it converts ~1000 lines of deployed code from "should work" to "proven".
+   **`/system` now has a Self-test panel** (`system.selftest`) that walks
+   identify → `loadActor` → `countActiveAdmins` → `evaluateAction` → audit and
+   reports each step. It changes no user, no flag and no curriculum; the only row
+   it writes is its own audit entry. Run it first.
+
+   **Still to do: a smoke test on a throwaway user.** Sign in → ban → confirm in
+   the UI → check `/audit-log` produces its first row. ~5 minutes, and it
+   converts the rest of the write path from "should work" to "proven". The
+   self-test proves the path is REACHABLE; only the smoke test proves it applies
+   the change it claims.
 
 2. **The 47 vocabulary findings are candidates, not defects.** Live SQL showed at
    least two are **correct**: `Fahrkarte → ticket` and `schlecht → bad` only trip
@@ -220,9 +227,15 @@ and every `<Route>` element is imported. That catches the realistic failure mode
    constant-row-offset misalignment theory was **tested and rejected**. Every
    value must be human-supplied, per row. Do not auto-repair.
 
-3. **`vocab.clear_flag` is registered but returns `501`.** Implement it or remove
-   it from `KNOWN_ACTIONS`. A permanently-501 action is the same smell as the
-   silent no-op already fixed.
+   The finding's `detail` text now says so. It used to tell the operator that
+   learners are being taught the wrong meaning for "every one of these", which
+   would have led to bulk-repairing correct rows.
+
+3. **`vocab.clear_flag` is registered but returns `501`.** It was also MISSING
+   from the client's `AdminActionName` union, so it was unreachable from the UI
+   entirely — caught by `check:adminaction` §14, which now compares the two lists.
+   Implement the handler or remove it from `KNOWN_ACTIONS` and the union. A
+   permanently-501 action is the same smell as the silent no-op already fixed.
 
 4. **CORS — FIXED AND DEPLOYED, but the lesson is the point.**
    `ADMIN_ALLOWED_ORIGIN` was read in exactly one place and **set nowhere** —
@@ -246,41 +259,43 @@ and every `<Route>` element is imported. That catches the realistic failure mode
    indistinguishable from a passing one.** When adding a check, add the npm
    script AND the CI step, or it does not exist.
 
-6. **LEARNER PROGRESS IS SILENTLY ORPHANED BY THE v4.0 RENAME — FIX NEXT.**
-   The V4 migration (`V4_ORDER_MARKER` / `remapV3UnitIndex` in `useA1Path.tsx`)
-   remaps `unlockedUnitIndex`, `checkpointBestByUnit` and `attemptsByUnit`, and
-   its own comment says:
+6. **LEARNER PROGRESS WAS SILENTLY ORPHANED BY THE v4.0 RENAME — NOW FIXED.**
+    The V4 migration (`V4_ORDER_MARKER` / `remapV3UnitIndex` in `useA1Path.tsx`)
+    remaps `unlockedUnitIndex`, `checkpointBestByUnit` and `attemptsByUnit`, and
+    its original comment said:
 
-   > *"this one is a pure REORDER: every unit still exists with the same id and
-   > the same content, so `completedNodeIds` is left completely alone"*
+    > *"this one is a pure REORDER: every unit still exists with the same id and
+    > the same content, so `completedNodeIds` is left completely alone"*
 
-   **That premise is false.** Unit ids are stable, but 20 NODE ids were renamed,
-   from semantic to positional:
+    **That premise was false.** Unit ids are stable, but 20 NODE ids were renamed,
+    from semantic to positional:
 
-   ```
-   m06-professions → m06-learn        m09-separable → m09-learn
-   m06-grammar     → m06-practice     m09-prefix    → m09-practice
-   m06-gate        → m06-checkpoint   (m06…m15, every unit)
-   ```
+    ```
+    m06-professions → m06-learn        m09-separable → m09-learn
+    m06-grammar     → m06-practice     m09-prefix    → m09-practice
+    m06-gate        → m06-checkpoint   (m06…m15, every unit)
+    ```
 
-   `isNodeComplete` is `completedNodeIds.includes(node.id)`. So every learner who
-   finished a renamed node now shows it **incomplete**. They are not locked out —
-   `unlockedUnitIndex` was remapped, so checkpoint gating still holds — but up
-   to 20 nodes per learner revert to "not done".
+    `isNodeComplete` is `completedNodeIds.includes(node.id)`. So every learner who
+    finished a renamed node showed it **incomplete**. They were not locked out —
+    `unlockedUnitIndex` was remapped, so checkpoint gating still held — but up
+    to 20 nodes per learner reverted to "not done".
 
-   **Fix:** the V4 migration must also remap node ids inside
-   `completedNodeIds`, keyed on unit id + node kind (learn/practice/checkpoint)
-   rather than on position, because the unit ORDER changed too. It must be
-   idempotent via `V4_ORDER_MARKER` like the existing migrations, and it needs
-   its own check.
+    **RESOLVED.** `useA1Path.tsx:282` now calls `remapV3NodeIds(completedNodeIds)`
+    before pushing `V4_ORDER_MARKER`, keyed on unit id + node kind rather than on
+    position, and `remapV3NodeIds` is idempotent. The marker is pushed after the
+    map so it is not itself run through it.
 
-   This is the plan's own HIGH risk
-   (`1790504406225-curriculum-sequence-upgrade.md` line 189), and it is why the
-   v4.0 sequence is **not** finished.
-   After the v4.0 re-sequence (15 → 16 units) it reports 40 value-parity
-   differences and exits 1. It is in neither CI nor §8's run list.
+    *This section previously said the fix was still outstanding. It was already
+    in the code, and the only thing disagreeing with it was this document — which
+    is the same failure as the silent-no-op `vocab.repair` fixed earlier in the
+    same session: a claim that outlived the code it described, because nothing in
+    the code checked the prose.*
 
-   **`npm run curriculum:baseline` CANNOT fix this.** It rebuilds from the
+   **STILL OPEN: `curriculum:verify` is red.** After the v4.0 re-sequence
+    (15 → 16 units) it reports 40 value-parity differences and exits 1.
+
+    **`npm run curriculum:baseline` CANNOT fix this.** It rebuilds from the
    *frozen pre-P0 source* — running it reproduces the 15-unit baseline
    byte-for-byte. There is no tooling to re-cut the baseline to the current
    spine; that is a deliberate manual edit, and it means accepting the v4.0

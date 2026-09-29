@@ -103,3 +103,4 @@ dev.log
 # record. If you ever mean to untrack it, that is a decision to state out loud
 # in a commit message, not a line to leave lying around in this file.
 supabase/.temp/cli-latest
+ADMIN_PHASES_HANDOFF.md

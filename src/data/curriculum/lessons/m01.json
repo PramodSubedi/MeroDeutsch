@@ -406,5 +406,506 @@
       "🧠 Memory Hook: Capitalization Matters! Sie (Capital S) = Formal You / तपाईं. sie (lowercase s) = she / उनी or they / तिनीहरू.",
       "🇩🇪 *Cultural Insight (Kulturtipp): Use Sie + Last Name (Herr Müller, Frau Weber) until the other person explicitly offers the Du-Wort* (\"Wir können 'du' sagen\")."
     ]
-  }
+  },
+  "steps": [
+    {
+      "type": "intro",
+      "objectives": {
+        "en": [
+          "Greet people at different times of the day in German",
+          "Introduce yourself using 'Ich heiße...' and 'Ich bin...'",
+          "Ask someone's name using 'Wie heißt du?' and 'Wie heißen Sie?'",
+          "Understand when to use 'du' (informal) versus 'Sie' (formal)"
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Hallo",
+        "en": "hello",
+        "ne": "नमस्ते / हेलो",
+        "examples": [
+          {
+            "de": "Hallo, wie geht es dir?",
+            "en": "Hello, how are you?"
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Guten Tag",
+        "en": "good day / hello",
+        "ne": "शुभ दिन / हेलो",
+        "examples": [
+          {
+            "de": "Guten Tag, Herr Schmidt.",
+            "en": "Good day, Mr. Schmidt."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Guten Morgen",
+        "en": "good morning",
+        "ne": "शुभ प्रभात",
+        "examples": [
+          {
+            "de": "Guten Morgen, Frau Müller.",
+            "en": "Good morning, Mrs. Müller."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Guten Abend",
+        "en": "good evening",
+        "ne": "शुभ सन्ध्या",
+        "examples": [
+          {
+            "de": "Guten Abend, alle zusammen.",
+            "en": "Good evening, everyone."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "mcq",
+      "prompt": "Which greeting is used in the morning?",
+      "options": [
+        "Guten Morgen",
+        "Guten Abend",
+        "Gute Nacht"
+      ],
+      "answer": "Guten Morgen",
+      "hintReason": "'Guten Morgen' means good morning."
+    },
+    {
+      "type": "match",
+      "pairs": [
+        {
+          "id": "0",
+          "de": "Hallo",
+          "en": "hello"
+        },
+        {
+          "id": "1",
+          "de": "Guten Tag",
+          "en": "good day"
+        },
+        {
+          "id": "2",
+          "de": "Guten Morgen",
+          "en": "good morning"
+        },
+        {
+          "id": "3",
+          "de": "Guten Abend",
+          "en": "good evening"
+        }
+      ],
+      "columnLabels": {
+        "left": "Deutsch",
+        "right": "English"
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "heißen",
+        "en": "to be called",
+        "ne": "नाम हुनु",
+        "examples": [
+          {
+            "de": "Ich heiße Maria.",
+            "en": "My name is Maria."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "explain",
+      "title": {
+        "en": "Introducing Yourself with 'Ich heiße'"
+      },
+      "body": "To say your name in German, use **Ich heiße...** (literally 'I am called...').\n\n- **Ich heiße Anna.** = My name is Anna.\n- **Ich heiße Thomas.** = My name is Thomas."
+    },
+    {
+      "type": "typed",
+      "ask": "fill-blank",
+      "prompt": "Ich ___ Anna.",
+      "answer": "heiße",
+      "accepted": [
+        "heiße"
+      ],
+      "note": "Ich heiße = My name is"
+    },
+    {
+      "type": "typed",
+      "ask": "translate-en-de",
+      "prompt": "My name is Maria.",
+      "answer": "Ich heiße Maria",
+      "accepted": [
+        "Ich heiße Maria."
+      ],
+      "note": "Use 'Ich heiße [Name]' to introduce yourself."
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "du",
+        "en": "you (informal)",
+        "ne": "तिमी (आदर नभएको)",
+        "examples": [
+          {
+            "de": "Wie heißt du?",
+            "en": "What is your name? (informal)"
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Sie",
+        "en": "you (formal)",
+        "ne": "तपाईं (उच्च आदर)",
+        "examples": [
+          {
+            "de": "Wie heißen Sie?",
+            "en": "What is your name? (formal)"
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "explain",
+      "title": {
+        "en": "Formal vs. Informal: 'du' vs. 'Sie'"
+      },
+      "body": "German has two ways to say 'you':\n\n- **du** (informal): Friends, family, fellow students (Nepali: तिमी).\n- **Sie** (formal): Strangers, elders, officials (Nepali: तपाईं).\n\nQuestions:\n- **Wie heißt du?** (Informal)\n- **Wie heißen Sie?** (Formal)"
+    },
+    {
+      "type": "trap",
+      "wrong": "Wie heißen du?",
+      "right": "Wie heißt du?",
+      "note": {
+        "en": "With 'du', the verb form is 'heißt'. With 'Sie', it is 'heißen'."
+      }
+    },
+    {
+      "type": "mcq",
+      "prompt": "Which pronoun should you use when speaking formally to a police officer or professor?",
+      "options": [
+        "Sie",
+        "du"
+      ],
+      "answer": "Sie",
+      "hintReason": "'Sie' is the formal address used for officials and authority figures."
+    },
+    {
+      "type": "typed",
+      "ask": "short-answer",
+      "prompt": "How do you ask a friend their name in German?",
+      "answer": "Wie heißt du?",
+      "accepted": [
+        "Wie heißt du",
+        "Wie heißt du?"
+      ],
+      "note": "'Wie heißt du?' is informal."
+    },
+    {
+      "type": "typed",
+      "ask": "short-answer",
+      "prompt": "How do you ask a stranger their name formally in German?",
+      "answer": "Wie heißen Sie?",
+      "accepted": [
+        "Wie heißen Sie",
+        "Wie heißen Sie?"
+      ],
+      "note": "'Wie heißen Sie?' is formal."
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Danke",
+        "en": "thank you",
+        "ne": "धन्यवाद",
+        "examples": [
+          {
+            "de": "Danke für die Hilfe.",
+            "en": "Thank you for the help."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Bitte",
+        "en": "please / you're welcome",
+        "ne": "कृपया / स्वागत छ",
+        "examples": [
+          {
+            "de": "Bitte schön!",
+            "en": "You're very welcome!"
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Tschüss",
+        "en": "bye",
+        "ne": "नमस्ते / बाइ",
+        "examples": [
+          {
+            "de": "Tschüss, bis morgen!",
+            "en": "Bye, see you tomorrow!"
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Auf Wiedersehen",
+        "en": "goodbye",
+        "ne": "फेरि भेटौला / बिदा",
+        "examples": [
+          {
+            "de": "Auf Wiedersehen, Herr Schmidt.",
+            "en": "Goodbye, Mr. Schmidt."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "dialogue",
+      "title": {
+        "en": "First Contact",
+        "de": "Erster Kontakt"
+      },
+      "turns": [
+        {
+          "speaker": "Officer",
+          "de": "Guten Tag! Wie heißen Sie?",
+          "en": "Good day! What is your name?"
+        },
+        {
+          "speaker": "Traveler",
+          "de": "Guten Tag! Ich heiße Anna.",
+          "en": "Good day! My name is Anna."
+        },
+        {
+          "speaker": "Officer",
+          "de": "Danke, Frau Anna. Auf Wiedersehen!",
+          "en": "Thank you, Ms. Anna. Goodbye!"
+        },
+        {
+          "speaker": "Traveler",
+          "de": "Auf Wiedersehen!",
+          "en": "Goodbye!"
+        }
+      ]
+    },
+    {
+      "type": "arrange",
+      "prompt": "Build the formal greeting and name phrase:",
+      "tokens": [
+        "Guten",
+        "Tag,",
+        "ich",
+        "heiße",
+        "Anna."
+      ]
+    },
+    {
+      "type": "dictation",
+      "text": "Guten Tag! Ich heiße Anna.",
+      "instruction": "Listen and type what you hear."
+    },
+    {
+      "type": "culture",
+      "body": "In Germany, Austria, and Switzerland, people maintain formal 'Sie' with colleagues and strangers until explicitly invited to use 'du' ('das Du anbieten'). Shaking hands firmly with eye contact is standard in formal settings."
+    },
+    {
+      "type": "typed",
+      "ask": "correct",
+      "prompt": "Hallo, ich heißen Anna.",
+      "answer": "Hallo, ich heiße Anna",
+      "accepted": [
+        "Hallo, ich heiße Anna.",
+        "Hallo ich heiße Anna",
+        "Hallo ich heiße Anna."
+      ],
+      "note": "With 'ich', the verb ending is '-e': 'ich heiße'."
+    },
+    {
+      "type": "mcq",
+      "prompt": "Which word means 'thank you' in German?",
+      "options": [
+        "Danke",
+        "Bitte",
+        "Hallo"
+      ],
+      "answer": "Danke",
+      "hintReason": "'Danke' means thank you."
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Gute Nacht",
+        "en": "Good night",
+        "ne": "शुभ राती",
+        "partOfSpeech": "Phrase",
+        "examples": [
+          {
+            "de": "Gute Nacht, schlaf gut!",
+            "en": "",
+            "ne": ""
+          }
+        ],
+        "frequency": "active"
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Entschuldigung",
+        "en": "Excuse me / Sorry",
+        "ne": "माफ गर्नुहोस्",
+        "article": "die",
+        "partOfSpeech": "Noun/Phrase",
+        "examples": [
+          {
+            "de": "Entschuldigung, wo ist der Bahnhof?",
+            "en": "",
+            "ne": ""
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Danke schön",
+        "en": "Thank you very much",
+        "ne": "धेरै धेरै धन्यवाद",
+        "partOfSpeech": "Phrase",
+        "examples": [
+          {
+            "de": "Danke schön für die Hilfe!",
+            "en": "",
+            "ne": ""
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "kommen",
+        "en": "to come (from)",
+        "ne": "आउनु",
+        "partOfSpeech": "Verb",
+        "examples": [
+          {
+            "de": "Ich komme aus Nepal.",
+            "en": "",
+            "ne": ""
+          }
+        ],
+        "frequency": "active"
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "wohnen",
+        "en": "to live / reside",
+        "ne": "बस्नु",
+        "partOfSpeech": "Verb",
+        "examples": [
+          {
+            "de": "Ich wohne in Katmandu.",
+            "en": "",
+            "ne": ""
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "sprechen",
+        "en": "to speak",
+        "ne": "बोल्नु",
+        "partOfSpeech": "Verb",
+        "examples": [
+          {
+            "de": "Ich spreche Deutsch.",
+            "en": "",
+            "ne": ""
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Name",
+        "en": "Name",
+        "ne": "नाम",
+        "article": "der",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "Mein Name ist Paul.",
+            "en": "",
+            "ne": ""
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Land",
+        "en": "Country",
+        "ne": "देश",
+        "article": "das",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "Nepal ist mein Heimatland.",
+            "en": "",
+            "ne": ""
+          }
+        ]
+      }
+    },
+    {
+      "type": "summary"
+    }
+  ],
+  "stepsSource": "imported"
 }

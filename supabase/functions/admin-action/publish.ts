@@ -12,86 +12,18 @@
  * So the rules live here where they can be tested against a hundred hostile
  * inputs, rather than inside a request handler.
  */
+import { CONFIG_KEYS } from '../../../src/shared/configKeys.ts';
 
-// ── The curated allow-list of config keys ───────────────────────────────────
+// The allow-list itself is NOT defined here any more. It lives in
+// `src/shared/configKeys.ts` so the admin control centre and this function read
+// the same list — a private copy on each side is precisely how
+// `announcement_banner` came to be writable from the UI and unwriteable from
+// here, taking the whole feature with it.
 //
-// `config.set` writes `app_config`, which the LEARNER APP reads on every boot.
-// An arbitrary key is a channel for enabling something nobody reviewed, so the
-// writable set is closed and each entry states what it may contain.
-export interface ConfigKeySpec {
-  types: ('boolean' | 'string')[];
-  /** For string keys: the complete set of legal values. */
-  values?: readonly string[];
-  description: string;
-}
-
-export const CONFIG_KEYS: Readonly<Record<string, ConfigKeySpec>> = {
-  curriculum_source: {
-    types: ['string'],
-    values: ['bundle', 'db'],
-    description: 'Which curriculum the app serves. db is only safe with a verified backfill.',
-  },
-  maintenance_mode: {
-    types: ['boolean'],
-    description: 'Blocks learners out of the app while you work on it.',
-  },
-  registration_open: {
-    types: ['boolean'],
-    description: 'Whether new signups are accepted.',
-  },
-
-  // ── The AI companion (Mero) ───────────────────────────────────────────────
-  //
-  // Global defaults only. A learner's own choices stay in per-user localStorage
-  // (`meroDeutschChatbot:<userId>`); these are the values a NEW user starts from
-  // and the values an admin can change for everyone who has not overridden them.
-  chatbot_enabled: {
-    types: ['boolean'],
-    description: 'Global on/off for the AI companion. Overrides every learner personal toggle.',
-  },
-  chatbot_base_url: {
-    types: ['string'],
-    description: 'Default Ollama/LM Studio base URL seeded for learners who have not set one.',
-  },
-  chatbot_default_model: {
-    types: ['string'],
-    // NO `values` — model names are case-sensitive identifiers, not a fixed
-    // vocabulary. That single omission is what stops normalisation lowercasing
-    // `Qwen2.5:3b` into a name no local runtime recognises.
-    description: 'Default model name. Must appear in chatbot_allowed_models when that key is set.',
-  },
-  chatbot_allowed_models: {
-    types: ['string'],
-    description: 'Comma-separated models an admin may set as the default. Case is preserved.',
-  },
-  chatbot_default_intensity: {
-    types: ['string'],
-    values: ['serious', 'balanced', 'playful'],
-    description: 'Default personality intensity for new learners.',
-  },
-  chatbot_default_language_mix: {
-    types: ['string'],
-    values: ['de_en', 'de_en_ne'],
-    description: 'Default helper language mix for new learners.',
-  },
-  chatbot_default_auto_open: {
-    types: ['boolean'],
-    description: 'Whether Mero opens itself unprompted after repeated mistakes, by default.',
-  },
-};
-
-/**
- * The companion keys, as a set.
- *
- * Derived from `CONFIG_KEYS` by PREFIX rather than typed out a second time, so a
- * key cannot be added to the allow-list and forgotten here — which would leave
- * the admin page unable to show a control for a flag that is genuinely writable.
- * The learner app asserts the same list in `src/data/chatbot/config.ts`; the two
- * are pinned to each other by `check:chatconfig`.
- */
-export const CHATBOT_CONFIG_KEYS: readonly string[] = Object.freeze(
-  Object.keys(CONFIG_KEYS).filter((k) => k.startsWith('chatbot_')),
-);
+// Re-exported under the original names so the existing suites (and any importer
+// of this module) are unaffected by the move.
+export { CONFIG_KEYS, CHATBOT_CONFIG_KEYS } from '../../../src/shared/configKeys.ts';
+export type { ConfigKeySpec } from '../../../src/shared/configKeys.ts';
 
 export type ConfigCheck = { ok: true } | { ok: false; message: string };
 
@@ -134,6 +66,31 @@ export function validateConfigWrite(key: unknown, value: unknown): ConfigCheck {
     return { ok: true };
   }
 
+  // ── Object payloads ────────────────────────────────────────────────────────
+  //
+  // `app_config.value` is JSONB, so a structured value is representable — but
+  // "representable" is not "writable". Until this branch existed, the only legal
+  // shapes were `boolean` and `string`, so `announcement_banner` had no way to be
+  // written at all and its admin editor returned `400` for every save.
+  //
+  // An object key MUST carry a `validate`. A spec that accepts objects with no
+  // validator would be an open write of arbitrary JSON into a row the learner app
+  // renders, which is the exact failure mode the closed allow-list exists to
+  // prevent — so the absence is refused rather than defaulted.
+  if (spec.types.includes('object')) {
+    if (value === null || typeof value !== 'object' || Array.isArray(value)) {
+      return { ok: false, message: `"${key}" must be a JSON object.` };
+    }
+    if (!spec.validate) {
+      return { ok: false, message: `"${key}" has no shape validator and cannot be written.` };
+    }
+    const problems = spec.validate(value);
+    if (problems.length > 0) {
+      return { ok: false, message: `"${key}" was rejected: ${problems.join('; ')}` };
+    }
+    return { ok: true };
+  }
+
   return { ok: false, message: `"${key}" has no writable type.` };
 }
 
@@ -158,9 +115,22 @@ export function validateConfigWrite(key: unknown, value: unknown): ConfigCheck {
  * It is exported (rather than inlined in the handler) so the rule is testable
  * against a hundred hostile inputs here, and so the handler cannot drift away
  * from the validator it runs three lines earlier.
+ *
+ * ── AND OBJECTS ARE STORED EXACTLY AS VALIDATED ──────────────────────────────
+ * An `object` key's payload is structured. There is no vocabulary to be
+ * case-insensitive over, so folding case would corrupt it — and worse, would do
+ * so SILENTLY, turning a banner's link or severity into a value the reader
+ * rejects. So an object value is returned untouched: the shape validator already
+ * accepted it, and re-canonicalising here would mean the stored bytes no longer
+ * match what was validated.
  */
-export function normalizeConfigValue(key: string, value: string | boolean): string | boolean {
+export function normalizeConfigValue(key: string, value: unknown): string | boolean | unknown {
   if (typeof value === 'boolean') return value;
+
+  if (value !== null && typeof value === 'object') return value;
+
+  if (typeof value !== 'string') return value;
+
   const trimmed = value.trim();
   return CONFIG_KEYS[key]?.values ? trimmed.toLowerCase() : trimmed;
 }

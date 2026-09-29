@@ -7,7 +7,7 @@
  * teaches the operator not to trust it. These pin the RANKING rules, not just
  * the fact that something matched.
  */
-import { isDismissKey, isOpenHotkey, scoreMatch, searchAll } from './search';
+import { GROUPS, NAV_ITEMS, isDismissKey, isOpenHotkey, scoreMatch, searchAll } from './search';
 
 let checks = 0;
 const failures: string[] = [];
@@ -106,6 +106,61 @@ check('a broad query keeps navigation visible', both.some((h) => h.group === 'na
 // "test" is a substring of no page name, so surfacing System for it would be
 // noise dressed up as a result.
 check('a query matching no page name returns no navigation', searchAll({ users: manyUsers } as never, 'test', { perGroup: 3 }).every((h) => h.group !== 'navigation'));
+
+/* ── 9b. every group is represented, not just the highest-scoring ones ────── */
+console.log('\n=== 9b. NO GROUP IS CROWDED OUT ===');
+// A per-group cap plus a flat total cap is not enough. A total cap over a
+// score-sorted list always favours whichever groups score highest, and
+// `content` (`s - 30`) and `unit` (`s - 10`) always sort last — so with a total
+// cap of `perGroup * 4` against six groups they NEVER appeared on a broad query.
+//
+// Raising the cap did not fix it either; it just moved the starvation onto
+// `users` and `navigation`. The order is now interleaved per group instead.
+//
+// The query is `s`, which is in "Users", "System", "Analytics" and "QA
+// simulator", and every fixture row below also contains it — so all six groups
+// genuinely compete.
+const manyProbe = Array.from({ length: 40 }, (_, i) => ({ id: `u${i}`, username: `users${i}`, fullName: `Person s${i}` }));
+const everyGroup = {
+  users: manyProbe,
+  vocabulary: Array.from({ length: 40 }, (_, i) => ({ id: `v${i}`, word: `haus${i}`, translationEn: `house ${i}`, translationNp: `n${i}` })),
+  audit: Array.from({ length: 40 }, (_, i) => ({ id: `a${i}`, action: `user.s${i}`, targetId: null, adminName: null })),
+  content: Array.from({ length: 40 }, (_, i) => ({ id: `c${i}`, contentType: `quiz-${i}`, label: `s${i}` })),
+  unitDocs: Array.from({ length: 40 }, (_, i) => ({ id: `m0${i}s`, doc: null })),
+} as never;
+const broadResult = searchAll(everyGroup, 's', { perGroup: 6 });
+const seenGroups = new Set(broadResult.map((h) => h.group));
+for (const g of GROUPS.map((x) => x.id)) {
+  check(`"${g}" survives a broad query`, seenGroups.has(g), `saw: ${[...seenGroups].join(', ')}`);
+}
+check('the total cap is perGroup × the group count', broadResult.length <= 6 * GROUPS.length, String(broadResult.length));
+// The per-group cap must still hold for EVERY group, including one whose spare
+// budget could otherwise be absorbed by the fill pass.
+for (const g of GROUPS.map((x) => x.id)) {
+  const n = broadResult.filter((h) => h.group === g).length;
+  check(`"${g}" is still capped at perGroup`, n <= 6, String(n));
+}
+// No duplicates: a hit must not appear twice because it was both interleaved and
+// picked up by the spare-budget pass.
+check('no hit appears twice', new Set(broadResult.map((h) => h.id)).size === broadResult.length);
+// And the strongest group still leads, so interleaving did not flatten ranking.
+const firstGroup = broadResult[0]?.group;
+check('the top-scoring group leads', firstGroup === 'navigation' || firstGroup === 'users', String(firstGroup));
+
+// A group with only one hit must not waste the palette's whole budget.
+const lopsided = searchAll({ vocabulary: Array.from({ length: 40 }, (_, i) => ({ id: `v${i}`, word: `haus${i}`, translationEn: `e${i}`, translationNp: `n${i}` })), content: [{ id: 'c1', contentType: 'quiz', label: 's1' }] } as never, 's', { perGroup: 6 });
+check('a tiny group does not collapse the result', lopsided.length > 6, String(lopsided.length));
+check('the tiny group is still present', lopsided.some((h) => h.group === 'content'));
+
+// The empty-query state: NAV has ten entries and the default cap was six, so
+// Analytics and System were unreachable until the admin typed something.
+const emptyState = searchAll(everyGroup, '', { perGroup: 20 });
+check('an empty query can show every page', emptyState.length === NAV_ITEMS.length, `${emptyState.length} of ${NAV_ITEMS.length}`);
+check('every page is reachable from the palette', NAV_ITEMS.every((n) => emptyState.some((h) => h.to === n.to)));
+// The regression that motivated sharing the table: `/debug` was missing from the
+// palette's copy, so the QA simulator could not be found by searching for it.
+check('the QA simulator is searchable', NAV_ITEMS.some((n) => n.to === '/debug'));
+check('the palette knows about every nav item', NAV_ITEMS.length === 10, String(NAV_ITEMS.length));
 
 console.log('\n=== 10. DEGENERATE INPUT ===');
 check('an empty index returns nothing for a real query', searchAll({}, 'anything').filter((h) => h.group !== 'navigation').length === 0);

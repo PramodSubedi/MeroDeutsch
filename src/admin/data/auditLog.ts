@@ -17,6 +17,7 @@
  * the log because one row is odd is the wrong trade.
  */
 import { supabase } from '../../lib/supabase';
+import { callAdminRpc, LEGACY_PATH_NOTICE } from './rpc';
 import { csvDocument } from './csv';
 
 export type AuditOutcome = 'allowed' | 'denied' | 'failed' | 'unimplemented';
@@ -154,59 +155,164 @@ export function targetTypeFacets(entries: AuditEntry[]): string[] {
   return [...new Set(entries.map((e) => e.targetType ?? 'none'))].sort();
 }
 
-/**
- * Load the log newest-first, with admin names resolved separately.
- *
- * `admin_audit_log.admin_id` references `auth.users`, which the anon key cannot
- * traverse. A nested select would return NULL names SILENTLY, so this reads
- * the matching profile rows explicitly and fails loudly instead.
- */
-export async function fetchAuditLog(limit = 500): Promise<AuditResult> {
-  const errors: string[] = [];
+/** A keyset cursor into the log. */
+export interface AuditCursor {
+  createdAt: string;
+  id: string;
+}
 
+export interface AuditPageResult {
+  entries: AuditEntry[];
+  errors: string[];
+  /** Exact number of rows matching, not "however many arrived". */
+  total: number;
+  nextCursor: AuditCursor | null;
+}
+
+/** The page size the log asks for. The RPC clamps to 500. */
+export const AUDIT_PAGE_SIZE = 100;
+
+/**
+ * ONE page of the log, newest first, filtered in the database.
+ *
+ * The read was a capped 500 rows with the filter applied in the BROWSER. That is
+ * only correct while the filter runs over the whole set — the moment the read is
+ * paged, "user.ban" means "user.ban, among the 500 most recent audit rows", which
+ * is a different and much weaker claim than an operator thinks they are making.
+ * The filters came with the pagination, or the pagination is a lie.
+ *
+ * Admin names are still resolved SEPARATELY, and deliberately not joined: the
+ * RPC runs with the service role and a nested select there would work, but this
+ * read is the one place a NULL name must be LOUD rather than silent, and an
+ * explicit read that can fail visibly is how that is guaranteed.
+ */
+export async function fetchAuditPage(args: {
+  search?: string;
+  action?: string;
+  targetId?: string;
+  adminId?: string | null;
+  limit?: number;
+  cursor?: AuditCursor | null;
+} = {}): Promise<AuditPageResult> {
+  const outcome = await callAdminRpc<{ entries: AuditEntry[]; total: number; next_cursor: AuditCursor | null }[]>(
+    supabase,
+    'admin_audit_page',
+    {
+      p_search: args.search ?? '',
+      p_action: args.action ?? '',
+      p_target_id: args.targetId ?? '',
+      p_admin_id: args.adminId ?? null,
+      p_limit: args.limit ?? AUDIT_PAGE_SIZE,
+      p_cursor_created_at: args.cursor?.createdAt ?? null,
+      p_cursor_id: args.cursor?.id ?? null,
+    },
+  );
+
+  if (outcome.kind === 'absent') {
+    // The RPC is not deployed. The old read — a capped prefix with the filter
+    // applied in the browser — is correct only while the filter runs over the
+    // whole set, so the fallback filters what it actually holds and reports how
+    // much that was.
+    const legacy = await fetchAuditLegacy(args);
+    return { ...legacy, errors: [LEGACY_PATH_NOTICE, ...legacy.errors] };
+  }
+  if (outcome.kind !== 'ok') {
+    return { entries: [], errors: [`admin_audit_page: ${outcome.message}`], total: 0, nextCursor: null };
+  }
+
+  const row = (outcome.data as { entries: AuditEntry[]; total: number; next_cursor: AuditCursor | null }[] | null)?.[0];
+  const rows = Array.isArray(row?.entries) ? row.entries : [];
+
+  return {
+    entries: await attachAdminNames(rows),
+    errors: [],
+    total: typeof row?.total === 'number' ? row.total : rows.length,
+    nextCursor: row?.next_cursor ?? null,
+  };
+}
+
+/**
+ * The previous read: a capped prefix, filtered in the browser.
+ *
+ * Kept as a fallback for when `admin_audit_page` is not deployed. The browser
+ * filter is the ONLY correct option here — the log is append-only, so the newest
+ * rows are the ones an admin is looking at — and the cap is stated rather than
+ * assumed.
+ */
+async function fetchAuditLegacy(args: {
+  search?: string;
+  action?: string;
+  targetId?: string;
+  adminId?: string | null;
+  limit?: number;
+}): Promise<AuditPageResult> {
+  const errors: string[] = [];
+  const limit = args.limit ?? AUDIT_PAGE_SIZE;
   const { data, error } = await supabase
     .from('admin_audit_log')
     .select('id, admin_id, action, target_type, target_id, before, after, user_agent, created_at')
     .order('created_at', { ascending: false })
+    .order('id', { ascending: false })
     .limit(limit);
+  if (error) return { entries: [], errors: [`admin_audit_log: ${error.message}`], total: 0, nextCursor: null };
 
-  if (error) {
-    return { entries: [], errors: [`admin_audit_log: ${error.message}`] };
-  }
-
-  const rows = data ?? [];
-  const adminIds = [...new Set(rows.map((r) => r.admin_id as string).filter(Boolean))];
-
-  const names = new Map<string, string>();
-  if (adminIds.length > 0) {
-    const { data: profiles, error: pErr } = await supabase
-      .from('profiles')
-      .select('id, username, full_name')
-      .in('id', adminIds);
-    if (pErr) {
-      // Not fatal: the log is still readable by id, so this degrades rather
-      // than blanking the page.
-      errors.push(`admin names: ${pErr.message}`);
-    } else {
-      for (const p of profiles ?? []) {
-        const label = (p.full_name as string | null) || (p.username as string | null);
-        if (label) names.set(p.id as string, label);
-      }
-    }
-  }
-
-  const entries: AuditEntry[] = rows.map((r) => ({
+  // Snake-case from PostgREST, camel-case for the shared filter. Typed as
+  // `unknown` because the query's inferred row type is not `AuditEntry` — the
+  // mapping is deliberate, not a coercion.
+  const raw = (data ?? []) as unknown as Array<Record<string, unknown>>;
+  const mapped: AuditEntry[] = raw.map((r) => ({
     id: r.id as string,
     adminId: r.admin_id as string,
     action: r.action as string,
     targetType: (r.target_type as string | null) ?? null,
     targetId: (r.target_id as string | null) ?? null,
-    before: r.before,
-    after: r.after,
+    before: (r.before ?? null) as AuditEntry['before'],
+    after: (r.after ?? null) as AuditEntry['after'],
     userAgent: (r.user_agent as string | null) ?? null,
     createdAt: (r.created_at as string | null) ?? null,
-    adminName: names.get(r.admin_id as string) ?? null,
+    adminName: null,
   }));
 
-  return { entries, errors };
+  // `filterAuditEntries` takes only the four facets it declares; `search`
+  // already covers the target id and the admin name, so the caller's separate
+  // `targetId`/`adminId` are applied here as explicit pre-filters rather than
+  // being smuggled into a filter shape that does not have those fields.
+  let rows = filterAuditEntries(mapped, {
+    action: args.action ?? '',
+    targetType: '',
+    outcome: 'all',
+    search: args.search ?? '',
+  });
+  if (args.targetId) rows = rows.filter((r) => r.targetId === args.targetId);
+  if (args.adminId) rows = rows.filter((r) => r.adminId === args.adminId);
+
+  return {
+    entries: await attachAdminNames(rows),
+    errors: rows.length === limit ? [`Showing the ${limit} most recent audit rows.`] : errors,
+    total: rows.length,
+    // No keyset cursor on this path: it is a single capped read with no stable
+    // position to resume from.
+    nextCursor: null,
+  };
+}
+
+/** Resolve `adminName` from `profiles`, since the FK targets `auth.users`. */
+async function attachAdminNames(rows: AuditEntry[]): Promise<AuditEntry[]> {
+  const adminIds = [...new Set(rows.map((r) => r.adminId).filter(Boolean))];
+  const names = new Map<string, string>();
+  if (adminIds.length > 0) {
+    const { data: profiles } = await supabase
+      .from('profiles')
+      .select('id, username, full_name')
+      .in('id', adminIds);
+    for (const p of profiles ?? []) {
+      const label = (p.full_name as string | null) || (p.username as string | null);
+      if (label) names.set(p.id as string, label);
+    }
+  }
+  return rows.map((r) => ({ ...r, adminName: names.get(r.adminId) ?? null }));
+}
+export async function fetchAuditLog(limit = 200): Promise<AuditResult> {
+  const page = await fetchAuditPage({ limit });
+  return { entries: page.entries, errors: page.errors };
 }

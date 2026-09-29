@@ -29,17 +29,29 @@
 import { supabase } from '../../lib/supabase';
 
 /** Mirrors the guard's action union. Kept local so the browser never imports
- *  from the Deno function's source. */
+ *  from the Deno function's source.
+ *
+ *  `check:adminconfig` asserts the two agree. They have to be written twice —
+ *  the convention is sound — but a list nothing compares is not a convention,
+ *  it is a hope, and `vocab.clear_flag` had already drifted by being absent
+ *  from this one. */
 export type AdminActionName =
   | 'user.ban'
   | 'user.unban'
   | 'user.demote'
   | 'user.promote'
   | 'vocab.repair'
+  // Registered in `KNOWN_ACTIONS` and answered with a 501 by the handler. It is
+  // in the union so a caller gets an honest "not implemented" rather than the
+  // client-side "unrecognised action" error, which would blame the operator for
+  // a feature that was never built. The UI does not currently offer it — see the
+  // `vocab.clear_flag` note in `VocabularyPage`.
+  | 'vocab.clear_flag'
   | 'config.set'
   | 'unit.publish'
   | 'unit.rollback'
-  | 'unit.save';
+  | 'unit.save'
+  | 'system.selftest';
 
 export interface RepairEditInput {
   id: string;
@@ -49,6 +61,15 @@ export interface RepairEditInput {
 
 export interface ConfigWritePayload {
   key: string;
+  /**
+   * Deliberately `unknown`, not `string | boolean`.
+   *
+   * `app_config.value` is JSONB and the allow-list now admits `object` keys —
+   * the announcement banner is one. Narrowing this to two primitives is what
+   * made the banner's editor unable to express its own payload without a cast.
+   * The legal shapes are decided by the shared allow-list
+   * (`src/shared/configKeys.ts`), which the server also enforces.
+   */
   value: unknown;
 }
 
@@ -106,6 +127,16 @@ export interface AdminActionResult {
   recoverable?: boolean;
   applied?: number;
   failed?: { id: string; field: string; reason: string }[];
+  /**
+   * The parsed response body, for actions that return structured detail the
+   * message cannot carry — `system.selftest`'s per-step results, for instance.
+   *
+   * Deliberately `unknown`: this is a passthrough of whatever the function
+   * returned, and the caller that reads it is the one that knows the shape.
+   * Interpreting anything here would reintroduce the "200 that means nothing"
+   * problem this module exists to prevent.
+   */
+  data?: unknown;
 }
 
 const isStr = (v: unknown): v is string => typeof v === 'string';
@@ -154,7 +185,9 @@ export function interpretAdminResponse(status: number, body: unknown): AdminActi
     };
   }
 
-  if (status === 200) return { ok: true, outcome: 'applied', message: msg ?? 'Applied.' };
+  if (status === 200) {
+    return { ok: true, outcome: 'applied', message: msg ?? 'Applied.', data: b };
+  }
 
   if (status === 403) {
     return {

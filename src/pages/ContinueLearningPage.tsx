@@ -4,6 +4,7 @@ import { useLang } from '../hooks/useLang';
 import { useA1Path } from '../hooks/useA1Path';
 import { A1_CURRICULUM, A1_UNIT_COUNT } from '../data/a1Path';
 import { ANCHORS, anchorHref } from '../lib/anchors';
+import { resolvePushTarget } from '../lib/pushTarget';
 import { useReviewQueue } from '../hooks/useReviewQueue';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { useAuth } from '../hooks/useAuth';
@@ -113,18 +114,16 @@ export function ContinueLearningPage() {
   const FREE_RESUME_EN = 'Continue learning';
   const FREE_RESUME_DE = 'Weiterlernen';
 
-  // PREMIUM: Resume ALWAYS continues the campaign. It used to jump to
+  // Resume ALWAYS continues the campaign. It used to jump to
   // /dashboard#review-queue whenever anything was due, which meant standing on
-  // the spine threw you OUT of the spine — the one page whose entire job is
+  // the spine threw you OUT of the spine - the one page whose entire job is
   // "here is your next step in the course". Due reviews are still surfaced, as
   // a secondary chip, but the primary action here is the next node.
   //
-  // No push node means the whole level is finished, so the honest target is the
-  // LEVEL GRID ("here is what else there is") — not this same page, which a
-  // self-link would make a dead button.
-  const resumePath = nextNode?.to ?? CEFR_LEVELS_ROUTE;
-  const resumeLabelEn = nextNode ? `Next: ${nextNode.label.en}` : 'All levels';
-  const resumeLabelDe = nextNode ? `Weiter: ${nextNode.label.de}` : 'Alle Niveaus';
+  // The finished case comes from `resolvePushTarget`, which Home uses too: no push
+  // node means the level is done, and the honest target is the CEFR level grid -
+  // not this same page, which a self-link would make a dead button.
+  const resume = resolvePushTarget(nextNode, isDE);
 
   // "You are here" — the band the push node lives in, plus its gate best score.
   const youAreHere = (() => {
@@ -300,10 +299,10 @@ export function ContinueLearningPage() {
             </Link>
           )}
           <Link
-            to={resumePath}
+            to={resume.to}
             className={`${theme.button.primary} min-w-[160px] text-center inline-flex items-center justify-center`}
           >
-            {isDE ? resumeLabelDe : resumeLabelEn} →
+            {resume.label} →
           </Link>
         </div>
       </header>

@@ -17,16 +17,59 @@
     "de": "Trennbare Verbpräfixe abtrennen, ans Satzende setzen, Tagesabläufe beschreiben."
   },
   "nodes": [
-    { "id": "m09-learn", "kind": "learn", "label": { "en": "Separable Verbs", "de": "Trennbare Verben" }, "to": "/sentence-builder?focus=separable", "xp": 10 },
-    { "id": "m09-practice", "kind": "practice", "label": { "en": "Prefix Drill", "de": "Präfix-Drill" }, "to": "/grammar?tab=prefix", "xp": 20 },
-    { "id": "m09-checkpoint", "kind": "checkpoint", "label": { "en": "Module 9 Checkpoint", "de": "Modul 9 Prüfung" } }
+    {
+      "id": "m09-learn",
+      "kind": "learn",
+      "label": {
+        "en": "Separable Verbs",
+        "de": "Trennbare Verben"
+      },
+      "to": "/lesson/8",
+      "xp": 10
+    },
+    {
+      "id": "m09-practice",
+      "kind": "practice",
+      "label": {
+        "en": "Separable Verb Builder",
+        "de": "Trennbare-Verben-Baukasten"
+      },
+      "to": "/grammar?tab=prefix",
+      "xp": 20
+    },
+    {
+      "id": "m09-checkpoint",
+      "kind": "checkpoint",
+      "label": {
+        "en": "Module 9 Checkpoint",
+        "de": "Modul 9 Prüfung"
+      }
+    },
+    {
+      "id": "m09-tool",
+      "kind": "bonus",
+      "label": {
+        "en": "Separable Verb Builder",
+        "de": "Trennbare-Verben-Baukasten"
+      },
+      "to": "/sentence-builder?focus=separable"
+    }
   ],
   "checkpoint": {
     "moduleType": "a1-checkpoint",
     "specs": [
-      { "type": "grammar-drill", "count": 6 },
-      { "type": "word-order", "count": 3 },
-      { "type": "vocab-translation", "count": 3 }
+      {
+        "type": "grammar-drill",
+        "count": 6
+      },
+      {
+        "type": "word-order",
+        "count": 3
+      },
+      {
+        "type": "vocab-translation",
+        "count": 3
+      }
     ]
   },
   "pedagogy": {
@@ -40,15 +83,85 @@
         "de": "Satzklammer-Struktur"
       },
       "rows": [
-        { "label": { "en": "Ich", "de": "Ich" }, "usage": { "en": "Subject", "de": "Subjekt" }, "example": { "en": "Ich stehe jeden Morgen um 6 Uhr auf.", "de": "Ich stehe jeden Morgen um 6 Uhr auf." } },
-        { "label": { "en": "Wir", "de": "Wir" }, "usage": { "en": "Subject", "de": "Subjekt" }, "example": { "en": "Wir kaufen heute im Supermarkt ein.", "de": "Wir kaufen heute im Supermarkt ein." } },
-        { "label": { "en": "Er", "de": "Er" }, "usage": { "en": "Subject", "de": "Subjekt" }, "example": { "en": "Er ruft seine Mutter an.", "de": "Er ruft seine Mutter an." } },
-        { "label": { "en": "Das Fest", "de": "Das Fest" }, "usage": { "en": "Subject", "de": "Subjekt" }, "example": { "en": "Das Fest fängt um 20 Uhr an.", "de": "Das Fest fängt um 20 Uhr an." } },
-        { "label": { "en": "Räumst du", "de": "Räumst du" }, "usage": { "en": "Question form", "de": "Frageform" }, "example": { "en": "Räumst du bitte dein Zimmer auf?", "de": "Räumst du bitte dein Zimmer auf?" } }
+        {
+          "label": {
+            "en": "Ich",
+            "de": "Ich"
+          },
+          "usage": {
+            "en": "Subject",
+            "de": "Subjekt"
+          },
+          "example": {
+            "en": "Ich stehe jeden Morgen um 6 Uhr auf.",
+            "de": "Ich stehe jeden Morgen um 6 Uhr auf."
+          }
+        },
+        {
+          "label": {
+            "en": "Wir",
+            "de": "Wir"
+          },
+          "usage": {
+            "en": "Subject",
+            "de": "Subjekt"
+          },
+          "example": {
+            "en": "Wir kaufen heute im Supermarkt ein.",
+            "de": "Wir kaufen heute im Supermarkt ein."
+          }
+        },
+        {
+          "label": {
+            "en": "Er",
+            "de": "Er"
+          },
+          "usage": {
+            "en": "Subject",
+            "de": "Subjekt"
+          },
+          "example": {
+            "en": "Er ruft seine Mutter an.",
+            "de": "Er ruft seine Mutter an."
+          }
+        },
+        {
+          "label": {
+            "en": "Das Fest",
+            "de": "Das Fest"
+          },
+          "usage": {
+            "en": "Subject",
+            "de": "Subjekt"
+          },
+          "example": {
+            "en": "Das Fest fängt um 20 Uhr an.",
+            "de": "Das Fest fängt um 20 Uhr an."
+          }
+        },
+        {
+          "label": {
+            "en": "Räumst du",
+            "de": "Räumst du"
+          },
+          "usage": {
+            "en": "Question form",
+            "de": "Frageform"
+          },
+          "example": {
+            "en": "Räumst du bitte dein Zimmer auf?",
+            "de": "Räumst du bitte dein Zimmer auf?"
+          }
+        }
       ]
     }
   },
-  "vocabCategories": ["daily-routine", "action-verbs"],
-  "grammarCategories": ["wordOrder"],
+  "vocabCategories": [
+    "daily-routine",
+    "action-verbs"
+  ],
+  "grammarCategories": [
+    "wordOrder"
+  ],
   "hasLesson": true
 }

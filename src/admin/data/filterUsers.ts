@@ -13,6 +13,7 @@
  */
 
 import type { AdminUserRow } from './users';
+import { windowStartIso } from './dayMath';
 
 export type PlanFilter = 'all' | 'free' | 'premium';
 export type RoleFilter = 'all' | 'user' | 'admin';
@@ -40,10 +41,16 @@ export const DEFAULT_FILTERS: UserFilters = {
 /** A learner is "active" if they touched the app in the last 7 days. */
 const ACTIVE_WINDOW_DAYS = 7;
 
-function daysAgo(n: number): string {
-  const d = new Date();
-  d.setUTCDate(d.getUTCDate() - n);
-  return d.toISOString().slice(0, 10);
+/**
+ * The oldest activity date that counts as "active".
+ *
+ * `windowStartIso`, NOT `isoDaysAgo(7)`. The bound is inclusive, so starting at
+ * seven days back admits EIGHT calendar days — the "Active (7d)" filter was a
+ * filter for eight. This is the same off-by-one the dashboard's `active7d`
+ * carried, and it now has one definition.
+ */
+export function activeWindowStart(now: Date = new Date()): string {
+  return windowStartIso(ACTIVE_WINDOW_DAYS, now);
 }
 
 /**
@@ -169,7 +176,7 @@ export interface ApplyResult {
 export function filterUsers(
   rows: AdminUserRow[],
   filters: UserFilters,
-  from: string = daysAgo(ACTIVE_WINDOW_DAYS)
+  from: string = activeWindowStart()
 ): ApplyResult {
   const matched = rows.filter(
     (row) =>

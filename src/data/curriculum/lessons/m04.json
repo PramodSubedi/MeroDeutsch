@@ -908,5 +908,990 @@
         "de": ""
       }
     }
-  ]
+  ],
+  "steps": [
+    {
+      "type": "intro",
+      "objectives": {
+        "en": [
+          "Name core family members in German",
+          "Use possessive pronouns 'mein' (my) and 'dein' (your)",
+          "Distinguish masculine/neuter possessives from feminine/plural forms (-e ending)"
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "der Vater",
+        "en": "father",
+        "ne": "बुबा",
+        "examples": [
+          {
+            "de": "Das ist mein Vater.",
+            "en": "That is my father."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "die Mutter",
+        "en": "mother",
+        "ne": "आमा",
+        "examples": [
+          {
+            "de": "Das ist meine Mutter.",
+            "en": "That is my mother."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "das Kind",
+        "en": "child",
+        "ne": "बच्चा",
+        "examples": [
+          {
+            "de": "Das ist mein Kind.",
+            "en": "That is my child."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "die Eltern",
+        "en": "parents",
+        "ne": "अभिभावक",
+        "examples": [
+          {
+            "de": "Das sind meine Eltern.",
+            "en": "Those are my parents."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "explain",
+      "title": {
+        "en": "Possessive Pronouns: 'mein' vs. 'meine'"
+      },
+      "body": "Possessives change ending based on the noun gender:\n\n- **Masculine / Neuter**: **mein** Vater, **mein** Kind (no ending).\n- **Feminine / Plural**: **meine** Mutter, **meine** Eltern (adds **-e**).\n\nSame for 'dein' (your):\n- **dein** Vater / **deine** Mutter."
+    },
+    {
+      "type": "typed",
+      "ask": "fill-blank",
+      "prompt": "Das ist ___ (my) Vater.",
+      "answer": "mein",
+      "accepted": [
+        "mein"
+      ],
+      "note": "Vater is masculine -> mein"
+    },
+    {
+      "type": "typed",
+      "ask": "fill-blank",
+      "prompt": "Das ist ___ (my) Mutter.",
+      "answer": "meine",
+      "accepted": [
+        "meine"
+      ],
+      "note": "Mutter is feminine -> meine"
+    },
+    {
+      "type": "mcq",
+      "prompt": "Which form goes with 'das Kind' (neuter)?",
+      "options": [
+        "mein",
+        "meine",
+        "meinen"
+      ],
+      "answer": "mein",
+      "hintReason": "Neuter nouns take 'mein' with no ending."
+    },
+    {
+      "type": "match",
+      "pairs": [
+        {
+          "id": "0",
+          "de": "der Vater",
+          "en": "father"
+        },
+        {
+          "id": "1",
+          "de": "die Mutter",
+          "en": "mother"
+        },
+        {
+          "id": "2",
+          "de": "das Kind",
+          "en": "child"
+        },
+        {
+          "id": "3",
+          "de": "die Eltern",
+          "en": "parents"
+        }
+      ],
+      "columnLabels": {
+        "left": "Deutsch",
+        "right": "English"
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "der Bruder",
+        "en": "brother",
+        "ne": "दाजु / भाइ",
+        "examples": [
+          {
+            "de": "Mein Bruder ist nett.",
+            "en": "My brother is nice."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "die Schwester",
+        "en": "sister",
+        "ne": "दिदी / बहिनी",
+        "examples": [
+          {
+            "de": "Meine Schwester studiert.",
+            "en": "My sister studies."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "mcq",
+      "prompt": "Which possessive goes with 'die Schwester' (feminine)?",
+      "options": [
+        "meine",
+        "mein",
+        "meinen"
+      ],
+      "answer": "meine",
+      "hintReason": "Feminine takes 'meine'."
+    },
+    {
+      "type": "dialogue",
+      "title": {
+        "en": "Family Photo",
+        "de": "Das Familienfoto"
+      },
+      "turns": [
+        {
+          "speaker": "Anna",
+          "de": "Wer ist das?",
+          "en": "Who is that?"
+        },
+        {
+          "speaker": "Ben",
+          "de": "Das ist mein Bruder Thomas.",
+          "en": "That is my brother Thomas."
+        },
+        {
+          "speaker": "Anna",
+          "de": "Und wer ist das?",
+          "en": "And who is that?"
+        },
+        {
+          "speaker": "Ben",
+          "de": "Das ist meine Schwester Lisa.",
+          "en": "That is my sister Lisa."
+        }
+      ]
+    },
+    {
+      "type": "typed",
+      "ask": "translate-en-de",
+      "prompt": "This is my sister.",
+      "answer": "Das ist meine Schwester",
+      "accepted": [
+        "Das ist meine Schwester."
+      ],
+      "note": "Schwester is feminine -> meine."
+    },
+    {
+      "type": "arrange",
+      "prompt": "Order the family sentence:",
+      "tokens": [
+        "Das",
+        "ist",
+        "meine",
+        "Schwester."
+      ]
+    },
+    {
+      "type": "dictation",
+      "text": "Das ist mein Bruder.",
+      "instruction": "Listen and type what you hear."
+    },
+    {
+      "type": "culture",
+      "body": "Family names in German-speaking countries are often introduced with official titles in formal contexts (e.g., 'Herr Doktor Schmidt' or 'Frau Professor Weber')."
+    },
+    {
+      "type": "typed",
+      "ask": "correct",
+      "prompt": "Das ist mein Mutter.",
+      "answer": "Das ist meine Mutter",
+      "accepted": [
+        "Das ist meine Mutter."
+      ],
+      "note": "Mutter is feminine -> meine."
+    },
+    {
+      "type": "mcq",
+      "prompt": "What is the plural of 'das Kind'?",
+      "options": [
+        "die Kinder",
+        "die Kindes",
+        "die Kindenn"
+      ],
+      "answer": "die Kinder",
+      "hintReason": "The plural of Kind is Kinder."
+    },
+    {
+      "type": "mcq",
+      "prompt": "How do you say 'my father' in German?",
+      "options": [
+        "mein Vater",
+        "meine Vater",
+        "meinen Vater"
+      ],
+      "answer": "mein Vater",
+      "hintReason": "Vater is masculine -> mein Vater."
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Familie",
+        "en": "Family",
+        "ne": "परिवार",
+        "article": "die",
+        "plural": "Familien",
+        "ipa": "/faˈmiːli̯ə/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Meine Familie lebt in Nepal.",
+            "en": "My family lives in Nepal.",
+            "ne": "मेरो परिवार नेपालमा बस्छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Vater",
+        "en": "Father",
+        "ne": "बुबा",
+        "article": "der",
+        "plural": "Väter",
+        "ipa": "/ˈfaːtɐ/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Mein Vater ist 55 Jahre alt.",
+            "en": "My father is 55 years old.",
+            "ne": "मेरो बुबा ५५ वर्षको हुनुभयो।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Mutter",
+        "en": "Mother",
+        "ne": "आमा",
+        "article": "die",
+        "plural": "Mütter",
+        "ipa": "/ˈmʊtɐ/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Meine Mutter kocht lecker.",
+            "en": "My mother cooks delicious food.",
+            "ne": "मेरो आमा मीठो खाना पकाउनुहुन्छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Eltern",
+        "en": "Parents",
+        "ne": "आमाबुबा",
+        "article": "die",
+        "plural": "-",
+        "ipa": "/ˈʔɛltɐn/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Meine Eltern wohnen in Kathmandu.",
+            "en": "My parents live in Kathmandu.",
+            "ne": "मेरो आमाबुबा काठमाडौँमा बस्नुहुन्छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Sohn",
+        "en": "Son",
+        "ne": "छोरा",
+        "article": "der",
+        "plural": "Söhne",
+        "ipa": "/zoːn/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Wir haben einen Sohn.",
+            "en": "We have a son.",
+            "ne": "हाम्रो एउटा छोरा छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Tochter",
+        "en": "Daughter",
+        "ne": "छोरी",
+        "article": "die",
+        "plural": "Töchter",
+        "ipa": "/ˈtɔxtɐ/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Meine Tochter geht in die Schule.",
+            "en": "My daughter goes to school.",
+            "ne": "मेरो छोरी विद्यालय जान्छन्।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Kind",
+        "en": "Child",
+        "ne": "बच्चा",
+        "article": "das",
+        "plural": "Kinder",
+        "ipa": "/kɪnt/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Das Kind spielt.",
+            "en": "The child is playing.",
+            "ne": "बच्चा खेलिरहेको छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Bruder",
+        "en": "Brother",
+        "ne": "दाजु / भाइ",
+        "article": "der",
+        "plural": "Brüder",
+        "ipa": "/ˈbʁuːdɐ/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Mein Bruder studiert in Deutschland.",
+            "en": "My brother studies in Germany.",
+            "ne": "मेरो भाइ जर्मनमा पढ्दैछ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Schwester",
+        "en": "Sister",
+        "ne": "दिदी / बहिनी",
+        "article": "die",
+        "plural": "Schwestern",
+        "ipa": "/ˈʃvɛstɐ/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Meine Schwester ist verheiratet.",
+            "en": "My sister is married.",
+            "ne": "मेरो दिदीको विवाह भइसकेको छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Geschwister",
+        "en": "Siblings",
+        "ne": "दाजुभाइ दिदीबहिनी",
+        "article": "die",
+        "plural": "-",
+        "ipa": "/ɡəˈʃvɪstɐ/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Hast du Geschwister?",
+            "en": "Do you have siblings?",
+            "ne": "तिम्रा दाजुभाइ दिदीबहिनी छन्?"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Großvater / Opa",
+        "en": "Grandfather / Grandpa",
+        "ne": "हजुरबुबा",
+        "article": "der",
+        "plural": "Großväter / Opas",
+        "ipa": "/ˈɡʁoːsˌfaːtɐ/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Mein Opa ist sehr nett.",
+            "en": "My grandpa is very nice.",
+            "ne": "मेरो हजुरबुबा धेरै राम्रो हुनुहुन्छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Großmutter / Oma",
+        "en": "Grandmother / Grandma",
+        "ne": "हजुरआमा",
+        "article": "die",
+        "plural": "Großmütter / Omas",
+        "ipa": "/ˈɡʁoːsˌmʊtɐ/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Meine Oma backt Kuchen.",
+            "en": "My grandma bakes cake.",
+            "ne": "मेरो हजुरआमा केक बनाउनुहुन्छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Großeltern",
+        "en": "Grandparents",
+        "ne": "हजुरबुबा हजुरआमा",
+        "article": "die",
+        "plural": "-",
+        "ipa": "/ˈɡʁoːsˌʔɛltɐn/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Meine Großeltern leben auf dem Land.",
+            "en": "My grandparents live in the countryside.",
+            "ne": "मेरो हजुरबुबा हजुरआमा गाउँमा बस्नुहुन्छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Mann / Ehemann",
+        "en": "Husband / Man",
+        "ne": "श्रीमान् / पुरुष",
+        "article": "der",
+        "plural": "Männer / Ehemänner",
+        "ipa": "/man/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Das ist mein Ehemann.",
+            "en": "This is my husband.",
+            "ne": "उहाँ मेरो श्रीमान् हुनुहुन्छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Frau / Ehefrau",
+        "en": "Wife / Woman",
+        "ne": "श्रीमती / महिला",
+        "article": "die",
+        "plural": "Frauen / Ehefrauen",
+        "ipa": "/fʁaʊ̯/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Meine Ehefrau heißt Anita.",
+            "en": "My wife is named Anita.",
+            "ne": "मेरो श्रीमतीको नाम अनिता हो।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Baby",
+        "en": "Baby",
+        "ne": "शिशु",
+        "article": "das",
+        "plural": "Babys",
+        "ipa": "/ˈbeːbi/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Das Baby schläft ruhig.",
+            "en": "The baby sleeps quietly.",
+            "ne": "शिशु शान्त भई सुतिरहेको छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Onkel",
+        "en": "Uncle",
+        "ne": "काका / मामा",
+        "article": "der",
+        "plural": "Onkel",
+        "ipa": "/ˈɔŋkl̩/",
+        "frequency": "passive",
+        "examples": [
+          {
+            "de": "Mein Onkel wohnt in Wien.",
+            "en": "My uncle lives in Vienna.",
+            "ne": "मेरो मामा भिएन्नामा बस्नुहुन्छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Tante",
+        "en": "Aunt",
+        "ne": "काकी / फुपु / माइजु",
+        "article": "die",
+        "plural": "Tanten",
+        "ipa": "/ˈtantə/",
+        "frequency": "passive",
+        "examples": [
+          {
+            "de": "Meine Tante besucht uns.",
+            "en": "My aunt is visiting us.",
+            "ne": "मेरो काकी हामीलाई भेट्न आउँदै हुनुहुन्छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Cousin",
+        "en": "Male cousin",
+        "ne": "काकाको / मामाको छोरा",
+        "article": "der",
+        "plural": "Cousins",
+        "ipa": "/kuˈzɛ̃ː/",
+        "frequency": "passive",
+        "examples": [
+          {
+            "de": "Mein Cousin kommt morgen.",
+            "en": "My cousin is coming tomorrow.",
+            "ne": "मेरो भाइ भोलि आउँदैछ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Neffe",
+        "en": "Nephew",
+        "ne": "भान्जा / भतिजा",
+        "article": "der",
+        "plural": "Neffen",
+        "ipa": "/ˈnɛfə/",
+        "frequency": "passive",
+        "examples": [
+          {
+            "de": "Mein Neffe ist drei Jahre alt.",
+            "en": "My nephew is three years old.",
+            "ne": "मेरो भतिजा तीन वर्षको भयो।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Nichte",
+        "en": "Niece",
+        "ne": "भान्जी / भतिजी",
+        "article": "die",
+        "plural": "Nichten",
+        "ipa": "/ˈnɪçtə/",
+        "frequency": "passive",
+        "examples": [
+          {
+            "de": "Meine Nichte malt ein Bild.",
+            "en": "My niece is painting a picture.",
+            "ne": "मेरो भतिजी चित्र बनाउँदैछ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "verheiratet",
+        "en": "Married",
+        "ne": "विवाहित",
+        "plural": "-",
+        "ipa": "/fɛɐ̯ˈhaɪ̯ʁaːtət/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Sind Sie verheiratet?",
+            "en": "Are you married?",
+            "ne": "तपाईं विवाहित हुनुहुन्छ?"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "ledig",
+        "en": "Single / Unmarried",
+        "ne": "अविवाहित",
+        "plural": "-",
+        "ipa": "/ˈleːdɪç/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Ich bin noch ledig.",
+            "en": "I am still single.",
+            "ne": "मेरो विवाह भएको छैन।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "geschieden",
+        "en": "Divorced",
+        "ne": "पारपाचुके भएको",
+        "plural": "-",
+        "ipa": "/ɡəˈʃiːdn̩/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Er ist geschieden.",
+            "en": "He is divorced.",
+            "ne": "उहाँको पारपाचुके भएको छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "verwitwet",
+        "en": "Widowed",
+        "ne": "एकल (विधवा/विधुर)",
+        "plural": "-",
+        "ipa": "/fɛɐ̯ˈvɪtvət/",
+        "frequency": "passive",
+        "examples": [
+          {
+            "de": "Sie ist seit zwei Jahren verwitwet.",
+            "en": "She has been widowed for two years.",
+            "ne": "उहाँ दुई वर्षदेखि एकल हुनुहुन्छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "zusammen",
+        "en": "Together",
+        "ne": "सँगै",
+        "plural": "-",
+        "ipa": "/tsuˈzamən/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Wir leben zusammen in Berlin.",
+            "en": "We live together in Berlin.",
+            "ne": "हामी बर्लिनमा सँगै बस्छौँ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "allein / single",
+        "en": "Alone / Single",
+        "ne": "एकलै",
+        "plural": "-",
+        "ipa": "/aˈlaɪ̯n/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Ich wohne allein.",
+            "en": "I live alone.",
+            "ne": "म एकलै बस्छु।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Partner",
+        "en": "Partner (male)",
+        "ne": "जोडी / साझेदार",
+        "article": "der",
+        "plural": "Partner",
+        "ipa": "/ˈpaʁtnɐ/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Das ist mein Partner.",
+            "en": "This is my partner.",
+            "ne": "उहाँ मेरो जोडी हुनुहुन्छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Partnerin",
+        "en": "Partner (female)",
+        "ne": "जोडी (महिला)",
+        "article": "die",
+        "plural": "Partnerinnen",
+        "ipa": "/ˈpaʁtnəʁɪn/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Das ist meine Partnerin.",
+            "en": "This is my partner.",
+            "ne": "उहाँ मेरो जोडी हुनुहुन्छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Freund",
+        "en": "Boyfriend / Male friend",
+        "ne": "साथी / प्रेमी",
+        "article": "der",
+        "plural": "Freunde",
+        "ipa": "/fʁɔɪ̯nt/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Mein Freund heißt Lukas.",
+            "en": "My boyfriend is named Lukas.",
+            "ne": "मेरो साथीको नाम लुकास हो।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Freundin",
+        "en": "Girlfriend / Female friend",
+        "ne": "साथी / प्रेमिका",
+        "article": "die",
+        "plural": "Freundinnen",
+        "ipa": "/ˈfʁɔɪ̯ndɪn/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Meine Freundin kommt heute.",
+            "en": "My girlfriend is coming today.",
+            "ne": "मेरो साथी आज आउँदैछ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Herr",
+        "en": "Gentleman / Mr.",
+        "ne": "श्रीमान्",
+        "article": "der",
+        "plural": "Herren",
+        "ipa": "/hɛʁ/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Ist Herr Müller da?",
+            "en": "Is Mr. Müller there?",
+            "ne": "श्रीमान् मुलर हुनुहुन्छ?"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Frau",
+        "en": "Lady / Mrs. / Wife",
+        "ne": "श्रीमती / महिला",
+        "article": "die",
+        "plural": "Frauen",
+        "ipa": "/fʁaʊ̯/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Frau Schmidt ist Lehrerin.",
+            "en": "Mrs. Schmidt is a teacher.",
+            "ne": "श्रीमती स्मिड शिक्षिका हुनुहुन्छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "mein / meine",
+        "en": "My (Masculine/Feminine)",
+        "ne": "मेरो",
+        "plural": "-",
+        "ipa": "/maɪ̯n/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Das ist mein Vater und meine Mutter.",
+            "en": "This is my father and my mother.",
+            "ne": "उहाँ मेरो बुबा र मेरो आमा हुनुहुन्छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "dein / deine",
+        "en": "Your (informal)",
+        "ne": "तिम्रो",
+        "plural": "-",
+        "ipa": "/daɪ̯n/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Ist das dein Bruder?",
+            "en": "Is that your brother?",
+            "ne": "उनी तिम्रा भाइ हुन्?"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "sein / seine",
+        "en": "His",
+        "ne": "उहाँको / उसको",
+        "plural": "-",
+        "ipa": "/zaɪ̯n/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Seine Schwester wohnt hier.",
+            "en": "His sister lives here.",
+            "ne": "उहाँको बहिनी यहाँ बस्छिन्।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "ihr / ihre",
+        "en": "Her / Their",
+        "ne": "उनको / उनीहरूको",
+        "plural": "-",
+        "ipa": "/iːɐ̯/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Ihre Mutter kommt aus Nepal.",
+            "en": "Her mother comes from Nepal.",
+            "ne": "उनको आमा नेपालबाट आउनुभएको हो।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "unser / unsere",
+        "en": "Our",
+        "ne": "हाम्रो",
+        "plural": "-",
+        "ipa": "/ˈʊnzɐ/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Unser Haus ist klein.",
+            "en": "Our house is small.",
+            "ne": "हाम्रो घर सानो छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "summary"
+    }
+  ],
+  "stepsSource": "imported"
 }

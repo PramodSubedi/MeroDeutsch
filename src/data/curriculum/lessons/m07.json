@@ -479,11 +479,11 @@
     },
     {
       "kind": "V2 Slot",
-      "prompt": "In Berlin ________ (wohnen) meine Schwester."
+      "prompt": "In Berlin ________ (wohnen) meine Schwester. \\(\\rightarrow\\) wohnt"
     },
     {
       "kind": "V2 Slot",
-      "prompt": "Den Apfel ________ (essen) er gerne."
+      "prompt": "Den Apfel ________ (essen) er gerne. \\(\\rightarrow\\) isst"
     },
     {
       "kind": "TeKaMoLo",
@@ -596,5 +596,467 @@
       "V2 is not a style choice in German — it is a grammatical requirement. There is no colloquial way to put the subject back on position 1 after a time expression.",
       "XP Reward: 100 XP | Badge Unlocked: 🧭 Word Order Navigator"
     ]
-  }
+  },
+  "steps": [
+    {
+      "type": "intro",
+      "objectives": {
+        "en": [
+          "Master the strict Verb-Second (V2) rule in German main clauses",
+          "Apply adverbial inversion when starting a sentence with time or place",
+          "Avoid common word order errors in German sentence construction"
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "heute",
+        "en": "today",
+        "ne": "आज",
+        "examples": [
+          {
+            "de": "Heute ist Montag.",
+            "en": "Today is Monday."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "morgen",
+        "en": "tomorrow",
+        "ne": "भोलि",
+        "examples": [
+          {
+            "de": "Morgen lerne ich.",
+            "en": "Tomorrow I study."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "jetzt",
+        "en": "now",
+        "ne": "अहिले",
+        "examples": [
+          {
+            "de": "Jetzt trinke ich Tee.",
+            "en": "Now I drink tea."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "explain",
+      "title": {
+        "en": "The Verb-Second (V2) Rule"
+      },
+      "body": "In a German declarative main clause, the **conjugated verb MUST occupy Position 2**.\n\nPosition 1 can be the Subject OR a Time/Place adverb:\n\n1. **Ich** [Pos 1] **trinke** [Pos 2 - VERB] heute Tee.\n2. **Heute** [Pos 1] **trinke** [Pos 2 - VERB] **ich** [Pos 3 - Subject] Tee.\n\nNotice how the verb stays second, pushing the subject to Position 3!"
+    },
+    {
+      "type": "trap",
+      "wrong": "Heute ich trinke Tee.",
+      "right": "Heute trinke ich Tee.",
+      "note": {
+        "en": "The conjugated verb must be in Position 2. When 'Heute' is in Position 1, the verb comes next!"
+      }
+    },
+    {
+      "type": "mcq",
+      "prompt": "Which sentence has the verb in the correct position?",
+      "options": [
+        "Heute lerne ich Deutsch.",
+        "Heute ich lerne Deutsch.",
+        "Ich heute lerne Deutsch."
+      ],
+      "answer": "Heute lerne ich Deutsch.",
+      "hintReason": "The conjugated verb 'lerne' must be in Position 2."
+    },
+    {
+      "type": "typed",
+      "ask": "correct",
+      "prompt": "Heute ich lerne Deutsch.",
+      "answer": "Heute lerne ich Deutsch",
+      "accepted": [
+        "Heute lerne ich Deutsch."
+      ],
+      "note": "Verb 'lerne' must be in Position 2."
+    },
+    {
+      "type": "typed",
+      "ask": "fill-blank",
+      "prompt": "Jetzt ___ ich Kaffee.",
+      "answer": "trinke",
+      "accepted": [
+        "trinke"
+      ],
+      "note": "Verb 'trinke' sits in Position 2"
+    },
+    {
+      "type": "match",
+      "pairs": [
+        {
+          "id": "0",
+          "de": "heute",
+          "en": "today"
+        },
+        {
+          "id": "1",
+          "de": "morgen",
+          "en": "tomorrow"
+        },
+        {
+          "id": "2",
+          "de": "jetzt",
+          "en": "now"
+        },
+        {
+          "id": "3",
+          "de": "immer",
+          "en": "always"
+        }
+      ],
+      "columnLabels": {
+        "left": "Deutsch",
+        "right": "English"
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "hier",
+        "en": "here",
+        "ne": "यहाँ",
+        "examples": [
+          {
+            "de": "Hier wohne ich.",
+            "en": "Here I live."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "dort",
+        "en": "there",
+        "ne": "त्यहाँ",
+        "examples": [
+          {
+            "de": "Dort arbeitet er.",
+            "en": "There he works."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "mcq",
+      "prompt": "Where does the verb go when 'Morgen' starts the sentence?",
+      "options": [
+        "Position 2",
+        "Position 1",
+        "Position 3"
+      ],
+      "answer": "Position 2",
+      "hintReason": "The conjugated verb is strictly in Position 2."
+    },
+    {
+      "type": "dialogue",
+      "title": {
+        "en": "Daily Schedule",
+        "de": "Tagesablauf"
+      },
+      "turns": [
+        {
+          "speaker": "Lisa",
+          "de": "Was machst du heute?",
+          "en": "What are you doing today?"
+        },
+        {
+          "speaker": "Ben",
+          "de": "Heute lerne ich Deutsch. Und morgen?",
+          "en": "Today I study German. And tomorrow?"
+        },
+        {
+          "speaker": "Lisa",
+          "de": "Morgen fahre ich nach Berlin.",
+          "en": "Tomorrow I go to Berlin."
+        }
+      ]
+    },
+    {
+      "type": "typed",
+      "ask": "translate-en-de",
+      "prompt": "Today I learn German.",
+      "answer": "Heute lerne ich Deutsch",
+      "accepted": [
+        "Heute lerne ich Deutsch."
+      ],
+      "note": "V2 inversion: Heute + lerne + ich"
+    },
+    {
+      "type": "arrange",
+      "prompt": "Build the inverted V2 sentence:",
+      "tokens": [
+        "Heute",
+        "trinke",
+        "ich",
+        "Tee."
+      ]
+    },
+    {
+      "type": "dictation",
+      "text": "Heute lerne ich Deutsch.",
+      "instruction": "Listen and type what you hear."
+    },
+    {
+      "type": "culture",
+      "body": "German syntax values clarity and structure. Emphasizing time or place at the start of a sentence is very common in spoken and written German!"
+    },
+    {
+      "type": "typed",
+      "ask": "short-answer",
+      "prompt": "In a main clause, which position must the conjugated verb occupy?",
+      "answer": "2",
+      "accepted": [
+        "2",
+        "Position 2",
+        "second",
+        "second position"
+      ],
+      "note": "The conjugated verb is strictly in Position 2."
+    },
+    {
+      "type": "mcq",
+      "prompt": "What happens to the subject when an adverb starts the sentence?",
+      "options": [
+        "It moves to Position 3 (after the verb).",
+        "It stays in Position 1.",
+        "It moves to the end of the sentence."
+      ],
+      "answer": "It moves to Position 3 (after the verb).",
+      "hintReason": "Inversion flips Subject and Verb around Position 2."
+    },
+    {
+      "type": "typed",
+      "ask": "fill-blank",
+      "prompt": "Morgen ___ (go/travel) ich nach Berlin.",
+      "answer": "fahre",
+      "accepted": [
+        "fahre"
+      ],
+      "note": "fahre sits in Position 2"
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Wortstellung",
+        "en": "Word order",
+        "ne": "शब्द क्रम",
+        "article": "die",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "Die Wortstellung ist wichtig.",
+            "en": "Word order is important.",
+            "ne": "शब्द क्रम महत्त्वपूर्ण छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Satz",
+        "en": "Sentence",
+        "ne": "वाक्य",
+        "article": "der",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "Der Satz ist richtig.",
+            "en": "The sentence is correct.",
+            "ne": "वाक्य मिल्नेको छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Satzbau",
+        "en": "Sentence structure",
+        "ne": "वाक्य संरचना",
+        "article": "der",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "Der Satzbau ist einfach.",
+            "en": "The sentence structure is simple.",
+            "ne": "वाक्य संरचना सरल छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Verb",
+        "en": "Verb",
+        "ne": "क्रियापद",
+        "article": "das",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "Das Verb steht auf Position 2.",
+            "en": "The verb stands in position 2.",
+            "ne": "क्रिया स्थान २ मा हुन्छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Subjekt",
+        "en": "Subject",
+        "ne": "कर्ता",
+        "article": "das",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "Das Subjekt steht auf Position 1 oder 3.",
+            "en": "The subject stands in position 1 or 3.",
+            "ne": "कर्ता स्थान १ वा ३ मा हुन्छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Inversion",
+        "en": "Inversion",
+        "ne": "उलटो क्रम",
+        "article": "die",
+        "partOfSpeech": "Noun",
+        "examples": [
+          {
+            "de": "Heute ist Montag. Das ist eine Inversion.",
+            "en": "Today is Monday. That is an inversion.",
+            "ne": "आज सोमबार हो। यो उलटो क्रम हो।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "gestern",
+        "en": "yesterday",
+        "ne": "हिजो",
+        "partOfSpeech": "Adverb",
+        "examples": [
+          {
+            "de": "Gestern war ich müde.",
+            "en": "Yesterday I was tired.",
+            "ne": "हिजो म थकित थिएँ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "in der Nacht",
+        "en": "at night",
+        "ne": "राति",
+        "partOfSpeech": "Phrase",
+        "examples": [
+          {
+            "de": "In der Nacht schlafe ich.",
+            "en": "At night I sleep.",
+            "ne": "राति म सुत्छु।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "am Morgen",
+        "en": "in the morning",
+        "ne": "बिहानपख",
+        "partOfSpeech": "Phrase",
+        "examples": [
+          {
+            "de": "Am Morgen trinke ich Kaffee.",
+            "en": "In the morning I drink coffee.",
+            "ne": "बिहानपख म कफी पिउँछु।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "im Park",
+        "en": "in the park",
+        "ne": "पार्कमा",
+        "partOfSpeech": "Phrase",
+        "examples": [
+          {
+            "de": "Im Park spiele ich Fußball.",
+            "en": "In the park I play football.",
+            "ne": "पार्कमा म फुटबल खेल्छु।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "in Berlin",
+        "en": "in Berlin",
+        "ne": "बर्लिनमा",
+        "partOfSpeech": "Phrase",
+        "examples": [
+          {
+            "de": "In Berlin wohnt meine Schwester.",
+            "en": "In Berlin my sister lives.",
+            "ne": "बर्लिनमा मेरो दिदि बस्छिन्।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "TeKaMoLo",
+        "en": "Time–Cause–Manner–Location adverbial order",
+        "ne": "समय–कारण–तरिका–स्थान क्रम",
+        "partOfSpeech": "Phrase",
+        "examples": [
+          {
+            "de": "Heute fahre ich mit dem Bus in die Stadt.",
+            "en": "Today I take the bus into town.",
+            "ne": "आज म बसले सहरमा जान्छु।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "summary"
+    }
+  ],
+  "stepsSource": "imported"
 }

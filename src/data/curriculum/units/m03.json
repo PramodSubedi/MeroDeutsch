@@ -24,14 +24,14 @@
         "en": "Alphabet & Spelling",
         "de": "Alphabet & Buchstabieren"
       },
-      "to": "/alphabet"
+      "to": "/lesson/2"
     },
     {
       "id": "m03-pronunciation",
       "kind": "practice",
       "label": {
-        "en": "Pronunciation",
-        "de": "Aussprache"
+        "en": "Alphabet Practice",
+        "de": "Alphabetübungen"
       },
       "to": "/pronunciation"
     },
@@ -43,6 +43,15 @@
         "de": "Modul 3 Prüfung"
       },
       "to": "/checkpoint/2"
+    },
+    {
+      "id": "m03-tool",
+      "kind": "bonus",
+      "label": {
+        "en": "Alphabet Practice",
+        "de": "Alphabetübungen"
+      },
+      "to": "/alphabet"
     }
   ],
   "bonus": [

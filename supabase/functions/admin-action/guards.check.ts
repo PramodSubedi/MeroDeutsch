@@ -10,7 +10,22 @@
  *
  * A guard with no test is a guard that does not exist.
  */
-import { evaluateAction, hasReason, requiresTarget, isKnownAction, validateRepair, REPAIR_FIELDS, REPAIR_COLUMNS, type ActionRequest, type Actor, type TargetUser } from './guards';
+import { readFileSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import {
+  evaluateAction,
+  hasReason,
+  requiresTarget,
+  isKnownAction,
+  isReadOnlyAction,
+  validateRepair,
+  REPAIR_FIELDS,
+  REPAIR_COLUMNS,
+  type ActionRequest,
+  type Actor,
+  type TargetUser,
+} from './guards';
 
 let checks = 0;
 const failures: string[] = [];
@@ -173,6 +188,50 @@ console.log('\n=== 13. NO UNIMPLEMENTED ACTION IS ALLOWED BY THE GUARD ===');
 for (const a of ['config.set', 'unit.publish', 'vocab.clear_flag'] as const) {
   check(`${a} is a KNOWN action (passes membership)`, isKnownAction(a));
   check(`${a} is guarded for a non-admin`, evaluateAction(req({ action: a, target: undefined, actor: { ...ADMIN, role: 'user' } })).allowed === false);
+}
+
+console.log('\n=== 14. THE SELF-TEST IS REAL, AND THE MIRRORED ACTION UNION AGREES ===');
+// `system.selftest` exists so an operator can prove the privilege boundary is
+// REACHABLE without performing a privileged write. Every call made so far
+// returned 401, which proves the auth wall and nothing else — and a deployment
+// that 401s looks exactly like one that would have worked.
+//
+// It must therefore be: recognised (so the unknown-action guard is exercised
+// honestly), guarded like everything else (so it is not a privilege hole), and
+// read-only (so running it changes nothing an operator has to reason about).
+const BANNED_ADMIN = { ...ADMIN, banned: true };
+const selfTest = (actor: typeof ADMIN | typeof BANNED_ADMIN) =>
+  evaluateAction(req({ action: 'system.selftest', target: undefined, actor }));
+
+check('system.selftest is a KNOWN action', isKnownAction('system.selftest'));
+check('system.selftest is read-only', isReadOnlyAction('system.selftest'));
+check('system.selftest is allowed for an admin', selfTest(ADMIN).allowed);
+check('system.selftest is refused for a non-admin', selfTest({ ...ADMIN, role: 'user' }).allowed === false);
+check('system.selftest is refused for a SUSPENDED admin', selfTest(BANNED_ADMIN).allowed === false);
+check('system.selftest needs no target', requiresTarget('system.selftest') === false);
+// A read-only action the guard would let a LEARNER run is a privilege hole with
+// a friendly name, so the property is asserted per action, not assumed.
+for (const a of ['user.ban', 'user.unban', 'user.demote', 'user.promote', 'vocab.repair', 'config.set', 'unit.publish', 'unit.rollback', 'unit.save', 'system.selftest'] as const) {
+  check(`${a} is refused for a non-admin`, evaluateAction(req({ action: a, target: undefined, actor: { ...ADMIN, role: 'user' } })).allowed === false);
+}
+// And none of the WRITE actions is mislabelled read-only, which would be the
+// inverse of the bug above.
+for (const a of ['user.ban', 'user.unban', 'user.demote', 'user.promote', 'vocab.repair', 'vocab.clear_flag', 'config.set', 'unit.publish', 'unit.rollback', 'unit.save'] as const) {
+  check(`${a} is NOT read-only`, isReadOnlyAction(a) === false);
+}
+
+// The client's `AdminActionName` is a hand-kept mirror of the union above, by
+// convention — the browser must not import Deno source. `vocab.clear_flag` had
+// already drifted (registered here, absent there), so the mirror is compared
+// rather than trusted.
+const CLIENT = readFileSync(
+  resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', '..', 'src', 'admin', 'data', 'adminActions.ts'),
+  'utf8',
+);
+const clientActions = [...CLIENT.matchAll(/^\s{2}\|\s*'([^']+)'/gm)].map((m) => m[1]);
+check('the client action mirror was found', clientActions.length > 0, `found ${clientActions.length}`);
+for (const a of ['user.ban', 'user.unban', 'user.demote', 'user.promote', 'vocab.repair', 'vocab.clear_flag', 'config.set', 'unit.publish', 'unit.rollback', 'unit.save', 'system.selftest']) {
+  check(`the client can send "${a}"`, clientActions.includes(a));
 }
 
 console.log(`\n${failures.length === 0 ? '[summary] ALL' : '[summary]'} ${checks} CHECKS ${failures.length === 0 ? 'PASSED' : `FAILED (${failures.length})`}`);

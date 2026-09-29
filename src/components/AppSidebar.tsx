@@ -171,10 +171,10 @@ export function AppSidebar({
   const { pathname } = useLocation();
   const { langMode } = useLang();
   const { isAuthenticated } = useAuth();
-  // Only the loading flag is read now. `hasCampaign` used to gate the
-  // waypoint and was dropped when `/learn` became the course for every tier —
-  // see the note above the <LearnerWaypoint /> call.
-  const { isLoading: campaignLoading } = useHasA1Campaign();
+  // The waypoint renders A1 campaign state, so it is gated on the same hook
+  // `ContinueLearningPage` branches on - see the note above the
+  // <LearnerWaypoint /> call for why this is the right call, not a tier leak.
+  const { hasCampaign, isLoading: campaignLoading } = useHasA1Campaign();
   const { dueQueue } = useReviewQueue();
   const isDE = langMode === 'german';
   const mobileDrawerRef = useRef<HTMLElement>(null);
@@ -218,10 +218,10 @@ export function AppSidebar({
   // the nav table, so the guest "Lessons" variant and the auth-gated Progress
   // row are handled by ONE place instead of branching per surface.
   const primaryRows: RailRow[] = getPrimaryNav(isAuthenticated).map((item) => ({
-    to: navTarget(item, isAuthenticated),
-    label: navLabel(item, isAuthenticated, isDE),
+    to: navTarget(item),
+    label: navLabel(item, isDE),
     icon: item.icon,
-    active: isNavActive(pathname, item, isAuthenticated),
+    active: isNavActive(pathname, item),
     countBadge: item.badge === 'due' ? dueCount : 0,
   }));
 
@@ -255,26 +255,26 @@ export function AppSidebar({
       {/* Learner waypoint — the A1 course waypoint: the module ring, the stage
           code, "Next: <node>" and a course percentage, linking into the spine.
 
-          THE `hasCampaign` GATE IS GONE, and it is now wrong to keep.
+          GATED ON `hasCampaign`, and that gate is correct.
 
-          It used to read `isAuthenticated && hasCampaign`, added to stop a tier
-          leak: a signed-in FREE learner was shown "M04 · Next: Greetings · 40%"
-          for a campaign their `/learn` did not give them, so the shell
-          advertised a roadmap the page contradicted. That reasoning was sound
-          THEN. It is not now, because `/learn` IS the course for every tier
-          (see `CEFR_LEVELS_ROUTE`): a free learner gets the same spine
-          position, and `getPushNode()` returns a `/lesson/:n` target —
-          `LessonModulePage`, which is free and always reachable.
+          It was removed on the reasoning that "`/learn` IS the course for every
+          tier, so the shell should advertise it to everyone". But `/learn`
+          branches on the plan: Premium gets the `UnitSpine`, and a free learner
+          gets the flat `LearningPath` grid, which has no module rings, no stage
+          codes and no "Next: Greetings" concept at all. So with the gate off the
+          rail showed a free learner "M04 · Next: Greetings · 40%" for a campaign
+          their own course page does not contain — the shell advertising a
+          roadmap the page contradicts, which is the exact tier leak the gate
+          was added to stop.
 
-          So the waypoint now states the same thing the page will show. Keeping
-          the gate would hide "where am I / what next?" from exactly the
-          learners standing on a 15-lesson course with no course position in
-          their rail — the question this component exists to answer.
+          The rule this encodes: a surface that renders campaign state asks
+          `useHasA1Campaign()` first. `/learn` needs no such check because the
+          PAGE decides which surface to render; a rail slot does not.
 
           `isLoading` still renders nothing rather than guessing, matching
           `PremiumGate`: a waypoint that appears for one learner and vanishes
           for another is worse than one that arrives 100ms late. */}
-      {isAuthenticated && !campaignLoading && (
+      {isAuthenticated && hasCampaign && !campaignLoading && (
         <div className="px-3 pt-4">
           <LearnerWaypoint collapsed={collapsed} />
         </div>

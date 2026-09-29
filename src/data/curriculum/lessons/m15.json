@@ -968,5 +968,995 @@
     "body": [
       "*Small Talk about Weather (Wetter-Smalltalk): In DACH countries, discussing the weather (\"Schönes Wetter heute, oder?\"*) is the standard icebreaker for informal conversations with neighbors, colleagues, or shopkeepers."
     ]
-  }
+  },
+  "steps": [
+    {
+      "type": "intro",
+      "objectives": {
+        "en": [
+          "Name core body parts and describe ailments ('weh tun')",
+          "Discuss weather conditions and temperatures",
+          "Form conversational Past Tense (Perfekt) using 'haben/sein' + Partizip II"
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "der Kopf",
+        "en": "head",
+        "ne": "टाउको",
+        "examples": [
+          {
+            "de": "Mein Kopf tut weh.",
+            "en": "My head hurts."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "der Bauch",
+        "en": "stomach",
+        "ne": "पेट",
+        "examples": [
+          {
+            "de": "Mein Bauch tut weh.",
+            "en": "My stomach hurts."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "weh tun",
+        "en": "to hurt / ache",
+        "ne": "दुख्नु",
+        "examples": [
+          {
+            "de": "Was tut weh?",
+            "en": "What hurts?"
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "die Sonne",
+        "en": "sun",
+        "ne": "घाम / सूर्य",
+        "examples": [
+          {
+            "de": "Die Sonne scheint.",
+            "en": "The sun is shining."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "der Regen",
+        "en": "rain",
+        "ne": "पानी पर्नु / वर्षा",
+        "examples": [
+          {
+            "de": "Es regnet heute.",
+            "en": "It is raining today."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "explain",
+      "title": {
+        "en": "Introduction to Past Tense (Perfekt)"
+      },
+      "body": "In spoken German, past events are expressed using the **Perfekt**:\n\n**Auxiliary (haben/sein)** [Pos 2] + **Partizip II** [END]\n\n- **machen** -> Ich habe Deutsch **gemacht**.\n- **lernen** -> Ich habe viel **gelernt**.\n- **fahren** -> Ich bin nach Berlin **gefahren** (motion verb takes *sein*!)."
+    },
+    {
+      "type": "typed",
+      "ask": "fill-blank",
+      "prompt": "Ich habe Deutsch ___ (learned).",
+      "answer": "gelernt",
+      "accepted": [
+        "gelernt"
+      ],
+      "note": "Partizip II of lernen = gelernt"
+    },
+    {
+      "type": "typed",
+      "ask": "fill-blank",
+      "prompt": "Ich bin nach Berlin ___ (traveled).",
+      "answer": "gefahren",
+      "accepted": [
+        "gefahren"
+      ],
+      "note": "Partizip II of fahren = gefahren"
+    },
+    {
+      "type": "mcq",
+      "prompt": "Which auxiliary verb is used with motion verbs like 'fahren' or 'kommen' in Perfekt?",
+      "options": [
+        "sein",
+        "haben",
+        "werden"
+      ],
+      "answer": "sein",
+      "hintReason": "Verbs of motion use 'sein' in the Perfekt."
+    },
+    {
+      "type": "match",
+      "pairs": [
+        {
+          "id": "0",
+          "de": "gelernt",
+          "en": "learned"
+        },
+        {
+          "id": "1",
+          "de": "gemacht",
+          "en": "made/done"
+        },
+        {
+          "id": "2",
+          "de": "gekauft",
+          "en": "bought"
+        },
+        {
+          "id": "3",
+          "de": "gefahren",
+          "en": "driven/traveled"
+        }
+      ],
+      "columnLabels": {
+        "left": "Deutsch",
+        "right": "English"
+      }
+    },
+    {
+      "type": "mcq",
+      "prompt": "What is the Partizip II of 'gemacht' (make/do)?",
+      "options": [
+        "gemacht",
+        "gemachen",
+        "gemachent"
+      ],
+      "answer": "gemacht",
+      "hintReason": "machen -> gemacht"
+    },
+    {
+      "type": "dialogue",
+      "title": {
+        "en": "At the Doctor",
+        "de": "Beim Arzt"
+      },
+      "turns": [
+        {
+          "speaker": "Doctor",
+          "de": "Was fehlt Ihnen?",
+          "en": "What is troubling you?"
+        },
+        {
+          "speaker": "Patient",
+          "de": "Mein Kopf tut weh.",
+          "en": "My head hurts."
+        },
+        {
+          "speaker": "Doctor",
+          "de": "Trinken Sie viel Wasser und ruhen Sie sich aus.",
+          "en": "Drink plenty of water and rest."
+        }
+      ]
+    },
+    {
+      "type": "typed",
+      "ask": "translate-en-de",
+      "prompt": "My head hurts.",
+      "answer": "Mein Kopf tut weh",
+      "accepted": [
+        "Mein Kopf tut weh."
+      ],
+      "note": "Kopf + tut weh"
+    },
+    {
+      "type": "arrange",
+      "prompt": "Order the weather phrase:",
+      "tokens": [
+        "Die",
+        "Sonne",
+        "scheint",
+        "heute."
+      ]
+    },
+    {
+      "type": "dictation",
+      "text": "Mein Kopf tut weh.",
+      "instruction": "Listen and type what you hear."
+    },
+    {
+      "type": "culture",
+      "body": "If you are sick in Germany and miss work, you need a doctor's note called an 'AU-Bescheinigung' (Arbeitsunfähigkeitsbescheinigung) for your employer."
+    },
+    {
+      "type": "typed",
+      "ask": "correct",
+      "prompt": "Ich habe nach Berlin gefahren.",
+      "answer": "Ich bin nach Berlin gefahren",
+      "accepted": [
+        "Ich bin nach Berlin gefahren."
+      ],
+      "note": "Motion verb 'fahren' takes 'sein' in Perfekt -> bin gefahren."
+    },
+    {
+      "type": "mcq",
+      "prompt": "What is the Partizip II of 'lernen'?",
+      "options": [
+        "gelernt",
+        "gelernen",
+        "getlernt"
+      ],
+      "answer": "gelernt",
+      "hintReason": "lernen -> gelernt"
+    },
+    {
+      "type": "typed",
+      "ask": "fill-blank",
+      "prompt": "Mein Bauch tut ___ (hurts).",
+      "answer": "weh",
+      "accepted": [
+        "weh"
+      ],
+      "note": "weh tun = to hurt"
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Hobby",
+        "en": "Hobby / Free time activity",
+        "ne": "रुचि / सोख",
+        "article": "das",
+        "plural": "Hobbys",
+        "ipa": "/ˈhɔbi/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Mein Hobby ist Musik hören.",
+            "en": "My hobby is listening to music.",
+            "ne": "मेरो रुचि संगीत सुन्नु हो।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Freizeit",
+        "en": "Free time / Leisure",
+        "ne": "फुर्सदको समय",
+        "article": "die",
+        "plural": "-",
+        "ipa": "/ˈfʁaɪ̯_tsaɪ̯t/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Was machst du in deiner Freizeit?",
+            "en": "What do you do in your free time?",
+            "ne": "फुर्सदको समयमा तिमी के गर्छौ?"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Sport",
+        "en": "Sport / Exercise",
+        "ne": "खेलकुद",
+        "article": "der",
+        "plural": "-",
+        "ipa": "/ʃpɔʁt/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Ich treibe viel Sport.",
+            "en": "I do a lot of sport.",
+            "ne": "म धेरै खेलकुद गर्छु।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Fußball",
+        "en": "Football / Soccer",
+        "ne": "फुटबल",
+        "article": "der",
+        "plural": "-",
+        "ipa": "/ˈfuːs_bal/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Die Kinder spielen Fußball.",
+            "en": "The children play football.",
+            "ne": "बालबालिकाहरू फुटबल खेल्दैछन्।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Musik",
+        "en": "Music",
+        "ne": "संगीत",
+        "article": "die",
+        "plural": "-",
+        "ipa": "muˈziːk/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Ich höre gerne Musik.",
+            "en": "I like listening to music.",
+            "ne": "मलाई संगीत सुन्न मन पर्छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Buch",
+        "en": "Book",
+        "ne": "किताब",
+        "article": "das",
+        "plural": "Bücher",
+        "ipa": "/buːx/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Abends lese ich ein Buch.",
+            "en": "In the evening I read a book.",
+            "ne": "साँझ म किताब पढ्छु।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Film",
+        "en": "Movie / Film",
+        "ne": "चलचित्र / फिल्म",
+        "article": "der",
+        "plural": "Filme",
+        "ipa": "/fɪlm/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Der Film war sehr spannend.",
+            "en": "The movie was very exciting.",
+            "ne": "चलचित्र धेरै प्रतिस्पर्धात्मक थियो।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Kino",
+        "en": "Cinema / Movie theater",
+        "ne": "सिनेमा हल",
+        "article": "das",
+        "plural": "Kinos",
+        "ipa": "/ˈkiːno/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Wir gehen am Samstag ins Kino.",
+            "en": "We go to the cinema on Saturday.",
+            "ne": "हामी शनिबार सिनेमा हल जान्छौँ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Schwimmen",
+        "en": "Swimming",
+        "ne": "पौडी",
+        "article": "das",
+        "plural": "-",
+        "ipa": "/ˈʃvɪmən/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Schwimmen macht Spaß.",
+            "en": "Swimming is fun.",
+            "ne": "पौडी खेल्न रमाइलो हुन्छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Reisen",
+        "en": "Traveling",
+        "ne": "यात्रा",
+        "article": "das",
+        "plural": "-",
+        "ipa": "/ˈʁaɪ̯zn̩/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Mein Hobby ist Reisen.",
+            "en": "My hobby is traveling.",
+            "ne": "मेरो रुचि यात्रा गर्नु हो।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Wetter",
+        "en": "Weather",
+        "ne": "मौसम",
+        "article": "das",
+        "plural": "-",
+        "ipa": "/ˈvɛtɐ/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Wie ist das Wetter heute?",
+            "en": "How is the weather today?",
+            "ne": "आज मौसम कस्तो छ?"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Sonne",
+        "en": "Sun",
+        "ne": "घाम / सूर्य",
+        "article": "die",
+        "plural": "-",
+        "ipa": "/ˈzɔnə/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Die Sonne scheint hell.",
+            "en": "The sun shines brightly.",
+            "ne": "घाम चम्किलो लागेको छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Regen",
+        "en": "Rain",
+        "ne": "पानी / वर्षा",
+        "article": "der",
+        "plural": "-",
+        "ipa": "/ˈʁeːɡn̩/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Heute gibt es Regen.",
+            "en": "Today there is rain.",
+            "ne": "आज पानी पर्छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Schnee",
+        "en": "Snow",
+        "ne": "हिउँ",
+        "article": "der",
+        "plural": "-",
+        "ipa": "/ʃneː/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Im Winter fällt Schnee.",
+            "en": "In winter snow falls.",
+            "ne": "जाडोमा हिउँ पर्छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Wind",
+        "en": "Wind",
+        "ne": "हावा",
+        "article": "der",
+        "plural": "Winde",
+        "ipa": "/vɪnt/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Der Wind ist stark.",
+            "en": "The wind is strong.",
+            "ne": "हावा चम्किलो चलेको छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Wolke",
+        "en": "Cloud",
+        "ne": "बादल",
+        "article": "die",
+        "plural": "Wolken",
+        "ipa": "/ˈvɔlkə/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Es gibt viele Wolken am Himmel.",
+            "en": "There are many clouds in the sky.",
+            "ne": "आकाशमा धेरै बादल छन्।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "warm",
+        "en": "Warm",
+        "ne": "न्यानो",
+        "plural": "-",
+        "ipa": "/vaʁm/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Im Sommer ist es warm.",
+            "en": "In summer it is warm.",
+            "ne": "गर्मीयाममा न्यानो हुन्छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "kalt",
+        "en": "Cold",
+        "ne": "चिसो",
+        "plural": "-",
+        "ipa": "/kalt/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Heute ist es sehr kalt.",
+            "en": "Today it is very cold.",
+            "ne": "आज धेरै चिसो छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "heiß",
+        "en": "Hot",
+        "ne": "गर्मी / तातो",
+        "plural": "-",
+        "ipa": "/haɪ̯s/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Im Juli ist es sehr heiß.",
+            "en": "In July it is very hot.",
+            "ne": "जुलाईमा धेरै गर्मी हुन्छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "sonnig",
+        "en": "Sunny",
+        "ne": "घमाइलो",
+        "plural": "-",
+        "ipa": "/ˈzɔnɪç/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Das Wetter ist sonnig.",
+            "en": "The weather is sunny.",
+            "ne": "मौसम घमाइलो छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "regnerisch",
+        "en": "Rainy",
+        "ne": "झरी पर्ने",
+        "plural": "-",
+        "ipa": "/ˈʁeːɡnəʁɪʃ/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Es ist ein regnerischer Tag.",
+            "en": "It is a rainy day.",
+            "ne": "यो झरी पर्ने दिन हो।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "windig",
+        "en": "Windy",
+        "ne": "हावाहुरी चल्ने",
+        "plural": "-",
+        "ipa": "/ˈvɪndɪç/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Heute ist es sehr windig.",
+            "en": "Today it is very windy.",
+            "ne": "आज धेरै हावाहुरी चलेको छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "bewölkt",
+        "en": "Cloudy",
+        "ne": "बादलेले ढाकेको",
+        "plural": "-",
+        "ipa": "/bəˈvœlkt/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Der Himmel ist bewölkt.",
+            "en": "The sky is cloudy.",
+            "ne": "आकाश बादलेले ढाकेको छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Grad",
+        "en": "Degree (temperature)",
+        "ne": "डिग्री",
+        "article": "das",
+        "plural": "Grad",
+        "ipa": "/ɡʁaːt/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Es sind heute 22 Grad.",
+            "en": "It is 22 degrees today.",
+            "ne": "आज २२ डिग्री छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "gestern",
+        "en": "Yesterday",
+        "ne": "हिजो",
+        "plural": "-",
+        "ipa": "/ˈɡɛstɐn/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Gestern habe ich Fußball gespielt.",
+            "en": "Yesterday I played football.",
+            "ne": "हिजो मैले फुटबल खेलेँ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "haben",
+        "en": "to have (auxiliary)",
+        "ne": "हुनु / हुनुहुन्थ्यो",
+        "plural": "hat / hatte / gehabt",
+        "ipa": "/ˈhaːbn̩/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Ich habe ein Buch gelesen.",
+            "en": "I have read a book.",
+            "ne": "मैले किताब पढेँ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "sein",
+        "en": "to be (auxiliary)",
+        "ne": "हुनु",
+        "plural": "ist / war / ist gewesen",
+        "ipa": "/zaɪ̯n/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Er ist nach Berlin gefahren.",
+            "en": "He has traveled to Berlin.",
+            "ne": "उहाँ बर्लिन जानुभयो।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "gemacht",
+        "en": "done / made (Partizip II)",
+        "ne": "गरिएको / गरेको",
+        "plural": "-",
+        "ipa": "/ɡəˈmaxt/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Was hast du gestern gemacht?",
+            "en": "What did you do yesterday?",
+            "ne": "हिजो तिमीले के गर्यौ?"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "gespielt",
+        "en": "played (Partizip II)",
+        "ne": "खेलेको",
+        "plural": "-",
+        "ipa": "/ɡəˈʃpiːlt/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Wir haben Tennis gespielt.",
+            "en": "We played tennis.",
+            "ne": "हामीले टेनिस खेल्यौँ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "gekauft",
+        "en": "bought (Partizip II)",
+        "ne": "किनेको",
+        "plural": "-",
+        "ipa": "/ɡəˈkaʊ̯ft/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Er hat eine Hose gekauft.",
+            "en": "He bought trousers.",
+            "ne": "उहाँले प्यान्ट किन्नुभयो।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "gekocht",
+        "en": "cooked (Partizip II)",
+        "ne": "पकाएको",
+        "plural": "-",
+        "ipa": "/ɡəˈkɔxt/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Meine Mutter hat Suppe gekocht.",
+            "en": "My mother cooked soup.",
+            "ne": "मेरो आमाले सुप पकाउनुभयो।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "gelernt",
+        "en": "learned (Partizip II)",
+        "ne": "सिकेको",
+        "plural": "-",
+        "ipa": "/ɡəˈlɛʁnt/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Ich habe Deutsch gelernt.",
+            "en": "I learned German.",
+            "ne": "मैले जर्मन सिकेँ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "gehört",
+        "en": "heard / listened (Partizip II)",
+        "ne": "सुनेको",
+        "plural": "-",
+        "ipa": "/ɡəˈhøːʁt/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Hast du die Musik gehört?",
+            "en": "Did you hear the music?",
+            "ne": "के तिमीले संगीत सुन्यौ?"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "gewesen",
+        "en": "been (Partizip II of sein)",
+        "ne": "भएको / रहेको",
+        "plural": "-",
+        "ipa": "/ɡəˈveːzn̩/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Ich bin gestern zu Hause gewesen.",
+            "en": "I was at home yesterday.",
+            "ne": "हिजो म घरमै थिएँ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "gegangen",
+        "en": "gone / walked (Partizip II)",
+        "ne": "गएको",
+        "plural": "-",
+        "ipa": "/ɡəˈɡaŋən/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Er ist nach Hause gegangen.",
+            "en": "He went home.",
+            "ne": "उहाँ घर जानुभयो।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "gefahren",
+        "en": "driven / traveled (Partizip II)",
+        "ne": "गएको (सवारीमा)",
+        "plural": "-",
+        "ipa": "/ɡəˈfaːʁən/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Wir sind nach München gefahren.",
+            "en": "We traveled to Munich.",
+            "ne": "हामी म्युनिख गयौँ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "gekommen",
+        "en": "come (Partizip II)",
+        "ne": "आएको",
+        "plural": "-",
+        "ipa": "/ɡəˈkɔmən/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Er ist pünktlich gekommen.",
+            "en": "He arrived on time.",
+            "ne": "उहाँ समयमै आउनुभयो।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "geschlafen",
+        "en": "slept (Partizip II)",
+        "ne": "सुतेको",
+        "plural": "-",
+        "ipa": "/ɡəˈʃlaːfn̩/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Ich habe gut geschlafen.",
+            "en": "I slept well.",
+            "ne": "म राम्रोसँग सुतेँ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "gegessen",
+        "en": "eaten (Partizip II)",
+        "ne": "खाएको",
+        "plural": "-",
+        "ipa": "/ɡəˈɡɛsn̩/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Wir haben Pizza gegessen.",
+            "en": "We ate pizza.",
+            "ne": "हामीले पिज्जा खायौँ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "getrunken",
+        "en": "drunk (Partizip II)",
+        "ne": "पिएको",
+        "plural": "-",
+        "ipa": "/ɡəˈtʁʊŋkn̩/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Er hat Wasser getrunken.",
+            "en": "He drank water.",
+            "ne": "उहाँले पानी पिउनुभयो।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "summary"
+    }
+  ],
+  "stepsSource": "imported"
 }

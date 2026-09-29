@@ -3,21 +3,37 @@
  *
  * Read model for the Curriculum section.
  *
- * ── WHY THIS READS THE BUNDLED JSON, NOT THE DATABASE ──────────────────────
- * The curriculum is AUTHORED CONTENT, not database rows. It lives in
- * `src/data/curriculum/units/m01.json … m15.json`, is validated by the
- * hand-written validator in `src/data/curriculum/schema.ts`, and is bundled into
- * the app at build time. There is no `curriculum_units` table — the original
- * plan's migration referencing one would have failed to apply.
+ * ── WHY THIS READS THE BUNDLE AND NOT THE DATABASE ──────────────────────────
+ * The curriculum is AUTHORED CONTENT. It lives in
+ * `src/data/curriculum/units/*.json`, is validated by
+ * `src/data/curriculum/schema.ts`, and is bundled into the app at build time.
  *
- * So this module imports the SAME resolved spine the learner app runs on, via
- * the existing `src/data/curriculum` barrel. That is the important property:
- * the CMS and the app cannot disagree, because they are literally the same
- * data. A second source of truth here would be the exact drift this page is
- * meant to prevent.
+ * So this module imports the SAME resolved spine the learner app runs on, via the
+ * `src/data/curriculum` barrel. That is the important property: the control
+ * centre and the app cannot disagree about the bundle, because they are
+ * literally the same data. A second read path for the bundle would be the exact
+ * drift this page exists to prevent.
  *
- * `curriculum_versions` in the database is the append-only SNAPSHOT history for
- * rollback; it is read-only from here (service-role writes).
+ * ── THE `curriculum_units` TABLE IS NOT WHAT THIS READS ──────────────────────
+ * This file's header used to say "There is no `curriculum_units` table — the
+ * original plan's migration referencing one would have failed to apply". That was
+ * true when written. It is false now: the table exists (migration
+ * `20260930020000`) and is read by `curriculumStore.ts`, which owns the editable
+ * copy.
+ *
+ * The statement survived its own falsification because nothing contradicted it
+ * inside this file, and a reader had no reason to re-derive it. The two models
+ * are genuinely different and both are correct:
+ *
+ *   · HERE     the bundle, compiled in, always available, never edited here
+ *   · STORE    the published database copy, editable, and what `db` serves
+ *
+ * They can disagree — which is the thing worth reviewing — and
+ * `curriculumDiff.ts` is what compares them. Conflating them, in either
+ * direction, is the mistake this comment now prevents.
+ *
+ * `curriculum_versions` is the append-only SNAPSHOT history for rollback. It is
+ * read-only from here; writes go through the service-role function.
  */
 import { CURRICULUM_ISSUES, RESOLVED_PATH } from '../../data/curriculum';
 import { hasCurriculumErrors } from '../../data/curriculum/schema';

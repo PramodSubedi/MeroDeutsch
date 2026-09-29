@@ -203,14 +203,22 @@ function LessonRow({ unit, phase }: { unit: A1Unit; phase: A1UnitPhase }) {
           decorative
         />
         <span className="min-w-0 flex-1">
+          {/* `break-words` is load-bearing, not decoration: the stage columns are
+              ~60px of text width at desktop, and a single long word
+              ("Comprehensive", "Relationships") is wider than that. Without
+              breaking, `word-break: normal` lets it spill past the card edge
+              and get clipped by the neighbouring column's border. */}
           <span
-            className={`block text-meta font-semibold leading-[1.15rem] ${
+            className={`block break-words text-meta font-semibold leading-[1.15rem] ${
               isLocked ? 'text-ink-600 dark:text-ink-400' : 'text-ink-900 dark:text-ink-50'
             }`}
           >
             {title}
           </span>
-          <span className="mt-0.5 flex items-center gap-1 text-micro font-semibold uppercase tracking-wider text-ink-400 dark:text-ink-500">
+          {/* Same constraint: the state word and the percentage are two flex
+              items that together can exceed the column, so let them wrap
+              rather than overrun the row. */}
+          <span className="mt-0.5 flex flex-wrap items-center gap-x-1 text-micro font-semibold uppercase tracking-wider text-ink-400 dark:text-ink-500">
             {stateWord}
             <span aria-hidden="true">·</span>
             <span className={phase === 'current' ? 'text-accent-600 dark:text-accent-400' : undefined}>

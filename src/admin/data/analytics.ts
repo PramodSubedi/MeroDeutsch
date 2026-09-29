@@ -21,10 +21,19 @@
  * "no data yet" state rather than padding a series to look full.
  */
 import { supabase } from '../../lib/supabase';
+import { denseDailySeries, windowStartIso } from './dayMath';
+import { callAdminRpc, shouldFallBack, LEGACY_PATH_NOTICE } from './rpc';
 
 export interface SeriesPoint {
   label: string;
   value: number;
+}
+
+/** A read that hit a hard row cap, so the page can admit it rather than hide it. */
+export interface Truncation {
+  source: string;
+  shown: number;
+  total: number;
 }
 
 export interface AnalyticsData {
@@ -44,14 +53,41 @@ export interface AnalyticsData {
   /** Learners with any a1_path_state row at all. */
   onSpine: number;
   totalLearners: number;
+  /** Non-empty when a read hit a row cap; see `Truncation`. */
+  truncated: Truncation[];
   errors: string[];
 }
 
-function isoDaysAgo(days: number): string {
-  const d = new Date();
-  d.setUTCDate(d.getUTCDate() - days);
-  return d.toISOString().slice(0, 10);
-}
+const EMPTY_TRUNCATED: Truncation[] = [];
+
+/** The `profiles` read cap. Mirrors `useAdminData`'s so the two cannot disagree. */
+export const PROFILE_ROW_CAP = 100_000;
+
+/** The activity-table read cap. */
+export const ACTIVITY_ROW_CAP = 200_000;
+
+// ═══════════════════════════════════════════════════════════════════════════
+// THE REFERENCE IMPLEMENTATION — READ BEFORE CHANGING THE SQL
+// ═══════════════════════════════════════════════════════════════════════════
+//
+// `weekStart`, `buildRetention`, `denseDaily`, `bucketStreaks`, `tally` and
+// `tallyNumeric` are no longer called in production. `fetchAnalytics` issues ONE
+// call to `admin_analytics` and the database does all of this arithmetic.
+//
+// They are kept, and `analytics.check.ts` still runs them, for one reason:
+//
+// ── THEY ARE THE SPECIFICATION THE SQL CANNOT BE TESTED AGAINST ──────────────
+// The 30 check suites execute in `tsx` with no database. `admin_analytics` is
+// therefore UNVERIFIED — a function that counted the wrong day would pass every
+// check in this repository, and `check:adminrpcs` says so explicitly in its
+// final section. So when someone changes the SQL — a cohort boundary, the
+// trailing-zero trim, whether streak 10 collapses — these functions say what
+// the answer is supposed to be, in a language CI can execute.
+//
+// A second implementation with no first-class role is duplication that drifts.
+// A reference implementation with a stated purpose is documentation that runs.
+//
+// IF YOU CHANGE ONE, CHANGE THE OTHER, and note it in the migration.
 
 /** Monday of the week containing `date` — cohorts must align to week starts. */
 export function weekStart(date: string): string {
@@ -71,21 +107,19 @@ export function addWeeks(isoDate: string, weeks: number): string {
  * Dense daily series. Real zero-fills matter: a learner who skipped three days
  * is a meaningful dip, and a sparse line chart would draw straight through the
  * gap and hide it.
+ *
+ * Delegates to `denseDailySeries`, so the point count is `days` and the window
+ * bound is `days - 1`. It used to be a local loop of its own that emitted
+ * `days + 1` points — which is how the Analytics page plotted a 31-point series
+ * under the heading "Last 30 days". `analytics.check.ts` pins the count.
  */
 export function denseDaily(
   counts: Map<string, number>,
   days: number,
-  today = isoDaysAgo(0)
+  today?: string,
 ): { date: string; active: number }[] {
-  const end = new Date(`${today}T00:00:00Z`);
-  const out: { date: string; active: number }[] = [];
-  for (let i = days; i >= 0; i -= 1) {
-    const d = new Date(end);
-    d.setUTCDate(d.getUTCDate() - i);
-    const date = d.toISOString().slice(0, 10);
-    out.push({ date, active: counts.get(date) ?? 0 });
-  }
-  return out;
+  const end = today ? new Date(`${today}T00:00:00Z`) : new Date();
+  return denseDailySeries(counts, days, end);
 }
 
 /**
@@ -161,24 +195,151 @@ export function tallyNumeric<T>(rows: T[] | null, key: (row: T) => number | null
   }).sort((a, b) => Number(a.label) - Number(b.label));
 }
 
+/** The row `admin_analytics` returns. One row, or nothing. */
+interface AnalyticsRpcRow {
+  dau: { date: string; active: number }[];
+  retention: { cohort: string; weeks: number[] }[];
+  unit_funnel: SeriesPoint[];
+  checkpoint_averages: SeriesPoint[];
+  total_xp: number;
+  xp_by_level: SeriesPoint[];
+  streak_buckets: SeriesPoint[];
+  plan_split: SeriesPoint[];
+  content_types: SeriesPoint[];
+  on_spine: number;
+  total_learners: number;
+}
+
+/**
+ * Coerce one RPC row into the shape the page renders.
+ *
+ * PURE and exported, so it is testable with no network and no Supabase client.
+ * Every field is read defensively: a renamed column becomes a 0, which is
+ * visibly wrong on a dashboard, rather than `NaN`, which is not.
+ */
+export function mapAnalyticsRow(row: AnalyticsRpcRow | null | undefined): AnalyticsData {
+  const n = (v: unknown): number => (typeof v === 'number' && Number.isFinite(v) ? v : 0);
+  const points = (v: unknown): SeriesPoint[] =>
+    Array.isArray(v)
+      ? v
+          .filter((p): p is SeriesPoint => !!p && typeof p.label === 'string' && typeof p.value === 'number')
+          .map((p) => ({ label: p.label, value: p.value }))
+      : [];
+  if (!row) {
+    return {
+      dau: [],
+      retention: [],
+      unitFunnel: [],
+      checkpointAverages: [],
+      totalXp: 0,
+      xpByLevel: [],
+      streakBuckets: [],
+      planSplit: [],
+      contentTypes: [],
+      onSpine: 0,
+      totalLearners: 0,
+      truncated: [],
+      errors: [],
+    };
+  }
+  return {
+    dau: Array.isArray(row.dau) ? row.dau : [],
+    retention: Array.isArray(row.retention) ? row.retention : [],
+    unitFunnel: points(row.unit_funnel),
+    checkpointAverages: points(row.checkpoint_averages),
+    totalXp: n(row.total_xp),
+    xpByLevel: points(row.xp_by_level),
+    streakBuckets: points(row.streak_buckets),
+    planSplit: points(row.plan_split),
+    contentTypes: points(row.content_types),
+    onSpine: n(row.on_spine),
+    totalLearners: n(row.total_learners),
+    // Permanently empty. These RPCs return exact counts, so a capped read is no
+    // longer a state the data can be in. The field survives only because
+    // `AnalyticsPage` destructures it, and deleting it there is a separate edit.
+    truncated: EMPTY_TRUNCATED,
+    errors: [],
+  };
+}
+
+/**
+ * The Analytics page's entire read, in one call.
+ *
+ * Was SIX capped queries with every aggregate computed in JavaScript — including
+ * a 100 000-row cap on `user_xp` to compute a SUM, which is always a lower
+ * bound presented as a total.
+ *
+ * Two properties this gained beyond speed:
+ *
+ *   · a REFUSAL rather than zero rows. RLS can only exclude rows, so the old
+ *     reads handed a demoted or suspended admin an empty page with no error. A
+ *     SECURITY DEFINER function can raise, and does.
+ *   · the numbers are exact, so `truncated` is permanently empty and the
+ *     "showing N of M" banner this page could previously render is gone.
+ */
 export async function fetchAnalytics(days = 30): Promise<AnalyticsData> {
+  const outcome = await callAdminRpc<AnalyticsRpcRow[]>(supabase, 'admin_analytics', { p_days: days });
+
+  if (outcome.kind === 'ok') {
+    return mapAnalyticsRow((outcome.data as AnalyticsRpcRow[] | null)?.[0]);
+  }
+
+  if (shouldFallBack(outcome)) {
+    // The RPC is not deployed. The previous implementation is six capped reads
+    // aggregated here, and it is correct — bounded, but correct.
+    const legacy = await fetchAnalyticsLegacy(days);
+    return { ...legacy, errors: [LEGACY_PATH_NOTICE, ...legacy.errors] };
+  }
+
+  // A refusal is the RPC working correctly. Falling back would replace "you may
+  // not see this" with an empty Analytics page, which is the silent failure the
+  // RPC exists to prevent.
+  return { ...mapAnalyticsRow(null), errors: [`admin_analytics: ${outcome.message}`] };
+}
+
+/**
+ * The previous implementation, kept as a fallback.
+ *
+ * Six capped reads with every aggregate computed in JavaScript, including a
+ * 100 000-row cap on `user_xp` to compute a SUM — always a lower bound presented
+ * as a total. Reached only when the RPC is absent, and the caps are reported in
+ * `truncated` so the bound is visible rather than assumed.
+ */
+async function fetchAnalyticsLegacy(days: number): Promise<AnalyticsData> {
   const errors: string[] = [];
+  const truncated: Truncation[] = [];
+  const CAP = 100_000;
 
   const [profiles, activity, xp, streaks, path, content] = await Promise.all([
-    supabase.from('profiles').select('plan').limit(5000),
-    supabase.from('user_activity_days').select('user_id, activity_date').limit(20000),
-    supabase.from('user_xp').select('user_id, total_xp, level').limit(5000),
-    supabase.from('user_streaks').select('current_streak').limit(5000),
-    supabase.from('a1_path_state').select('unlocked_unit_index, checkpoint_best_by_unit').limit(5000),
-    supabase.from('content_items').select('content_type').limit(5000),
+    supabase.from('profiles').select('plan', { count: 'exact' }).limit(CAP),
+    supabase
+      .from('user_activity_days')
+      .select('user_id, activity_date', { count: 'exact' })
+      .gte('activity_date', windowStartIso(days))
+      .order('activity_date', { ascending: true })
+      .limit(200_000),
+    supabase.from('user_xp').select('user_id, total_xp, level', { count: 'exact' }).limit(CAP),
+    supabase.from('user_streaks').select('current_streak', { count: 'exact' }).limit(CAP),
+    supabase
+      .from('a1_path_state')
+      .select('unlocked_unit_index, checkpoint_best_by_unit', { count: 'exact' })
+      .limit(CAP),
+    supabase.from('content_items').select('content_type', { count: 'exact' }).limit(CAP),
   ]);
 
-  if (profiles.error) errors.push(`profiles: ${profiles.error.message}`);
-  if (activity.error) errors.push(`user_activity_days: ${activity.error.message}`);
-  if (xp.error) errors.push(`user_xp: ${xp.error.message}`);
-  if (streaks.error) errors.push(`user_streaks: ${streaks.error.message}`);
-  if (path.error) errors.push(`a1_path_state: ${path.error.message}`);
-  if (content.error) errors.push(`content_items: ${content.error.message}`);
+  const note = (source: string, res: { error: unknown; count: number | null; data: unknown[] | null }) => {
+    if (res.error) return;
+    const total = res.count ?? res.data?.length ?? 0;
+    if (total > (res.data?.length ?? 0)) {
+      truncated.push({ source, shown: res.data?.length ?? 0, total });
+    }
+  };
+  if (profiles.error) errors.push(`profiles: ${profiles.error.message}`); else note('profiles', profiles);
+  if (activity.error) errors.push(`user_activity_days: ${activity.error.message}`); else note('user_activity_days', activity);
+  if (xp.error) errors.push(`user_xp: ${xp.error.message}`); else note('user_xp', xp);
+  if (streaks.error) errors.push(`user_streaks: ${streaks.error.message}`); else note('user_streaks', streaks);
+  if (path.error) errors.push(`a1_path_state: ${path.error.message}`); else note('a1_path_state', path);
+  if (content.error) errors.push(`content_items: ${content.error.message}`); else note('content_items', content);
 
   const dailyCounts = new Map<string, number>();
   const byUser = new Map<string, Set<string>>();
@@ -190,15 +351,12 @@ export async function fetchAnalytics(days = 30): Promise<AnalyticsData> {
     else byUser.set(row.user_id, new Set([row.activity_date]));
   }
 
-  // Unit funnel: the stored index is the highest unit whose checkpoint was
-  // passed, so it is a STAGE marker and not a visit count. The panel says so.
   const unitCounts = new Map<number, number>();
   const scoreSums = new Map<number, { sum: number; n: number }>();
   for (const row of path.data ?? []) {
     const idx = row.unlocked_unit_index ?? 0;
     unitCounts.set(idx, (unitCounts.get(idx) ?? 0) + 1);
-    const best = (row.checkpoint_best_by_unit ?? {}) as Record<string, number>;
-    for (const [unit, score] of Object.entries(best)) {
+    for (const [unit, score] of Object.entries((row.checkpoint_best_by_unit ?? {}) as Record<string, number>)) {
       const u = Number(unit);
       if (!Number.isFinite(u) || typeof score !== 'number') continue;
       const acc = scoreSums.get(u) ?? { sum: 0, n: 0 };
@@ -211,8 +369,9 @@ export async function fetchAnalytics(days = 30): Promise<AnalyticsData> {
   return {
     dau: denseDaily(dailyCounts, days),
     retention: buildRetention(byUser, 6, 5),
-    unitFunnel: Array.from(unitCounts, ([idx, value]) => ({ label: String(idx + 1), value }))
-      .sort((a, b) => Number(a.label) - Number(b.label)),
+    unitFunnel: Array.from(unitCounts, ([idx, value]) => ({ label: String(idx + 1), value })).sort(
+      (a, b) => Number(a.label) - Number(b.label),
+    ),
     checkpointAverages: Array.from(scoreSums, ([unit, acc]) => ({
       label: String(unit + 1),
       value: Math.round((acc.sum / acc.n) * 100) / 100,
@@ -222,8 +381,9 @@ export async function fetchAnalytics(days = 30): Promise<AnalyticsData> {
     streakBuckets: bucketStreaks((streaks.data ?? []).map((r) => r.current_streak)),
     planSplit: tally(profiles.data, (r) => r.plan ?? 'free'),
     contentTypes: tally(content.data, (r) => r.content_type),
-    onSpine: (path.data ?? []).length,
-    totalLearners: (profiles.data ?? []).length,
+    onSpine: path.count ?? (path.data ?? []).length,
+    totalLearners: profiles.count ?? (profiles.data ?? []).length,
+    truncated,
     errors,
   };
 }

@@ -14,10 +14,13 @@
  * validation, not a replacement for it.
  */
 import { useCallback, useEffect, useState } from 'react';
-import { Database, History, Rocket, Undo2 } from 'lucide-react';
+import { Activity, Database, FileDiff, History, Rocket, Undo2 } from 'lucide-react';
 import { theme } from '../../config/theme';
+import { supabase } from '../../lib/supabase';
 import { runAdminAction, type AdminActionResult } from '../data/adminActions';
 import { describeStore, fetchCurriculumStore, type CurriculumStore, type StoredUnit } from '../data/curriculumStore';
+import { diffCurriculum, summariseDiff, type CurriculumDiff } from '../data/curriculumDiff';
+import { checkServedSource, verdictDetail, type ServedSourceVerdict } from '../data/servedSource';
 import { UnitDocEditor } from './UnitDocEditor';
 
 export function CurriculumStorePanel() {
@@ -98,17 +101,21 @@ export function CurriculumStorePanel() {
   const editingUnit: StoredUnit | null = store.units.find((u) => u.id === editing) ?? null;
 
   return (
-    <section aria-label="Database curriculum" className="rounded-lg border border-ink-200 p-4 dark:border-ink-800">
-      <h2 className="flex items-center gap-2 text-section font-bold text-ink-900 dark:text-ink-50">
-        <Database className="h-4 w-4" aria-hidden="true" />
-        Database store
-      </h2>
-      <p className="mt-1 text-meta text-ink-600 dark:text-ink-300">
-        {describeStore(store)} The app is serving:{' '}
-        <strong className="font-mono">
-          {store.source === 'unknown' ? 'bundle (flag unreadable)' : store.source}
-        </strong>
-      </p>
+    <>
+      <ServedSourcePanel />
+      <CurriculumDiffPanel />
+      <section aria-label="Database curriculum" className="rounded-lg border border-ink-200 p-4 dark:border-ink-800">
+        <h2 className="flex items-center gap-2 text-section font-bold text-ink-900 dark:text-ink-50">
+          <Database className="h-4 w-4" aria-hidden="true" />
+          Database store
+        </h2>
+        <p className="mt-1 text-meta text-ink-600 dark:text-ink-300">
+          {describeStore(store)} The <code className="font-mono">curriculum_source</code> flag reads{' '}
+          <strong className="font-mono">
+            {store.source === 'unknown' ? 'unreadable' : store.source}
+          </strong>
+          . What the app actually serves is shown above.
+        </p>
 
       {store.errors.length > 0 && (
         <ul className="mt-2 list-inside list-disc text-meta text-danger-700 dark:text-danger-300">
@@ -230,6 +237,201 @@ export function CurriculumStorePanel() {
             ))}
           </ul>
         </details>
+      )}
+      </section>
+    </>
+  );
+}
+
+/**
+ * ── WHAT WOULD CHANGE IF `db` WENT LIVE ──────────────────────────────────────
+ *
+ * The `db` switch is a CONTENT decision, and the only way to make it well is to
+ * see the difference. There was nowhere to see it: the store list showed titles
+ * and node counts, the version list showed timestamps, and neither said how the
+ * published content compares to what learners get today.
+ *
+ * So the review had to be done by hand, or skipped. This does not judge quality
+ * — two documents can be structurally identical and one can be much better — it
+ * just makes the review possible, which is the part a tool should own.
+ */
+function CurriculumDiffPanel() {
+  const [diff, setDiff] = useState<CurriculumDiff | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const check = useCallback(async () => {
+    setBusy(true);
+    setError(null);
+    const { data, error: readError } = await supabase
+      .from('app_config')
+      .select('value')
+      .eq('key', 'curriculum_document')
+      .maybeSingle();
+    setBusy(false);
+    if (readError) {
+      setError(`${readError.message}`);
+      setDiff(null);
+      return;
+    }
+    setDiff(diffCurriculum(data?.value ?? null));
+  }, []);
+
+  const lines = diff ? summariseDiff(diff) : [];
+
+  return (
+    <section aria-label="Bundle versus database" className="rounded-lg border border-ink-200 p-4 dark:border-ink-800">
+      <h2 className="text-section font-bold text-ink-900 dark:text-ink-50">Bundle vs database</h2>
+      <p className="mt-1 text-meta text-ink-600 dark:text-ink-300">
+        Structural differences between the published document and the bundled curriculum — the
+        review surface for the <code className="font-mono">db</code> switch. It reports what
+        differs, not which is better.
+      </p>
+
+      <button type="button" onClick={() => void check()} disabled={busy} className={`${theme.button.secondary} mt-3`}>
+        <FileDiff className="h-4 w-4" aria-hidden="true" />
+        {busy ? 'Comparing…' : diff ? 'Compare again' : 'Compare'}
+      </button>
+
+      {error && (
+        <p role="alert" className="mt-3 text-meta text-danger-700 dark:text-danger-300">
+          The comparison could not run: {error}
+        </p>
+      )}
+
+      {diff && (
+        <div className="mt-3">
+          <p
+            className={`text-meta font-semibold ${
+              diff.verdict === 'identical'
+                ? 'text-success-700 dark:text-success-300'
+                : diff.verdict === 'bundle-only'
+                  ? 'text-ink-700 dark:text-ink-200'
+                  : 'text-warning-700 dark:text-warning-300'
+            }`}
+          >
+            {diff.verdict === 'identical' && 'Identical. Switching to db would change nothing.'}
+            {diff.verdict === 'bundle-only' && 'Nothing published yet — every unit would be missing.'}
+            {diff.verdict === 'diverged' &&
+              `Diverged. ${diff.units.filter((u) => u.verdict !== 'identical').length} unit(s) differ.`}
+          </p>
+          <ul className="mt-2 space-y-0.5 text-meta text-ink-600 dark:text-ink-300">
+            {lines.map((line) => (
+              <li key={line} className="font-mono text-micro">
+                {line}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </section>
+  );
+}
+
+/**
+ * ── WHAT THE APP IS ACTUALLY SERVING ─────────────────────────────────────────
+ *
+ * The flag is an intent; the served content is the result of that intent run
+ * through the boot gate against real content. They diverge in five ways, and
+ * four of them serve the bundle. So an admin who published content, flipped the
+ * flag to `db`, and broke the document saw `db` in this panel while every
+ * learner silently received the bundle — with no error anywhere, because
+ * falling back IS the designed behaviour and there is nothing to log.
+ *
+ * This runs the learner's own `runBootGate` against the same two `app_config`
+ * rows the learner reads. It is the same function, not a second implementation
+ * of the rule, so it cannot disagree with boot.
+ *
+ * It is a PREDICTION, not a measurement. A learner offline, on a slow
+ * connection, or reading a stale cached document resolves differently, and the
+ * timeout branch cannot be exercised from here. The panel says so.
+ */
+function ServedSourcePanel() {
+  const [verdict, setVerdict] = useState<ServedSourceVerdict | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [failed, setFailed] = useState(false);
+
+  const check = useCallback(async () => {
+    setBusy(true);
+    setFailed(false);
+    try {
+      setVerdict(await checkServedSource());
+    } catch {
+      // A thrown reader is a failure to KNOW, which must not read as a verdict.
+      setVerdict(null);
+      setFailed(true);
+    }
+    setBusy(false);
+  }, []);
+
+  return (
+    <section aria-label="What the app is serving" className="rounded-lg border border-ink-200 p-4 dark:border-ink-800">
+      <h2 className="text-section font-bold text-ink-900 dark:text-ink-50">What the app is serving</h2>
+      <p className="mt-1 text-meta text-ink-600 dark:text-ink-300">
+        Runs the learner app&apos;s own boot gate against the same two rows a learner reads, so this
+        is the gate&apos;s answer rather than the flag&apos;s. It is a prediction: a learner who is
+        offline or slow will get the bundle whatever this says.
+      </p>
+
+      <button type="button" onClick={() => void check()} disabled={busy} className={`${theme.button.secondary} mt-3`}>
+        <Activity className="h-4 w-4" aria-hidden="true" />
+        {busy ? 'Checking…' : verdict ? 'Check again' : 'Check served source'}
+      </button>
+
+      {failed && (
+        <p role="alert" className="mt-3 text-meta text-danger-700 dark:text-danger-300">
+          The check could not complete. Nothing is known about what the app is serving — that is not
+          the same as it serving the bundle.
+        </p>
+      )}
+
+      {verdict && (
+        <div className="mt-3">
+          {verdict.contradicted && (
+            <p
+              role="alert"
+              className="mb-2 rounded border border-danger-300 bg-danger-50 p-2 text-meta font-semibold text-danger-800 dark:border-danger-900 dark:bg-danger-950/40 dark:text-danger-200"
+            >
+              The flag says <code className="font-mono">db</code>, but the gate will serve the
+              bundle. Every learner is on the bundled curriculum and the database content is not
+              being used at all.
+            </p>
+          )}
+
+          <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-meta">
+            <dt className="text-ink-500 dark:text-ink-400">Flag</dt>
+            <dd className="font-mono text-ink-900 dark:text-ink-50">
+              {typeof verdict.flag === 'string' ? verdict.flag : '(missing)'}
+            </dd>
+
+            <dt className="text-ink-500 dark:text-ink-400">Served</dt>
+            <dd
+              className={`font-mono font-semibold ${
+                verdict.served === 'db' ? 'text-success-700 dark:text-success-300' : 'text-ink-900 dark:text-ink-50'
+              }`}
+            >
+              {verdict.served}
+            </dd>
+
+            <dt className="text-ink-500 dark:text-ink-400">Reason</dt>
+            <dd className="font-mono text-ink-700 dark:text-ink-200">{verdictDetail(verdict)}</dd>
+
+            {verdict.outcome.kind === 'db' && (
+              <>
+                <dt className="text-ink-500 dark:text-ink-400">Units</dt>
+                <dd className="font-mono text-ink-900 dark:text-ink-50">{verdict.outcome.units}</dd>
+              </>
+            )}
+          </dl>
+
+          {verdict.errors.length > 0 && (
+            <ul className="mt-2 list-inside list-disc text-meta text-danger-700 dark:text-danger-300">
+              {verdict.errors.map((e) => (
+                <li key={e}>{e}</li>
+              ))}
+            </ul>
+          )}
+        </div>
       )}
     </section>
   );

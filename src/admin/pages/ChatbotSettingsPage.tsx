@@ -37,7 +37,7 @@ import {
   parseAllowedModelsField,
   validateDefaultModel,
 } from '../data/chatbotConfig';
-import { CHATBOT_KEYS } from '../../data/chatbot/config';
+import { CHATBOT_KEYS, UNRESTRICTED_MODELS_SENTINEL } from '../../data/chatbot/config';
 import type { LanguageMix, PersonalityIntensity } from '../../types/chatbot';
 
 const INTENSITIES: ReadonlyArray<{ id: PersonalityIntensity; label: string }> = [
@@ -65,6 +65,32 @@ interface Draft {
   autoOpen: boolean;
 }
 
+/**
+ * The text fields that are EDITED and SAVED, as opposed to chosen from a fixed
+ * set.
+ *
+ * This is the second half of the `SaveButton` contract, and it is the half that
+ * was missing. `SaveButton` renders only when `draftValue !== savedValue`, so a
+ * caller has to be able to say what the LAST SAVED value was — not what the form
+ * currently shows. Every call site passed `draft.<field>` for both props, which
+ * is trivially equal, so the button returned `null` on every render and
+ * `chatbot_base_url`, `chatbot_allowed_models` and `chatbot_default_model` could
+ * not be saved at all. The values below are written ONLY by `load()` and by a
+ * successful save, which is what makes the comparison mean "edited".
+ */
+type TextDraftKey = 'baseUrl' | 'allowedModelsField' | 'model';
+type SavedText = Record<TextDraftKey, string>;
+
+const EMPTY_TEXT: SavedText = { baseUrl: '', allowedModelsField: '', model: '' };
+
+function textOf(draft: Draft): SavedText {
+  return {
+    baseUrl: draft.baseUrl,
+    allowedModelsField: draft.allowedModelsField,
+    model: draft.model,
+  };
+}
+
 const toggleClass = (on: boolean) => (on ? theme.button.toggleActive : theme.button.toggleInactive);
 
 export function ChatbotSettingsPage() {
@@ -74,6 +100,9 @@ export function ChatbotSettingsPage() {
   const [readError, setReadError] = useState<string | null>(null);
   const [seeded, setSeeded] = useState(false);
   const [result, setResult] = useState<AdminActionResult | null>(null);
+  // The last values known to be STORED. Distinct from `draft`, which is what the
+  // form currently shows. See `SavedText`.
+  const [saved, setSaved] = useState<SavedText>(EMPTY_TEXT);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -81,7 +110,7 @@ export function ChatbotSettingsPage() {
     setReadError(read.error);
     setSeeded(read.seeded);
     if (!read.error) {
-      setDraft({
+      const next: Draft = {
         enabled: read.current.enabled,
         baseUrl: read.current.baseUrl,
         model: read.current.model,
@@ -89,7 +118,11 @@ export function ChatbotSettingsPage() {
         intensity: read.current.intensity,
         languageMix: read.current.languageMix,
         autoOpen: read.current.autoOpenOnMistake,
-      });
+      };
+      setDraft(next);
+      // A successful read IS the definition of "saved" — the form was just
+      // populated from storage, so nothing is edited.
+      setSaved(textOf(next));
     }
     setLoading(false);
   }, []);
@@ -140,11 +173,17 @@ export function ChatbotSettingsPage() {
     setBusyKey(key);
     setResult(null);
     const r = await runAdminAction({ action: 'config.set', config: { key, value }, reason });
-    setBusyKey(null);
-    setResult(r);
     // Re-read on success only. On failure the draft on screen is still what the
     // admin intended, which is what they need in order to retry it.
+    //
+    // `busyKey` is cleared AFTER the re-read, not before. Clearing it first
+    // re-enabled every control while `load()` was still in flight, so a second
+    // click could be sent against a `saved` snapshot that had not been updated
+    // yet — and the Save button would be comparing the draft against the
+    // pre-write value it had just replaced.
     if (r.ok) await load();
+    setBusyKey(null);
+    setResult(r);
   }
 
   /* ── the availability switch ── */
@@ -253,7 +292,7 @@ export function ChatbotSettingsPage() {
             busyKey={busyKey}
             currentKey={CHATBOT_KEYS.baseUrl}
             draftValue={draft.baseUrl}
-            savedValue={draft.baseUrl}
+            savedValue={saved.baseUrl}
             disabled={draft.baseUrl.trim() === ''}
             onSave={(v) => void save(CHATBOT_KEYS.baseUrl, v, `Default server URL set to ${v}`)}
           />
@@ -276,18 +315,24 @@ export function ChatbotSettingsPage() {
             busyKey={busyKey}
             currentKey={CHATBOT_KEYS.allowedModels}
             draftValue={draft.allowedModelsField}
-            savedValue={draft.allowedModelsField}
+            savedValue={saved.allowedModelsField}
             disabled={false}
             onSave={(v) => {
               const list = parseAllowedModelsField(v);
               // An empty list is a legitimate value meaning "unrestricted", but
               // `validateConfigWrite` refuses a blank string for every string
               // key. Writing an explicit sentinel is the honest way to express it
-              // without teaching the validator a special case, and the reader
-              // treats a single unrecognised entry as "unrestricted" anyway.
+              // without teaching the validator a special case — and the reader
+              // recognises that sentinel, in `src/data/chatbot/config.ts`.
+              //
+              // The previous comment here claimed "the reader treats a single
+              // unrecognised entry as unrestricted anyway". That was false:
+              // `isModelAllowed` compares against the list, so a stored `any`
+              // restricted every learner to a model literally named `any`, and
+              // the admin's own default-model save then refused every real model.
               void save(
                 CHATBOT_KEYS.allowedModels,
-                list.length === 0 ? 'any' : list.join(', '),
+                list.length === 0 ? UNRESTRICTED_MODELS_SENTINEL : list.join(', '),
                 list.length === 0
                   ? 'Model allow-list cleared (any model permitted)'
                   : `Allowed models set to ${list.join(', ')}`,
@@ -322,7 +367,7 @@ export function ChatbotSettingsPage() {
             busyKey={busyKey}
             currentKey={CHATBOT_KEYS.defaultModel}
             draftValue={draft.model}
-            savedValue={draft.model}
+            savedValue={saved.model}
             disabled={!modelCheck.ok}
             onSave={(v) => void save(CHATBOT_KEYS.defaultModel, v, `Default model set to ${v}`)}
           />

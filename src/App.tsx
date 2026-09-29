@@ -10,6 +10,7 @@ import { LearningContextProvider } from './context/LearningContext';
 import { useAdminModeBootstrap } from './hooks/useAdminModeBootstrap';
 import { useQaBridge } from './hooks/useQaBridge';
 import { useCurriculumSource } from './hooks/useCurriculumSource';
+import { useLessonRenderResolution } from './hooks/useLessonRender';
 import { DebugModeBanner } from './components/debug/DebugModeBanner';
 
 // Core pages - eagerly loaded for instant navigation
@@ -44,8 +45,13 @@ const TermsPage = lazy(() => import('./pages/TermsPage').then(m => ({ default: m
 const HelpPage = lazy(() => import('./pages/HelpPage').then(m => ({ default: m.HelpPage })));
 const FeedbackPage = lazy(() => import('./pages/FeedbackPage').then(m => ({ default: m.FeedbackPage })));
 const A1CheckpointPage = lazy(() => import('./pages/A1CheckpointPage').then(m => ({ default: m.A1CheckpointPage })));
-const LessonModulePage = lazy(() =>
-  import('./components/lesson/LessonModulePage').then(m => ({ default: m.LessonModulePage }))
+// The lesson renderer is chosen by the `lesson_render` switch, not by the route.
+// LessonRoute renders the current page whole on `legacy` and the step-flow on
+// `run`, so the rollout can be flipped (and reverted) by editing one config row
+// rather than by a deploy. See components/lesson/LessonRoute.tsx for why the
+// switch lives outside the page rather than inside it.
+const LessonRoute = lazy(() =>
+  import('./components/lesson/LessonRoute').then(m => ({ default: m.LessonRoute }))
 );
 // The document-style "notes" deep-dive — the PREMIUM tier. It is a separate,
 // more specific route and MUST be declared before `lesson/:unitIndex`, or
@@ -103,6 +109,12 @@ export default function App() {
   //
   // Mounted at the root, for the same reason as the bootstraps above.
   useCurriculumSource();
+  // Resolve the `lesson_render` switch. Same reasoning as the two bootstraps
+  // above and for the same reason: it has to be live for a lesson to render the
+  // right way, including the one route a signed-out visitor can reach directly.
+  // Mounted here rather than inside the lesson page so the read is kicked off
+  // once per session instead of once per lesson opened.
+  useLessonRenderResolution();
   return (
     <ErrorBoundary>
       <BrowserRouter>
@@ -160,8 +172,9 @@ export default function App() {
                     like every other module route: deep links always load. */}
                 {/* PREMIUM first: the article-style notes for a lesson. */}
     <Route path="lesson/:unitIndex/notes" element={<LessonPage />} />
-    {/* FREE: the interactive lesson — the same material as tabs, cards and drills. */}
-    <Route path="lesson/:unitIndex" element={<LessonModulePage />} />
+    {/* FREE: the interactive lesson — resolved through the `lesson_render`
+        switch so the step-flow can be piloted and rolled back by config. */}
+    <Route path="lesson/:unitIndex" element={<LessonRoute />} />
                 {/* Unit 2 optional practice — bonus node on the /learn spine */}
                 <Route path="sentence-builder" element={<SentenceBuilderPage />} />
                 {/* NotebookLM mechanics: games hub + Goethe A1 Schreiben trainer.

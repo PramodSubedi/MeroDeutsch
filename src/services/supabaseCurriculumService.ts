@@ -681,14 +681,45 @@ export class SupabaseCurriculumService implements CurriculumService {
             }
           }
 
-          // Levels come from the rows' `level` column (same in both paths).
+          // Levels come from a DISTINCT aggregate, not a full-table read.
+          //
+          // This used to be `supabase.from('vocabulary').select('level')` —
+          // unfiltered, unlimited, every row of the dictionary to read one
+          // column, and the only read here with no error guard. A failure
+          // silently produced an empty level list, so the filter dropdown came
+          // up short and the learner saw "this app has fewer levels", which is
+          // indistinguishable from a content problem.
+          //
+          // `vocab_levels()` is the same answer computed where the index is. The
+          // fallback below is loud rather than silent, for the same reason.
           const levels = new Set<string>();
-          const { data: levelsData, error: levelsError } = await supabase
-            .from('vocabulary')
-            .select('level');
-          if (!levelsError && levelsData) {
+          const { data: levelsData, error: levelsError } = await supabase.rpc('vocab_levels');
+          if (levelsError) {
+            // `vocab_levels` is not deployed, OR the read failed. Either way this
+            // must not be silent: a missing level list is a bug the learner sees
+            // as missing content.
+            //
+            // The direct read is the fallback, and it is the ONLY unconditional
+            // full-table scan left in the learner app. It stays because the
+            // alternative is a silently short dropdown, and a visible console
+            // error plus correct behaviour beats a quiet wrong one.
+            console.error(
+              `[vocabulary] vocab_levels() unavailable (${levelsError.message}); falling back to a direct read.`,
+            );
+            const { data: fallback, error: fallbackError } = await supabase
+              .from('vocabulary')
+              .select('level');
+            if (fallbackError) {
+              console.error(`[vocabulary] level fallback also failed: ${fallbackError.message}`);
+            } else {
+              for (const r of (fallback ?? []) as { level?: string | null }[]) {
+                if (r.level) levels.add(r.level);
+              }
+            }
+          } else if (Array.isArray(levelsData)) {
             for (const r of levelsData) {
-              if (r.level) levels.add(r.level);
+              const level = (r as { level?: string | null }).level;
+              if (level) levels.add(level);
             }
           }
           options.levels = Array.from(levels)

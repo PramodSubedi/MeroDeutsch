@@ -959,5 +959,983 @@
         "de": ""
       }
     }
-  ]
+  ],
+  "steps": [
+    {
+      "type": "intro",
+      "objectives": {
+        "en": [
+          "Identify noun genders using definite articles (der, die, das)",
+          "Use indefinite articles (ein, eine) and negation (kein, keine)",
+          "Describe house objects and apartments in the Nominative case"
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "der Tisch",
+        "en": "table",
+        "ne": "टेबुल",
+        "examples": [
+          {
+            "de": "Der Tisch ist neu.",
+            "en": "The table is new."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "die Tür",
+        "en": "door",
+        "ne": "ढोका",
+        "examples": [
+          {
+            "de": "Die Tür ist offen.",
+            "en": "The door is open."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "das Bett",
+        "en": "bed",
+        "ne": "खाट",
+        "examples": [
+          {
+            "de": "Das Bett ist bequem.",
+            "en": "The bed is comfortable."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "die Wohnung",
+        "en": "apartment",
+        "ne": "कोठा / अपार्टमेन्ट",
+        "examples": [
+          {
+            "de": "Die Wohnung ist groß.",
+            "en": "The apartment is big."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "explain",
+      "title": {
+        "en": "Noun Genders & Nominative Negation"
+      },
+      "body": "German nouns have 3 genders:\n\n- **Masculine**: **der** Tisch -> ein Tisch -> **kein** Tisch.\n- **Feminine**: **die** Tür -> eine Tür -> **keine** Tür.\n- **Neuter**: **das** Bett -> ein Bett -> **kein** Bett.\n\nUse **kein/keine** to negate nouns ('no / not a')."
+    },
+    {
+      "type": "typed",
+      "ask": "choose-article",
+      "prompt": "Tisch",
+      "answer": "der",
+      "accepted": [
+        "der"
+      ],
+      "note": "Tisch is masculine."
+    },
+    {
+      "type": "typed",
+      "ask": "choose-article",
+      "prompt": "Bett",
+      "answer": "das",
+      "accepted": [
+        "das"
+      ],
+      "note": "Bett is neuter."
+    },
+    {
+      "type": "typed",
+      "ask": "choose-article",
+      "prompt": "Wohnung",
+      "answer": "die",
+      "accepted": [
+        "die"
+      ],
+      "note": "Wohnung is feminine."
+    },
+    {
+      "type": "mcq",
+      "prompt": "Which negative article negates a feminine noun like 'Tür'?",
+      "options": [
+        "keine",
+        "kein",
+        "nicht"
+      ],
+      "answer": "keine",
+      "hintReason": "Feminine nouns take 'keine' in the nominative."
+    },
+    {
+      "type": "match",
+      "pairs": [
+        {
+          "id": "0",
+          "de": "der Tisch",
+          "en": "table"
+        },
+        {
+          "id": "1",
+          "de": "die Tür",
+          "en": "door"
+        },
+        {
+          "id": "2",
+          "de": "das Bett",
+          "en": "bed"
+        },
+        {
+          "id": "3",
+          "de": "die Wohnung",
+          "en": "apartment"
+        }
+      ],
+      "columnLabels": {
+        "left": "Deutsch",
+        "right": "English"
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "groß",
+        "en": "big / large",
+        "ne": "ठूलो",
+        "examples": [
+          {
+            "de": "Das Haus ist groß.",
+            "en": "The house is big."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "klein",
+        "en": "small",
+        "ne": "सानो",
+        "examples": [
+          {
+            "de": "Das Zimmer ist klein.",
+            "en": "The room is small."
+          }
+        ]
+      },
+      "active": true
+    },
+    {
+      "type": "dialogue",
+      "title": {
+        "en": "In the New Apartment",
+        "de": "In der neuen Wohnung"
+      },
+      "turns": [
+        {
+          "speaker": "Landlord",
+          "de": "Das ist das Wohnzimmer.",
+          "en": "This is the living room."
+        },
+        {
+          "speaker": "Tenant",
+          "de": "Das Wohnzimmer ist sehr groß!",
+          "en": "The living room is very big!"
+        },
+        {
+          "speaker": "Landlord",
+          "de": "Hier ist die Küche.",
+          "en": "Here is the kitchen."
+        },
+        {
+          "speaker": "Tenant",
+          "de": "Die Küche ist schön.",
+          "en": "The kitchen is nice."
+        }
+      ]
+    },
+    {
+      "type": "typed",
+      "ask": "fill-blank",
+      "prompt": "Das ist ___ (no) Tisch.",
+      "answer": "kein",
+      "accepted": [
+        "kein"
+      ],
+      "note": "Tisch is masculine -> kein"
+    },
+    {
+      "type": "typed",
+      "ask": "translate-en-de",
+      "prompt": "The apartment is small.",
+      "answer": "Die Wohnung ist klein",
+      "accepted": [
+        "Die Wohnung ist klein."
+      ],
+      "note": "Wohnung is feminine -> Die."
+    },
+    {
+      "type": "arrange",
+      "prompt": "Order the sentence:",
+      "tokens": [
+        "Die",
+        "Wohnung",
+        "ist",
+        "klein."
+      ]
+    },
+    {
+      "type": "dictation",
+      "text": "Das Haus ist groß.",
+      "instruction": "Listen and type what you hear."
+    },
+    {
+      "type": "culture",
+      "body": "In Germany, rental apartments are often rented without fitted kitchens ('EBK' = Einbauküche). Tenants often bring their own kitchen furniture!"
+    },
+    {
+      "type": "typed",
+      "ask": "correct",
+      "prompt": "Das ist keine Tisch.",
+      "answer": "Das ist kein Tisch",
+      "accepted": [
+        "Das ist kein Tisch."
+      ],
+      "note": "Tisch is masculine -> kein Tisch."
+    },
+    {
+      "type": "mcq",
+      "prompt": "What ending do nouns ending in '-ung' (like Wohnung) always take for gender?",
+      "options": [
+        "die (feminine)",
+        "der (masculine)",
+        "das (neuter)"
+      ],
+      "answer": "die (feminine)",
+      "hintReason": "Nouns ending in '-ung' are always feminine ('die')."
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Tisch",
+        "en": "Table",
+        "ne": "टेबल",
+        "article": "der",
+        "plural": "Tische",
+        "ipa": "/tɪʃ/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Der Tisch steht im Wohnzimmer.",
+            "en": "The table is in the living room.",
+            "ne": "टेबल बैठक कोठामा छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Stuhl",
+        "en": "Chair",
+        "ne": "मेच",
+        "article": "der",
+        "plural": "Stühle",
+        "ipa": "/ʃtuːl/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Der Stuhl ist sehr bequem.",
+            "en": "The chair is very comfortable.",
+            "ne": "मेच धेरै आरामदायी छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Schrank",
+        "en": "Cupboard / Closet",
+        "ne": "दराज",
+        "article": "der",
+        "plural": "Schränke",
+        "ipa": "/ʃʁaŋk/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Der Schrank ist groß.",
+            "en": "The closet is big.",
+            "ne": "दराज ठूलो छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Fernseher",
+        "en": "Television",
+        "ne": "टेलिभिजन",
+        "article": "der",
+        "plural": "Fernseher",
+        "ipa": "/ˈfɛʁnˌzeːɐ̯/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Der Fernseher ist neu.",
+            "en": "The television is new.",
+            "ne": "टेलिभिजन नयाँ छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Kühlschrank",
+        "en": "Refrigerator",
+        "ne": "फ्रिज",
+        "article": "der",
+        "plural": "Kühlschränke",
+        "ipa": "/ˈkyːlˌʃʁaŋk/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Der Kühlschrank ist voll.",
+            "en": "The refrigerator is full.",
+            "ne": "फ्रिज भरिएको छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Schlüssel",
+        "en": "Key",
+        "ne": "चाबी",
+        "article": "der",
+        "plural": "Schlüssel",
+        "ipa": "/ˈʃlʏsl̩/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Wo ist mein Schlüssel?",
+            "en": "Where is my key?",
+            "ne": "मेरो चाबी कहाँ छ?"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Tür",
+        "en": "Door",
+        "ne": "ढोका",
+        "article": "die",
+        "plural": "Türen",
+        "ipa": "/tyːɐ̯/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Die Tür ist geschlossen.",
+            "en": "The door is closed.",
+            "ne": "ढोका बन्द छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Lampe",
+        "en": "Lamp",
+        "ne": "बत्ती / ल्याम्प",
+        "article": "die",
+        "plural": "Lampen",
+        "ipa": "/ˈlampə/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Die Lampe ist hell.",
+            "en": "The lamp is bright.",
+            "ne": "बत्ती चम्किलो छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Küche",
+        "en": "Kitchen",
+        "ne": "भान्सा",
+        "article": "die",
+        "plural": "Küchen",
+        "ipa": "/ˈkʏçə/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Die Küche ist sauber.",
+            "en": "The kitchen is clean.",
+            "ne": "भान्सा सफा छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Wohnung",
+        "en": "Apartment / Flat",
+        "ne": "कोठा / फ्लाट",
+        "article": "die",
+        "plural": "Wohnungen",
+        "ipa": "/ˈvoːnʊŋ/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Die Wohnung hat drei Zimmer.",
+            "en": "The apartment has three rooms.",
+            "ne": "फ्लाटमा तीन वटा कोठा छन्।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Tasche",
+        "en": "Bag",
+        "ne": "झोला",
+        "article": "die",
+        "plural": "Taschen",
+        "ipa": "/ˈtaʃə/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Meine Tasche ist schwer.",
+            "en": "My bag is heavy.",
+            "ne": "मेरो झोला गह्रौँ छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Brille",
+        "en": "Glasses",
+        "ne": "चश्मा",
+        "article": "die",
+        "plural": "Brillen",
+        "ipa": "/ˈbʁɪlə/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Ich brauche meine Brille.",
+            "en": "I need my glasses.",
+            "ne": "मलाई मेरो चश्मा चाहिन्छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Buch",
+        "en": "Book",
+        "ne": "किताब",
+        "article": "das",
+        "plural": "Bücher",
+        "ipa": "/buːx/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Das Buch ist interessant.",
+            "en": "The book is interesting.",
+            "ne": "किताब रोचक छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Bett",
+        "en": "Bed",
+        "ne": "ओछ्यान / खाट",
+        "article": "das",
+        "plural": "Betten",
+        "ipa": "/bɛt/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Das Bett ist weich.",
+            "en": "The bed is soft.",
+            "ne": "खाट नरम छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Sofa",
+        "en": "Sofa / Couch",
+        "ne": "सोफा",
+        "article": "das",
+        "plural": "Sofas",
+        "ipa": "/ˈzoːfa/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Das Sofa ist neu.",
+            "en": "The sofa is new.",
+            "ne": "सोफा नयाँ छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Fenster",
+        "en": "Window",
+        "ne": "झ्याल",
+        "article": "das",
+        "plural": "Fenster",
+        "ipa": "/ˈfɛnstɐ/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Öffnen Sie das Fenster!",
+            "en": "Open the window!",
+            "ne": "झ्याल खोल्नुहोस्!"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Haus",
+        "en": "House",
+        "ne": "घर",
+        "article": "das",
+        "plural": "Häuser",
+        "ipa": "/haʊ̯s/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Das Haus hat einen Garten.",
+            "en": "The house has a garden.",
+            "ne": "घरको एउटा बगैँचा छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Zimmer",
+        "en": "Room",
+        "ne": "कोठा",
+        "article": "das",
+        "plural": "Zimmer",
+        "ipa": "/ˈtsɪmɐ/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Das Zimmer ist hell.",
+            "en": "The room is bright.",
+            "ne": "कोठा उज्यालो छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Badezimmer",
+        "en": "Bathroom",
+        "ne": "शौचालय / स्नानगृह",
+        "article": "das",
+        "plural": "Badezimmer",
+        "ipa": "/ˈbaːdəˌtsɪmɐ/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Wo ist das Badezimmer?",
+            "en": "Where is the bathroom?",
+            "ne": "स्नानगृह कहाँ छ?"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Handy",
+        "en": "Mobile phone",
+        "ne": "मोबाइल",
+        "article": "das",
+        "plural": "Handys",
+        "ipa": "/ˈhɛndi/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Mein Handy liegt auf dem Tisch.",
+            "en": "My mobile phone is on the table.",
+            "ne": "मेरो मोबाइल टेबलमा छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "schön",
+        "en": "Beautiful / Nice",
+        "ne": "सुन्दर",
+        "plural": "-",
+        "ipa": "/ʃøːn/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Das Haus ist sehr schön.",
+            "en": "The house is very beautiful.",
+            "ne": "घर धेरै सुन्दर छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "alt",
+        "en": "Old",
+        "ne": "पुराना",
+        "plural": "-",
+        "ipa": "/alt/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Der Fernseher ist alt.",
+            "en": "The TV is old.",
+            "ne": "टिभी पुरानो छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "neu",
+        "en": "New",
+        "ne": "नयाँ",
+        "plural": "-",
+        "ipa": "/nɔɪ̯/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Ich habe ein neues Handy.",
+            "en": "I have a new phone.",
+            "ne": "मसँग नयाँ फोन छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "hell",
+        "en": "Bright / Light",
+        "ne": "उज्यालो",
+        "plural": "-",
+        "ipa": "/hɛl/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Das Zimmer ist sehr hell.",
+            "en": "The room is very bright.",
+            "ne": "कोठा धेरै उज्यालो छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "dunkel",
+        "en": "Dark",
+        "ne": "अध्याँरो",
+        "plural": "-",
+        "ipa": "/ˈdʊŋkl̩/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Es ist dunkel draußen.",
+            "en": "It is dark outside.",
+            "ne": "बाहिर अध्याँरो छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "teuer",
+        "en": "Expensive",
+        "ne": "महँगो",
+        "plural": "-",
+        "ipa": "/ˈtɔɪ̯ɐ/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Das Auto ist zu teuer.",
+            "en": "The car is too expensive.",
+            "ne": "गाडी धेरै महँगो छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "billig / günstig",
+        "en": "Cheap / Affordable",
+        "ne": "सस्तो",
+        "plural": "-",
+        "ipa": "/ˈbɪlɪç/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Die Miete ist günstig.",
+            "en": "The rent is affordable.",
+            "ne": "भाडा सस्तो छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Miete",
+        "en": "Rent",
+        "ne": "भाडा",
+        "article": "die",
+        "plural": "Mieten",
+        "ipa": "/ˈmiːtə/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Wie hoch ist die Miete?",
+            "en": "How high is the rent?",
+            "ne": "भाडा कति हो?"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "kein",
+        "en": "No / None (noun negation)",
+        "ne": "होइन / छैन",
+        "plural": "keine",
+        "ipa": "/kaɪ̯n/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Ich habe keinen Tisch.",
+            "en": "I have no table.",
+            "ne": "मसँग कुनै टेबल छैन।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "nicht",
+        "en": "Not (verb/adj negation)",
+        "ne": "होइन / छैन",
+        "plural": "-",
+        "ipa": "/nɪçt/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Das Haus ist nicht groß.",
+            "en": "The house is not big.",
+            "ne": "घर ठूलो छैन।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "da",
+        "en": "There",
+        "ne": "त्यहाँ",
+        "plural": "-",
+        "ipa": "/daː/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Der Schlüssel liegt da.",
+            "en": "The key is there.",
+            "ne": "चाबी त्यहाँ छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "hier",
+        "en": "Here",
+        "ne": "यहाँ",
+        "plural": "-",
+        "ipa": "/hiːɐ̯/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Hier ist Ihre Wohnung.",
+            "en": "Here is your apartment.",
+            "ne": "यहाँ तपाईंको फ्लाट छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "frei",
+        "en": "Free / Vacant",
+        "ne": "खाली",
+        "plural": "-",
+        "ipa": "/fʁaɪ̯/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Ist dieses Zimmer frei?",
+            "en": "Is this room vacant?",
+            "ne": "के यो कोठा खाली छ?"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "besetzt",
+        "en": "Occupied / Taken",
+        "ne": "भरिएको",
+        "plural": "-",
+        "ipa": "/bəˈzɛts/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Das Badezimmer ist besetzt.",
+            "en": "The bathroom is occupied.",
+            "ne": "स्नानगृह भरिएको छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "suchen",
+        "en": "to search / look for",
+        "ne": "खोज्नु",
+        "plural": "sucht / suchte / gesucht",
+        "ipa": "/ˈzuːxn̩/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Ich suche meine Brille.",
+            "en": "I am looking for my glasses.",
+            "ne": "म मेरो चश्मा खोज्दैछु।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "finden",
+        "en": "to find",
+        "ne": "भेट्टाउनु",
+        "plural": "findet / fand / gefunden",
+        "ipa": "/ˈfɪndn̩/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Ich finde den Schlüssel nicht.",
+            "en": "I cannot find the key.",
+            "ne": "मैले चाबी भेट्टाउन सकिनँ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "gehören",
+        "en": "to belong to",
+        "ne": "स्वामित्वमा हुनु",
+        "plural": "gehört / gehörte / gehört",
+        "ipa": "/ɡəˈhøːʁən/",
+        "frequency": "passive",
+        "examples": [
+          {
+            "de": "Gehört das Buch dir?",
+            "en": "Does the book belong to you?",
+            "ne": "यो किताब तिम्रो हो?"
+          }
+        ]
+      }
+    },
+    {
+      "type": "word",
+      "entry": {
+        "word": "Möbel",
+        "en": "Furniture",
+        "ne": "फर्निचर",
+        "article": "die",
+        "plural": "-",
+        "ipa": "/ˈmøːbl̩/",
+        "frequency": "active",
+        "examples": [
+          {
+            "de": "Die Möbel sind neu.",
+            "en": "The furniture is new.",
+            "ne": "फर्निचर नयाँ छ।"
+          }
+        ]
+      }
+    },
+    {
+      "type": "summary"
+    }
+  ],
+  "stepsSource": "imported"
 }

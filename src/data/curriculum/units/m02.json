@@ -24,14 +24,14 @@
         "en": "Numbers",
         "de": "Zahlen"
       },
-      "to": "/numbers"
+      "to": "/lesson/1"
     },
     {
       "id": "m02-numbers-blitz",
       "kind": "practice",
       "label": {
-        "en": "Number Blitz",
-        "de": "Zahlen-Blitz"
+        "en": "Numbers Practice",
+        "de": "Zahlenübungen"
       },
       "to": "/rapid-fire?mode=number-conversion"
     },
@@ -42,6 +42,15 @@
         "en": "Module 2 Checkpoint",
         "de": "Modul 2 Prüfung"
       }
+    },
+    {
+      "id": "m02-tool",
+      "kind": "bonus",
+      "label": {
+        "en": "Numbers Practice",
+        "de": "Zahlenübungen"
+      },
+      "to": "/numbers"
     }
   ],
   "bonus": [

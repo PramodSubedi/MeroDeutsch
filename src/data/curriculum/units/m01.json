@@ -24,14 +24,14 @@
         "en": "Greetings",
         "de": "Grüße"
       },
-      "to": "/greetings"
+      "to": "/lesson/0"
     },
     {
       "id": "m01-dictation",
       "kind": "practice",
       "label": {
-        "en": "Dictation",
-        "de": "Diktat"
+        "en": "Greetings Practice",
+        "de": "Begrüßungsübungen"
       },
       "to": "/dictation"
     },
@@ -42,6 +42,15 @@
         "en": "Module 1 Checkpoint",
         "de": "Modul 1 Prüfung"
       }
+    },
+    {
+      "id": "m01-tool",
+      "kind": "bonus",
+      "label": {
+        "en": "Greetings Practice",
+        "de": "Begrüßungsübungen"
+      },
+      "to": "/greetings"
     }
   ],
   "bonus": [

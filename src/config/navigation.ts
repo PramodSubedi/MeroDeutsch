@@ -61,18 +61,6 @@ export interface NavDestination {
   matchPaths: readonly string[];
   /** Hidden entirely for signed-out visitors. */
   authOnly?: boolean;
-  /**
-   * Guest variant. The A1 spine is a signed-in benefit, so guests get a
-   * "Lessons" shortcut to the module grid on Home instead of the spine. Its own
-   * `matchPaths` keeps the section lit while the learner is inside a lesson,
-   * without stealing Home's active state.
-   */
-  guest?: {
-    to: string;
-    label: LocalizedLabel;
-    short: LocalizedLabel;
-    matchPaths: readonly string[];
-  };
   /** Render the live due-review count from useReviewQueue (never re-derived). */
   badge?: 'due';
 }
@@ -101,18 +89,6 @@ export const PRIMARY_NAV: readonly NavDestination[] = [
     // Learn, and leaving it out meant clicking through to it from the course
     // header unlit the tab you were already in.
     matchPaths: [...new Set(['/learn', '/levels', '/checkpoint', ...modulePaths('learning')])],
-    guest: {
-      // Guests get the REAL spine, the same as signed-in learners. This used to
-      // send them to `/home#learning-path` — a flat card grid with its own
-      // hardcoded lesson list — while `/learn` stayed reachable by URL, so the
-      // app shipped two learning paths and contradicted the locked decision
-      // that the path is the spine. `useA1Path` already supports a 'guest'
-      // identity, so the spine works signed-out and keeps progress on-device.
-      to: '/learn',
-      label: { en: 'Learn', de: 'Lernen' },
-      short: { en: 'Learn', de: 'Lernen' },
-      matchPaths: [...new Set(['/learn', '/levels', '/checkpoint', ...modulePaths('learning')])],
-    },
   },
   {
     id: 'practice',
@@ -179,32 +155,43 @@ export function getPrimaryNav(isAuthenticated: boolean): NavDestination[] {
   return PRIMARY_NAV.filter((item) => !item.authOnly || isAuthenticated);
 }
 
-/** Where a destination actually navigates, honouring the guest variant. */
-export function navTarget(item: NavDestination, isAuthenticated: boolean): string {
-  return !isAuthenticated && item.guest ? item.guest.to : item.to;
+/**
+ * Where a destination actually navigates.
+ *
+ * There is deliberately no per-visitor override here any more. The old
+ * `guest` variant existed to point signed-out visitors at a flat lesson grid
+ * instead of the A1 spine — but `/learn` now serves BOTH surfaces itself
+ * (`ContinueLearningPage` branches on the plan: the spine for Premium, the
+ * `LearningPath` grid for everyone else). The only `guest` block that survived
+ * in the table was byte-identical to its parent's values, so it overrode
+ * nothing while its comment asserted the opposite of what the page did.
+ *
+ * A nav override is the wrong tool for a content gate: the nav describes
+ * WHERE a destination is, and the page decides WHAT is there. Splitting the two
+ * is what let the shell and the page disagree.
+ */
+export function navTarget(item: NavDestination): string {
+  return item.to;
 }
 
 /** Localized label for the current visitor (rail / drawer). */
-export function navLabel(item: NavDestination, isAuthenticated: boolean, isDE: boolean): string {
-  const label = !isAuthenticated && item.guest ? item.guest.label : item.label;
-  return isDE ? label.de : label.en;
+export function navLabel(item: NavDestination, isDE: boolean): string {
+  return isDE ? item.label.de : item.label.en;
 }
 
 /** Localized compact label (bottom bar). */
-export function navShortLabel(item: NavDestination, isAuthenticated: boolean, isDE: boolean): string {
-  const label = !isAuthenticated && item.guest ? item.guest.short : item.short;
-  return isDE ? label.de : label.en;
+export function navShortLabel(item: NavDestination, isDE: boolean): string {
+  return isDE ? item.short.de : item.short.en;
 }
 
 /** Is this destination the one the learner is currently inside? */
-export function isNavActive(pathname: string, item: NavDestination, isAuthenticated: boolean): boolean {
-  if (!isAuthenticated && item.guest) return matchesAny(pathname, item.guest.matchPaths);
+export function isNavActive(pathname: string, item: NavDestination): boolean {
   return matchesAny(pathname, item.matchPaths);
 }
 
 /** The primary destination containing `pathname`, or undefined. */
 export function getActiveDestination(pathname: string, isAuthenticated: boolean): NavDestination | undefined {
-  return getPrimaryNav(isAuthenticated).find((item) => isNavActive(pathname, item, isAuthenticated));
+  return getPrimaryNav(isAuthenticated).find((item) => isNavActive(pathname, item));
 }
 
 /** The secondary destination containing `pathname`, or undefined. */
@@ -226,7 +213,7 @@ export interface NavSection {
 export function navSectionFor(pathname: string, isAuthenticated: boolean, isDE: boolean): NavSection {
   const primary = getActiveDestination(pathname, isAuthenticated);
   if (primary) {
-    return { id: primary.id, label: navLabel(primary, isAuthenticated, isDE), icon: primary.icon };
+    return { id: primary.id, label: navLabel(primary, isDE), icon: primary.icon };
   }
   const secondary = getActiveSecondary(pathname);
   if (secondary) {

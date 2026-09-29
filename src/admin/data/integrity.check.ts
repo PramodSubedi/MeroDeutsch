@@ -93,6 +93,31 @@ check('exactly 3 of 7 rows are flagged', mis?.count === 3, String(mis?.count));
 check('the clean rows are not flagged', !mis?.samples.some((s) => s.label.startsWith('Haus')));
 check('the clean German rows are not flagged', !mis?.samples.some((s) => s.label.startsWith('Der (')));
 check('it is ranked as an error', mis?.severity === 'error');
+// The detail must NOT tell the operator these are confirmed defects. A live SQL
+// check found at least two of the 47 are correct and trip the detector only
+// because the English word coincides with an unrelated German headword — and the
+// constant-offset theory that would have made them all wrong was rejected. The
+// wording is the thing that stops an admin bulk-repairing correct rows.
+const misDetail = mis?.detail ?? '';
+check('the finding does not claim every row is wrong', !/every one of these/i.test(misDetail), misDetail);
+check('the finding says to treat them as candidates', /candidate/i.test(misDetail));
+check('the finding says there is no bulk fix', /no bulk fix|hand/i.test(misDetail));
+
+/* ── 3b. THE KNOWN FALSE POSITIVES ARE PINNED ────────────────────────────── */
+console.log('\n=== 3b. THE KNOWN-CORRECT ROWS THE DETECTOR CATCHES ANYWAY ===');
+// These are the two rows a live SQL check confirmed are correct. They MUST still
+// be flagged — the heuristic cannot tell them apart, and pretending otherwise
+// would mean a special case keyed on a coincidence. What this pins is that we
+// KNOW it happens, so "47 findings" is never read as "47 defects".
+const withGermanHeadwords = new Set([...heads, 'ticket', 'bad', 'die', 'das']);
+const falsePositive = isMisalignedTranslation('Fahrkarte', 'ticket', withGermanHeadwords);
+const secondFalsePositive = isMisalignedTranslation('schlecht', 'bad', withGermanHeadwords);
+check('Fahrkarte → ticket IS flagged, and is still a correct row', falsePositive);
+check('schlecht → bad IS flagged, and is still a correct row', secondFalsePositive);
+// Therefore the count on the page is a CANDIDATE count. Asserted through the
+// wording, because that is the only place the number reaches a human.
+check('the finding count is described as candidates, not defects', /candidate/i.test(misDetail));
+check('the finding warns that some rows are correct', /correct/i.test(misDetail), misDetail);
 
 console.log('\n=== 4. MISSING FIELDS ===');
 const gappy = [row({ translationNp: '' }), row({ exampleDe: '' }), row({ translationNp: null, exampleDe: '   ' })];

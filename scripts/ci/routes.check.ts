@@ -44,20 +44,27 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..');
 const APP = path.join(ROOT, 'src', 'admin', 'AdminApp.tsx');
 const LAYOUT = path.join(ROOT, 'src', 'admin', 'AdminLayout.tsx');
+// The nav table moved out of `AdminLayout.tsx` and into `data/search.ts`, so the
+// sidebar and the ⌘K palette render from ONE list. It was duplicated, and the
+// two copies had drifted by one entry — `data/search.ts` was missing `/debug`,
+// so the QA simulator could not be found by searching for it.
+const NAV = path.join(ROOT, 'src', 'admin', 'data', 'search.ts');
 
 console.log('\n=== 0. THE FILES EXIST ===');
 check('AdminApp.tsx is readable', fs.existsSync(APP), APP);
 check('AdminLayout.tsx is readable', fs.existsSync(LAYOUT), LAYOUT);
-if (!fs.existsSync(APP) || !fs.existsSync(LAYOUT)) {
+check('the shared nav table is readable', fs.existsSync(NAV), NAV);
+if (!fs.existsSync(APP) || !fs.existsSync(LAYOUT) || !fs.existsSync(NAV)) {
   console.log(`\n[summary] FAILED — cannot check routes without ${APP}`);
   process.exit(1);
 }
 
 const app = fs.readFileSync(APP, 'utf8');
 const layout = fs.readFileSync(LAYOUT, 'utf8');
+const search = fs.readFileSync(NAV, 'utf8');
 
-/** `to: '/users'` in the nav table. */
-const navPaths = [...layout.matchAll(/\bto:\s*'([^']+)'/g)].map((m) => m[1]);
+/** `to: '/users'` in the shared nav table. */
+const navPaths = [...search.matchAll(/\{\s*to:\s*'([^']+)'/g)].map((m) => m[1]);
 /** `path="users"` on a `<Route>` — relative to the layout route at "/". */
 const routePaths = [...app.matchAll(/<Route\s+path="([^"]*)"/g)].map((m) => m[1]);
 
@@ -97,6 +104,17 @@ check('every nav path starts with /', navPaths.every((p) => p.startsWith('/')), 
 check('no nav path has a stray trailing slash', navPaths.every((p) => !p.endsWith('/') || p === '/'), navPaths.join(', '));
 check('the catch-all is the only wildcard', routePaths.filter((p) => p.includes('*')).length <= 1);
 check('routes are mounted under the admin layout', /<Route element=\{<AdminLayout \/>\}>/.test(app));
+
+console.log('\n=== 5. THE SIDEBAR AND THE PALETTE SHARE ONE TABLE ===');
+// The drift that motivated moving it. Two hand-kept copies, nine vs ten entries,
+// and nothing compared them — so `/debug` was routable, present in the sidebar,
+// and unfindable by search.
+check('AdminLayout imports the shared nav table', /NAV_ITEMS/.test(layout) && /from\s+'.\/data\/search'/.test(layout));
+check('AdminLayout no longer declares its own table', !/const NAV_ITEMS\s*:\s*readonly/.test(layout));
+// Icons stay in the component, so the shared module stays importable headless.
+check('the icon map is keyed by route, not a second table', /NAV_ICONS/.test(layout));
+check('every nav route has an icon', navPaths.every((p) => new RegExp(`'${p.replace('/', '\\/')}':`).test(layout)));
+check('no icon key points at a route with no entry', [...layout.matchAll(/^\s{2}'(\/[^']*)':/gm)].map((m) => m[1]).every((p) => navPaths.includes(p)));
 
 console.log(`\n${failures.length === 0 ? '[summary] ALL' : '[summary]'} ${checks} CHECKS ${failures.length === 0 ? 'PASSED' : `FAILED (${failures.length})`}`);
 if (failures.length > 0) {

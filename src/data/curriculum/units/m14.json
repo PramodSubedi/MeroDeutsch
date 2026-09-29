@@ -17,15 +17,55 @@
     "de": "Nach Weg fragen/geben, Verkehrsmittel mit mit + Dativ beschreiben, Wechselpräpositionsfälle unterscheiden (Wohin? Akkusativ vs. Wo? Dativ), formale Imperative für Navigation nutzen."
   },
   "nodes": [
-    { "id": "m14-learn", "kind": "learn", "label": { "en": "Directions", "de": "Richtungen" }, "to": "/roleplay?scene=directions", "xp": 10 },
-    { "id": "m14-practice", "kind": "practice", "label": { "en": "City & Travel", "de": "Stadt & Reisen" }, "to": "/vocab-trainer?category=city-travel", "xp": 20 },
-    { "id": "m14-checkpoint", "kind": "checkpoint", "label": { "en": "Module 14 Checkpoint", "de": "Modul 14 Prüfung" } }
+    {
+      "id": "m14-learn",
+      "kind": "learn",
+      "label": {
+        "en": "Directions",
+        "de": "Richtungen"
+      },
+      "to": "/lesson/13",
+      "xp": 10
+    },
+    {
+      "id": "m14-practice",
+      "kind": "practice",
+      "label": {
+        "en": "Directions Roleplay",
+        "de": "Wegbeschreibungs-Rollenspiel"
+      },
+      "to": "/vocab-trainer?category=city-travel",
+      "xp": 20
+    },
+    {
+      "id": "m14-checkpoint",
+      "kind": "checkpoint",
+      "label": {
+        "en": "Module 14 Checkpoint",
+        "de": "Modul 14 Prüfung"
+      }
+    },
+    {
+      "id": "m14-tool",
+      "kind": "bonus",
+      "label": {
+        "en": "Directions Roleplay",
+        "de": "Wegbeschreibungs-Rollenspiel"
+      },
+      "to": "/roleplay?scene=directions"
+    }
   ],
   "checkpoint": {
     "moduleType": "a1-checkpoint",
     "specs": [
-      { "type": "grammar-drill", "count": 8 },
-      { "type": "vocab-translation", "count": 4 }
+      {
+        "type": "grammar-drill",
+        "count": 8
+      },
+      {
+        "type": "vocab-translation",
+        "count": 4
+      }
     ]
   },
   "pedagogy": {
@@ -39,20 +79,158 @@
         "de": "Wechselpräpositionen: Akkusativ vs Dativ (Wohin? / Wo?)"
       },
       "rows": [
-        { "label": { "en": "in (Accusative)", "de": "in (Akkusativ)" }, "usage": { "en": "Wohin?", "de": "Wohin?" }, "example": { "en": "in den Park / in die Stadt", "de": "in den Park / in die Stadt" } },
-        { "label": { "en": "in (Dative)", "de": "in (Dativ)" }, "usage": { "en": "Wo?", "de": "Wo?" }, "example": { "en": "im Park / in der Stadt", "de": "im Park / in der Stadt" } },
-        { "label": { "en": "an (Accusative)", "de": "an (Akkusativ)" }, "usage": { "en": "Wohin?", "de": "Wohin?" }, "example": { "en": "an den See / ans Meer", "de": "an den See / ans Meer" } },
-        { "label": { "en": "an (Dative)", "de": "an (Dativ)" }, "usage": { "en": "Wo?", "de": "Wo?" }, "example": { "en": "am See / am Meer", "de": "am See / am Meer" } },
-        { "label": { "en": "auf (Accusative)", "de": "auf (Akkusativ)" }, "usage": { "en": "Wohin?", "de": "Wohin?" }, "example": { "en": "auf den Tisch", "de": "auf den Tisch" } },
-        { "label": { "en": "auf (Dative)", "de": "auf (Dativ)" }, "usage": { "en": "Wo?", "de": "Wo?" }, "example": { "en": "auf dem Tisch", "de": "auf dem Tisch" } },
-        { "label": { "en": "vor (Accusative)", "de": "vor (Akkusativ)" }, "usage": { "en": "Wohin?", "de": "Wohin?" }, "example": { "en": "vor das Haus", "de": "vor das Haus" } },
-        { "label": { "en": "vor (Dative)", "de": "vor (Dativ)" }, "usage": { "en": "Wo?", "de": "Wo?" }, "example": { "en": "vor dem Haus", "de": "vor dem Haus" } },
-        { "label": { "en": "zwischen (Accusative)", "de": "zwischen (Akkusativ)" }, "usage": { "en": "Wohin?", "de": "Wohin?" }, "example": { "en": "zwischen die Bäume", "de": "zwischen die Bäume" } },
-        { "label": { "en": "zwischen (Dative)", "de": "zwischen (Dativ)" }, "usage": { "en": "Wo?", "de": "Wo?" }, "example": { "en": "zwischen den Bäumen", "de": "zwischen den Bäumen" } }
+        {
+          "label": {
+            "en": "in (Accusative)",
+            "de": "in (Akkusativ)"
+          },
+          "usage": {
+            "en": "Wohin?",
+            "de": "Wohin?"
+          },
+          "example": {
+            "en": "in den Park / in die Stadt",
+            "de": "in den Park / in die Stadt"
+          }
+        },
+        {
+          "label": {
+            "en": "in (Dative)",
+            "de": "in (Dativ)"
+          },
+          "usage": {
+            "en": "Wo?",
+            "de": "Wo?"
+          },
+          "example": {
+            "en": "im Park / in der Stadt",
+            "de": "im Park / in der Stadt"
+          }
+        },
+        {
+          "label": {
+            "en": "an (Accusative)",
+            "de": "an (Akkusativ)"
+          },
+          "usage": {
+            "en": "Wohin?",
+            "de": "Wohin?"
+          },
+          "example": {
+            "en": "an den See / ans Meer",
+            "de": "an den See / ans Meer"
+          }
+        },
+        {
+          "label": {
+            "en": "an (Dative)",
+            "de": "an (Dativ)"
+          },
+          "usage": {
+            "en": "Wo?",
+            "de": "Wo?"
+          },
+          "example": {
+            "en": "am See / am Meer",
+            "de": "am See / am Meer"
+          }
+        },
+        {
+          "label": {
+            "en": "auf (Accusative)",
+            "de": "auf (Akkusativ)"
+          },
+          "usage": {
+            "en": "Wohin?",
+            "de": "Wohin?"
+          },
+          "example": {
+            "en": "auf den Tisch",
+            "de": "auf den Tisch"
+          }
+        },
+        {
+          "label": {
+            "en": "auf (Dative)",
+            "de": "auf (Dativ)"
+          },
+          "usage": {
+            "en": "Wo?",
+            "de": "Wo?"
+          },
+          "example": {
+            "en": "auf dem Tisch",
+            "de": "auf dem Tisch"
+          }
+        },
+        {
+          "label": {
+            "en": "vor (Accusative)",
+            "de": "vor (Akkusativ)"
+          },
+          "usage": {
+            "en": "Wohin?",
+            "de": "Wohin?"
+          },
+          "example": {
+            "en": "vor das Haus",
+            "de": "vor das Haus"
+          }
+        },
+        {
+          "label": {
+            "en": "vor (Dative)",
+            "de": "vor (Dativ)"
+          },
+          "usage": {
+            "en": "Wo?",
+            "de": "Wo?"
+          },
+          "example": {
+            "en": "vor dem Haus",
+            "de": "vor dem Haus"
+          }
+        },
+        {
+          "label": {
+            "en": "zwischen (Accusative)",
+            "de": "zwischen (Akkusativ)"
+          },
+          "usage": {
+            "en": "Wohin?",
+            "de": "Wohin?"
+          },
+          "example": {
+            "en": "zwischen die Bäume",
+            "de": "zwischen die Bäume"
+          }
+        },
+        {
+          "label": {
+            "en": "zwischen (Dative)",
+            "de": "zwischen (Dativ)"
+          },
+          "usage": {
+            "en": "Wo?",
+            "de": "Wo?"
+          },
+          "example": {
+            "en": "zwischen den Bäumen",
+            "de": "zwischen den Bäumen"
+          }
+        }
       ]
     }
   },
-  "vocabCategories": ["city-travel", "travel-questions", "action-verbs", "unit4-places"],
-  "grammarCategories": ["dative", "prepositions"],
+  "vocabCategories": [
+    "city-travel",
+    "travel-questions",
+    "action-verbs",
+    "unit4-places"
+  ],
+  "grammarCategories": [
+    "dative",
+    "prepositions"
+  ],
   "hasLesson": true
 }

@@ -70,10 +70,10 @@ export function BottomNav() {
 
   const navItems = getPrimaryNav(isAuthenticated).map((item) => ({
     id: item.id,
-    to: navTarget(item, isAuthenticated),
-    label: navShortLabel(item, isAuthenticated, isDE),
+    to: navTarget(item),
+    label: navShortLabel(item, isDE),
     icon: item.icon,
-    active: isNavActive(pathname, item, isAuthenticated),
+    active: isNavActive(pathname, item),
     // Live due count straight from useReviewQueue — the same source the rail's
     // Progress badge and the Dashboard queue read. Never re-derived here.
     count: item.badge === 'due' ? dueCount : 0,

@@ -11,8 +11,10 @@
  * SIDE-BY-SIDE (squad-analysis console feel); below lg they stack vertically
  * (chart first, breakdown beneath) — a real flex-order rearrangement.
  *
- * Chart: Recharts (already a project dependency). Brand blue #2563eb fill,
- * muted polar grid, localized axis labels, empty-state for new learners.
+ * Chart: Recharts (already a project dependency). Every colour comes from the
+ * project's `--color-*` tokens via `useChartTokens`, so the polar grid, axis
+ * ticks and tooltip follow dark mode instead of staying light. Localized axis
+ * labels, empty state for new learners.
  */
 
 import {
@@ -27,8 +29,7 @@ import {
 import { Target } from 'lucide-react';
 import { useLang } from '../hooks/useLang';
 import { useSkillAccuracy, skillLabel, SKILL_ROUTES, type SkillCategory } from '../hooks/useSkillAccuracy';
-
-const BRAND_BLUE = '#2563eb';
+import { useChartTokens } from '../hooks/useChartTokens';
 
 /** Localized drill-down hint per category. The hint IS the route the chart has
     always linked to — it now reads `SKILL_ROUTES` so a new "recommended for
@@ -52,6 +53,11 @@ export function SkillRadarChart() {
   const { langMode } = useLang();
   const isDE = langMode === 'german';
   const { skills, hasData } = useSkillAccuracy();
+  // Recharts colours are props, not CSS classes, so a `dark:` class on any
+  // wrapper cannot reach them. This hook reads the same `--color-*` tokens the
+  // rest of the app uses and re-reads on a theme flip — which is what lets the
+  // grid, ticks and tooltip follow dark mode instead of staying light.
+  const t = useChartTokens();
 
   const chartData = skills.map((s) => ({
     skill: skillMeta(s.category, isDE).label,
@@ -91,36 +97,36 @@ export function SkillRadarChart() {
           <div className="order-2 h-64 w-full sm:h-72 lg:w-1/2">
             <ResponsiveContainer width="100%" height="100%">
               <RadarChart data={chartData} outerRadius="72%">
-                <PolarGrid stroke="#94a3b8" strokeOpacity={0.35} />
+                <PolarGrid stroke={t.grid} strokeOpacity={0.6} />
                 <PolarAngleAxis
                   dataKey="skill"
-                  tick={{ fill: '#64748b', fontSize: 12, fontWeight: 600 }}
+                  tick={{ fill: t.axis, fontSize: 12, fontWeight: 600 }}
                 />
                 <PolarRadiusAxis
                   domain={[0, 100]}
-                  tick={{ fill: '#94a3b8', fontSize: 10 }}
+                  tick={{ fill: t.axis, fontSize: 10 }}
                   tickCount={5}
-                  stroke="#94a3b8"
-                  strokeOpacity={0.3}
+                  stroke={t.grid}
+                  strokeOpacity={0.5}
                 />
                 <Tooltip
                   formatter={(value) => [`${value}%`, isDE ? 'Genauigkeit' : 'Accuracy']}
                   contentStyle={{
-                    borderRadius: 12,
-                    border: '1px solid rgba(148,163,184,0.35)',
-                    background: 'rgba(15,23,42,0.92)',
-                    color: '#f8fafc',
+                    borderRadius: 8,
+                    border: `1px solid ${t.tooltipBorder}`,
+                    background: t.tooltipBg,
+                    color: t.tooltipText,
                     fontSize: 12,
                   }}
                 />
                 <Radar
                   name={isDE ? 'Genauigkeit' : 'Accuracy'}
                   dataKey="accuracy"
-                  stroke={BRAND_BLUE}
+                  stroke={t.accent}
                   strokeWidth={2}
-                  fill={BRAND_BLUE}
+                  fill={t.accent}
                   fillOpacity={0.35}
-                  dot={{ r: 3, fill: BRAND_BLUE, strokeWidth: 0 }}
+                  dot={{ r: 3, fill: t.accent, strokeWidth: 0 }}
                 />
               </RadarChart>
             </ResponsiveContainer>
@@ -147,7 +153,7 @@ export function SkillRadarChart() {
                   <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-ink-200 dark:bg-ink-700">
                     <div
                       className={`h-full rounded-full transition-all duration-500 ${s.total === 0 ? 'bg-ink-300 dark:bg-ink-600' : ''}`}
-                      style={{ width: `${s.accuracy}%`, backgroundColor: s.total > 0 ? BRAND_BLUE : undefined }}
+                      style={{ width: `${s.accuracy}%`, backgroundColor: s.total > 0 ? t.accent : undefined }}
                     />
                   </div>
                   <div className="mt-1 text-meta text-ink-500 dark:text-ink-500">

@@ -47,7 +47,8 @@ export type AdminAction =
   | 'config.set'
   | 'unit.publish'
   | 'unit.rollback'
-  | 'unit.save';
+  | 'unit.save'
+  | 'system.selftest';
 
 export interface ActionRequest {
   action: AdminAction;
@@ -129,7 +130,25 @@ const KNOWN_ACTIONS: ReadonlySet<string> = new Set<AdminAction>([
   'unit.publish',
   'unit.rollback',
   'unit.save',
+  // Read-only. Exists so an operator can PROVE the privilege boundary works
+  // without performing a privileged write first — see `system.selftest` below.
+  'system.selftest',
 ]);
+
+/**
+ * Actions that change no row and are safe to run at any time.
+ *
+ * A separate set rather than a property on the case, because the reasoning is
+ * not "this is harmless" — it is "this is READ-ONLY, and that is exactly what
+ * makes it a trustworthy probe". `system.selftest` is in the recognised-action
+ * set so the unknown-action guard is exercised honestly, and it is here so the
+ * guard does not have to carry a special case for it.
+ */
+const READ_ONLY_ACTIONS: ReadonlySet<string> = new Set<AdminAction>(['system.selftest']);
+
+export function isReadOnlyAction(action: string): action is AdminAction {
+  return READ_ONLY_ACTIONS.has(action);
+}
 
 export function isKnownAction(action: string): action is AdminAction {
   return KNOWN_ACTIONS.has(action);

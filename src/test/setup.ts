@@ -58,7 +58,7 @@ vi.mock('dexie', () => {
       contentItems = mockTable;
       ankiVocab = mockTable;
     },
-    liveQuery: vi.fn((fn) => ({ subscribe: vi.fn(), unsubscribe: vi.fn() })),
+    liveQuery: vi.fn((_fn) => ({ subscribe: vi.fn(), unsubscribe: vi.fn() })),
   };
 });
 
@@ -83,20 +83,36 @@ vi.mock('react-router-dom', async () => {
 });
 
 // ── Mock lucide-react ───────────────────────────────────────────────────────
-vi.mock('lucide-react', () => {
-  const icons = [
+// Icons that render as a LABELLED stub, so tests can assert on a stable
+// `data-testid`. Anything else keeps its real implementation (see below).
+vi.mock('lucide-react', async () => {
+  const React = (await import('react')).default;
+  const actual = await vi.importActual<Record<string, unknown>>('lucide-react');
+
+  // Icons whose `data-testid` existing tests already assert on. Adding a name
+  // here changes its rendering, so it is not a catch-all.
+  const labelled = [
     'Menu', 'Volume2', 'VolumeX', 'Home', 'BookOpen', 'Target', 'LayoutDashboard',
     'LifeBuoy', 'Send', 'Settings', 'ArrowLeft', 'ArrowRight', 'Lock',
     'ChevronsLeft', 'ChevronsRight', 'ArrowUpRight', 'MessageCircle', 'Hash',
     'Calendar', 'FileText', 'Mic', 'MessageSquare', 'Zap', 'Layers', 'Puzzle',
-    'Gamepad2', 'Mail', 'Library', 'BookA', 'WifiOff'
+    'Gamepad2', 'Mail', 'Library', 'BookA', 'WifiOff',
   ];
-  const exports: Record<string, any> = {};
-  for (const icon of icons) {
-    exports[icon] = (props: any) =>
-      React.createElement('svg', { ...props, 'data-testid': `icon-${icon.toLowerCase()}` }, icon);
+
+  const overrides: Record<string, unknown> = {};
+  for (const name of labelled) {
+    overrides[name] = (props: Record<string, unknown>) =>
+      React.createElement('svg', { ...props, 'data-testid': `icon-${name.toLowerCase()}` }, name);
   }
-  return exports;
+
+  // WHY THE SPREAD MATTERS. This mock used to be a CLOSED list of exports, so
+  // importing one previously-unused lucide icon anywhere in the app threw
+  // `No "X" export is defined on the "lucide-react" mock` at render time — which
+  // is exactly how the list came to require hand-maintaining against the whole
+  // codebase, and how it drifted. Spreading the real module first means every
+  // icon resolves, present and future, and only the labelled ones above are
+  // swapped for a stub. No list to keep in sync.
+  return { ...actual, ...overrides };
 });
 
 // ── Mock framer-motion ──────────────────────────────────────────────────────
@@ -115,6 +131,12 @@ vi.mock('recharts', () => ({
   Line: (props: any) => React.createElement('div', { 'data-testid': 'line', ...props }),
   BarChart: ({ children }: any) => React.createElement('div', { 'data-testid': 'bar-chart' }, children),
   Bar: (props: any) => React.createElement('div', { 'data-testid': 'bar', ...props }),
+  // `ActivityTrend` plots raw daily counts as a filled area under a moving
+  // average. Both were missing here, so the component threw
+  // `No "AreaChart" export is defined on the "recharts" mock` the moment any
+  // test rendered it — which is how a component ships completely unrendered.
+  AreaChart: ({ children }: any) => React.createElement('div', { 'data-testid': 'area-chart' }, children),
+  Area: (props: any) => React.createElement('div', { 'data-testid': 'area', ...props }),
   PieChart: ({ children }: any) => React.createElement('div', { 'data-testid': 'pie-chart' }, children),
   Pie: (props: any) => React.createElement('div', { 'data-testid': 'pie', ...props }),
   Cell: (props: any) => React.createElement('div', { 'data-testid': 'cell', ...props }),
@@ -125,6 +147,10 @@ vi.mock('recharts', () => ({
   Legend: (props: any) => React.createElement('div', { 'data-testid': 'legend', ...props }),
   ResponsiveContainer: ({ children }: any) => React.createElement('div', { 'data-testid': 'responsive-container' }, children),
   LabelList: (props: any) => React.createElement('div', { 'data-testid': 'label-list', ...props }),
+  // `CheckpointTrajectory` draws the 80% gate as a ReferenceLine, and asserts
+  // its `y` value. Mocking it as a passthrough keeps that assertion possible
+  // without recharts trying to measure a chart in jsdom.
+  ReferenceLine: (props: any) => React.createElement('div', { 'data-testid': 'reference-line', ...props }),
 }));
 
 // ── Mock canvas-confetti ────────────────────────────────────────────────────

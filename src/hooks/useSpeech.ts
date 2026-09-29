@@ -138,7 +138,17 @@ function playFile(url: string, fallbackText: string) {
   audio.playbackRate = clampRecordingRate(currentRate());
   applyPitchPreservation(audio);
   audio.onerror = () => synthesize(fallbackText, currentRate());
-  audio.play().catch(() => synthesize(fallbackText, currentRate()));
+
+  // `play()` returns a promise in every modern browser, but it is specified to
+  // return `undefined` in some older ones, and a test environment without a real
+  // media stack does the same. Calling `.catch` on that throws a TypeError from
+  // inside a click handler, which surfaces as a blank screen rather than a missing
+  // sound. The `onerror` handler above already covers a genuine load failure, so
+  // this only has to not explode.
+  const played = audio.play() as Promise<void> | undefined;
+  if (played && typeof played.catch === 'function') {
+    played.catch(() => synthesize(fallbackText, currentRate()));
+  }
 }
 
 /**
