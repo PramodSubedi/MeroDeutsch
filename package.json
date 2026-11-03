@@ -84,10 +84,12 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.112.3",
     "@tanstack/react-virtual": "^3.14.9",
+    "@types/dompurify": "^3.0.5",
     "@vercel/analytics": "^2.0.1",
     "canvas-confetti": "^1.9.4",
     "dexie": "^4.4.4",
     "dexie-react-hooks": "^4.4.0",
+    "dompurify": "^3.4.17",
     "framer-motion": "^13.1.1",
     "lucide-react": "^1.31.0",
     "marked": "^15.0.12",

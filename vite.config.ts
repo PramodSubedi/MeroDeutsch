@@ -119,6 +119,13 @@ export default defineConfig({
         cleanupOutdatedCaches: true,
         navigateFallback: '/index.html',
         navigateFallbackDenylist: [/^\/api\//],
+        // Defense in depth: do NOT let the service worker claim uncontrolled
+        // clients or activate immediately. With `registerType: 'prompt'` the
+        // new SW waits for an explicit `onNeedRefresh` → `updateSW(true)` call
+        // from main.tsx (learner entry only). admin.html never imports the
+        // registration module, so it can never trigger activation.
+        clientsClaim: false,
+        skipWaiting: false,
         // Offline-first AUDIO caching: a clip is fetched once, then served
         // instantly from Cache Storage on every later visit (including fully
         // offline). Two layers, deliberately:

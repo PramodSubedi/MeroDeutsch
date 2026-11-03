@@ -54,9 +54,17 @@ import { ALLOW_ORIGIN_SECRET, corsHeaders } from './cors.ts';
 
 /** Service-role client. Bypasses RLS — only for the privileged writes below. */
 function admin(): SupabaseClient {
+  const url = Deno.env.get('SUPABASE_URL');
+  const key = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+  if (!url || !key) {
+    console.error(
+      '[admin-action] SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY is NOT SET. ' +
+        'The service-role client cannot be created. Set both in the Edge Function environment.',
+    );
+  }
   return createClient(
-    Deno.env.get('SUPABASE_URL') ?? '',
-    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+    url ?? '',
+    key ?? '',
     { auth: { persistSession: false, autoRefreshToken: false } },
   );
 }
@@ -81,7 +89,11 @@ async function identify(req: Request): Promise<string | null> {
   const token = header.slice('Bearer '.length).trim();
   if (!token) return null;
   const { data, error } = await admin().auth.getUser(token);
-  if (error || !data.user) return null;
+  if (error) {
+    console.error('[admin-action] JWT verification failed:', error.message);
+    return null;
+  }
+  if (!data.user) return null;
   return data.user.id;
 }
 
@@ -245,7 +257,16 @@ Deno.serve(async (req: Request) => {
 
   // ── 1. Identity from the verified token, never the body ───────────────────
   const actorId = await identify(req);
-  if (!actorId) return json(401, { ok: false, code: 'unauthenticated' });
+  if (!actorId) {
+    const missingEnv = !Deno.env.get('SUPABASE_URL') || !Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    return json(401, {
+      ok: false,
+      code: 'unauthenticated',
+      hint: missingEnv
+        ? 'SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY is not set in the Edge Function environment.'
+        : 'The bearer token could not be verified. Check that the user is signed in and the token is for this Supabase project.',
+    });
+  }
 
   let body: Body;
   try {
