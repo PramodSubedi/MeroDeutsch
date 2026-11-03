@@ -23,6 +23,15 @@ import { GreetingsPage } from './pages/GreetingsPage';
 import { AppHomeSwitch } from './pages/AppHomeSwitch';
 import { LandingPage } from './pages/LandingPage';
 
+<button 
+  onClick={() => {
+    throw new Error("Sentry Test Crash: MeroDeutsch Integration Verification");
+  }}
+  style={{ padding: '10px', backgroundColor: '#e11d48', color: 'white', borderRadius: '4px', marginTop: '20px' }}
+>
+  Break Application (Test Sentry)
+</button>
+
 // Secondary pages - lazy loaded to reduce initial bundle size
 const DashboardPage = lazy(() => import('./pages/DashboardPage').then(m => ({ default: m.DashboardPage })));
 const GlossaryPage = lazy(() => import('./pages/GlossaryPage').then(m => ({ default: m.GlossaryPage })));
