@@ -30,6 +30,7 @@ import {
   validateAnnouncementBanner,
   type AnnouncementBanner,
 } from '../../shared/configKeys';
+import { AdminPageHeader } from '../components/AdminPageHeader';
 
 interface TableCount {
   table_name: string;
@@ -433,25 +434,21 @@ export function SystemPage() {
   const byName = new Map(counts.map((c) => [c.table_name, c.row_count]));
 
   return (
-    <div className="space-y-6">
-      <header className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <p className={theme.type.kicker}>Operations</p>
-          <h1 className={theme.page.heading}>System</h1>
-          <p className={theme.page.description}>
-            Row counts across the public schema, and the feature flags the app reads at boot.
-          </p>
-        </div>
-        <button
+    <div className="admin-page space-y-7">
+      <AdminPageHeader
+        eyebrow="Operations / control"
+        title="System"
+        description="Database shape, runtime flags, announcement controls, and a real privileged-path self-test."
+        actions={<button
           type="button"
           onClick={() => void load()}
-          className={theme.button.secondary}
+          className="admin-refresh-button"
           disabled={loading}
         >
           <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} aria-hidden="true" />
           {loading ? 'Loading…' : 'Refresh'}
-        </button>
-      </header>
+        </button>}
+      />
 
       {errors.length > 0 && <ErrorsPanel errors={errors} />}
 
@@ -487,7 +484,7 @@ export function SystemPage() {
 
       <CountPanel counts={byName} />
       <SelfTestPanel />
-      <FlagsPanel flags={flags} onAction={handleAction} />
+      <FlagsPanel flags={flags} loading={loading} onAction={handleAction} />
       <AnnouncementBannerPanel flags={flags} loaded={!loading} onAction={handleAction} />
       <MigrationsPanel />
     </div>
@@ -646,7 +643,7 @@ function SelfTestPanel() {
   );
 }
 
-function FlagsPanel({ flags, onAction }: { flags: AppFlag[]; onAction: (key: string, value: boolean, reason: string) => void }) {  // ── WHY THE ROWS ARE SPLIT ──────────────────────────────────────────────────
+function FlagsPanel({ flags, loading, onAction }: { flags: AppFlag[]; loading: boolean; onAction: (key: string, value: boolean, reason: string) => void }) {  // ── WHY THE ROWS ARE SPLIT ──────────────────────────────────────────────────
   // This panel used to render a boolean `FlagToggle` for EVERY `app_config` row
   // and write `!currentValue` for any of them. `currentValue` was
   // `flag.value === true || flag.value === 'true'`, which is `false` for every
@@ -664,8 +661,6 @@ function FlagsPanel({ flags, onAction }: { flags: AppFlag[]; onAction: (key: str
   // link to it, rather than a control that can only fail.
   const booleanFlags = flags.filter((f) => isBooleanConfigKey(f.key));
   const otherFlags = flags.filter((f) => !isBooleanConfigKey(f.key));
-  const loading = flags.length === 0;
-
   return (
     <section className="rounded-lg border border-ink-200 bg-white p-4 dark:border-ink-800 dark:bg-ink-900">
       <h2 className={theme.type.section}>Feature flags</h2>

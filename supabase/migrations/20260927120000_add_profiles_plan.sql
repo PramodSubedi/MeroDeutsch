@@ -3,10 +3,9 @@
 -- ============================================================================
 -- WHY
 -- The A1 curriculum has two tiers:
---   FREE — the interactive lesson surface (the 7-step unit scaffold, word cards,
---          generated exercises, checkpoints).
---   PAID — the document-style "notes" deep-dive, i.e. the full NotebookLM
---          lesson read as an article.
+--   FREE — the six learning-component lesson surfaces, word cards and exercises.
+--   PAID — the A1 campaign, including its guided spine, checkpoints and the
+--          document-style "notes" deep-dive.
 --
 -- `profiles` already exists (initial_schema) with RLS limited to each user's own
 -- row, so a plan column is all the app needs to read entitlement. There is NO

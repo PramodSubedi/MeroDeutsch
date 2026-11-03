@@ -34,6 +34,7 @@ import type {
   QuizQuestion,
 } from '../types/chatbot';
 import { createConversation, type ConversationState } from './conversationManager';
+import { rebuildLearnerMemory, emptyLearnerMemory } from './learnerMemory';
 import type { PracticeMode } from './chatPractice';
 
 /** One answered question in an in-chat drill. */
@@ -412,7 +413,7 @@ export function hydrateChat(userId: string): void {
 export function useChatEnabled(): boolean {
   const adminEnabled = useChatStore((s) => s.adminEnabled);
   const personal = useChatStore((s) => s.settings.enabled);
-  return CHATBOT_ENABLED && adminEnabled && personal;
+  return CHATBOT_ENABLED && adminEnabled && personal && CHATBOT_CONFIG.useLocalModel;
 }
 
 /** Write settings + transcript back. Called from the provider on change. */

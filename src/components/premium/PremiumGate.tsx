@@ -35,12 +35,27 @@ import { A1_PATH_ROUTE } from '../../data/cefrLevels';
 export function PremiumGate({ children }: { children: ReactNode }) {
   const { langMode } = useLang();
   const isDE = langMode === 'german';
-  const { isPremium, isLoading } = usePremium();
+  const { isPremium, isLoading, isUnavailable, retry } = usePremium();
   const { isAuthenticated } = useAuth();
 
   // Unknown tier → render nothing rather than guess. A paywall that flashes is
   // worse than a paywall that arrives 100ms late.
   if (isLoading) return null;
+  if (isUnavailable) {
+    return (
+      <div className={theme.page.container}>
+        <div className={theme.panel.surface} role="alert">
+          <h1 className="text-xl font-bold text-ink-900 dark:text-white">Premium status unavailable</h1>
+          <p className="mx-auto mt-2 max-w-md text-body text-ink-600 dark:text-ink-300">
+            We could not verify your account plan. Your access has not been changed.
+          </p>
+          <button type="button" onClick={retry} className={`${theme.button.primary} mt-5 min-h-[44px]`}>
+            Try again
+          </button>
+        </div>
+      </div>
+    );
+  }
   if (isPremium) return <>{children}</>;
 
   return (
@@ -55,8 +70,8 @@ export function PremiumGate({ children }: { children: ReactNode }) {
           </h1>
           <p className="mx-auto mt-2 max-w-md text-body text-ink-600 dark:text-ink-300">
             {isDE
-              ? 'Die interaktiven Lektionen, Vokabelkarten und Übungen sind kostenlos. Die ausführlichen Lektüre-Notizen zu jeder Lektion sind Teil von Premium.'
-              : 'The interactive lessons, word cards and exercises are free. The full in-depth notes for each lesson are part of Premium.'}
+              ? 'Die sechs Lernmodule sind kostenlos. Der geführte A1-Lernpfad, Checkpoints und die ausführlichen Notizen sind Teil von Premium.'
+              : 'The six learning modules are free. The guided A1 campaign, checkpoints and full lesson notes are part of Premium.'}
           </p>
 
           <div className="mt-5 flex flex-wrap justify-center gap-2.5">

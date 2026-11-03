@@ -40,8 +40,8 @@ function check(name: string, cond: boolean, detail = ''): void {
 }
 
 const ADMIN: Actor = { id: 'admin-1', role: 'admin', banned: false };
-const OTHER_ADMIN: TargetUser = { id: 'admin-2', role: 'admin', banned: false };
-const LEARNER: TargetUser = { id: 'user-9', role: 'user', banned: false };
+const OTHER_ADMIN: TargetUser = { id: 'admin-2', role: 'admin', banned: false, plan: 'free' };
+const LEARNER: TargetUser = { id: 'user-9', role: 'user', banned: false, plan: 'free' };
 
 /** Two active admins is the default: enough to demote one safely. */
 function req(over: Partial<ActionRequest> = {}): ActionRequest {
@@ -86,6 +86,12 @@ check('promoting an existing admin is a no-op', evaluateAction(req({ action: 'us
 check('a suspended account must be unbanned first', evaluateAction(req({ action: 'user.promote', target: { ...LEARNER, banned: true } })).code === 'invalid-transition');
 check('promotion is recoverable after an unban', evaluateAction(req({ action: 'user.promote', target: { ...LEARNER, banned: true } })).recoverable === true);
 
+console.log('\n=== 4b. PREMIUM ENTITLEMENTS ===');
+check('granting Premium to a free learner is allowed', evaluateAction(req({ action: 'user.grant_premium', target: LEARNER })).allowed === true);
+check('granting Premium twice is a no-op', evaluateAction(req({ action: 'user.grant_premium', target: { ...LEARNER, plan: 'premium' } })).code === 'invalid-transition');
+check('revoking Premium is allowed', evaluateAction(req({ action: 'user.revoke_premium', target: { ...LEARNER, plan: 'premium' } })).allowed === true);
+check('revoking Premium from a free learner is a no-op', evaluateAction(req({ action: 'user.revoke_premium', target: LEARNER })).code === 'invalid-transition');
+
 console.log('\n=== 5. ACTOR AUTHORIZATION ===');
 check('a non-admin cannot act', evaluateAction(req({ actor: { ...ADMIN, role: 'user' } })).code === 'actor-not-admin');
 check('a BANNED admin cannot act', evaluateAction(req({ actor: { ...ADMIN, banned: true } })).code === 'actor-banned');
@@ -115,7 +121,7 @@ check('a reason with padding counts', hasReason('  yes  '));
 check('whitespace-only cannot unlock a peer ban', evaluateAction(req({ action: 'user.ban', target: OTHER_ADMIN, reason: '   ' })).code === 'reason-required');
 
 console.log('\n=== 9. TARGET REQUIREMENT ===');
-for (const a of ['user.ban', 'user.unban', 'user.demote', 'user.promote'] as const) check(`${a} requires a target`, requiresTarget(a));
+for (const a of ['user.ban', 'user.unban', 'user.demote', 'user.promote', 'user.grant_premium', 'user.revoke_premium'] as const) check(`${a} requires a target`, requiresTarget(a));
 for (const a of ['vocab.repair', 'config.set', 'unit.publish', 'unit.rollback', 'unit.save'] as const) check(`${a} needs no target`, !requiresTarget(a));
 
 console.log('\n=== 10. DECISION SHAPE ===');
@@ -124,6 +130,7 @@ const every = [
   evaluateAction(req({ action: 'user.demote', target: OTHER_ADMIN, activeAdminCount: 1 })),
   evaluateAction(req({ actor: { ...ADMIN, role: 'user' } })),
   evaluateAction(req({ action: 'evil.drop' as never })),
+  evaluateAction(req({ action: 'user.grant_premium', target: LEARNER })),
 ];
 check('every decision has a code', every.every((d) => d.code.length > 0));
 check('every decision has a message', every.every((d) => d.message.length > 0));

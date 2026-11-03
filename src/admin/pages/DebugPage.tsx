@@ -74,13 +74,11 @@ export function DebugPage() {
   const appUrl = resolveAppUrl();
 
   return (
-    <div className="space-y-6">
+    <div className="admin-page space-y-7">
       <header>
-        <p className={theme.type.kicker}>Quality assurance</p>
-        <h1 className={theme.page.heading}>QA simulator</h1>
-        <p className={theme.page.description}>
-          How the mode simulator works, and shortcuts into the app in each mode.
-        </p>
+        <p className="admin-eyebrow">Quality assurance / bridge</p>
+        <h1 className="admin-page-title mt-2">QA simulator</h1>
+        <p className="admin-page-copy">Open the learner experience in controlled display modes without changing plan, role, or progress data.</p>
       </header>
 
       <HowItWorks appUrl={appUrl} />

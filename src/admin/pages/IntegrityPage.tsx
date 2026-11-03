@@ -13,10 +13,10 @@
  */
 import { useCallback, useEffect, useState } from 'react';
 import { AlertTriangle, CheckCircle2, Info, RefreshCw, TriangleAlert } from 'lucide-react';
-import { theme } from '../../config/theme';
 import { VocabularyRepair } from '../components/VocabularyRepair';
 import { KpiCard } from '../components/KpiCard';
 import { fetchIntegrity, type Finding, type Severity } from '../data/integrity';
+import { AdminPageHeader } from '../components/AdminPageHeader';
 
 const SEVERITY_META: Record<
   Severity,
@@ -116,21 +116,16 @@ export function IntegrityPage() {
   const share = totalVocab > 0 ? ((affected / totalVocab) * 100).toFixed(1) : '0.0';
 
   return (
-    <div className="space-y-6">
-      <header className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <p className={theme.type.kicker}>Content</p>
-          <h1 className={theme.page.heading}>Integrity</h1>
-          <p className={theme.page.description}>
-            Automated checks over the live vocabulary table. Read-only — repairing a row is a
-            privileged write.
-          </p>
-        </div>
-        <button type="button" onClick={() => void load()} className={theme.button.secondary} disabled={loading}>
+    <div className="admin-page space-y-7">
+      <AdminPageHeader
+        eyebrow="Content / quality"
+        title="Integrity"
+        description="Automated checks over the live vocabulary table. Findings are candidates for human review; every repair is audited."
+        actions={<button type="button" onClick={() => void load()} className="admin-refresh-button" disabled={loading}>
           <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} aria-hidden="true" />
           {loading ? 'Checking…' : 'Re-check'}
-        </button>
-      </header>
+        </button>}
+      />
 
       {errors.length > 0 && (
         <div className="rounded-md border border-danger-200 bg-danger-50 p-4 text-body text-danger-900 dark:border-danger-900 dark:bg-danger-950/40 dark:text-danger-200" role="status">

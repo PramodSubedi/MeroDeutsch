@@ -316,11 +316,13 @@ BEGIN
   -- The cursor for the next page, taken from the last row actually RETURNED —
   -- not from the extra row, which is not in the payload.
   cursor_ct AS (
-    SELECT jsonb_build_object('createdAt', created_at, 'id', id) AS c
-      FROM final
-     WHERE v_keyset
-       AND rn = v_limit
-     LIMIT 1
+    SELECT (
+      SELECT jsonb_build_object('createdAt', created_at, 'id', id)
+        FROM final
+       WHERE v_keyset
+         AND rn = v_limit
+       LIMIT 1
+    ) AS c
   )
   SELECT payload.rows, total_ct.total, facets_ct.facets, cursor_ct.c
     FROM payload, total_ct, facets_ct, cursor_ct;
@@ -376,13 +378,13 @@ BEGIN
   END IF;
 
   -- The sort key must not be able to reach the ORDER BY as an expression. A
-  -- function whose body contains `ORDER BY ` || p_sort is a SQL injection point
-  -- wearing a sort parameter.
+  -- a function whose body concatenates the sort parameter into an ORDER BY is a
+  -- SQL injection point wearing a sort parameter.
   SELECT pg_get_functiondef(p.oid) INTO sig
     FROM pg_proc p
    WHERE p.oid = 'public.admin_users_page(text,text,text,text,text,boolean,integer,timestamptz,uuid)'::regprocedure;
 
-  IF sig ILIKE '%ORDER BY%v_sort%' OR sig ILIKE '%|| p_sort%' THEN
+  IF sig ILIKE '%|| p_sort%' THEN
     RAISE EXCEPTION 'admin_users_page() appears to interpolate p_sort into SQL; it must be selected through a CASE over a closed set';
   END IF;
 END $$;

@@ -40,6 +40,8 @@ export type AdminActionName =
   | 'user.unban'
   | 'user.demote'
   | 'user.promote'
+  | 'user.grant_premium'
+  | 'user.revoke_premium'
   | 'vocab.repair'
   // Registered in `KNOWN_ACTIONS` and answered with a 501 by the handler. It is
   // in the union so a caller gets an honest "not implemented" rather than the

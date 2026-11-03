@@ -61,7 +61,7 @@ if (flagIndex >= 0) {
 }
 if (!query.trim()) fail('Empty SQL — nothing to run.');
 
-const ref = process.env.SUPABASE_PROJECT_REF ?? DEFAULT_REF;
+const ref = process.env.SUPABASE_PROJECT_REF?.trim() || DEFAULT_REF;
 console.log(`\n🔌 Executing SQL against project ref \`${ref}\` (${query.length.toLocaleString()} chars)\n`);
 
 const res = await fetch(`${API_BASE}/projects/${ref}/database/query`, {

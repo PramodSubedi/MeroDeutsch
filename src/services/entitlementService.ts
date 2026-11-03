@@ -37,13 +37,18 @@
  *
  * OFFLINE / GUEST
  * A guest has no profile row, so a guest is always `free`. A failed read is
- * also treated as `free`: a network blip must not flash a paywall at someone
- * who has paid, and must not grant premium either. The caller decides how to
- * present that — `usePremium` exposes `isLoading` for exactly this.
+ * unavailable, not free: a network blip must not grant premium or silently
+ * present a paid learner with the free product. The hook exposes that state so
+ * the UI can offer a retry.
  */
 import { supabase } from '../lib/supabase';
 
 export type Plan = 'free' | 'premium';
+
+export interface EntitlementRead {
+  plan: Plan | null;
+  error: string | null;
+}
 
 /** Coerce whatever came back off the wire into a real plan. */
 function coercePlan(value: unknown): Plan {
@@ -51,25 +56,33 @@ function coercePlan(value: unknown): Plan {
 }
 
 export const entitlementService = {
-  /**
-   * The signed-in user's plan. Returns `'free'` for a guest, for a missing row,
-   * and for any read error — the gate fails CLOSED, and the UI layer decides
-   * whether to show a paywall or a retry.
-   */
-  async getPlan(userId: string | null): Promise<Plan> {
-    if (!userId) return 'free';
+  /** Read the account tier without turning an unavailable account into free. */
+  async readPlan(userId: string | null): Promise<EntitlementRead> {
+    if (!userId) return { plan: 'free', error: null };
     try {
       const { data, error } = await supabase
         .from('profiles')
         .select('plan')
         .eq('id', userId)
         .maybeSingle();
-      if (error || !data) return 'free';
-      return coercePlan(data.plan);
-    } catch {
-      // A thrown network error is indistinguishable from "no row" as far as the
-      // gate is concerned, and must not become an implicit grant.
-      return 'free';
+      if (error) return { plan: null, error: error.message };
+      if (!data) return { plan: 'free', error: null };
+      return { plan: coercePlan(data.plan), error: null };
+    } catch (error) {
+      return {
+        plan: null,
+        error: error instanceof Error ? error.message : 'Entitlement read failed',
+      };
     }
+  },
+
+  /**
+   * The signed-in user's plan. Returns `'free'` for a guest, for a missing row,
+   * and for a read error. Callers that need to distinguish an unavailable read
+   * should use `readPlan`.
+   */
+  async getPlan(userId: string | null): Promise<Plan> {
+    const result = await this.readPlan(userId);
+    return result.plan ?? 'free';
   },
 };

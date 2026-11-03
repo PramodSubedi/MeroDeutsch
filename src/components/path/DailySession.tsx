@@ -46,7 +46,7 @@ export function DailySession() {
   const isDE = langMode === 'german';
   const navigate = useNavigate();
   const { getPushNode } = useA1Path();
-  const { hasCampaign } = useHasA1Campaign();
+  const { hasCampaign, isLoading: campaignLoading, isUnavailable: campaignUnavailable } = useHasA1Campaign();
   const { getLastModule } = useLastModule();
   const { dueQueue, markCorrect } = useReviewQueue();
 
@@ -75,7 +75,7 @@ export function DailySession() {
    * sitting on Home was offered "All caught up - go to path" linking back to
    * Home, which is a button that goes nowhere.
    */
-  const continueTarget = hasCampaign
+  const continueTarget = campaignLoading || campaignUnavailable ? null : hasCampaign
     ? resolvePushTarget(a1PushNode, isDE)
     : (() => {
         const to = getLastModule();
@@ -223,6 +223,10 @@ export function DailySession() {
             {dueCount}
           </span>
         </button>
+      ) : !continueTarget ? (
+        <p className="text-meta text-ink-600 dark:text-ink-300" role="status">
+          {isDE ? 'Dein Kontostatus wird noch überprüft.' : 'Your account status is still being verified.'}
+        </p>
       ) : continueTarget.isComplete ? (
         /* The campaign is finished. This used to be a `continueTarget ? ... : ...`
            fallback pointing at A1_PATH_ROUTE, which on Home is a link back to

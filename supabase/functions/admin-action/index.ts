@@ -111,11 +111,16 @@ async function loadActor(db: SupabaseClient, id: string): Promise<Actor | null> 
 async function loadTarget(db: SupabaseClient, id: string): Promise<TargetUser | null> {
   const { data, error } = await db
     .from('profiles')
-    .select('id, role, banned_at')
+    .select('id, role, banned_at, plan')
     .eq('id', id)
     .maybeSingle();
   if (error || !data) return null;
-  return { id: data.id, role: (data.role as TargetUser['role']) ?? 'user', banned: data.banned_at !== null };
+  return {
+    id: data.id,
+    role: (data.role as TargetUser['role']) ?? 'user',
+    banned: data.banned_at !== null,
+    plan: data.plan === 'premium' ? 'premium' : 'free',
+  };
 }
 
 /**
@@ -152,7 +157,7 @@ async function audit(
 }
 
 /** Map a guarded action onto the concrete `profiles` write it performs. */
-function profileWrite(action: AdminAction, target: TargetUser): { column: 'role' | 'banned_at'; value: string | null } {
+function profileWrite(action: AdminAction, target: TargetUser): { column: 'role' | 'banned_at' | 'plan'; value: string | null } {
   switch (action) {
     case 'user.ban':
       return { column: 'banned_at', value: new Date().toISOString() };
@@ -162,6 +167,10 @@ function profileWrite(action: AdminAction, target: TargetUser): { column: 'role'
       return { column: 'role', value: 'admin' };
     case 'user.demote':
       return { column: 'role', value: 'user' };
+    case 'user.grant_premium':
+      return { column: 'plan', value: 'premium' };
+    case 'user.revoke_premium':
+      return { column: 'plan', value: 'free' };
     default:
       throw new Error(`profileWrite called for non-user action: ${action}`);
   }
@@ -362,6 +371,25 @@ Deno.serve(async (req: Request) => {
   }
 
   if (requiresTarget(action) && target) {
+    if (action === 'user.grant_premium' || action === 'user.revoke_premium') {
+      const { error } = await db.rpc('admin_change_user_plan', {
+        p_actor_id: actorId,
+        p_target_id: target.id,
+        p_action: action,
+        p_expected_plan: target.plan,
+        p_reason: reason,
+        p_user_agent: userAgent,
+      });
+      if (error) {
+        return json(500, {
+          ok: false,
+          code: 'plan-change-failed',
+          message: 'The plan change and its audit record were not applied.',
+        });
+      }
+      return json(200, { ok: true, message: 'The plan and audit record were updated.' });
+    }
+
     const { column, value } = profileWrite(action, target);
     const patch: Record<string, unknown> = { [column]: value };
     // A suspension carries its reason on the row, not only in the audit log, so
@@ -389,7 +417,7 @@ Deno.serve(async (req: Request) => {
       adminId: actorId,
       action,
       targetId: target.id,
-      before: { role: target.role, banned: target.banned },
+      before: { role: target.role, banned: target.banned, plan: target.plan },
       after: patch,
       userAgent,
     });
@@ -511,7 +539,24 @@ Deno.serve(async (req: Request) => {
       .in('id', unitIds)
       .eq('is_published', true);
     for (const c of current ?? []) {
-      await db.from('curriculum_versions').insert({ unit_id: c.id, lesson_json: c.doc, editor_id: actorId });
+      const { error: snapshotErr } = await db
+        .from('curriculum_versions')
+        .insert({ unit_id: c.id, lesson_json: c.doc, editor_id: actorId });
+      if (snapshotErr) {
+        await audit(db, {
+          adminId: actorId,
+          action: 'unit.publish.failed',
+          targetId: c.id,
+          before: { error: snapshotErr.message, stage: 'snapshot' },
+          after: null,
+          userAgent,
+        });
+        return json(500, {
+          ok: false,
+          code: 'snapshot-failed',
+          message: 'The current curriculum could not be archived. Nothing was published.',
+        });
+      }
     }
 
     const { error: writeErr } = await db
@@ -635,11 +680,26 @@ Deno.serve(async (req: Request) => {
       .maybeSingle();
 
     if (live) {
-      await db.from('curriculum_versions').insert({
+      const { error: snapshotErr } = await db.from('curriculum_versions').insert({
         unit_id: rollbackUnitId,
         lesson_json: live.doc,
         editor_id: actorId,
       });
+      if (snapshotErr) {
+        await audit(db, {
+          adminId: actorId,
+          action: 'unit.rollback.failed',
+          targetId: rollbackUnitId,
+          before: { error: snapshotErr.message, stage: 'snapshot' },
+          after: null,
+          userAgent,
+        });
+        return json(500, {
+          ok: false,
+          code: 'snapshot-failed',
+          message: 'The current curriculum could not be archived. Nothing was changed.',
+        });
+      }
     }
 
     // A rollback restores CONTENT, never publication state. If the unit was an

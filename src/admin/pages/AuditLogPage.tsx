@@ -15,7 +15,7 @@ import { downloadTextFile } from '../data/csv';
 import {
   actionFacets,
   auditToCsv,
-  fetchAuditLog,
+  fetchAuditPage,
   filterAuditEntries,
   outcomeOf,
   safeText,
@@ -134,15 +134,31 @@ export function AuditLogPage() {
   const [entries, setEntries] = useState<AuditEntry[]>([]);
   const [errors, setErrors] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [cursor, setCursor] = useState<{ createdAt: string; id: string } | null>(null);
+  const [total, setTotal] = useState(0);
   const [filters, setFilters] = useState<AuditFilters>({ search: '', outcome: 'all', action: '', targetType: '' });
 
   const load = useCallback(async () => {
     setLoading(true);
-    const r = await fetchAuditLog();
+    const r = await fetchAuditPage();
     setEntries(r.entries);
     setErrors(r.errors);
+    setCursor(r.nextCursor);
+    setTotal(r.total);
     setLoading(false);
   }, []);
+
+  const loadMore = useCallback(async () => {
+    if (!cursor || loadingMore) return;
+    setLoadingMore(true);
+    const r = await fetchAuditPage({ cursor });
+    setEntries((previous) => [...previous, ...r.entries]);
+    setErrors((previous) => [...previous, ...r.errors]);
+    setCursor(r.nextCursor);
+    setTotal(r.total);
+    setLoadingMore(false);
+  }, [cursor, loadingMore]);
 
   useEffect(() => {
     void load();
@@ -154,15 +170,12 @@ export function AuditLogPage() {
   const targetTypes = useMemo(() => targetTypeFacets(entries), [entries]);
 
   return (
-    <div className="space-y-6">
-      <header className="flex flex-wrap items-end justify-between gap-3">
+    <div className="admin-page space-y-7">
+      <header className="admin-page-header flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className={theme.type.kicker}>Compliance</p>
-          <h1 className={theme.page.heading}>Audit log</h1>
-          <p className={theme.page.description}>
-            Every privileged action, allowed or refused. Denials are recorded too — a refused
-            attempt is the event worth seeing.
-          </p>
+          <p className="admin-eyebrow">Compliance / history</p>
+          <h1 className="admin-page-title mt-2">Audit log</h1>
+          <p className="admin-page-copy">Every privileged action, allowed or refused. Denials stay visible because a stopped attempt is still an operational event.</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <button
@@ -216,6 +229,19 @@ export function AuditLogPage() {
         <ul className="divide-y divide-ink-100 rounded-lg border border-ink-200 bg-white dark:divide-ink-800 dark:border-ink-800 dark:bg-ink-900">
           {filtered.map((e) => <Row key={e.id} entry={e} />)}
         </ul>
+      )}
+
+      {entries.length > 0 && (
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-ink-200 pt-4 text-meta text-ink-500 dark:border-ink-800 dark:text-ink-400">
+          <span>Loaded {entries.length.toLocaleString()} of {total.toLocaleString()} matching entries.</span>
+          {cursor ? (
+            <button type="button" onClick={() => void loadMore()} disabled={loadingMore} className={theme.button.secondarySmall}>
+              {loadingMore ? 'Loading older entries…' : 'Load older entries'}
+            </button>
+          ) : (
+            <span className="font-semibold text-success-700 dark:text-success-300">Complete history loaded</span>
+          )}
+        </div>
       )}
     </div>
   );

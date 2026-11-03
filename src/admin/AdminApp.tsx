@@ -55,12 +55,13 @@ function SignInGate({ onSignIn }: SignInGateProps) {
   const [error, setError] = useState<string | null>(null);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-ink-50 px-4 dark:bg-ink-950">
-      <div className="w-full max-w-sm">
-        <div className="rounded-lg border border-ink-200 bg-white p-6 dark:border-ink-800 dark:bg-ink-900">
-          <p className={theme.type.kicker}>Restricted</p>
-          <h1 className="mt-1 text-title font-bold text-ink-900 dark:text-ink-50">Admin sign-in</h1>
-          <p className="mt-2 text-meta text-ink-500 dark:text-ink-400">
+    <div className="admin-console flex min-h-screen items-center justify-center px-4 py-8">
+      <div className="w-full max-w-md">
+        <div className="admin-auth-card">
+          <div className="admin-auth-mark" aria-hidden="true">M</div>
+          <p className="admin-eyebrow mt-5">Restricted / control center</p>
+          <h1 className="mt-2 text-display font-extrabold text-[#24241f] dark:text-[#fffaf2]">Admin sign-in</h1>
+          <p className="mt-3 text-body text-[#716f67] dark:text-[#aaa59c]">
             Requires an account with <code className="font-mono">role = 'admin'</code> on this project.
           </p>
 
@@ -80,7 +81,7 @@ function SignInGate({ onSignIn }: SignInGateProps) {
             <div>
               <label
                 htmlFor="admin-email"
-                className="block text-meta font-semibold text-ink-700 dark:text-ink-300"
+                className="block text-meta font-extrabold text-[#24241f] dark:text-[#fffaf2]"
               >
                 Email
               </label>
@@ -97,7 +98,7 @@ function SignInGate({ onSignIn }: SignInGateProps) {
             <div>
               <label
                 htmlFor="admin-password"
-                className="block text-meta font-semibold text-ink-700 dark:text-ink-300"
+                className="block text-meta font-extrabold text-[#24241f] dark:text-[#fffaf2]"
               >
                 Password
               </label>
@@ -118,13 +119,13 @@ function SignInGate({ onSignIn }: SignInGateProps) {
               </p>
             ) : null}
 
-            <button type="submit" className={`${theme.button.primary} w-full`} disabled={busy}>
+            <button type="submit" className="admin-auth-button w-full" disabled={busy}>
               {busy ? 'Signing in…' : 'Sign in'}
             </button>
           </form>
         </div>
 
-        <p className="mt-4 text-center text-meta text-ink-500 dark:text-ink-400">
+        <p className="mt-4 text-center text-meta text-[#716f67] dark:text-[#aaa59c]">
           The session on this origin is independent of the learner app.
         </p>
       </div>
@@ -134,8 +135,8 @@ function SignInGate({ onSignIn }: SignInGateProps) {
 
 function LockedGate({ title, message, onSignOut }: { title: string; message: string; onSignOut: () => void }) {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-ink-50 px-4 dark:bg-ink-950">
-      <div className="w-full max-w-md rounded-lg border border-ink-200 bg-white p-6 text-center dark:border-ink-800 dark:bg-ink-900">
+    <div className="admin-console flex min-h-screen items-center justify-center px-4 py-8">
+      <div className="admin-auth-card w-full max-w-md text-center">
         <ShieldAlert className="mx-auto h-8 w-8 text-warning-500" aria-hidden="true" />
         <h1 className="mt-3 text-title font-bold text-ink-900 dark:text-ink-50">{title}</h1>
         <p className="mt-2 text-body text-ink-600 dark:text-ink-400">{message}</p>

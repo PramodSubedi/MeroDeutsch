@@ -116,10 +116,12 @@ BEGIN
      WHERE n.rn <= v_limit
   ),
   cursor_ct AS (
-    SELECT jsonb_build_object('createdAt', created_at, 'id', id) AS c
-      FROM numbered
-     WHERE rn = v_limit
-     LIMIT 1
+    SELECT (
+      SELECT jsonb_build_object('createdAt', created_at, 'id', id)
+        FROM numbered
+       WHERE rn = v_limit
+       LIMIT 1
+    ) AS c
   )
   SELECT payload.entries, total_ct.total, cursor_ct.c
     FROM payload, total_ct, cursor_ct;
@@ -249,10 +251,12 @@ BEGIN
      WHERE n.rn <= v_limit
   ),
   cursor_ct AS (
-    SELECT jsonb_build_object('dueAt', due_at, 'id', id) AS c
-      FROM numbered
-     WHERE rn = v_limit
-     LIMIT 1
+    SELECT (
+      SELECT jsonb_build_object('dueAt', due_at, 'id', id)
+        FROM numbered
+       WHERE rn = v_limit
+       LIMIT 1
+    ) AS c
   )
   SELECT payload.items, total_ct.total, totals_ct.totals, cursor_ct.c
     FROM payload, total_ct, totals_ct, cursor_ct;

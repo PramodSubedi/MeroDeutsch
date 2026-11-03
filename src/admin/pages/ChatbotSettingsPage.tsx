@@ -39,6 +39,7 @@ import {
 } from '../data/chatbotConfig';
 import { CHATBOT_KEYS, UNRESTRICTED_MODELS_SENTINEL } from '../../data/chatbot/config';
 import type { LanguageMix, PersonalityIntensity } from '../../types/chatbot';
+import { AdminPageHeader } from '../components/AdminPageHeader';
 
 const INTENSITIES: ReadonlyArray<{ id: PersonalityIntensity; label: string }> = [
   { id: 'serious', label: 'Serious — just the grammar' },
@@ -137,8 +138,8 @@ export function ChatbotSettingsPage() {
 
   if (!draft) {
     return (
-      <div className="space-y-4">
-        <h1 className={theme.page.heading}>Chatbot</h1>
+      <div className="admin-page space-y-4">
+        <AdminPageHeader eyebrow="Configuration / companion" title="Chatbot" description="The current companion configuration could not be read." />
         <div
           className="rounded-md border border-danger-200 bg-danger-50 p-4 text-body text-danger-800 dark:border-danger-900 dark:bg-danger-950/40 dark:text-danger-200"
           role="alert"
@@ -188,26 +189,21 @@ export function ChatbotSettingsPage() {
 
   /* ── the availability switch ── */
   return (
-    <div className="space-y-6">
-      <header className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <p className={theme.type.kicker}>Configuration</p>
-          <h1 className={theme.page.heading}>Chatbot</h1>
-          <p className={theme.page.description}>
-            Global defaults for Mero, the AI companion. These seed every learner and anyone who has
-            not overridden a value — they never overwrite a choice someone has already made.
-          </p>
-        </div>
-        <button
+    <div className="admin-page space-y-7">
+      <AdminPageHeader
+        eyebrow="Configuration / companion"
+        title="Chatbot"
+        description="Global defaults for Mero. These seed learners who have not overridden a value; they never overwrite personal settings."
+        actions={<button
           type="button"
           onClick={() => void load()}
-          className={theme.button.secondary}
+          className="admin-refresh-button"
           disabled={loading || busy}
         >
           <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} aria-hidden="true" />
           {loading ? 'Loading…' : 'Refresh'}
-        </button>
-      </header>
+        </button>}
+      />
 
       {!seeded && (
         <p

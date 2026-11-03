@@ -405,6 +405,7 @@ export function UserDetailDrawer({ userId, fallbackName, onClose }: UserDetailDr
                 userId={detail.profile.id}
                 role={detail.profile.role}
                 banned={Boolean(detail.profile.banned_at)}
+                plan={detail.profile.plan ?? 'free'}
                 isAdmin={detail.profile.role === 'admin'}
                 onDone={() => setReloadToken((n) => n + 1)}
               />

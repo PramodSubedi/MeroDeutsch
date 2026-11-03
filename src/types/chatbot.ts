@@ -338,3 +338,41 @@ export interface WeakItemSnapshot {
    */
   userAnswer: string;
 }
+
+/** Compact, always-fresh learner profile snapshot.
+ *  Used by the recommendation engine and dialogue moves.
+ *  Kept in plain serializable form – no functions, no React refs.
+ */
+export interface LearnerMemory {
+  // Progress
+  cefr: CefrLevel;
+  userLevel: 'A1.1' | 'A1.2' | 'A2.1';
+  unitId: string | null;          // e.g. 'm07'
+  unitIndex: number;
+  checkpointPercent: number;      // 0–100
+  xp: number;
+  level: number;
+  streak: number;
+  lastActiveAt: number;           // epoch ms
+
+  // Weakness
+  weakSkills: { skill: string; score: number }[];   // top 3–5
+  weakWords: { id: string; lemma: string; article?: string; dueAt?: number }[];  // top 10–20
+  dueReviewCount: number;
+
+  // Recent signals
+  recentMistakes: { type: string; count: number; lastAt: number }[];  // e.g. articles, word-order
+  recentIntents: string[];        // last 5–8 intents for follow-up awareness
+  lastTopic?: { type: 'vocab' | 'grammar' | 'quiz' | 'unit'; key: string };
+
+  // Preferences (inferred or explicit)
+  preferredPractice?: 'quiz' | 'vocab' | 'grammar';
+  languageMode: 'de' | 'de_en' | 'de_en_ne' | 'nur_deutsch';
+  nudgesPausedUntil?: number;
+
+  // Wins
+  winsThisWeek: { quizzes: number; cardsReviewed: number; checkpointsPassed: number };
+}
+
+/** CEFR level type. */
+export type CefrLevel = 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';

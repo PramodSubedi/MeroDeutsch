@@ -27,6 +27,7 @@ import {
   LogOut,
   Menu,
   Moon,
+  Search,
   Settings as SettingsIcon,
   Shield,
   Sun,
@@ -183,6 +184,9 @@ export function AdminLayout() {
   }, [refreshIndex]);
 
   const displayName = profile?.full_name || profile?.username || session?.user.email || 'Admin';
+  const activeSection = NAV_ITEMS.find((item) =>
+    item.to === '/' ? location.pathname === '/' : location.pathname.startsWith(item.to),
+  );
 
   const nav = (
     <nav className="flex flex-col gap-1 p-3" aria-label="Admin sections">
@@ -190,10 +194,10 @@ export function AdminLayout() {
         const Icon = NAV_ICONS[item.to];
         const classes = (active: boolean) =>
           [
-            'flex min-h-[44px] items-center gap-3 rounded-md px-3 text-body font-medium transition',
+            'admin-nav-item flex min-h-[46px] items-center gap-3 rounded-md px-3 text-body font-semibold transition',
             active
-              ? 'bg-accent-50 text-accent-700 dark:bg-accent-950/50 dark:text-accent-300'
-              : 'text-ink-600 hover:bg-ink-100 hover:text-ink-900 dark:text-ink-300 dark:hover:bg-ink-800 dark:hover:text-ink-50',
+              ? 'admin-nav-item-active text-[#f6f0e7]'
+              : 'text-[#aaa59c] hover:bg-[#292a25] hover:text-[#fffaf2]',
           ].join(' ');
 
         return (
@@ -207,19 +211,19 @@ export function AdminLayout() {
   );
 
   const brand = (
-    <div className="flex items-center gap-2 border-b border-ink-200 px-4 py-4 dark:border-ink-800">
-      <Shield className="h-5 w-5 text-accent-600" aria-hidden="true" />
+    <div className="admin-brand flex items-center gap-3 border-b px-4 py-5">
+      <span className="admin-brand-mark" aria-hidden="true"><Shield className="h-5 w-5" /></span>
       <div className="min-w-0">
-        <p className={theme.type.kicker}>Control center</p>
-        <p className="truncate text-body font-bold text-ink-900 dark:text-ink-50">MeroDeutsch</p>
+        <p className="admin-eyebrow">Operations / 01</p>
+        <p className="truncate text-body font-extrabold text-[#fffaf2]">MeroDeutsch</p>
       </div>
     </div>
   );
 
   return (
-    <div className="app-shell flex min-h-screen bg-ink-50 dark:bg-ink-950">
+    <div className="admin-console flex min-h-screen">
       {/* Desktop rail */}
-      <aside className="hidden w-64 shrink-0 border-r border-ink-200 bg-white lg:block dark:border-ink-800 dark:bg-ink-900">
+      <aside className="hidden w-64 shrink-0 border-r border-[#34352f] bg-[#171815] lg:block">
         <div className="sticky top-0">
           {brand}
           {nav}
@@ -236,12 +240,12 @@ export function AdminLayout() {
       )}
       <aside
         className={[
-          'fixed inset-y-0 left-0 z-50 w-72 border-r border-ink-200 bg-white transition-transform lg:hidden dark:border-ink-800 dark:bg-ink-900',
+          'admin-mobile-rail fixed inset-y-0 left-0 z-50 w-72 border-r transition-transform lg:hidden',
           drawerOpen ? 'translate-x-0' : '-translate-x-full',
         ].join(' ')}
         aria-hidden={!drawerOpen}
       >
-        <div className="border-b border-ink-200 dark:border-ink-800">{brand}</div>
+        <div>{brand}</div>
         {nav}
         <button
           type="button"
@@ -255,24 +259,35 @@ export function AdminLayout() {
 
       <div className="flex min-w-0 flex-1 flex-col">
         {/* Header: host indicator + account. Solid surface, hairline only. */}
-        <header className={theme.layout.header}>
-          <div className="flex min-h-16 flex-wrap items-center justify-between gap-3 px-4 py-2 sm:px-6">
+        <header className="admin-header sticky top-0 z-30">
+          <div className="flex min-h-20 flex-wrap items-center justify-between gap-4 px-4 py-3 sm:px-8">
             <div className="flex min-w-0 items-center gap-3">
               <button
                 type="button"
                 onClick={() => setDrawerOpen(true)}
-                className={theme.button.icon}
+                className="admin-icon-button lg:hidden"
                 aria-label="Open navigation"
                 aria-expanded={drawerOpen}
               >
                 <Menu className="h-5 w-5" aria-hidden="true" />
               </button>
-              {/* Domain indicator: an admin must never confuse this origin with
-                  the learner app they are also signed in to. */}
-              <p className="min-w-0 truncate text-meta font-semibold text-ink-600 dark:text-ink-400">
-                {host}
-              </p>
+              <div className="min-w-0">
+                <p className="admin-eyebrow">{host}</p>
+                <h1 className="truncate text-title font-extrabold text-[#24241f] dark:text-[#fffaf2]">
+                  {activeSection?.label ?? 'Control center'}
+                </h1>
+              </div>
             </div>
+
+            <button
+              type="button"
+              className="admin-search-trigger hidden min-h-11 min-w-[15rem] items-center gap-3 rounded-md px-3 text-left text-meta md:flex"
+              onClick={() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true }))}
+            >
+              <Search className="h-4 w-4" aria-hidden="true" />
+              <span className="flex-1">Search anything</span>
+              <kbd>Ctrl K</kbd>
+            </button>
 
             {/* QA mode lives in the NAVBAR, not behind a page. Switching the
                 identity the app is being reviewed as is something an admin does
@@ -287,7 +302,7 @@ export function AdminLayout() {
               <button
                 type="button"
                 onClick={toggle}
-                className={theme.button.icon}
+                className="admin-icon-button"
                 aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'}
               >
                 {dark ? (
@@ -296,10 +311,10 @@ export function AdminLayout() {
                   <Moon className="h-5 w-5" aria-hidden="true" />
                 )}
               </button>
-              <span className="hidden max-w-[16rem] truncate text-meta font-semibold text-ink-700 lg:inline dark:text-ink-300">
+              <span className="admin-user-chip hidden max-w-[16rem] truncate text-meta font-bold lg:inline">
                 {displayName}
               </span>
-              <button type="button" onClick={() => void signOut()} className={theme.button.secondary}>
+              <button type="button" onClick={() => void signOut()} className="admin-signout">
                 <LogOut className="h-4 w-4" aria-hidden="true" />
                 <span className="hidden sm:inline">Sign out</span>
               </button>
@@ -307,8 +322,8 @@ export function AdminLayout() {
           </div>
         </header>
 
-        <main className="flex-1 px-4 py-6 sm:px-6">
-          <div className="mx-auto w-full max-w-content">
+        <main className="admin-main flex-1 px-4 py-7 sm:px-8 lg:px-10">
+          <div className="mx-auto w-full max-w-[90rem]">
             {/* A panel that throws costs you that panel, not the shell.
                 A rejected read in a `useEffect` unmounts the whole React tree by
                 default, which is how one missing database function once turned

@@ -63,6 +63,25 @@ export function levelDirective(level: UserLevel): string {
 
 const PRONOUN_WORDS = ['er', 'sie', 'es', 'he', 'she', 'it'];
 
+/** Simple cache: frozen state+text -> resolved text. */
+const anaphoraCache = new Map<string, string>();
+const MAX_ANAPHORA_CACHE_SIZE = 200;
+
+function purgeAnaphoraCache(): void {
+  if (anaphoraCache.size <= MAX_ANAPHORA_CACHE_SIZE) return;
+  // Remove oldest entries
+  const keysToRemove = anaphoraCache.size - MAX_ANAPHORA_CACHE_SIZE;
+  for (let i = 0; i < keysToRemove; i++) {
+    anaphoraCache.delete(anaphoraCache.keys().next().value);
+  }
+}
+
+/** Freeze a conversation state for use as a cache key. */
+function freezeStateForCache(state: ConversationState): string {
+  // Use JSON.stringify of the key data that matters for anaphora resolution
+  return `${state.topic}|${state.turnCount}|${state.userLevel}|${JSON.stringify(state.keyEntities)}`;
+}
+
 /** `Anna und sie` / `Anna, sie ist` -> bind sie -> Anna. */
 function bindEntities(state: ConversationState, text: string): Record<string, string> {
   const entities = { ...state.keyEntities };

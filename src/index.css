@@ -206,6 +206,88 @@ body {
   background-color: var(--app-canvas-dark);
 }
 
+/* Admin control center: a warm, editorial operations surface distinct from the
+   learner product. Pages keep the shared semantic tokens, while the shell owns
+   the denser instrument-panel atmosphere. */
+.admin-console {
+  --admin-ink: #24241f;
+  --admin-muted: #716f67;
+  --admin-paper: #f4f1ea;
+  --admin-paper-bright: #fffdf8;
+  --admin-line: #d9d4c9;
+  --admin-signal: #c7462f;
+  background: var(--admin-paper);
+  color: var(--admin-ink);
+  font-family: 'Manrope', 'Noto Sans Devanagari', sans-serif;
+}
+
+.admin-console .admin-main {
+  background:
+    radial-gradient(circle at 85% 0%, rgb(199 70 47 / 0.06), transparent 25rem),
+    var(--admin-paper);
+}
+
+.admin-console .admin-header {
+  background: rgb(244 241 234 / 0.94);
+  border-bottom: 1px solid var(--admin-line);
+  backdrop-filter: blur(14px);
+}
+
+.dark .admin-console {
+  --admin-paper: #1d1e1a;
+  --admin-paper-bright: #252620;
+  --admin-line: #3a3b34;
+  --admin-ink: #f6f0e7;
+  --admin-muted: #aaa59c;
+  background: var(--admin-paper);
+}
+
+.dark .admin-console .admin-header,
+.dark .admin-console .admin-main {
+  background-color: var(--admin-paper);
+}
+
+.admin-brand { border-color: #34352f; }
+.admin-brand-mark { display: grid; height: 2rem; width: 2rem; place-items: center; border-radius: 0.45rem; background: var(--admin-signal); color: #fffaf2; }
+.admin-eyebrow { color: var(--admin-muted); font-size: 0.66rem; font-weight: 800; letter-spacing: 0.15em; line-height: 1rem; text-transform: uppercase; }
+.admin-nav-item-active { background: var(--admin-signal); box-shadow: 0 8px 18px rgb(199 70 47 / 0.18); }
+.admin-header .admin-icon-button { display: inline-flex; height: 2.75rem; width: 2.75rem; align-items: center; justify-content: center; border-radius: 0.45rem; color: var(--admin-muted); }
+.admin-header .admin-icon-button:hover { background: rgb(36 36 31 / 0.07); color: var(--admin-ink); }
+.admin-search-trigger { border: 1px solid var(--admin-line); background: var(--admin-paper-bright); color: var(--admin-muted); }
+.admin-search-trigger:hover { border-color: var(--admin-signal); color: var(--admin-ink); }
+.admin-search-trigger kbd { border: 1px solid var(--admin-line); border-radius: 0.25rem; padding: 0.15rem 0.35rem; font-size: 0.65rem; }
+.admin-user-chip { border-left: 1px solid var(--admin-line); color: var(--admin-ink); padding-left: 0.9rem; }
+.admin-signout { display: inline-flex; min-height: 2.75rem; align-items: center; gap: 0.45rem; border: 1px solid var(--admin-line); border-radius: 0.45rem; padding: 0.6rem 0.8rem; color: var(--admin-muted); font-size: 0.8rem; font-weight: 800; }
+.admin-signout:hover { border-color: var(--admin-signal); color: var(--admin-signal); }
+.admin-mobile-rail { background: #171815; color: #fffaf2; }
+.admin-auth-card { border: 1px solid var(--admin-line); background: var(--admin-paper-bright); padding: clamp(1.5rem, 5vw, 2.75rem); box-shadow: 0 24px 60px rgb(36 36 31 / 0.1); }
+.admin-auth-mark { display: grid; height: 3rem; width: 3rem; place-items: center; background: var(--admin-signal); color: #fffaf2; font-size: 1.2rem; font-weight: 900; }
+.admin-auth-button { min-height: 3.25rem; border-radius: 0.4rem; background: var(--admin-signal); color: #fffaf2; font-size: 0.95rem; font-weight: 900; transition: background 160ms ease, transform 160ms ease; }
+.admin-auth-button:hover { background: #a93625; transform: translateY(-1px); }
+.admin-hero-title { color: var(--admin-ink); font-size: clamp(2rem, 4vw, 3.8rem); font-weight: 850; letter-spacing: -0.055em; line-height: 0.98; }
+.admin-page-title { color: var(--admin-ink); font-size: clamp(1.9rem, 3vw, 3rem); font-weight: 850; letter-spacing: -0.05em; line-height: 1; }
+.admin-page-copy { color: var(--admin-muted); font-size: 0.95rem; line-height: 1.55; margin-top: 0.7rem; max-width: 46rem; }
+.admin-page-header { border-bottom: 1px solid var(--admin-line); padding-bottom: 1.4rem; }
+.admin-hero-copy { color: var(--admin-muted); font-size: 1rem; line-height: 1.5; margin-top: 0.8rem; max-width: 34rem; }
+.admin-refresh-button { min-height: 2.75rem; border: 1px solid var(--admin-line); border-radius: 0.45rem; padding: 0.6rem 1rem; color: var(--admin-ink); font-size: 0.8rem; font-weight: 800; }
+.admin-refresh-button:hover { border-color: var(--admin-signal); color: var(--admin-signal); }
+.admin-signal-strip { display: flex; align-items: center; justify-content: space-between; gap: 1rem; border: 1px solid #e6c6bd; border-left: 4px solid var(--admin-signal); background: rgb(255 253 248 / 0.75); padding: 1rem 1.1rem; }
+.dark .admin-signal-strip { border-color: #694139; background: rgb(37 38 32 / 0.75); }
+.admin-signal-dot { height: 0.6rem; width: 0.6rem; border-radius: 999px; background: #29956b; box-shadow: 0 0 0 5px rgb(41 149 107 / 0.13); }
+.admin-signal-dot-warning { background: var(--admin-signal); box-shadow: 0 0 0 5px rgb(199 70 47 / 0.13); }
+.admin-inline-link { display: inline-flex; align-items: center; gap: 0.25rem; color: var(--admin-signal); font-size: 0.8rem; font-weight: 800; white-space: nowrap; }
+.admin-inline-link:hover { text-decoration: underline; }
+.admin-metric-grid > * { border-color: var(--admin-line) !important; background: var(--admin-paper-bright) !important; border-radius: 0.45rem !important; box-shadow: none !important; }
+.admin-launchpad { display: grid; gap: 1rem; border-top: 1px solid var(--admin-line); padding-top: 1.25rem; }
+.admin-quick-link { display: flex; min-height: 5.2rem; align-items: center; gap: 0.8rem; border: 1px solid var(--admin-line); background: var(--admin-paper-bright); padding: 0.85rem; color: var(--admin-ink); transition: border-color 160ms ease, transform 160ms ease; }
+.admin-quick-link:hover { border-color: var(--admin-signal); transform: translateY(-2px); }
+.admin-quick-icon { display: grid; height: 2.35rem; width: 2.35rem; flex: 0 0 auto; place-items: center; background: #f0dfd8; color: var(--admin-signal); }
+.dark .admin-quick-icon { background: #4a2d28; }
+.admin-data-panel { border: 1px solid var(--admin-line); background: var(--admin-paper-bright); padding: 1rem; }
+.dark .admin-data-panel, .dark .admin-quick-link, .dark .admin-metric-grid > * { background: var(--admin-paper-bright) !important; }
+.admin-page > section { border-color: var(--admin-line) !important; }
+.admin-page > section.rounded-lg { border-radius: 0.45rem; box-shadow: none; }
+
 /* ═══════════════════════════════════════════════════════════════════════════
    MOBILE TYPE LAYER
    ───────────────────────────────────────────────────────────────────────────

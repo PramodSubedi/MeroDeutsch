@@ -27,6 +27,7 @@ import { theme } from '../../config/theme';
 import { KpiCard } from '../components/KpiCard';
 import { fetchCurriculum, issueCounts, type CurriculumData } from '../data/curriculum';
 import { CurriculumStorePanel } from '../components/CurriculumStorePanel';
+import { AdminPageHeader } from '../components/AdminPageHeader';
 
 export function CurriculumPage() {
   const [data, setData] = useState<CurriculumData | null>(null);
@@ -45,27 +46,21 @@ export function CurriculumPage() {
   const issues = issueCounts(data?.issues ?? []);
 
   return (
-    <div className="space-y-6">
-      <header className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <p className={theme.type.kicker}>Content</p>
-          <h1 className={theme.page.heading}>Curriculum</h1>
-          <p className={theme.page.description}>
-            The authored spine, read from the same bundled JSON the app runs on. The database store
-            below is the editable copy the <code className="font-mono">curriculum_source</code> flag
-            selects between — and the store panel shows which one the app is actually serving.
-          </p>
-        </div>
-        <button
+    <div className="admin-page space-y-7">
+      <AdminPageHeader
+        eyebrow="Content / release"
+        title="Curriculum"
+        description={<>The authored spine and the published database store, with validation and served-source checks side by side.</>}
+        actions={<button
           type="button"
           onClick={() => void load()}
-          className={theme.button.secondary}
+          className="admin-refresh-button"
           disabled={loading}
         >
           <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} aria-hidden="true" />
           {loading ? 'Loading…' : 'Refresh'}
-        </button>
-      </header>
+        </button>}
+      />
 
       <CurriculumStorePanel />
 

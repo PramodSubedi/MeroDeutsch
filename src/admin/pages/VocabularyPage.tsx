@@ -20,6 +20,7 @@ import { KpiCard } from '../components/KpiCard';
 import { fetchVocabulary, toCsv, type VocabRow, type VocabSource } from '../data/vocabulary';
 import { downloadTextFile } from '../data/csv';
 import { VocabularyRepair } from '../components/VocabularyRepair';
+import { AdminPageHeader } from '../components/AdminPageHeader';
 
 const ROW_HEIGHT = 48;
 const GRID = 'grid grid-cols-[minmax(10rem,1.5fr)_5rem_5rem_4rem_minmax(9rem,1.2fr)_minmax(9rem,1.2fr)] gap-3';
@@ -368,21 +369,16 @@ export function VocabularyPage() {
   );
 
   return (
-    <div className="space-y-6">
-      <header className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <p className={theme.type.kicker}>Content</p>
-          <h1 className={theme.page.heading}>Vocabulary</h1>
-          <p className={theme.page.description}>
-            Read-only. Writes to both source tables are revoked from client roles; import needs a
-            privileged function.
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
+    <div className="admin-page space-y-7">
+      <AdminPageHeader
+        eyebrow="Content / library"
+        title="Vocabulary"
+        description="Search the live vocabulary library, inspect coverage, and export a filtered working set. Repairs stay in the integrity workflow."
+        actions={<>
           <button
             type="button"
             onClick={() => downloadTextFile('vocabulary.csv', toCsv(filtered), 'text/csv;charset=utf-8')}
-            className={theme.button.secondary}
+            className="admin-refresh-button"
             disabled={filtered.length === 0}
           >
             <Download className="h-4 w-4" aria-hidden="true" />
@@ -393,7 +389,7 @@ export function VocabularyPage() {
             onClick={() =>
               downloadTextFile('vocabulary.json', JSON.stringify(filtered, null, 2), 'application/json')
             }
-            className={theme.button.secondary}
+            className="admin-refresh-button"
             disabled={filtered.length === 0}
           >
             <Download className="h-4 w-4" aria-hidden="true" />
@@ -402,14 +398,14 @@ export function VocabularyPage() {
           <button
             type="button"
             onClick={() => void load()}
-            className={theme.button.secondary}
+            className="admin-refresh-button"
             disabled={loading}
           >
             <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} aria-hidden="true" />
             Refresh
           </button>
-        </div>
-      </header>
+        </>}
+      />
 
       {errors.length > 0 && <ErrorsPanel errors={errors} />}
 

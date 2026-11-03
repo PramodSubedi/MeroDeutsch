@@ -22,7 +22,7 @@
  * target up front.
  */
 import { useState } from 'react';
-import { ShieldAlert, ShieldCheck, ShieldX, UserMinus, UserPlus } from 'lucide-react';
+import { Crown, ShieldAlert, ShieldCheck, ShieldX, UserMinus, UserPlus } from 'lucide-react';
 import { theme } from '../../config/theme';
 import { runAdminAction, type AdminActionResult } from '../data/adminActions';
 
@@ -30,14 +30,15 @@ export interface PrivilegedControlsProps {
   userId: string;
   role: string;
   banned: boolean;
+  plan: string;
   /** True when this target is an admin, which is what requires a reason. */
   isAdmin: boolean;
   onDone: () => void;
 }
 
-type Pending = 'user.ban' | 'user.unban' | 'user.promote' | 'user.demote' | null;
+type Pending = 'user.ban' | 'user.unban' | 'user.promote' | 'user.demote' | 'user.grant_premium' | 'user.revoke_premium' | null;
 
-export function PrivilegedControls({ userId, role, banned, isAdmin, onDone }: PrivilegedControlsProps) {
+export function PrivilegedControls({ userId, role, banned, plan, isAdmin, onDone }: PrivilegedControlsProps) {
   const [reason, setReason] = useState('');
   const [busy, setBusy] = useState<Pending>(null);
   const [result, setResult] = useState<AdminActionResult | null>(null);
@@ -113,6 +114,9 @@ export function PrivilegedControls({ userId, role, banned, isAdmin, onDone }: Pr
         {role === 'admin'
           ? action('user.demote', 'Demote', UserMinus, true)
           : action('user.promote', 'Promote', UserPlus, false)}
+        {plan === 'premium'
+          ? action('user.revoke_premium', 'Revoke Premium', Crown, true)
+          : action('user.grant_premium', 'Grant Premium', Crown, true)}
       </div>
 
       {result && (

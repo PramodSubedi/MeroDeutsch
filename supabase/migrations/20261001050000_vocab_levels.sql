@@ -88,7 +88,7 @@ BEGIN
   -- And it MUST be reachable by anon, or the learner filter dropdown silently
   -- empties. Asserted because the instinct to tighten a SECURITY DEFINER
   -- function is strong and this one is the exception.
-  IF NOT has_function_privilege('public.vocab_levels()'::regprocedure, 'anon', 'EXECUTE') THEN
+  IF NOT has_function_privilege('anon', 'public.vocab_levels()', 'EXECUTE') THEN
     RAISE EXCEPTION 'vocab_levels() is not executable by anon — the learner app calls it before sign-in';
   END IF;
 END $$;

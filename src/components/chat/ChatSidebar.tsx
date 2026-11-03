@@ -239,10 +239,10 @@ export function ChatSidebar() {
         intent = 'conversation';
       }
 
-      // MODEL-ASSISTED FALLBACK — only when the rules scored ZERO and a server
-      // is reachable. It can never re-route a question the rules understood, so
-      // a flaky model cannot hijack the common cases.
-      if (intent === 'casual_chat' && store.status.reachable) {
+      // MODEL-ASSISTED FALLBACK — skip when useLocalModel is true
+      // When deterministic mode is on, we never call the model.
+      // The handleIntent() call below handles everything.
+      if (intent === 'casual_chat' && !CHATBOT_CONFIG.useLocalModel && store.status.reachable) {
         intent =
           (await classifyWithModel(text, {
             baseUrl: settings.baseUrl,
@@ -277,6 +277,23 @@ export function ChatSidebar() {
         page,
         report,
       });
+
+      // ── DETERMINISTIC MODE: render reply immediately, no streaming ────────
+      if (CHATBOT_CONFIG.useLocalModel) {
+        const assistantId = nextMessageId();
+        addMessage({
+          id: assistantId,
+          role: 'assistant',
+          content: plan.fallbackReply,
+          createdAt: Date.now(),
+          streaming: false,
+          intent,
+          inReplyTo: text,
+          payload: plan.payload,
+        });
+        setFace(plan.mood);
+        return;
+      }
 
       // A drill is built from real data and rendered as an interactive card,
       // so the model only contributes the one-line encouragement.

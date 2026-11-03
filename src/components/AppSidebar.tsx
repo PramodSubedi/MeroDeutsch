@@ -174,7 +174,7 @@ export function AppSidebar({
   // The waypoint renders A1 campaign state, so it is gated on the same hook
   // `ContinueLearningPage` branches on - see the note above the
   // <LearnerWaypoint /> call for why this is the right call, not a tier leak.
-  const { hasCampaign, isLoading: campaignLoading } = useHasA1Campaign();
+  const { hasCampaign, isLoading: campaignLoading, isUnavailable: campaignUnavailable } = useHasA1Campaign();
   const { dueQueue } = useReviewQueue();
   const isDE = langMode === 'german';
   const mobileDrawerRef = useRef<HTMLElement>(null);
@@ -274,7 +274,7 @@ export function AppSidebar({
           `isLoading` still renders nothing rather than guessing, matching
           `PremiumGate`: a waypoint that appears for one learner and vanishes
           for another is worse than one that arrives 100ms late. */}
-      {isAuthenticated && hasCampaign && !campaignLoading && (
+      {isAuthenticated && hasCampaign && !campaignLoading && !campaignUnavailable && (
         <div className="px-3 pt-4">
           <LearnerWaypoint collapsed={collapsed} />
         </div>

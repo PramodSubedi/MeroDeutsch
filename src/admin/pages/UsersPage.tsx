@@ -14,7 +14,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import type { Virtualizer } from '@tanstack/react-virtual';
-import { AlertTriangle, ArrowDownUp, Download, RefreshCw, Search, MoreHorizontal, ShieldX, ShieldCheck, UserPlus, UserMinus } from 'lucide-react';
+import { AlertTriangle, ArrowDownUp, Crown, Download, RefreshCw, Search, MoreHorizontal, ShieldX, ShieldCheck, UserPlus, UserMinus } from 'lucide-react';
 import { theme } from '../../config/theme';
 import { KpiCard } from '../components/KpiCard';
 import { UserDetailDrawer } from '../components/UserDetailDrawer';
@@ -97,10 +97,10 @@ function UserActionMenu({
   onAction,
 }: {
   user: AdminUserRow;
-  onAction: (action: 'user.ban' | 'user.unban' | 'user.promote' | 'user.demote', reason: string) => void;
+  onAction: (action: 'user.ban' | 'user.unban' | 'user.promote' | 'user.demote' | 'user.grant_premium' | 'user.revoke_premium', reason: string) => void;
 }) {
   const [open, setOpen] = useState(false);
-  const [confirming, setConfirming] = useState<'user.ban' | 'user.unban' | 'user.promote' | 'user.demote' | null>(null);
+  const [confirming, setConfirming] = useState<'user.ban' | 'user.unban' | 'user.promote' | 'user.demote' | 'user.grant_premium' | 'user.revoke_premium' | null>(null);
   const [reason, setReason] = useState('');
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<AdminActionResult | null>(null);
@@ -118,9 +118,11 @@ function UserActionMenu({
     // the reason field only renders for existing admins) no written reason.
     { action: 'user.promote' as const, label: 'Promote', icon: UserPlus, danger: true, disabled: isAdmin },
     { action: 'user.demote' as const, label: 'Demote', icon: UserMinus, danger: true, disabled: !isAdmin },
+    { action: 'user.grant_premium' as const, label: 'Grant Premium', icon: Crown, danger: true, disabled: user.plan === 'premium' },
+    { action: 'user.revoke_premium' as const, label: 'Revoke Premium', icon: Crown, danger: true, disabled: user.plan !== 'premium' },
   ].filter((a) => !a.disabled);
 
-  async function execute(action: 'user.ban' | 'user.unban' | 'user.promote' | 'user.demote') {
+  async function execute(action: 'user.ban' | 'user.unban' | 'user.promote' | 'user.demote' | 'user.grant_premium' | 'user.revoke_premium') {
     setBusy(true);
     setResult(null);
     const r = await runAdminAction({ action, targetId: user.id, reason: reason.trim() || undefined });
@@ -424,15 +426,12 @@ export function UsersPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="admin-page space-y-7">
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className={theme.type.kicker}>People</p>
-          <h1 className={theme.page.heading}>Users</h1>
-          <p className={theme.page.description}>
-            Use the actions menu (⋮) on each row to ban, unban, promote or demote. Plan, role and
-            suspension are protected by database triggers and use the service-role function.
-          </p>
+          <p className="admin-eyebrow">People / operations</p>
+          <h1 className="admin-page-title mt-2">Users</h1>
+          <p className="admin-page-copy">Search the learner population, inspect a User 360 view, and run audited account or entitlement actions.</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <button
@@ -776,7 +775,7 @@ function UsersTable({
   scrollRef: React.RefObject<HTMLDivElement | null>;
   virtualizer: Virtualizer<HTMLDivElement, Element>;
   onOpen: (userId: string, name: string | null) => void;
-  onAction: (action: 'user.ban' | 'user.unban' | 'user.promote' | 'user.demote', reason: string) => void;
+  onAction: (action: 'user.ban' | 'user.unban' | 'user.promote' | 'user.demote' | 'user.grant_premium' | 'user.revoke_premium', reason: string) => void;
 }) {
   return (
     <section className="overflow-hidden rounded-lg border border-ink-200 bg-white dark:border-ink-800 dark:bg-ink-900">

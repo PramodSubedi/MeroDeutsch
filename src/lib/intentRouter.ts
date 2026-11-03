@@ -198,9 +198,26 @@ function score(intent: Intent, message: string, context?: ContextSnapshot): numb
   return total;
 }
 
+/** Simple LRU-like cache for intent classification results. */
+const intentCache = new Map<string, Intent>(/* max size will be enforced below */);
+const MAX_INTENT_CACHE_SIZE = 100;
+
+function purgeIntentCache(): void {
+  if (intentCache.size <= MAX_INTENT_CACHE_SIZE) return;
+  // Remove oldest entries (first keys in the Map)
+  const keysToRemove = intentCache.size - MAX_INTENT_CACHE_SIZE;
+  for (let i = 0; i < keysToRemove; i++) {
+    intentCache.delete(intentCache.keys().next().value);
+  }
+}
+
 export function classifyIntent(message: string, context?: ContextSnapshot): Intent {
   const text = message.trim();
   if (!text) return 'casual_chat';
+
+  // Check cache first — same message always maps to same intent (rules are deterministic)
+  const cached = intentCache.get(text);
+  if (cached !== undefined) return cached;
 
   let best: Intent = 'casual_chat';
   let bestScore = 0;
@@ -213,6 +230,10 @@ export function classifyIntent(message: string, context?: ContextSnapshot): Inte
   }
 
   // A quoted term is a lookup even when nothing else matched.
-  if (bestScore === 0 && extractQuotedTerm(text)) return 'vocab_lookup';
-  return best;
+  const result = bestScore === 0 && extractQuotedTerm(text) ? 'vocab_lookup' : best;
+
+  // Store in cache (purge if needed before inserting)
+  purgeIntentCache();
+  intentCache.set(text, result);
+  return result;
 }

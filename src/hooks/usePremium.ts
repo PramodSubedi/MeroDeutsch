@@ -44,10 +44,14 @@ export interface PremiumState {
   isPremium: boolean;
   /** True until the first read resolves. A gate should render nothing yet. */
   isLoading: boolean;
+  /** True when the account tier could not be verified. Never treat this as free. */
+  isUnavailable: boolean;
   /** True when the browser is forcing the tier for local testing. */
   isOverridden: boolean;
   /** Set / clear the local override. Pass `null` to return to the real plan. */
   setOverride: (plan: Plan | null) => void;
+  /** Retry a failed entitlement read. */
+  retry: () => void;
 }
 
 export function usePremium(): PremiumState {
@@ -56,6 +60,8 @@ export function usePremium(): PremiumState {
 
   const [plan, setPlan] = useState<Plan>('free');
   const [isLoading, setIsLoading] = useState(true);
+  const [isUnavailable, setIsUnavailable] = useState(false);
+  const [retryToken, setRetryToken] = useState(0);
   const [override, setOverrideState] = useState<Plan | null>(() => readOverride());
 
   // ⚠️ THE OVERRIDE MUST BE RE-READ WHEN THE MODE CHANGES — this was a real bug.
@@ -94,6 +100,7 @@ export function usePremium(): PremiumState {
     if (override) {
       setPlan(override);
       setIsLoading(false);
+      setIsUnavailable(false);
       return;
     }
     if (authLoading) return;
@@ -101,19 +108,21 @@ export function usePremium(): PremiumState {
       // A guest has no profile row. Not an error, and not "loading forever".
       setPlan('free');
       setIsLoading(false);
+      setIsUnavailable(false);
       return;
     }
     let cancelled = false;
     setIsLoading(true);
-    void entitlementService.getPlan(userId).then((next) => {
+    void entitlementService.readPlan(userId).then((result) => {
       if (cancelled) return;
-      setPlan(next);
+      setPlan(result.plan ?? 'free');
+      setIsUnavailable(result.error !== null);
       setIsLoading(false);
     });
     return () => {
       cancelled = true;
     };
-  }, [userId, authLoading, override]);
+  }, [userId, authLoading, override, retryToken]);
 
   const setOverride = useCallback((next: Plan | null) => {
     setOverrideState(next);
@@ -126,7 +135,9 @@ export function usePremium(): PremiumState {
     }
   }, []);
 
-  return { plan, isPremium: plan === 'premium', isLoading, isOverridden: override !== null, setOverride };
+  const retry = useCallback(() => setRetryToken((value) => value + 1), []);
+
+  return { plan, isPremium: plan === 'premium', isLoading, isUnavailable, isOverridden: override !== null, setOverride, retry };
 }
 
 /**
@@ -158,9 +169,11 @@ export interface A1CampaignAccess {
   hasCampaign: boolean;
   /** True until the plan read resolves. Render nothing rather than guess. */
   isLoading: boolean;
+  /** True when campaign eligibility could not be verified. */
+  isUnavailable: boolean;
 }
 
 export function useHasA1Campaign(): A1CampaignAccess {
-  const { isPremium, isLoading } = usePremium();
-  return { hasCampaign: isPremium, isLoading };
+  const { isPremium, isLoading, isUnavailable } = usePremium();
+  return { hasCampaign: isPremium, isLoading, isUnavailable };
 }

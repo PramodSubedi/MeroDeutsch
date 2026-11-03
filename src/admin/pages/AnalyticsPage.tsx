@@ -25,7 +25,6 @@ import {
   YAxis,
 } from 'recharts';
 import { RefreshCw } from 'lucide-react';
-import { theme } from '../../config/theme';
 import { KpiCard } from '../components/KpiCard';
 import {
   AXIS_PROPS,
@@ -36,6 +35,7 @@ import {
   TOOLTIP_PROPS,
 } from '../components/charts';
 import { fetchAnalytics, type AnalyticsData } from '../data/analytics';
+import { AdminPageHeader } from '../components/AdminPageHeader';
 
 /** Shared margins; -20 on the left recovers the Y-axis label gutter. */
 const M = { top: 8, right: 8, bottom: 0, left: -20 };
@@ -59,25 +59,21 @@ export function AnalyticsPage() {
   const peakDau = data ? Math.max(0, ...data.dau.map((d) => d.active)) : 0;
 
   return (
-    <div className="space-y-6">
-      <header className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <p className={theme.type.kicker}>Engagement</p>
-          <h1 className={theme.page.heading}>Analytics</h1>
-          <p className={theme.page.description}>
-            Read-only, aggregated in the browser from the learner tables.
-          </p>
-        </div>
-        <button
+    <div className="admin-page space-y-7">
+      <AdminPageHeader
+        eyebrow="Observability / engagement"
+        title="Analytics"
+        description="Population-level signals for activity, retention, progress, and content usage. Empty charts mean there is no trustworthy data yet."
+        actions={<button
           type="button"
           onClick={() => void load()}
-          className={theme.button.secondary}
+          className="admin-refresh-button"
           disabled={loading}
         >
           <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} aria-hidden="true" />
           {loading ? 'Loading…' : 'Refresh'}
-        </button>
-      </header>
+        </button>}
+      />
 
       {data && data.errors.length > 0 && (
         <div

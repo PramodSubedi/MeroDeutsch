@@ -15,7 +15,8 @@
  * loader with a `profiles` join. Four scalars do not justify that.
  */
 import { useCallback, useEffect, useState } from 'react';
-import { Activity, Crown, ListChecks, Sparkles, TrendingUp, UserCheck, UserX, Users } from 'lucide-react';
+import { Activity, ArrowUpRight, BookOpen, Crown, ListChecks, Settings2, Sparkles, TrendingUp, UserCheck, UserX, Users } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { theme } from '../../config/theme';
 import { KpiCard } from '../components/KpiCard';
 import { useAdminData } from '../hooks/useAdminData';
@@ -24,6 +25,15 @@ import { fetchQueueKpis, type DueSummary } from '../data/reviewQueue';
 
 function pct(ratio: number): string {
   return `${(ratio * 100).toFixed(1)}%`;
+}
+
+function todayLabel(): string {
+  return new Intl.DateTimeFormat(undefined, {
+    weekday: 'long',
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+  }).format(new Date());
 }
 
 /**
@@ -69,7 +79,10 @@ export function DashboardPage() {
   // the page refreshed — two halves of one button that disagree.
   const [refreshKey, setRefreshKey] = useState(0);
   const { kpis: queue, loading: queueLoading, error: queueError } = useQueueKpis(refreshKey);
-  const totalUsersLoaded = errors.length === 0;
+  const kpiUnavailable = !loading && errors.length > 0 && !kpis.degraded;
+  const kpiValueLoading = loading || kpiUnavailable;
+  const hasReadProblem = errors.length > 0 || Boolean(queueError);
+  const healthLabel = hasReadProblem ? 'Attention needed' : loading || queueLoading ? 'Reading live data' : 'Control plane is live';
 
   const onRefresh = useCallback(() => {
     refresh();
@@ -77,19 +90,32 @@ export function DashboardPage() {
   }, [refresh]);
 
   return (
-    <div className="space-y-6">
-      <header className="flex flex-wrap items-end justify-between gap-3">
+    <div className="admin-page space-y-7">
+      <header className="admin-hero flex flex-wrap items-end justify-between gap-5">
         <div>
-          <p className={theme.type.kicker}>Overview</p>
-          <h1 className={theme.page.heading}>Dashboard</h1>
-          <p className={theme.page.description}>
-            Live figures from the shared Supabase project.
-          </p>
+          <p className="admin-eyebrow">{todayLabel()}</p>
+          <h1 className="admin-hero-title mt-2">The day, at a glance.</h1>
+          <p className="admin-hero-copy">A live read on learners, content, and the work waiting for the team.</p>
         </div>
-        <button type="button" onClick={onRefresh} className={theme.button.secondary} disabled={loading || queueLoading}>
+        <button type="button" onClick={onRefresh} className="admin-refresh-button" disabled={loading || queueLoading}>
           {loading ? 'Refreshing…' : 'Refresh'}
         </button>
       </header>
+
+      <section className="admin-signal-strip" aria-label="Operations signal">
+        <div className="flex items-center gap-3">
+          <span className={`admin-signal-dot ${hasReadProblem ? 'admin-signal-dot-warning' : ''}`} aria-hidden="true" />
+          <div>
+            <p className="text-body font-extrabold">{healthLabel}</p>
+            <p className="text-meta text-[#716f67] dark:text-[#aaa59c]">
+              {hasReadProblem
+                ? 'One or more dashboard sources could not be verified. Review the notices before acting on these figures.'
+                : 'Reads are coming from the shared project. Check the audit trail before retrying a failed write.'}
+            </p>
+          </div>
+        </div>
+        <Link to="/audit-log" className="admin-inline-link">Open audit log <ArrowUpRight className="h-4 w-4" /></Link>
+      </section>
 
       {/* Partial-failure banner: the dashboard degrades, it does not blank. */}
       {errors.length > 0 && (
@@ -118,71 +144,71 @@ export function DashboardPage() {
         true.
       */}
 
-      <section aria-label="Audience" className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <section aria-label="Audience" className="admin-metric-grid grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCard
           label="Total users"
-          value={kpis.totalUsers.toLocaleString()}
+          value={kpiValueLoading ? '—' : kpis.totalUsers.toLocaleString()}
           hint="rows in profiles"
           icon={Users}
-          loading={loading}
+          loading={false}
         />
         <KpiCard
           label="Active today"
-          value={kpis.activeToday.toLocaleString()}
+          value={kpiValueLoading ? '—' : kpis.activeToday.toLocaleString()}
           hint="distinct users with an activity row dated today"
           icon={UserCheck}
-          loading={loading}
+          loading={false}
           tone={kpis.activeToday > 0 ? 'good' : 'neutral'}
         />
         <KpiCard
           label="Premium"
-          value={totalUsersLoaded ? pct(kpis.premiumShare) : '—'}
+          value={kpiValueLoading ? '—' : pct(kpis.premiumShare)}
           hint={`${kpis.premiumUsers.toLocaleString()} of ${kpis.totalUsers.toLocaleString()}`}
           icon={Crown}
-          loading={loading}
+          loading={false}
         />
         <KpiCard
           label="Suspended"
-          value={kpis.bannedCount.toLocaleString()}
+          value={kpiValueLoading ? '—' : kpis.bannedCount.toLocaleString()}
           hint="banned_at is set"
           icon={UserX}
-          loading={loading}
+          loading={false}
           tone={kpis.bannedCount > 0 ? 'bad' : 'neutral'}
         />
       </section>
 
-      <section aria-label="Learning" className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <section aria-label="Learning" className="admin-metric-grid grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCard
           label="Active 7d"
-          value={kpis.active7d.toLocaleString()}
+          value={kpiValueLoading ? '—' : kpis.active7d.toLocaleString()}
           hint="weekly retained learners"
           icon={Activity}
-          loading={loading}
+          loading={false}
         />
         <KpiCard
           label="Active 30d"
-          value={kpis.active30d.toLocaleString()}
+          value={kpiValueLoading ? '—' : kpis.active30d.toLocaleString()}
           hint="monthly active learners"
           icon={TrendingUp}
-          loading={loading}
+          loading={false}
         />
         <KpiCard
           label="On the spine"
-          value={kpis.pathEnrolled.toLocaleString()}
+          value={kpiValueLoading ? '—' : kpis.pathEnrolled.toLocaleString()}
           hint="rows in a1_path_state"
           icon={Sparkles}
-          loading={loading}
+          loading={false}
         />
         <KpiCard
           label="Avg unit reached"
-          value={loading || kpis.pathEnrolled === 0 ? '—' : (kpis.avgUnitUnlocked + 1).toFixed(1)}
+          value={kpiValueLoading || kpis.pathEnrolled === 0 ? '—' : (kpis.avgUnitUnlocked + 1).toFixed(1)}
           hint={`of ${A1_UNIT_COUNT} units (1-based display)`}
           icon={Sparkles}
-          loading={loading}
+          loading={false}
         />
       </section>
 
-      <section aria-label="Review debt" className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <section aria-label="Review debt" className="admin-metric-grid grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCard
           label="Queued"
           value={queue ? queue.total.toLocaleString() : '—'}
@@ -225,26 +251,60 @@ export function DashboardPage() {
         </p>
       )}
 
-      <section className="rounded-lg border border-ink-200 bg-white p-4 dark:border-ink-800 dark:bg-ink-900">
+      <section aria-label="Launchpad" className="admin-launchpad">
+        <div>
+          <p className="admin-eyebrow">Launchpad</p>
+          <h2 className="mt-1 text-section font-extrabold">Move the work forward</h2>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-3">
+          <QuickLink to="/users" icon={Users} title="Find a learner" detail="Inspect progress and activity" />
+          <QuickLink to="/curriculum" icon={BookOpen} title="Review curriculum" detail="Validate, diff, and publish" />
+          <QuickLink to="/system" icon={Settings2} title="Check the system" detail="Flags, config, and self-test" />
+        </div>
+      </section>
+
+      <section className="admin-data-panel">
         <h2 className={theme.type.section}>Platform</h2>
         <dl className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-4">
-          <Stat label="Total XP awarded" value={loading ? '—' : kpis.totalXp.toLocaleString()} />
-          <Stat label="Administrators" value={loading ? '—' : kpis.adminCount.toLocaleString()} />
+          <Stat label="Total XP awarded" value={kpiValueLoading ? '—' : kpis.totalXp.toLocaleString()} />
+          <Stat label="Administrators" value={kpiValueLoading ? '—' : kpis.adminCount.toLocaleString()} />
           {/* The series length, not the active-user total — labelled for exactly
               what it is. It used to read "31" under "30d", because the builder
               emitted `days + 1` points; it is now exactly 30. */}
           <Stat
             label="Daily-active series"
-            value={loading ? '—' : `${kpis.dauSeries.length} days`}
+            value={kpiValueLoading ? '—' : `${kpis.dauSeries.length} days`}
           />
           <Stat label="Unit count" value={String(A1_UNIT_COUNT)} />
         </dl>
         <p className="mt-4 text-meta text-ink-500 dark:text-ink-400">
-          Daily-active series and per-unit funnel charts land with the Analytics phase. The 30-day
-          series is already loaded above and is intentionally not drawn yet.
+          The full activity series and unit funnel are available in <Link className="admin-inline-link" to="/analytics">Analytics <ArrowUpRight className="h-3.5 w-3.5" /></Link>.
         </p>
       </section>
     </div>
+  );
+}
+
+function QuickLink({
+  to,
+  icon: Icon,
+  title,
+  detail,
+}: {
+  to: string;
+  icon: typeof Users;
+  title: string;
+  detail: string;
+}) {
+  return (
+    <Link to={to} className="admin-quick-link group">
+      <span className="admin-quick-icon"><Icon className="h-5 w-5" aria-hidden="true" /></span>
+      <span className="min-w-0 flex-1">
+        <span className="block text-body font-extrabold">{title}</span>
+        <span className="mt-0.5 block text-meta text-[#716f67] dark:text-[#aaa59c]">{detail}</span>
+      </span>
+      <ArrowUpRight className="h-4 w-4 text-[#aaa59c] transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" aria-hidden="true" />
+    </Link>
   );
 }
 

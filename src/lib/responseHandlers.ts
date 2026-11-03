@@ -1,3 +1,59 @@
+/** Handle practice suggestion with a recommendation action. */
+export function handlePracticeSuggestionWithRecommendation(
+  context: ContextSnapshot,
+  recommendation: Recommendation,
+): ResponsePlan {
+  const { skill, size } = recommendation.action as { type: 'start_quiz'; skill?: string; size: number };
+  const contextBlock = [
+    'RECOMMENDED DRILL – authoritative. Use these facts for the drill, never invent.',
+    `- Skill: ${skill || 'vocabulary'}`,
+    `- Items: ${size} focused practice items`,
+  ];
+  const fallbackReply = `${recommendation.title}: ${recommendation.reason}`;
+  return {
+    contextBlock,
+    fallbackReply,
+    mood: DEFAULT_MOOD.practice_suggestion,
+  };
+};
+
+/** Handle start quiz with a recommendation action. */
+export function handleStartQuizWithRecommendation(
+  context: ContextSnapshot,
+  recommendation: Recommendation,
+): ResponsePlan {
+  const { skill, size } = recommendation.action as { type: 'start_quiz'; skill?: string; size: number };
+  const drillType = skill ? ` ${skill} drill` : 'vocab drill';
+  const contextBlock = [
+    'RECOMMENDED QUIZ – authoritative. Use these facts for the quiz, never invent.',
+    `- Skill: ${skill || 'general vocabulary'}`,
+    `- Items: ${size} ${drillType}`,
+  ];
+  const fallbackReply = `${recommendation.title}: ${recommendation.reason}`;
+  return {
+    contextBlock,
+    fallbackReply,
+    mood: DEFAULT_MOOD.start_quiz,
+  };
+};
+
+/** Handle motivation with a recommendation action. */
+export function handleMotivationWithRecommendation(
+  context: ContextSnapshot,
+  recommendation: Recommendation,
+): ResponsePlan {
+  const reason = recommendation.reason;
+  const contextBlock = [
+    'RECOMMENDED MOTIVATION – authoritative. These are the facts driving the nudge.',
+    `- ${reason}`,
+  ];
+  const fallbackReply = `${recommendation.title}: ${reason}`;
+  return {
+    contextBlock,
+    fallbackReply,
+    mood: DEFAULT_MOOD.motivation,
+  };
+};
 /**
  * src/lib/responseHandlers.ts — per-intent grounding.
  *
@@ -20,16 +76,20 @@
 
 import { A1_CURRICULUM } from '../data/a1Path';
 import { ANCHORS } from './anchors';
-import type { ContextSnapshot, Intent, MeroMood, ReportSection, ResponsePlan } from '../types/chatbot';
+import type { ContextSnapshot, Intent, MeroMood, ReportSection, ResponsePlan, LearnerMemory } from '../types/chatbot';
 import type { VocabHit } from './vocabLookup';
 import type { ConversationState } from './conversationManager';
 import { levelForContext } from './conversationManager';
 import { extractQuotedTerm } from './intentRouter';
+import { getGrammarRules } from './rulesLibrary';
+import { computePrimaryRecommendation, generateRecommendations } from './recommendationEngine';
 
 export interface HandleInput {
   intent: Intent;
   message: string;
   context: ContextSnapshot;
+  /** LearnerMemory snapshot – rebuilt on chat open and after learning events. */
+  memory?: LearnerMemory | null;
   /** Present for `vocab_lookup` when the word was found in `db.vocab`. */
   vocabHit?: VocabHit | null;
   conversation?: ConversationState;
@@ -605,20 +665,43 @@ const DEFAULT_MOOD: Record<Intent, MeroMood> = {
  * means no handler can forget to set one.
  */
 export function handleIntent(input: HandleInput): ResponsePlan {
-  const { intent, message, context, vocabHit, conversation, page, report } = input;
+  const { intent, message, context, memory, vocabHit, conversation, page, report } = input;
+  
+  // Build recommendation from learner memory if available
+  const recommendation = memory
+    ? generateRecommendations(memory, context?.recentIntents ?? [])
+    : { primary: null, alternatives: [] };
+
   switch (intent) {
-    case 'progress_check':
-      return handleProgressCheck(context);
-    case 'practice_suggestion':
+    case 'progress_check': {
+      const plan = handleProgressCheck(context);
+      // Add recommendation if memory available and no primary yet
+      if (memory && !recommendation.primary) {
+        // ... could add recommendation here
+      }
+      return { ...plan, recommendation: recommendation.primary };
+    }
+    case 'practice_suggestion': {
+      const primary = recommendation.primary;
+      if (primary) {
+        // Return recommendation-based practice suggestion
+        return handlePracticeSuggestionWithRecommendation(context, primary);
+      }
       return handlePracticeSuggestion(context);
+    }
     case 'explain_mistake':
       return handleExplainMistake(context);
     case 'curriculum_help':
       return handleCurriculumHelp(context);
     case 'grammar_question':
       return handleGrammarQuestion(context);
-    case 'start_quiz':
+    case 'start_quiz': {
+      const primary = recommendation.primary;
+      if (primary) {
+        return handleStartQuizWithRecommendation(context, primary);
+      }
       return handleStartQuiz(context);
+    }
     case 'page_help':
       return handlePageHelp(context, page ?? null);
     case 'report':
@@ -629,15 +712,20 @@ export function handleIntent(input: HandleInput): ResponsePlan {
         vocabHit ?? null,
         extractQuotedTerm(message) ?? message.trim(),
       );
-    case 'motivation':
+    case 'motivation': {
+      const primary = recommendation.primary;
+      if (primary) {
+        return handleMotivationWithRecommendation(context, primary);
+      }
       return handleMotivation(context);
+    }
     case 'settings':
       return handleSettings(context);
     case 'conversation':
       return handleConversation(context, conversation);
     case 'casual_chat':
     default:
-      return { ...handleCasualChat(context), mood: DEFAULT_MOOD.casual_chat };
+      return { ...handleCasualChat(context), mood: DEFAULT_MOOD.casual_chat, recommendation: recommendation.primary };
   }
 }
 

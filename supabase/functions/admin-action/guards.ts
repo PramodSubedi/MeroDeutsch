@@ -35,6 +35,7 @@ export interface TargetUser {
   id: string;
   role: AdminRole;
   banned: boolean;
+  plan: 'free' | 'premium';
 }
 
 export type AdminAction =
@@ -42,6 +43,8 @@ export type AdminAction =
   | 'user.unban'
   | 'user.demote'
   | 'user.promote'
+  | 'user.grant_premium'
+  | 'user.revoke_premium'
   | 'vocab.repair'
   | 'vocab.clear_flag'
   | 'config.set'
@@ -106,7 +109,8 @@ export function hasReason(reason: string | null | undefined): boolean {
 /** True when `action` operates on a specific user and therefore needs a target. */
 export function requiresTarget(action: AdminAction): boolean {
   return (
-    action === 'user.ban' || action === 'user.unban' || action === 'user.demote' || action === 'user.promote'
+    action === 'user.ban' || action === 'user.unban' || action === 'user.demote' || action === 'user.promote' ||
+    action === 'user.grant_premium' || action === 'user.revoke_premium'
   );
 }
 
@@ -124,6 +128,8 @@ const KNOWN_ACTIONS: ReadonlySet<string> = new Set<AdminAction>([
   'user.unban',
   'user.demote',
   'user.promote',
+  'user.grant_premium',
+  'user.revoke_premium',
   'vocab.repair',
   'vocab.clear_flag',
   'config.set',
@@ -373,6 +379,20 @@ export function evaluateAction(req: ActionRequest): Decision {
       }
       if (t.role === 'admin') {
         return deny('invalid-transition', 'That user is already an admin.');
+      }
+      return OK;
+    }
+
+    case 'user.grant_premium': {
+      if (t.plan === 'premium') {
+        return deny('invalid-transition', 'That account already has Premium access.');
+      }
+      return OK;
+    }
+
+    case 'user.revoke_premium': {
+      if (t.plan !== 'premium') {
+        return deny('invalid-transition', 'That account does not have Premium access.');
       }
       return OK;
     }

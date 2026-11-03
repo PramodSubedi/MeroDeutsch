@@ -20,7 +20,7 @@ dotenv.config({ path: '.env', override: false });
 dotenv.config({ path: '.env.local', override: true });
 
 const TOKEN = process.env.SUPABASE_ACCESS_TOKEN;
-const REF = process.env.SUPABASE_PROJECT_REF ?? 'uiwlioriubixerspdamx';
+const REF = process.env.SUPABASE_PROJECT_REF?.trim() || 'uiwlioriubixerspdamx';
 if (!TOKEN) {
   console.error('[migration-status] SUPABASE_ACCESS_TOKEN is not set (see .env.example).');
   process.exit(1);
@@ -85,6 +85,48 @@ const M: MigrationSpec[] = [
     file: '003_add_daily_quests_and_high_scores_tables.sql',
     checks: [],
   },
+    {
+      file: '20261001000000_admin_rpc_prerequisites.sql',
+      checks: [
+        { kind: 'index', name: 'idx_user_activity_days_date' },
+        { kind: 'index', name: 'idx_profiles_created_id' },
+        { kind: 'index', name: 'idx_profiles_banned' },
+        { kind: 'index', name: 'idx_admin_audit_log_created_id' },
+        { kind: 'index', name: 'idx_review_queue_due_id' },
+      ],
+    },
+    {
+      file: '20261001010000_admin_dashboard_kpis.sql',
+      checks: [{ kind: 'function', name: 'admin_dashboard_kpis', args: '' }],
+    },
+    {
+      file: '20261001020000_admin_analytics.sql',
+      checks: [{ kind: 'function', name: 'admin_analytics', args: 'p_days integer' }],
+    },
+    {
+      file: '20261001030000_admin_users_page.sql',
+      checks: [{ kind: 'function', name: 'admin_users_page', args: 'p_search text, p_plan text, p_role text, p_status text, p_sort text, p_desc boolean, p_limit integer, p_cursor_created_at timestamp with time zone, p_cursor_id uuid' }],
+    },
+    {
+      file: '20261001040000_admin_audit_and_queue_pages.sql',
+      checks: [
+        { kind: 'function', name: 'admin_audit_page', args: 'p_search text, p_action text, p_target_id text, p_admin_id uuid, p_limit integer, p_cursor_created_at timestamp with time zone, p_cursor_id uuid' },
+        { kind: 'function', name: 'admin_review_queue_page', args: 'p_search text, p_module text, p_box integer, p_overdue_only boolean, p_limit integer, p_cursor_due timestamp with time zone, p_cursor_id text' },
+      ],
+    },
+    {
+      file: '20261001050000_vocab_levels.sql',
+      checks: [{ kind: 'function', name: 'vocab_levels', args: '' }],
+    },
+    {
+      file: '20261001060000_admin_user_detail.sql',
+      checks: [{ kind: 'function', name: 'admin_user_detail', args: 'p_user_id uuid' }],
+    },
+    {
+      file: '20261002000000_lesson_render_run.sql',
+      checks: [],
+      note: 'data/config compatibility migration with no catalog object check',
+    },
   {
     file: '004_vocabulary_expansion.sql',
     checks: [

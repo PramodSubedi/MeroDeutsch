@@ -76,6 +76,11 @@ export const CHATBOT_CONFIG = {
   requestTimeoutMs: 60_000,
   /** Probed first; short so a wrong URL fails fast. */
   healthTimeoutMs: 2500,
+  /** Use deterministic pipeline instead of local LLM. When false, Ollama path
+   * is enabled. Set `VITE_CHATBOT_USE_LOCAL_MODEL=false` at build time to
+   * disable the model and use the intelligent deterministic handlers.
+   */
+  useLocalModel: true, // default true for backward compatibility
 } as const;
 
 export const DEFAULT_SETTINGS: ChatbotSettings = {
