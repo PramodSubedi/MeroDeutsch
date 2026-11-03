@@ -34,7 +34,6 @@ import type {
   QuizQuestion,
 } from '../types/chatbot';
 import { createConversation, type ConversationState } from './conversationManager';
-import { rebuildLearnerMemory, emptyLearnerMemory } from './learnerMemory';
 import type { PracticeMode } from './chatPractice';
 
 /** One answered question in an in-chat drill. */

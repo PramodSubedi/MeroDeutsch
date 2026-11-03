@@ -207,7 +207,8 @@ function purgeIntentCache(): void {
   // Remove oldest entries (first keys in the Map)
   const keysToRemove = intentCache.size - MAX_INTENT_CACHE_SIZE;
   for (let i = 0; i < keysToRemove; i++) {
-    intentCache.delete(intentCache.keys().next().value);
+    const oldest = intentCache.keys().next().value;
+    if (oldest !== undefined) intentCache.delete(oldest);
   }
 }
 

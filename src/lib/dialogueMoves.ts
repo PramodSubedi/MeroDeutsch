@@ -11,7 +11,6 @@ export interface FollowUpChip {
 /** Move: Confirm – when an ambiguous entity is detected. */
 export function moveConfirm(
   message: string,
-  memory: import('../types/chatbot').LearnerMemory,
   isDE: boolean
 ): { text: string; confirmOptions: string[] } {
   const quoted = message.match(/[\"\']([^"\']{1,30})[\"\']/);
@@ -56,23 +55,10 @@ export function moveEncourage(
 /** Move: Clarify – when there are multiple valid paths. */
 export function moveClarify(
   intent: import('../types/chatbot').Intent,
-  memory: import('../types/chatbot').LearnerMemory,
   isDE: boolean
 ): { text: string; chip?: FollowUpChip } {
-  if (success) {
-    const celebrationIsDE = isDE
-      ? `Super! ${memory.streak > 0 ? `${memory.streak} Tage Serie!` : 'Weiter so!'}`
-      : `Great! ${memory.streak > 0 ? `${memory.streak}-day streak!` : 'Keep it up!'}`;
-    const chip: FollowUpChip = {
-      id: 'continue',
-      label: isDE ? 'Noch eine Runde' : 'One more round',
-      payload: { intent: 'start_quiz', entity: undefined },
-    };
-    return { text: celebrationIsDE, chip };
-  } else {
-    const encouragementIsDE = isDE
-      ? `Fast geschafft! Versuch es nochmal.`
-      : `Almost there! Try again.`;
-    return { text: encouragementIsDE };
-  }
+  const text = isDE
+    ? `Meinst du ${intent === 'grammar_question' ? 'eine Grammatikregel' : 'eine Übung'}?`
+    : `Do you mean ${intent === 'grammar_question' ? 'a grammar rule' : 'an exercise'}?`;
+  return { text };
 }

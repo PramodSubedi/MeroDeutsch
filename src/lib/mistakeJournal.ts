@@ -77,10 +77,6 @@ export function getMistakes(): MistakeJournalEntry[] {
 }
 
 /** Get mistakes by type. */
-function getMistakesByType(type: MistakeJournalEntry["type"]): MistakeJournalEntry[] {
-  return getJournal().filter((e) => e.type === type);
-}
-
 /** Surface mistakes for review - returns top tricky points. */
 export function surfaceMistakes(limit: number = 10): MistakeJournalEntry[] {
   const journal = getJournal();

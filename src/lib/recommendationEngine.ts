@@ -1,7 +1,9 @@
+import type { LearnerMemory, Recommendation } from '../types/chatbot';
+
 /** Compute the primary recommendation from learner memory. */
 export function computePrimaryRecommendation(
   memory: LearnerMemory,
-  recentIntents: string[] = []
+  _recentIntents: string[] = []
 ): Recommendation | null {
   const { checkpointPercent, dueReviewCount, weakSkills, streak } = memory;
 
@@ -124,16 +126,16 @@ export function computeAlternatives(
 /** Generate the full recommendation set (primary + alternatives). */
 export function generateRecommendations(
   memory: LearnerMemory,
-  recentIntents: string[] = []
+  _recentIntents: string[] = []
 ): { primary: Recommendation; alternatives: Recommendation[] } {
-  const primary = computePrimaryRecommendation(memory, recentIntents);
-  const alternatives = computeAlternatives(memory, primary ?? {
+  const primary = computePrimaryRecommendation(memory, _recentIntents) ?? {
     id: 'light_practice',
     title: 'Practice',
     reason: 'Keep your German warm.',
     action: { type: 'start_quiz', skill: 'vocabulary', size: 3 },
     priority: 5,
-  });
+  };
+  const alternatives = computeAlternatives(memory, primary);
 
   return { primary, alternatives };
 }

@@ -20,7 +20,7 @@ export const encourage = (mode: LanguageMode, success: boolean, streak: number):
 };
 
 /** Celebrations - respects Nur Deutsch mode. */
-export const celebrations = (mode: LanguageMode, type: "perfectQuiz" | "streak" | "checkpoint", value?: number): string => {
+export const celebrations = (mode: LanguageMode, type: "perfectQuiz" | "streak" | "checkpoint", _value?: number): string => {
   if (mode === "nur_deutsch") return "";
   if (type === "perfectQuiz") return "Perfect quiz! 🎉";
   if (type === "streak") return "Streak saved! 🔥";

@@ -1,4 +1,5 @@
 /** src/lib/microDrills.ts - Deterministic in-chat mini drills. */
+import type { DrillItem } from '../types/chatbot';
 
 /** Drill types. */
 export type DrillType = "articles" | "meaning" | "word_order" | "fix_mistake";

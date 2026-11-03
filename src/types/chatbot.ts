@@ -205,8 +205,29 @@ export interface ResponsePlan {
    * supplies the prose around them.
    */
   payload?: ChatPayload;
+  recommendation?: Recommendation | null;
   /** Suggested avatar mood. */
   mood: MeroMood;
+}
+
+export type RecommendationAction =
+  | { type: 'open_reviews'; limit: number }
+  | { type: 'continue_unit' }
+  | { type: 'start_quiz'; skill?: string; size: number };
+
+export interface Recommendation {
+  id: string;
+  title: string;
+  reason: string;
+  action: RecommendationAction;
+  priority: number;
+}
+
+export interface DrillItem {
+  id: string;
+  prompt: string;
+  correct: string;
+  distractors: string[];
 }
 
 /** The owl's seven moods (see `components/chat/MeroAvatar.tsx`). */

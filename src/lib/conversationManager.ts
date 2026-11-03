@@ -72,7 +72,8 @@ function purgeAnaphoraCache(): void {
   // Remove oldest entries
   const keysToRemove = anaphoraCache.size - MAX_ANAPHORA_CACHE_SIZE;
   for (let i = 0; i < keysToRemove; i++) {
-    anaphoraCache.delete(anaphoraCache.keys().next().value);
+    const oldest = anaphoraCache.keys().next().value;
+    if (oldest !== undefined) anaphoraCache.delete(oldest);
   }
 }
 
@@ -102,15 +103,20 @@ function bindEntities(state: ConversationState, text: string): Record<string, st
 
 /** Rewrite dangling pronouns to their referent so the model never guesses. */
 export function resolveAnaphora(state: ConversationState, text: string): string {
-  const entries = Object.entries(state.keyEntities);
-  if (!entries.length) return text;
-  return text.replace(/\b(Er|Sie|Es|er|sie|es|he|she|it)\b/g, (match, word: string) => {
+  const cacheKey = `${freezeStateForCache(state)}|${text}`;
+  const cached = anaphoraCache.get(cacheKey);
+  if (cached !== undefined) return cached;
+  if (!Object.keys(state.keyEntities).length) return text;
+  const resolved = text.replace(/\b(Er|Sie|Es|er|sie|es|he|she|it)\b/g, (match, word: string) => {
     const pronoun = word.toLowerCase();
     // German capitalises "sie/ihr" for the formal address — do not rewrite those.
     if (word === 'Sie') return match;
     const referent = state.keyEntities[pronoun];
     return referent ? referent : match;
   });
+  anaphoraCache.set(cacheKey, resolved);
+  purgeAnaphoraCache();
+  return resolved;
 }
 
 /** Coarse topic guess — the longest capitalised word, else the first noun-ish token. */

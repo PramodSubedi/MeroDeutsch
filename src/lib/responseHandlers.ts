@@ -1,59 +1,3 @@
-/** Handle practice suggestion with a recommendation action. */
-export function handlePracticeSuggestionWithRecommendation(
-  context: ContextSnapshot,
-  recommendation: Recommendation,
-): ResponsePlan {
-  const { skill, size } = recommendation.action as { type: 'start_quiz'; skill?: string; size: number };
-  const contextBlock = [
-    'RECOMMENDED DRILL – authoritative. Use these facts for the drill, never invent.',
-    `- Skill: ${skill || 'vocabulary'}`,
-    `- Items: ${size} focused practice items`,
-  ];
-  const fallbackReply = `${recommendation.title}: ${recommendation.reason}`;
-  return {
-    contextBlock,
-    fallbackReply,
-    mood: DEFAULT_MOOD.practice_suggestion,
-  };
-};
-
-/** Handle start quiz with a recommendation action. */
-export function handleStartQuizWithRecommendation(
-  context: ContextSnapshot,
-  recommendation: Recommendation,
-): ResponsePlan {
-  const { skill, size } = recommendation.action as { type: 'start_quiz'; skill?: string; size: number };
-  const drillType = skill ? ` ${skill} drill` : 'vocab drill';
-  const contextBlock = [
-    'RECOMMENDED QUIZ – authoritative. Use these facts for the quiz, never invent.',
-    `- Skill: ${skill || 'general vocabulary'}`,
-    `- Items: ${size} ${drillType}`,
-  ];
-  const fallbackReply = `${recommendation.title}: ${recommendation.reason}`;
-  return {
-    contextBlock,
-    fallbackReply,
-    mood: DEFAULT_MOOD.start_quiz,
-  };
-};
-
-/** Handle motivation with a recommendation action. */
-export function handleMotivationWithRecommendation(
-  context: ContextSnapshot,
-  recommendation: Recommendation,
-): ResponsePlan {
-  const reason = recommendation.reason;
-  const contextBlock = [
-    'RECOMMENDED MOTIVATION – authoritative. These are the facts driving the nudge.',
-    `- ${reason}`,
-  ];
-  const fallbackReply = `${recommendation.title}: ${reason}`;
-  return {
-    contextBlock,
-    fallbackReply,
-    mood: DEFAULT_MOOD.motivation,
-  };
-};
 /**
  * src/lib/responseHandlers.ts — per-intent grounding.
  *
@@ -76,13 +20,12 @@ export function handleMotivationWithRecommendation(
 
 import { A1_CURRICULUM } from '../data/a1Path';
 import { ANCHORS } from './anchors';
-import type { ContextSnapshot, Intent, MeroMood, ReportSection, ResponsePlan, LearnerMemory } from '../types/chatbot';
+import type { ContextSnapshot, Intent, MeroMood, ReportSection, ResponsePlan, LearnerMemory, Recommendation } from '../types/chatbot';
 import type { VocabHit } from './vocabLookup';
 import type { ConversationState } from './conversationManager';
 import { levelForContext } from './conversationManager';
 import { extractQuotedTerm } from './intentRouter';
-import { getGrammarRules } from './rulesLibrary';
-import { computePrimaryRecommendation, generateRecommendations } from './recommendationEngine';
+import { generateRecommendations } from './recommendationEngine';
 
 export interface HandleInput {
   intent: Intent;
@@ -97,6 +40,47 @@ export interface HandleInput {
   page?: { label: string; facts: string[]; focus: { subject: string; detail?: string } | null } | null;
   /** Assembled report rows for `report`. */
   report?: ReportSection[];
+}
+
+function recommendationPlan(
+  intent: Intent,
+  recommendation: Recommendation,
+  label: string,
+): ResponsePlan {
+  const action = recommendation.action.type === 'start_quiz' ? recommendation.action : null;
+  const contextBlock = [
+    `${label} – authoritative. Use these facts for the response, never invent.`,
+    `- ${recommendation.reason}`,
+    ...(action ? [`- Skill: ${action.skill ?? 'vocabulary'}`, `- Items: ${action.size}`] : []),
+  ].join('\n');
+  return {
+    intent,
+    contextBlock,
+    fallbackReply: `${recommendation.title}: ${recommendation.reason}`,
+    mood: DEFAULT_MOOD[intent],
+    recommendation,
+  };
+}
+
+export function handlePracticeSuggestionWithRecommendation(
+  _context: ContextSnapshot,
+  recommendation: Recommendation,
+): ResponsePlan {
+  return recommendationPlan('practice_suggestion', recommendation, 'RECOMMENDED DRILL');
+}
+
+export function handleStartQuizWithRecommendation(
+  _context: ContextSnapshot,
+  recommendation: Recommendation,
+): ResponsePlan {
+  return recommendationPlan('start_quiz', recommendation, 'RECOMMENDED QUIZ');
+}
+
+export function handleMotivationWithRecommendation(
+  _context: ContextSnapshot,
+  recommendation: Recommendation,
+): ResponsePlan {
+  return recommendationPlan('motivation', recommendation, 'RECOMMENDED MOTIVATION');
 }
 
 /* ── formatting helpers ───────────────────────────────────────────────────── */
@@ -669,7 +653,7 @@ export function handleIntent(input: HandleInput): ResponsePlan {
   
   // Build recommendation from learner memory if available
   const recommendation = memory
-    ? generateRecommendations(memory, context?.recentIntents ?? [])
+    ? generateRecommendations(memory, memory.recentIntents)
     : { primary: null, alternatives: [] };
 
   switch (intent) {

@@ -1,4 +1,6 @@
 /* ── grammar rules library ── */
+import { A1_CURRICULUM } from '../data/a1Path';
+import type { UserLevel } from './conversationManager';
 
 // Lightweight, deterministic rule set for common A1 German patterns.
 // Import & use in responseHandlers.ts grammar_question + explain_mistake.
@@ -22,30 +24,27 @@ export function getGrammarRules(
   unitIndex: number,
   levels: UserLevel[],
 ): GrammarRule[] {
-  const unit = unitAt(unitIndex)
+  const unit = A1_CURRICULUM.units[unitIndex];
   if (!unit?.pedagogy?.ruleTable?.rows?.length) return []
 
   const rules: GrammarRule[] = []
   for (const row of unit.pedagogy.ruleTable.rows) {
     // Only include rows matching the requested levels
-    if (!levels.some(l => l.toString().includes(row.level || 'A1'))) continue
+    if (!levels.length) continue
 
     rules.push({
-      id: row.id || `rule-${row.label}`,
-      tag: mapLabelToTag(row.label),
-      levels: ['A1.1', 'A1.2', 'A2.1'].filter(l => /* level check */ true),
-      title: { en: row.label || 'Rule', de: row.label || 'Regel' },
+      id: `rule-${row.label.en}`,
+      tag: mapLabelToTag(row.label.en),
+      levels: ['A1.1', 'A1.2', 'A2.1'] as UserLevel[],
+      title: { en: row.label.en || 'Rule', de: row.label.de || 'Regel' },
       explanation: {
-        en: row.explanation || 'No explanation loaded.',
-        de: row.explanationDe || 'Keine Erklärung geladen.',
+        en: row.usage.en || 'No explanation loaded.',
+        de: row.usage.de || 'Keine Erklärung geladen.',
       },
       example: {
-        de: row.exampleDe || '',
-        en: row.exampleEn || '',
+        de: row.example.de || '',
+        en: row.example.en || '',
       },
-      commonTraps: row.commonTraps
-        ? row.commonTraps.split('|').filter(Boolean)
-        : undefined,
     })
   }
   return rules
@@ -53,13 +52,13 @@ export function getGrammarRules(
 
 function mapLabelToTag(label: string): GrammarRule['tag'] {
   const lowered = label.toLowerCase()
-  if (lowed.includes('artikel') || lowed.includes('article')) return 'article'
-  if (lowed.includes('wortstellung') || lowed.includes('word order') || lowed.includes('word-order'))
+  if (lowered.includes('artikel') || lowered.includes('article')) return 'article'
+  if (lowered.includes('wortstellung') || lowered.includes('word order') || lowered.includes('word-order'))
     return 'word-order'
-  if (lowed.includes('verb') || lowed.includes('konjug')) return 'verb-position'
-  if (lowed.includes('fall') || lowed.includes('cas')) return 'case'
-  if (lowed.includes('pronomen') || lowed.includes('pronoun')) return 'pronoun'
-  if (lowed.includes('vernein') || lowed.includes('negation')) return 'negation'
-  if (lowed.includes('frage') || lowed.includes('question')) return 'question'
+  if (lowered.includes('verb') || lowered.includes('konjug')) return 'verb-position'
+  if (lowered.includes('fall') || lowered.includes('cas')) return 'case'
+  if (lowered.includes('pronomen') || lowered.includes('pronoun')) return 'pronoun'
+  if (lowered.includes('vernein') || lowered.includes('negation')) return 'negation'
+  if (lowered.includes('frage') || lowered.includes('question')) return 'question'
   return 'article' // default safe tag
 }

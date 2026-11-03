@@ -79,19 +79,15 @@ export function rebuildLearnerMemory(
     xp: { totalXp: number; level: number; xpToNextLevel: number; rank: string };
     skills: { category: string; accuracy: number; correct: number; total: number }[];
     review: { due: number; recent: { errorTag: string; timestamp: number }[] };
-    a1: { unitIndex: number; unitTitle: string; completedCount: number };
+    streak: { current: number };
+    a1: { unitIndex: number; unitTitle: string; completedCount: number; totalLearnNodes: number };
     cefr: CefrLevel;
     languageMode: 'de' | 'de_en' | 'de_en_ne' | 'nur_deutsch';
     winsThisWeek: { quizzes: number; cardsReviewed: number; checkpointsPassed: number };
   }
 ): LearnerMemory {
-  const measured = ctx.skills.filter((s) => s.total > 0);
-  const bestSkill = measured.length
-    ? measured.reduce((a, b) => (a.accuracy >= b.accuracy ? a : b))
-    : null;
-
   // Derive userLevel from CEFR + unit index (same logic as conversationManager)
-  const userLevel = ctx.unitIndex >= 3 ? 'A1.2' : 'A1.1';
+  const userLevel = ctx.a1.unitIndex >= 3 ? 'A1.2' : 'A1.1';
 
   // Build weakSkills from skills with lowest accuracy
   const skillScores = ctx.skills
@@ -123,14 +119,14 @@ export function rebuildLearnerMemory(
   return {
     cefr: ctx.cefr,
     userLevel,
-    unitId: ctx.a1.unitId ?? null,
+    unitId: null,
     unitIndex: ctx.a1.unitIndex,
     checkpointPercent: ctx.a1.completedCount > 0
-      ? Math.round((ctx.a1.completedCount / ctx.a1.totalUnitCount) * 100)
+      ? Math.round((ctx.a1.completedCount / Math.max(ctx.a1.totalLearnNodes, 1)) * 100)
       : 0,
     xp: ctx.xp.totalXp,
     level: ctx.xp.level,
-    streak: ctx.streak?.current ?? 0,
+    streak: ctx.streak.current,
     lastActiveAt: Date.now(),
     weakSkills,
     weakWords,
