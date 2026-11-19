@@ -25,7 +25,7 @@ import {
   getClusterForModule,
   type PathNode,
 } from '../data/a1Path';
-import { normalizeAttempt, hasProgress, normalizeState } from '../hooks/useA1Path';
+import { hasPassedCheckpoint, normalizeAttempt, hasProgress, normalizeState } from './a1PathUtils';
 
 // ── Test Helpers ────────────────────────────────────────────────────────────
 
@@ -527,5 +527,13 @@ describe('A1Path — Curriculum Structure', () => {
         expect(A1_CURRICULUM.nodeMap[nodeId]).toBeDefined();
       }
     }
+  });
+});
+describe('checkpoint completion', () => {
+  it('keeps earlier checkpoints unfinished when a later unit is passed', () => {
+    const progress = { completedNodeIds: [], checkpointBestByUnit: { 4: 0.9, 0: 0.6 } };
+    expect(hasPassedCheckpoint(progress, 0)).toBe(false);
+    expect(hasPassedCheckpoint(progress, 3)).toBe(false);
+    expect(hasPassedCheckpoint(progress, 4)).toBe(true);
   });
 });

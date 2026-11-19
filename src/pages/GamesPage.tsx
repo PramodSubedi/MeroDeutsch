@@ -13,7 +13,6 @@
  * XP/SRS pipeline (useAnswerReporter).
  */
 
-import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Calculator, Dices, Gamepad2, Puzzle } from 'lucide-react';
 import { useLang } from '../hooks/useLang';
@@ -27,21 +26,15 @@ import { VerbDice } from '../components/games/VerbDice';
 import { OddOneOut } from '../components/games/OddOneOut';
 import { ODD_ONE_OUT_SETS } from '../data/a1ResourcePack';
 
-type GameTab = 'tictactoe' | 'cypher' | 'dice' | 'oddoneout';
-
 const GAME_IDS: readonly string[] = ['tictactoe', 'cypher', 'dice', 'oddoneout'];
 
 export function GamesPage() {
   usePageTitle('Games');
   const { langMode } = useLang();
   const isDE = langMode === 'german';
-  const [searchParams] = useSearchParams();
-  const [tab, setTab] = useState<GameTab>(() => {
-    const param = searchParams.get('game');
-    return (GAME_IDS as readonly string[]).includes(param ?? '')
-      ? (param as GameTab)
-      : 'tictactoe';
-  });
+  const [searchParams, setSearchParams] = useSearchParams();
+  const game = searchParams.get('game') ?? '';
+  const tab = GAME_IDS.includes(game) ? game : 'tictactoe';
 
   return (
     <div className={theme.page.container}>
@@ -62,9 +55,10 @@ export function GamesPage() {
             { id: 'oddoneout', label: isDE ? 'Odd-One-Out' : 'Odd One Out', icon: Puzzle },
           ]}
           activeTab={tab}
-          onTabChange={(t) => {
-            const safe = t as string;
-            setTab((GAME_IDS as readonly string[]).includes(safe) ? (safe as GameTab) : 'tictactoe');
+          onTabChange={(gameId) => {
+            const params = new URLSearchParams(searchParams);
+            params.set('game', gameId);
+            setSearchParams(params);
           }}
         />
       </div>

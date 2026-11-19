@@ -24,8 +24,24 @@ import { useCallback, useEffect, useState } from 'react';
 import { useAuth } from './useAuth';
 import { subscribeDebugMode } from '../lib/debugMode';
 import { entitlementService, type Plan } from '../services/entitlementService';
+import { getItem, setItem } from '../utils/safeStorage';
+import { useOnlineStatus } from './useOnlineStatus';
 
 const OVERRIDE_KEY = 'germanPremiumOverride';
+const OFFLINE_PLAN_MAX_AGE_MS = 24 * 60 * 60 * 1000;
+
+function readOfflinePlan(userId: string): Plan | null {
+  try {
+    const raw = getItem(`meroDeutschPlan:${userId}`);
+    if (!raw) return null;
+    const { plan, verifiedAt } = JSON.parse(raw);
+    const age = Date.now() - verifiedAt;
+    if (!(age >= 0 && age < OFFLINE_PLAN_MAX_AGE_MS)) return null;
+    return plan === 'premium' || plan === 'free' ? plan : null;
+  } catch {
+    return null;
+  }
+}
 
 /** Read the local override, tolerating private-mode storage failures. */
 function readOverride(): Plan | null {
@@ -58,9 +74,8 @@ export function usePremium(): PremiumState {
   const { user, isLoading: authLoading } = useAuth();
   const userId = user?.userId ?? null;
 
-  const [plan, setPlan] = useState<Plan>('free');
-  const [isLoading, setIsLoading] = useState(true);
-  const [isUnavailable, setIsUnavailable] = useState(false);
+  const { isOnline } = useOnlineStatus();
+  const [verified, setVerified] = useState<{ userId: string; plan: Plan | null } | null>(null);
   const [retryToken, setRetryToken] = useState(0);
   const [override, setOverrideState] = useState<Plan | null>(() => readOverride());
 
@@ -97,32 +112,22 @@ export function usePremium(): PremiumState {
   // dependency: signing in, signing out, or switching account must all re-read,
   // and none of them should leave the previous account's tier on screen.
   useEffect(() => {
-    if (override) {
-      setPlan(override);
-      setIsLoading(false);
-      setIsUnavailable(false);
-      return;
-    }
-    if (authLoading) return;
-    if (!userId) {
-      // A guest has no profile row. Not an error, and not "loading forever".
-      setPlan('free');
-      setIsLoading(false);
-      setIsUnavailable(false);
-      return;
-    }
+    if (override || authLoading || !userId || !isOnline) return;
     let cancelled = false;
-    setIsLoading(true);
     void entitlementService.readPlan(userId).then((result) => {
       if (cancelled) return;
-      setPlan(result.plan ?? 'free');
-      setIsUnavailable(result.error !== null);
-      setIsLoading(false);
+      if (result.plan) {
+        setItem(`meroDeutschPlan:${userId}`, JSON.stringify({
+          plan: result.plan,
+          verifiedAt: Date.now(),
+        }));
+      }
+      setVerified({ userId, plan: result.plan });
     });
     return () => {
       cancelled = true;
     };
-  }, [userId, authLoading, override, retryToken]);
+  }, [userId, authLoading, override, retryToken, isOnline]);
 
   const setOverride = useCallback((next: Plan | null) => {
     setOverrideState(next);
@@ -137,7 +142,27 @@ export function usePremium(): PremiumState {
 
   const retry = useCallback(() => setRetryToken((value) => value + 1), []);
 
-  return { plan, isPremium: plan === 'premium', isLoading, isUnavailable, isOverridden: override !== null, setOverride, retry };
+  useEffect(() => {
+    if (!userId || override || !isOnline) return;
+    window.addEventListener('focus', retry);
+    return () => window.removeEventListener('focus', retry);
+  }, [userId, override, isOnline, retry]);
+
+  const cached = !isOnline && userId ? readOfflinePlan(userId) : null;
+  const account = verified?.userId === userId ? verified : null;
+  const accountPlan = isOnline ? account?.plan : cached;
+  const plan = override ?? accountPlan ?? 'free';
+  const isLoading = !override && (authLoading || Boolean(userId && isOnline && !account));
+  const isUnavailable = !override && !isLoading && Boolean(userId && !accountPlan);
+  return {
+    plan,
+    isPremium: !isLoading && !isUnavailable && plan === 'premium',
+    isLoading,
+    isUnavailable,
+    isOverridden: override !== null,
+    setOverride,
+    retry,
+  };
 }
 
 /**

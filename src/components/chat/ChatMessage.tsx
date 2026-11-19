@@ -74,7 +74,6 @@ function renderPayload(
     case 'onboarding':
       return (
         <OnboardingCard
-          payload={p}
           isDE={isDE}
           onAction={onAction}
           onDismiss={() => onDismissWelcome?.()}

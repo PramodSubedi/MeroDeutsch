@@ -19,7 +19,8 @@ import type { Progress, VocabCard, UserProgress } from '../types';
 
 /** Queued offline mutation — replayed when connectivity/auth returns. */
 interface PendingSyncOp {
-  kind: 'progress' | 'review' | 'achievement' | 'a1path' | 'generic';
+  id?: string;
+  kind: 'progress' | 'review' | 'achievement' | 'a1path' | 'a1-reset' | 'generic';
   userId: string;
   payload?: unknown;
   at: string;
@@ -27,6 +28,7 @@ interface PendingSyncOp {
 
 const PENDING_KEY = 'meroDeutschSyncQueue';
 const EMPTY_QUEUE: PendingSyncOp[] = [];
+export const A1_PATH_CHANGED_EVENT = 'mero-a1-path-changed';
 
 /* ───────────────────────────────────────────────────────────
  * Per-store last-push markers (skip unchanged stores)
@@ -74,12 +76,13 @@ function isDirty(timestamp: string | null | undefined, lastPushed: string): bool
  * ─────────────────────────────────────────────────────────── */
 
 function loadQueue(): PendingSyncOp[] {
-  if (typeof localStorage === 'undefined') return EMPTY_QUEUE;
+  if (typeof localStorage === 'undefined') return [];
   try {
     const raw = localStorage.getItem(PENDING_KEY);
-    return raw ? (JSON.parse(raw) as PendingSyncOp[]) : EMPTY_QUEUE;
+    const queue: unknown = raw ? JSON.parse(raw) : [];
+    return Array.isArray(queue) ? queue : [];
   } catch {
-    return EMPTY_QUEUE;
+    return [];
   }
 }
 
@@ -95,10 +98,11 @@ function saveQueue(queue: PendingSyncOp[]) {
 /** Enqueue an operation for replay when the network returns. */
 export function enqueueSync(op: PendingSyncOp): void {
   const queue = loadQueue();
-  queue.push(op);
-  // Cap queue to avoid unbounded storage growth.
-  const trimmed = queue.slice(-100);
-  saveQueue(trimmed);
+  if (op.kind !== 'a1-reset' && queue.some((entry) =>
+    entry.kind === op.kind && entry.userId === op.userId && entry.payload === op.payload
+  )) return;
+  queue.push({ ...op, id: crypto.randomUUID() });
+  saveQueue(queue);
 }
 
 export function clearQueue(): void {
@@ -160,13 +164,13 @@ async function pushReviewQueue(userId: string, lastPushed: string): Promise<stri
  * Adapter: Dexie `a1PathState` row → `a1_path_state` Postgres row.
  * Local Dexie is primary; this pushes the latest local campaign state up.
  */
-async function pushA1PathState(userId: string, lastPushed: string): Promise<string | null> {
+async function pushA1PathState(userId: string, lastPushed: string, reset = false): Promise<string | null> {
   const store = openDb();
   if (!store) return null;
 
   const row = await store.a1PathState.get(userId);
   if (!row) return null;
-  if (!isDirty(row.updatedAt, lastPushed)) return null;
+  if (!reset && !isDirty(row.updatedAt, lastPushed)) return null;
 
   const state: A1PathState = {
     unlockedUnitIndex: row.unlockedUnitIndex,
@@ -176,7 +180,7 @@ async function pushA1PathState(userId: string, lastPushed: string): Promise<stri
     // before the field existed, matching what those rows already meant.
     pathMode: row.pathMode ?? 'guided',
   };
-  await userDataService.saveA1PathState(userId, state);
+  await userDataService.saveA1PathState(userId, state, reset);
   return row.updatedAt ?? new Date().toISOString();
 }
 
@@ -237,10 +241,20 @@ export async function executeSync(userId: string): Promise<string[]> {
     errors.push(`progress:${e instanceof Error ? e.message : String(e)}`);
   }
 
+  // Replay a pending reset before an ordinary merge of the local snapshot.
+  const queue = loadQueue().map((op) => ({ ...op, id: op.id ?? crypto.randomUUID() }));
+  saveQueue(queue);
+  const pending = queue.filter((op) => op.userId === userId);
+  const resets = pending.filter((op) => op.kind === 'a1-reset');
+  const acknowledged = new Set<string>();
+
   // 3. A1 campaign path state (a1PathState → a1_path_state)
   try {
-    const pushedAt = await pushA1PathState(userId, mark.a1PathAt);
-    if (pushedAt) mark.a1PathAt = pushedAt;
+    const pushedAt = await pushA1PathState(userId, mark.a1PathAt, resets.length > 0);
+    if (pushedAt) {
+      mark.a1PathAt = pushedAt;
+      for (const reset of resets) acknowledged.add(reset.id);
+    }
   } catch (e) {
     errors.push(`a1path:${e instanceof Error ? e.message : String(e)}`);
   }
@@ -250,21 +264,20 @@ export async function executeSync(userId: string): Promise<string[]> {
 
   // 4. Replay queued offline mutations (achievements / explicit a1path pushes
   //    enqueued during offline time; progress/review flush live above).
-  const pending = loadQueue().filter(
-    (op) => op.userId === userId || op.kind === 'generic'
-  );
   for (const op of pending) {
+    if (op.kind === 'a1-reset' || (resets.length > 0 && op.kind === 'a1path')) continue;
     try {
       if (op.kind === 'achievement' && typeof op.payload === 'string') {
         await userDataService.unlockAchievement(userId, op.payload);
       } else if (op.kind === 'a1path') {
         await pushA1PathState(userId, mark.a1PathAt);
       }
+      acknowledged.add(op.id);
     } catch (e) {
       errors.push(`${op.kind}:${e instanceof Error ? e.message : String(e)}`);
     }
   }
-  clearQueue();
+  saveQueue(loadQueue().filter((op) => !op.id || !acknowledged.has(op.id)));
 
   return errors;
 }
@@ -282,16 +295,17 @@ export function queueAchievementUnlock(userId: string, badgeId: string): void {
   });
 }
 
-/**
- * Convenience: enqueue an A1 path push for the next successful sync.
- * Called by `useA1Path` when a Supabase write fails while offline.
- */
-export function queueA1PathPush(userId: string): void {
+/** Persist an explicit reset until it can replace the cloud snapshot. */
+export function queueA1PathReset(userId: string): void {
   enqueueSync({
-    kind: 'a1path',
+    kind: 'a1-reset',
     userId,
     at: new Date().toISOString(),
   });
+}
+
+export function hasPendingA1Reset(userId: string): boolean {
+  return loadQueue().some((op) => op.kind === 'a1-reset' && op.userId === userId);
 }
 
 /** Map local vocab cards (V title / context helper). */

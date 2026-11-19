@@ -30,7 +30,6 @@ import type {
   ChatMode,
   ChatPreference,
   MeroMood,
-  OllamaStatus,
   QuizQuestion,
 } from '../types/chatbot';
 import { createConversation, type ConversationState } from './conversationManager';
@@ -58,20 +57,12 @@ export interface QuizSession {
   mode: PracticeMode;
 }
 
-const INITIAL_STATUS: OllamaStatus = {
-  reachable: false,
-  checking: false,
-  format: null,
-  models: [],
-  error: null,
-};
 
 interface ChatStore {
   messages: ChatMessage[];
   settings: ChatbotSettings;
-  status: OllamaStatus;
   open: boolean;
-  isStreaming: boolean;
+  isBusy: boolean;
   mood: MeroMood;
   conversation: ConversationState;
   /** Coach (default) or German-practice mode. */
@@ -104,9 +95,8 @@ interface ChatStore {
 
   setOpen: (open: boolean) => void;
   toggle: () => void;
-  setStatus: (status: OllamaStatus) => void;
   setSettings: (patch: Partial<ChatbotSettings>) => void;
-  setStreaming: (isStreaming: boolean) => void;
+  setBusy: (isBusy: boolean) => void;
   setMood: (mood: MeroMood) => void;
   setConversation: (conversation: ConversationState) => void;
   setMode: (mode: ChatMode) => void;
@@ -130,7 +120,6 @@ interface ChatStore {
   /** Read-and-clear the OLDEST queued prompt, so nothing is sent twice or lost. */
   takePendingPrompt: () => string | null;
   addMessage: (message: ChatMessage) => void;
-  patchMessage: (id: string, patch: Partial<ChatMessage>) => void;
   clearHistory: () => void;
 
   /**
@@ -153,9 +142,8 @@ interface ChatStore {
 export const useChatStore = create<ChatStore>()((set, get) => ({
   messages: [],
   settings: DEFAULT_SETTINGS,
-  status: INITIAL_STATUS,
   open: false,
-  isStreaming: false,
+  isBusy: false,
   mood: 'idle',
   conversation: createConversation(),
   mode: 'coach',
@@ -166,10 +154,9 @@ export const useChatStore = create<ChatStore>()((set, get) => ({
 
   setOpen: (open) => set({ open }),
   toggle: () => set({ open: !get().open }),
-  setStatus: (status) => set({ status }),
   setAdminEnabled: (adminEnabled) => set({ adminEnabled }),
   setSettings: (patch) => set({ settings: { ...get().settings, ...patch } }),
-  setStreaming: (isStreaming) => set({ isStreaming }),
+  setBusy: (isBusy) => set({ isBusy }),
   setMood: (mood) => set({ mood }),
   setConversation: (conversation) => set({ conversation }),
   setMode: (mode) => set({ mode }),
@@ -263,12 +250,7 @@ export const useChatStore = create<ChatStore>()((set, get) => ({
   addMessage: (message) =>
     set({ messages: [...get().messages, message].slice(-CHATBOT_CONFIG.storedMessages) }),
 
-  patchMessage: (id, patch) =>
-    set({
-      messages: get().messages.map((m) => (m.id === id ? { ...m, ...patch } : m)),
-    }),
-
-  clearHistory: () => set({ messages: [], conversation: createConversation() }),
+  clearHistory: () => set({ messages: [], conversation: createConversation(), isBusy: false }),
 }));
 
 /**
@@ -357,8 +339,6 @@ export function hydrateChat(userId: string): void {
     // default for users who saved before it existed.
     settings: {
       ...DEFAULT_SETTINGS,
-      baseUrl: adminDefaults.baseUrl,
-      model: adminDefaults.model,
       intensity: adminDefaults.intensity,
       languageMix: adminDefaults.languageMix,
       autoOpenOnMistake: adminDefaults.autoOpenOnMistake,
@@ -366,8 +346,10 @@ export function hydrateChat(userId: string): void {
     },
     // A transcript restored mid-stream would render a permanently typing
     // bubble, so the flag is cleared on load.
-    messages: Array.isArray(parsed.messages) ? parsed.messages.slice(-CHATBOT_CONFIG.storedMessages) : [],
-    isStreaming: false,
+    messages: Array.isArray(parsed.messages)
+      ? parsed.messages.slice(-CHATBOT_CONFIG.storedMessages).filter((message) => !message.streaming || message.content.trim()).map((message) => ({ ...message, streaming: false }))
+      : [],
+    isBusy: false,
     conversation: createConversation(),
     // Session-scoped, never persisted: reopening the app should not silently
     // drop the learner into German-drill mode.
@@ -412,7 +394,7 @@ export function hydrateChat(userId: string): void {
 export function useChatEnabled(): boolean {
   const adminEnabled = useChatStore((s) => s.adminEnabled);
   const personal = useChatStore((s) => s.settings.enabled);
-  return CHATBOT_ENABLED && adminEnabled && personal && CHATBOT_CONFIG.useLocalModel;
+  return CHATBOT_ENABLED && adminEnabled && personal;
 }
 
 /** Write settings + transcript back. Called from the provider on change. */

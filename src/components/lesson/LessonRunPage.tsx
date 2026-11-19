@@ -64,17 +64,11 @@ export function LessonRunPage() {
   // follows the spine: if a learn node is ever repointed again, completion follows
   // it rather than needing a second edit in a second place.
   //
-  // Currently REDUNDANT, and deliberately so: `A1PathVisitTracker` completes a
-  // learn node on ARRIVAL, so the node is already ticked by the time anyone
-  // reaches the last screen, and `completeNode` is a no-op for an id that is
-  // already complete. It is wired now because the tracker is wrong — arrival is
-  // not completion — and when the tracker stops completing learn nodes this line
-  // is already correct.
-  const { completeNode } = useA1Path();
+  const { completeNode, isNodeUnlocked } = useA1Path();
   const onComplete = useCallback(() => {
     const learnNode = getNodeByRoute(`/lesson/${index}`);
-    if (learnNode) completeNode(learnNode.id);
-  }, [completeNode, index]);
+    if (learnNode && isNodeUnlocked(learnNode)) completeNode(learnNode.id);
+  }, [completeNode, index, isNodeUnlocked]);
 
   usePageTitle(unit ? `${unit.title.en} · Mero Deutsch` : 'Mero Deutsch');
 
@@ -97,6 +91,10 @@ export function LessonRunPage() {
         return;
       }
       setLoaded({ status: 'ready', run: toRun(unit.id, lesson) });
+    }).catch((error: unknown) => {
+      if (cancelled) return;
+      console.warn('[lesson] could not load step content:', error);
+      setLoaded({ status: 'legacy' });
     });
     return () => {
       cancelled = true;

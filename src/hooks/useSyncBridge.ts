@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { isOnline, executeSync, queueAchievementUnlock } from '../services/syncService';
+import { A1_PATH_CHANGED_EVENT, isOnline, executeSync, queueAchievementUnlock } from '../services/syncService';
 import { useAuth } from './useAuth';
 
 const SYNC_INTERVAL_MS = 60_000; // once per minute while online
+const PATH_SYNC_DEBOUNCE_MS = 600;
 
 /**
  * useSyncBridge — online-reconnect driven sync.
@@ -23,12 +24,12 @@ export function useSyncBridge() {
   const isSyncingRef = useRef(false);
 
   const runSync = useCallback(async () => {
-    if (isSyncingRef.current) return;
+    if (!isAuthenticated || !userId || !isOnline() || isSyncingRef.current) return;
     isSyncingRef.current = true;
     setIsSyncing(true);
     try {
-      const errors = await executeSync(userId ?? '');
-      setLastSyncAt(Date.now());
+      const errors = await executeSync(userId);
+      if (errors.length === 0) setLastSyncAt(Date.now());
       if (errors.length) {
         // Errors are logged to console; UI toast can be added if desired.
         console.warn('Sync errors:', errors);
@@ -37,7 +38,7 @@ export function useSyncBridge() {
       isSyncingRef.current = false;
       setIsSyncing(false);
     }
-  }, [userId, executeSync]);
+  }, [userId, isAuthenticated]);
 
   const onOnline = useCallback(() => {
     if (!isAuthenticated || !userId) return;
@@ -58,16 +59,29 @@ export function useSyncBridge() {
     return () => window.removeEventListener('online', onOnline);
   }, [onOnline]);
 
+  useEffect(() => {
+    if (!isAuthenticated || !userId) return;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const scheduleSync = () => {
+      clearTimeout(timer);
+      timer = setTimeout(onOnline, PATH_SYNC_DEBOUNCE_MS);
+    };
+    window.addEventListener(A1_PATH_CHANGED_EVENT, scheduleSync);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener(A1_PATH_CHANGED_EVENT, scheduleSync);
+    };
+  }, [isAuthenticated, userId, onOnline]);
+
   // Periodic re-sync while online (defensive: catch any changes that might
   // have been missed by the one-shot online event, e.g. tab switching).
   useEffect(() => {
     if (!isAuthenticated || !userId) return;
-    if (!isOnline()) return;
     const interval = setInterval(() => {
       void runSync();
     }, SYNC_INTERVAL_MS);
     return () => clearInterval(interval);
-  }, [isAuthenticated, userId, isOnline, runSync]);
+  }, [isAuthenticated, userId, runSync]);
 
   return {
     isSyncing,

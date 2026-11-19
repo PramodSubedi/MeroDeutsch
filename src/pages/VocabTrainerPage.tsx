@@ -17,7 +17,7 @@
  *   - Correct quiz answers → reportAnswer XP.
  *   - Nur-DE mode hides EN/NE helper lines (C1.5) but stays playable.
  */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Layers, ListChecks, Volume2 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
@@ -97,6 +97,11 @@ function posFromParam(raw: string | null): PosFilter {
 }
 
 export function VocabTrainerPage() {
+  const [searchParams] = useSearchParams();
+  return <VocabTrainerSession key={searchParams.toString()} searchParams={searchParams} />;
+}
+
+function VocabTrainerSession({ searchParams }: { searchParams: URLSearchParams }) {
   usePageTitle('Vocab Trainer');
   const { langMode } = useLang();
   const isDE = langMode === 'german';
@@ -108,7 +113,6 @@ export function VocabTrainerPage() {
   // Two reasons: deep links (the /glossary "practice these words" handoff and
   // the /learn spine chips both build these URLs), and a returning learner can
   // bookmark or share the exact drill they are running.
-  const [searchParams] = useSearchParams();
   const [level, setLevel] = useState<string>(searchParams.get('level') ?? '');
   const [category, setCategory] = useState<string>(searchParams.get('category') ?? '');
   const [pos, setPos] = useState<PosFilter>(posFromParam(searchParams.get('pos')));
@@ -124,6 +128,13 @@ export function VocabTrainerPage() {
   // ── Session state ──────────────────────────────────────────────────────
   const [mode, setMode] = useState<TrainerMode>('flashcards');
   const [loading, setLoading] = useState(false);
+  const [loadFailed, setLoadFailed] = useState(false);
+  const loadVersion = useRef(0);
+  const advanceTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  useEffect(() => () => {
+    loadVersion.current++;
+    clearTimeout(advanceTimer.current);
+  }, []);
   const [pool, setPool] = useState<VocabCard[]>([]);
   const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
@@ -156,6 +167,8 @@ export function VocabTrainerPage() {
     let cancelled = false;
     curriculumService.getVocabFilterOptions().then((opts) => {
       if (!cancelled) setOptions(opts);
+    }).catch((error: unknown) => {
+      if (!cancelled) console.warn('[vocab trainer] filter options unavailable:', error);
     });
     return () => {
       cancelled = true;
@@ -221,7 +234,12 @@ export function VocabTrainerPage() {
 
   /** Start a session with the current filters + pool mode. */
   const startSession = useCallback(async () => {
+    const version = ++loadVersion.current;
+    clearTimeout(advanceTimer.current);
+    setLoadFailed(false);
     setLoading(true);
+    setPool([]);
+    setQuestion(null);
     setFinished(false);
     setStarted(true);
     setScore({ correct: 0, total: 0 });
@@ -235,6 +253,7 @@ export function VocabTrainerPage() {
         category: category || undefined,
         limit: 20,
       });
+      if (loadVersion.current !== version) return;
       const cards = applyPoolMode(rawCards);
       // ADAPTIVE ORDER. Which 20 words get fetched is the DB's call (it does the
       // sampling), so the bias here is purely about ORDER: words this learner has
@@ -254,8 +273,14 @@ export function VocabTrainerPage() {
       } else {
         setQuestion(null);
       }
+    } catch {
+      if (loadVersion.current === version) {
+        setPool([]);
+        setQuestion(null);
+        setLoadFailed(true);
+      }
     } finally {
-      setLoading(false);
+      if (loadVersion.current === version) setLoading(false);
     }
   }, [pos, level, category, mode, buildQuestion, applyPoolMode, weakKeys]);
 
@@ -319,7 +344,7 @@ export function VocabTrainerPage() {
         );
       }
       // Brief feedback pause so the user sees right/wrong before advancing.
-      setTimeout(() => advance(correct), 900);
+      advanceTimer.current = setTimeout(() => advance(correct), 900);
     },
     [question, selected, reportAnswer, addWrongAnswer, advance, recordAttempt]
   );
@@ -331,6 +356,10 @@ export function VocabTrainerPage() {
   }, [flipped, current]);
 
   const reset = useCallback(() => {
+    loadVersion.current++;
+    clearTimeout(advanceTimer.current);
+    setLoading(false);
+    setLoadFailed(false);
     setPool([]);
     setIndex(0);
     setFinished(false);
@@ -500,7 +529,12 @@ export function VocabTrainerPage() {
       </div>
 
       {/* ── Empty state ────────────────────────────────────────────── */}
-      {!loading && pool.length === 0 && !finished && (
+      {loadFailed && (
+        <p role="alert" className={`${theme.panel.muted} mt-4 text-body`}>
+          {isDE ? 'Wörter konnten nicht geladen werden. Tippe auf Starten, um es erneut zu versuchen.' : 'Could not load words. Select Start to try again.'}
+        </p>
+      )}
+      {!loading && !loadFailed && pool.length === 0 && !finished && (
         <div className={`${theme.panel.muted} mt-4 text-center text-body text-ink-500 dark:text-ink-400`}>
           {started && hasFilters
             ? isDE
@@ -722,7 +756,7 @@ export function VocabTrainerPage() {
       )}
 
       {/* Offline hint when a started session comes back empty after filtering */}
-      {!loading && started && hasFilters && pool.length === 0 && !finished && (
+      {!loading && !loadFailed && started && hasFilters && pool.length === 0 && !finished && (
         <p className="mt-3 text-center text-meta text-ink-500">
           {isDE
             ? 'Keine Treffer — versuche andere Filter (offline? Cache füllt sich beim ersten Online-Besuch).'

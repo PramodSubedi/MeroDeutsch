@@ -79,17 +79,6 @@ export type Intent =
   | 'conversation'
   | 'casual_chat';
 
-/** The wire protocol spoken by the local model server. */
-export type OllamaWireFormat = 'ollama' | 'openai';
-
-export interface OllamaStatus {
-  reachable: boolean;
-  checking: boolean;
-  format: OllamaWireFormat | null;
-  models: string[];
-  /** Human-readable reason when `reachable` is false (CORS, not running, …). */
-  error: string | null;
-}
 
 /** Playfulness dial. `serious` is the "just tell me the grammar" mode. */
 export type PersonalityIntensity = 'serious' | 'balanced' | 'playful';
@@ -99,30 +88,11 @@ export type LanguageMix = 'de_en' | 'de_en_ne';
 
 export interface ChatbotSettings {
   enabled: boolean;
-  /**
-   * Runtime-overridable Ollama/LM Studio base URL.
-   *
-   * NOT env-only on purpose: `import.meta.env` is baked at BUILD time, so a
-   * deployed build (https://merodeutsch.pramods.com.np) could never be
-   * re-pointed at a learner's own machine. Persisted per user; falls back to
-   * the env var, which is only a sane default for `npm run dev` locally.
-   */
-  baseUrl: string;
-  model: string;
-  temperature: number;
-  maxTokens: number;
   intensity: PersonalityIntensity;
   /** Nudge the sidebar open after a run of wrong answers. */
   autoOpenOnMistake: boolean;
   languageMix: LanguageMix;
-  /**
-   * Standing instructions the learner has given Mero, injected into every
-   * system prompt ("explain simply", "German only", "more examples").
-   *
-   * Stored as a Set-like array so it survives JSON persistence. They are
-   * preferences about HOW to answer, never about the facts — the grounding
-   * block still wins over any of them.
-   */
+  /** Saved style preferences from existing learner profiles. */
   preferences: ChatPreference[];
   /** False until the learner has seen the first-run welcome. */
   onboarded: boolean;

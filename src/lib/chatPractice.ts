@@ -21,6 +21,7 @@
 import { db } from './db';
 import { shuffleArray } from '../utils/shuffleArray';
 import { getHint } from '../data/hints';
+import { A1_POLITENESS } from '../data/a1ResourcePack';
 import type { ContextSnapshot, QuizQuestion, WeakItemSnapshot } from '../types/chatbot';
 import type { VocabCard } from '../types';
 
@@ -33,12 +34,15 @@ export interface DeckOptions {
 }
 
 /** One question built from a vocabulary card. */
-function fromCard(card: VocabCard, mode: PracticeMode, cards: VocabCard[]): QuizQuestion | null {
+function fromCard(card: VocabCard, mode: PracticeMode, cards: VocabCard[], isDE: boolean): QuizQuestion | null {
   // Nouns are the most valuable drill: the article is the classic A1 trap and
   // every card carries a real gender, plural and example.
   const showArticle = card.partOfSpeech === 'noun' && Boolean(card.article);
   const answer = showArticle ? `${card.article} ${card.lemma}` : card.lemma;
   if (!answer) return null;
+  const gloss = card.translation?.en?.trim();
+  if (mode !== 'listen' && !showArticle &&
+      (isDE || !gloss || gloss.toLowerCase() === card.lemma.trim().toLowerCase())) return null;
 
   const distractors: string[] = [];
   if (showArticle) {
@@ -46,10 +50,14 @@ function fromCard(card: VocabCard, mode: PracticeMode, cards: VocabCard[]): Quiz
     for (const a of others) distractors.push(`${a} ${card.lemma}`);
   } else {
     const pool = cards
-      .filter((c) => c.id !== card.id && c.lemma !== card.lemma)
+      .filter((c) =>
+        c.partOfSpeech === card.partOfSpeech && c.lemma !== card.lemma &&
+        c.translation?.en?.trim().toLowerCase() !== gloss?.toLowerCase()
+      )
       .slice(0, 24);
     for (const c of pool) {
-      distractors.push(c.article && c.partOfSpeech === 'noun' ? `${c.article} ${c.lemma}` : c.lemma);
+      const option = c.article && c.partOfSpeech === 'noun' ? `${c.article} ${c.lemma}` : c.lemma;
+      if (option !== answer && !distractors.includes(option)) distractors.push(option);
       if (distractors.length >= 3) break;
     }
   }
@@ -57,8 +65,10 @@ function fromCard(card: VocabCard, mode: PracticeMode, cards: VocabCard[]): Quiz
     return {
       itemKey: card.id,
       moduleType: 'chat-vocab',
-      prompt: showArticle ? `Welcher Artikel passt zu „${card.lemma}“?` : `Write the German for “${card.translation?.en ?? card.lemma}”`,
-      speakPrompt: card.lemma,
+      prompt: mode === 'listen' ? 'Hör zu und schreibe, was du hörst.' : showArticle
+        ? `Welcher Artikel passt zu „${card.lemma}“?`
+        : `Write the German for “${gloss}”`,
+      speakPrompt: mode === 'listen' ? answer : '',
       options: [],
       correct: answer,
       mode: mode === 'choice' ? 'type' : mode,
@@ -67,14 +77,14 @@ function fromCard(card: VocabCard, mode: PracticeMode, cards: VocabCard[]): Quiz
   }
 
   // C2.9: shuffled here, once. The deck keeps this order for the whole round.
-  const options = shuffleArray([answer, ...distractors.slice(0, 3)]);
+  const options = shuffleArray([...new Set([answer, ...distractors])].slice(0, 4));
   return {
     itemKey: card.id,
     moduleType: 'chat-vocab',
     prompt: showArticle
       ? `Welcher Artikel passt zu „${card.lemma}“?`
-      : `What is the German for “${card.translation?.en ?? card.lemma}”?`,
-    speakPrompt: card.lemma,
+      : `What is the German for “${gloss}”?`,
+    speakPrompt: '',
     options,
     correct: answer,
     mode: 'choice',
@@ -83,22 +93,25 @@ function fromCard(card: VocabCard, mode: PracticeMode, cards: VocabCard[]): Quiz
 }
 
 /** One question built from something the learner keeps getting wrong. */
-function fromWeakItem(item: WeakItemSnapshot, mode: PracticeMode): QuizQuestion {
-  const answer = item.correctAnswer || item.itemKey;
-  // Their OWN wrong answer is the best distractor there is.
-  const options =
-    mode === 'choice' && item.userAnswer && item.userAnswer.trim() !== answer.trim()
-      ? shuffleArray([answer, item.userAnswer.trim()])
-      : [];
+function fromWeakItem(item: WeakItemSnapshot): QuizQuestion | null {
+  const answer = item.correctAnswer?.trim();
+  if (!answer) return null;
+  const noun = /^(der|die|das) (.+)$/i.exec(answer);
+  // A review row stores answers, but may lack the original question. The noun
+  // and its article provide enough information to reconstruct this exercise.
+  if (!noun) return null;
+  const options = shuffleArray([answer, ...['der', 'die', 'das']
+    .filter((article) => article !== noun[1].toLowerCase())
+    .map((article) => `${article} ${noun[2]}`)]);
   const hint = getHint(item.moduleType, 'wrong-answer');
   return {
     itemKey: item.itemKey,
     moduleType: item.moduleType,
-    prompt: 'Which one is correct?',
-    speakPrompt: answer,
+    prompt: `Welcher Artikel passt zu „${noun[2]}“?`,
+    speakPrompt: '',
     options,
     correct: answer,
-    mode: options.length >= 2 ? 'choice' : 'type',
+    mode: 'choice',
     hint: { en: hint.en, de: hint.de },
     source: 'weak_item',
   };
@@ -113,10 +126,10 @@ export async function buildPracticeDeck(options: DeckOptions): Promise<QuizQuest
   const { count, mode, ctx } = options;
   const deck: QuizQuestion[] = [];
 
-  for (const item of ctx.weakItems) {
+  for (const item of mode === 'listen' ? [] : ctx.weakItems) {
     if (deck.length >= count) break;
-    if (!item.correctAnswer && !item.itemKey) continue;
-    deck.push(fromWeakItem(item, mode));
+    const question = fromWeakItem(item);
+    if (question && !deck.some((row) => row.correct === question.correct)) deck.push(question);
   }
 
   if (deck.length < count && db) {
@@ -127,12 +140,32 @@ export async function buildPracticeDeck(options: DeckOptions): Promise<QuizQuest
       const shuffled = shuffleArray(cards);
       for (const card of shuffled) {
         if (deck.length >= count) break;
-        const q = fromCard(card, mode, cards);
-        if (q) deck.push(q);
+        const q = fromCard(card, mode, cards, ctx.isDE);
+        if (q && !deck.some((row) => row.correct === q.correct)) deck.push(q);
       }
     } catch {
       // A failed read yields a short (or empty) deck, never a crash.
     }
+  }
+
+  const phrases = A1_POLITENESS.filter((phrase) => !/[()]/.test(phrase.de));
+  for (const phrase of shuffleArray(phrases)) {
+    if (deck.length >= count) break;
+    if (deck.some((row) => row.correct === phrase.de)) continue;
+    deck.push({
+      itemKey: `phrase:${phrase.de}`,
+      moduleType: 'chat-vocab',
+      correct: phrase.de,
+      prompt: mode === 'listen' ? 'Hör zu und schreibe, was du hörst.'
+        : ctx.isDE ? `Ergänze: ${phrase.de.replace(/[aeiouäöü]/i, '_')}`
+        : `How do you say “${phrase.en}” in German?`,
+      speakPrompt: mode === 'listen' ? phrase.de : '',
+      options: mode === 'choice'
+        ? shuffleArray([phrase.de, ...shuffleArray(phrases.filter((other) => other !== phrase)).slice(0, 2).map((other) => other.de)])
+        : [],
+      mode,
+      source: 'vocabulary',
+    });
   }
 
   return deck.slice(0, count);
@@ -163,7 +196,7 @@ export function isAnswerCorrect(
   correct: string,
   mode: 'choice' | 'type' | 'listen' = 'type',
 ): boolean {
-  const flat = (s: string) => s.trim().toLowerCase().replace(/\s+/g, ' ');
+  const flat = (s: string) => s.normalize('NFC').trim().toLowerCase().replace(/[.!?]+$/, '').replace(/\s+/g, ' ');
   const g = flat(given);
   const c = flat(correct);
   if (g === c) return true;

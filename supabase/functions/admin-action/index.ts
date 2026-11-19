@@ -399,16 +399,45 @@ Deno.serve(async (req: Request) => {
     if (action === 'user.ban' && reason) patch.ban_reason = reason.slice(0, 500);
     if (action === 'user.unban') patch.ban_reason = null;
 
+    const changesSuspension = action === 'user.ban' || action === 'user.unban';
+    // GoTrue's admin API uses a Go duration. A suspension remains in effect
+    // until an administrator reverses it.
+    const banDuration = '876000h';
+    if (changesSuspension) {
+      const { error: authError } = await db.auth.admin.updateUserById(target.id, {
+        ban_duration: action === 'user.ban' ? banDuration : 'none',
+      });
+      if (authError) {
+        await audit(db, {
+          adminId: actorId,
+          action: `${action}.failed`,
+          targetId: target.id,
+          before: { error: authError.message, stage: 'auth' },
+          after: null,
+          userAgent,
+        });
+        return json(502, { ok: false, code: 'auth-write-failed', message: 'Sign-in access could not be updated. The profile change was skipped.' });
+      }
+    }
+
     const { error } = await db.from('profiles').update(patch).eq('id', target.id);
     if (error) {
+      const rollback = changesSuspension
+        ? await db.auth.admin.updateUserById(target.id, {
+            ban_duration: target.banned ? banDuration : 'none',
+          })
+        : null;
       await audit(db, {
         adminId: actorId,
         action: `${action}.failed`,
         targetId: target.id,
         before: { error: error.message },
-        after: null,
+        after: rollback?.error ? { authRollbackError: rollback.error.message } : null,
         userAgent,
       });
+      if (rollback?.error) {
+        return json(500, { ok: false, code: 'suspension-inconsistent', message: 'Sign-in access changed but the profile update failed. Check the audit log and reconcile the account.' });
+      }
       // Fail closed: the write did not land, so report failure.
       return json(500, { ok: false, code: 'write-failed', message: 'The change could not be applied.' });
     }

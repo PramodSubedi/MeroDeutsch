@@ -1,16 +1,5 @@
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import * as Sentry from "@sentry/react";
-import { Analytics } from '@vercel/analytics/react';
-import { HelmetProvider } from 'react-helmet-async';
 import { registerSW } from 'virtual:pwa-register';
 import './index.css';
-import { ErrorBoundary } from './components/ErrorBoundary';
-import { AuthProvider } from './hooks/useAuth';
-import { LanguageProvider } from './context/LanguageContext';
-import { XpProvider } from './context/XpContext';
-import { A1PathProvider } from './hooks/useA1Path';
-import { VocabularyStatusProvider } from './hooks/useVocabularyStatus';
 import { setUpdateAvailable } from './hooks/useUpdatePrompt';
 
 /**
@@ -41,9 +30,10 @@ async function boot() {
 
   if (import.meta.env.DEV) console.info(`[curriculum] serving ${source}`);
 
-  let App: typeof import('./App').default;
+  // The mounted app and its providers read the active curriculum at module load.
+  let mountLearner: typeof import('./mountLearner').mountLearner;
   try {
-    ({ default: App } = await import('./App'));
+    ({ mountLearner } = await import('./mountLearner'));
   } catch (err) {
     const root = document.getElementById('root');
     if (root) {
@@ -54,42 +44,8 @@ async function boot() {
     return;
   }
 
-  // Initialize Sentry right before React mounts
-  Sentry.init({
-    dsn: import.meta.env.VITE_SENTRY_DSN,
-    integrations: [
-      Sentry.browserTracingIntegration(),
-      Sentry.replayIntegration(),
-    ],
-    tracesSampleRate: 1.0,
-    replaysSessionSampleRate: 0.1,
-    replaysOnErrorSampleRate: 1.0,
-  });
-
   clearBootSplash();
-
-  createRoot(document.getElementById('root')!).render(
-    <StrictMode>
-      <ErrorBoundary>
-        <AuthProvider>
-          <LanguageProvider>
-            <XpProvider>
-              {/* A1 path state — per-user, isolated under meroDeutschA1Path:<userId> */}
-              <A1PathProvider>
-                {/* Per-word learning status (Glossary / Vocab Trainer) — Dexie-local */}
-                <VocabularyStatusProvider>
-                  <HelmetProvider>
-                    <App />
-                  </HelmetProvider>
-                </VocabularyStatusProvider>
-              </A1PathProvider>
-            </XpProvider>
-          </LanguageProvider>
-        </AuthProvider>
-      </ErrorBoundary>
-      <Analytics />
-    </StrictMode>,
-  );
+  mountLearner();
 }
 
 void boot();

@@ -56,14 +56,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
-    // Check active sessions
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(mapUser(session?.user ?? null));
-      setIsLoading(false);
-    });
-
-    // Listen for changes on auth state
+    // INITIAL_SESSION restores the session through the same path as sign-in
+    // and sign-out, so a separate session read cannot apply stale state.
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       setUser(mapUser(session?.user ?? null));
@@ -80,10 +74,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // until the existing useReviewQueue hook is migrated to Dexie (no data-loss
   // window).
   useEffect(() => {
+    if (isLoading) return;
+    let cancelled = false;
     const userId = user?.userId ?? 'guest';
     void migrateLocalStorageToDexie(userId, { cleanup: true })
-      .then((res) => setMigrationResult(res))
+      .then((res) => {
+        if (!cancelled) setMigrationResult(res);
+      })
       .catch((err) => {
+        if (cancelled) return;
         console.warn('[dexie] migration failed:', err);
         setMigrationResult({
           migrated: 0,
@@ -92,7 +91,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           message: err instanceof Error ? err.message : String(err),
         });
       });
-  }, [user?.userId]);
+    return () => { cancelled = true; };
+  }, [user?.userId, isLoading]);
 
   const register = useCallback(async (email: string, password: string, username?: string) => {
     const { error } = await supabase.auth.signUp({

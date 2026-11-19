@@ -233,7 +233,9 @@ export function interpretAdminResponse(status: number, body: unknown): AdminActi
     code,
     // 500 means the function failed CLOSED, so nothing changed. The Audit Log
     // entry with a `.failed` action is where that is confirmed.
-    message: withNoChange(msg ?? 'The action could not be completed.'),
+    message: code === 'suspension-inconsistent'
+      ? (msg ?? 'Sign-in access and profile status need reconciliation.')
+      : withNoChange(msg ?? 'The action could not be completed.'),
   };
 }
 

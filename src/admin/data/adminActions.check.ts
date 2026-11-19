@@ -78,6 +78,13 @@ const failed = interpretAdminResponse(500, { ok: false, code: 'write-failed', me
 check('500 is not ok', failed.ok === false);
 check('500 outcome is failed', failed.outcome === 'failed');
 check('500 says nothing changed', /nothing was changed/i.test(failed.message));
+const inconsistent = interpretAdminResponse(500, {
+  ok: false,
+  code: 'suspension-inconsistent',
+  message: 'Sign-in access changed but the profile update failed.',
+});
+check('partial suspension warns about the change', /sign-in access changed/i.test(inconsistent.message));
+check('partial suspension does not claim nothing changed', !/nothing was changed/i.test(inconsistent.message));
 check('an unlisted status still fails safe', interpretAdminResponse(418, {}).ok === false);
 check('an unlisted status is "failed"', interpretAdminResponse(418, {}).outcome === 'failed');
 

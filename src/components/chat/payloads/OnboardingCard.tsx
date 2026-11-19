@@ -1,23 +1,14 @@
-/**
- * src/components/chat/payloads/OnboardingCard.tsx
- *
- * First-run welcome. It leads with what the companion can actually DO, and —
- * only when no model server answered — the one setup step that changes its
- * behaviour. Showing a setup prompt to someone whose Ollama is already running
- * is the fastest way to teach them to ignore setup prompts.
- */
+/** First-run welcome for Mero. */
 
 import type { ChatPayload } from '../../../types/chatbot';
 
 export type OnboardingPayload = Extract<ChatPayload, { kind: 'onboarding' }>;
 
 export function OnboardingCard({
-  payload,
   isDE,
   onAction,
   onDismiss,
 }: {
-  payload: OnboardingPayload;
   isDE: boolean;
   onAction: (to: string) => void;
   onDismiss: () => void;
@@ -52,18 +43,6 @@ export function OnboardingCard({
         ))}
       </ul>
 
-      {!payload.canGenerate && (
-        <div className="mt-2.5 rounded-sm bg-warning-50 px-2.5 py-2 text-meta text-warning-900 dark:bg-warning-950/40 dark:text-warning-200">
-          <p className="font-semibold">
-            {isDE ? 'Kein lokales Modell gefunden' : 'No local model found'}
-          </p>
-          <p className="mt-0.5">
-            {isDE
-              ? `Ich antworte trotzdem mit App-Daten. Für freie Antworten starte Ollama und trage ${payload.baseUrl} ein.`
-              : `I'll still answer from app data. For free-form replies, start Ollama and set ${payload.baseUrl} in Settings.`}
-          </p>
-        </div>
-      )}
 
       <div className="mt-2.5 flex flex-wrap gap-2">
         <button

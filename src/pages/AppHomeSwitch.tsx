@@ -1,6 +1,7 @@
 import { useAuth } from '../hooks/useAuth';
 import { GuestHomePage } from './GuestHomePage';
 import { HomePage } from './HomePage';
+import { SkeletonLoader } from '../components/SkeletonLoader';
 
 /**
  * `/home` route switch: authenticated users see the full app Home
@@ -9,6 +10,7 @@ import { HomePage } from './HomePage';
  * focused "start here" start screen (Landing → Guest Home split).
  */
 export function AppHomeSwitch() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
+  if (isLoading) return <SkeletonLoader />;
   return isAuthenticated ? <HomePage /> : <GuestHomePage />;
 }

@@ -2,7 +2,17 @@ import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [
+    react(),
+    tailwindcss(),
+    {
+      name: 'test-service-worker-registration',
+      resolveId: (id) => id === 'virtual:pwa-register' ? '\0virtual:pwa-register' : undefined,
+      load: (id) => id === '\0virtual:pwa-register'
+        ? 'export const registerSW = () => () => Promise.resolve();'
+        : undefined,
+    },
+  ],
   test: {
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],

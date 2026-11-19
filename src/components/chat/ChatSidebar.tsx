@@ -1,39 +1,13 @@
-/**
- * src/components/chat/ChatSidebar.tsx — the contextual companion panel.
- *
- * SEND PIPELINE (the whole feature, in one function)
- * ---------------------------------------------------
- *   classifyIntent → optional vocab lookup → handleIntent → buildSystemPrompt
- *   → streamChat → patch the streaming bubble
- *
- * Every step is swappable because each one is a pure module. The two that are
- * NOT skippable are the grounding (`handleIntent`) and the offline path.
- *
- * WHY IT IS CLOSED BY DEFAULT
- * ---------------------------
- * It mounts on learn/practice/checkpoint routes, which includes active quizzes
- * (`/rapid-fire`, `/checkpoint/:i`, `/articles`). A panel that expands itself
- * mid-question would be exactly the interruption `.clinerules` C2.7 forbids, so
- * it starts collapsed and the learner opens it deliberately — button or
- * Ctrl/Cmd+K. Nothing auto-opens it.
- *
- * Z-ORDER
- * -------
- * `z-[56]` for the panel: above the sticky header (z-50) so it is not clipped,
- * above the AppSidebar mobile drawer (z-[55]) so a full-screen drawer pair can
- * never resolve by DOM order, and below the milestone/level-up toast (z-[60])
- * so XP and streak toasts are never hidden behind a chat drawer.
- */
+/** Mero, the on-device learning companion. */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { MessageCircle, WifiOff } from 'lucide-react';
+import { MeroAvatar } from './MeroAvatar';
 
 import { useLearningContext } from '../../context/LearningContext';
 import { useChatbotTriggers } from '../../hooks/useChatbotTriggers';
 import { useChatStore, useChatEnabled, nextMessageId, type QuizSession } from '../../lib/chatStore';
 import { classifyIntent, extractQuotedTerm } from '../../lib/intentRouter';
-import { classifyWithModel } from '../../lib/intentModel';
 import { followUpsFor, handleIntent } from '../../lib/responseHandlers';
 import { lookupVocab, type VocabHit } from '../../lib/vocabLookup';
 import { buildPracticeDeck, isAnswerCorrect } from '../../lib/chatPractice';
@@ -43,18 +17,11 @@ import { parseCommand, COMMAND_HELP } from '../../lib/slashCommands';
 import { setDailySessionActive } from '../../lib/dailySessionSignal';
 import { useAnswerReporter } from '../../hooks/useExerciseSession';
 import { triggerConfetti } from '../../utils/confetti';
-import { streamChat, OllamaError, type WireMessage } from '../../lib/ollamaClient';
-import { healthCheck } from '../../lib/ollamaHealth';
-import {
-  buildSystemPrompt,
-  buildUserPrompt,
-  recentHistory,
-} from '../../lib/promptBuilder';
 import {
   advanceConversation,
   levelForContext,
 } from '../../lib/conversationManager';
-import { CHATBOT_CONFIG, isLearningRoute } from '../../config/chatbot';
+import { isLearningRoute } from '../../config/chatbot';
 import type { Intent } from '../../types/chatbot';
 
 import { ChatHeader } from './ChatHeader';
@@ -94,9 +61,7 @@ export function ChatSidebar() {
   const setOpen = useChatStore((s) => s.setOpen);
   const messages = useChatStore((s) => s.messages);
   const settings = useChatStore((s) => s.settings);
-  const status = useChatStore((s) => s.status);
-  const setStatus = useChatStore((s) => s.setStatus);
-  const isStreaming = useChatStore((s) => s.isStreaming);
+  const isBusy = useChatStore((s) => s.isBusy);
   const mood = useChatStore((s) => s.mood);
   const conversation = useChatStore((s) => s.conversation);
   const setConversation = useChatStore((s) => s.setConversation);
@@ -112,31 +77,12 @@ export function ChatSidebar() {
   const activeQuestion = useChatStore((s) => s.quiz?.deck[s.quiz.index] ?? null);
   const [helpOpen, setHelpOpen] = useState(false);
 
-  const abortRef = useRef<AbortController | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const isDE = snapshot.isDE;
   // The build flag, the admin's global switch and the learner's own toggle. The
   // sidebar renders nothing at all when any of them is off — an openable panel
   // that cannot talk to anything is worse than no panel.
   const enabled = useChatEnabled();
-
-  /* ── connection health ──────────────────────────────────────────────── */
-  useEffect(() => {
-    if (!open || !enabled) return;
-    let cancelled = false;
-    const run = async () => {
-      const prev = useChatStore.getState().status;
-      setStatus({ ...prev, checking: true });
-      const next = await healthCheck(settings.baseUrl);
-      if (!cancelled) setStatus(next);
-    };
-    void run();
-    const timer = setInterval(run, CHATBOT_CONFIG.healthCheckIntervalMs);
-    return () => {
-      cancelled = true;
-      clearInterval(timer);
-    };
-  }, [open, enabled, settings.baseUrl, setStatus]);
 
   /* ── Ctrl/Cmd+K toggle ─────────────────────────────────────────────── */
   // Not a conflict: `useKeyboardShortcuts` owns Space / 1-4 / Enter, and it
@@ -182,11 +128,11 @@ export function ChatSidebar() {
   const sendRef = useRef<(text: string) => void>(() => {});
   useEffect(() => {
     if (!pendingPrompt) return;
-    if (isStreaming) return; // never interrupt a reply already in flight
+    if (isBusy) return; // never interrupt a reply already in flight
     if (!onLearningRoute) return; // answer it when they come back, not into the void
     const queued = useChatStore.getState().takePendingPrompt();
     if (queued) sendRef.current(queued);
-  }, [pendingPrompt, isStreaming, onLearningRoute]);
+  }, [pendingPrompt, isBusy, onLearningRoute]);
 
   // Mero noticing things on his own (failed checkpoint, streak at risk, new
   // weakest skill, level up).
@@ -196,17 +142,18 @@ export function ChatSidebar() {
   const send = useCallback(
     async (raw: string) => {
       const text = raw.trim();
-      if (!text || isStreaming) return;
+      if (!text || useChatStore.getState().isBusy) return;
 
       const store = useChatStore.getState();
-      const { addMessage, patchMessage, setStreaming: setBusy, setMood: setFace } = store;
+      const { addMessage, setMood: setFace } = store;
 
-      addMessage({ id: nextMessageId(), role: 'user', content: text, createdAt: Date.now() });
+      const turnId = nextMessageId();
+      const turnIsCurrent = () => useChatStore.getState().messages.some((message) => message.id === turnId);
+      addMessage({ id: turnId, role: 'user', content: text, createdAt: Date.now() });
       setFace('thinking');
 
       // ── SLASH COMMANDS short-circuit the router ───────────────────────
-      // A leading slash is authoritative: `/why` must not lose to a keyword
-      // rule, and `/help` never reaches the model at all.
+      // Explicit commands take precedence over matching the learner's wording.
       const command = parseCommand(text);
       if (command.command === 'help') {
         addMessage({
@@ -221,7 +168,8 @@ export function ChatSidebar() {
         return;
       }
       if (command.command === 'stop') {
-        abortRef.current?.abort();
+        store.endQuiz();
+        setFace('idle');
         return;
       }
 
@@ -239,175 +187,95 @@ export function ChatSidebar() {
         intent = 'conversation';
       }
 
-      // MODEL-ASSISTED FALLBACK — skip when useLocalModel is true
-      // When deterministic mode is on, we never call the model.
-      // The handleIntent() call below handles everything.
-      if (intent === 'casual_chat' && !CHATBOT_CONFIG.useLocalModel && store.status.reachable) {
-        intent =
-          (await classifyWithModel(text, {
-            baseUrl: settings.baseUrl,
-            model: settings.model,
-            temperature: settings.temperature,
-            maxTokens: settings.maxTokens,
-          })) ?? intent;
-      }
+      store.setBusy(true);
+      try {
+        let vocabHit: VocabHit | null = null;
+        if (intent === 'vocab_lookup') {
+          vocabHit = await lookupVocab(lookupTerm ?? text);
+          if (!turnIsCurrent()) return;
+        }
 
-      // Only vocabulary lookups need I/O; everything else is pure.
-      let vocabHit: VocabHit | null = null;
-      if (intent === 'vocab_lookup') {
-        vocabHit = await lookupVocab(lookupTerm ?? text);
-      }
+        const page = buildPageContext(pathname, snapshot);
+        const report = intent === 'report' ? buildReport(snapshot) : undefined;
 
-      // Screen context is assembled for EVERY turn, not just page_help, so the
-      // model can volunteer what the learner is looking at when it helps.
-      const page = buildPageContext(pathname, snapshot);
-      const report = intent === 'report' ? buildReport(snapshot) : undefined;
+        const nextConversation = intent === 'conversation'
+          ? advanceConversation(conversation, text, {
+              level: levelForContext(snapshot.cefr, snapshot.a1.unitIndex),
+            })
+          : conversation;
+        if (nextConversation !== conversation) setConversation(nextConversation);
 
-      const nextConversation = advanceConversation(conversation, text, {
-        level: levelForContext(snapshot.cefr, snapshot.a1.unitIndex),
-      });
-      setConversation(nextConversation);
+        const plan = handleIntent({
+          intent,
+          message: text,
+          context: snapshot,
+          vocabHit,
+          conversation: nextConversation,
+          page,
+          report,
+        });
 
-      const plan = handleIntent({
-        intent,
-        message: text,
-        context: snapshot,
-        vocabHit,
-        conversation,
-        page,
-        report,
-      });
+        let intro: string | undefined;
+        if (intent === 'start_quiz') {
+          if (store.activeQuestion()) {
+            addMessage({
+              id: nextMessageId(),
+              role: 'assistant',
+              content: isDE ? 'Unsere Runde läuft noch!' : 'We’re already playing! The next question is below.',
+              createdAt: Date.now(),
+            });
+            setFace('happy');
+            return;
+          }
+          const deck = await buildPracticeDeck({
+            count: 3,
+            mode: mode === 'practice' ? 'listen' : 'choice',
+            ctx: snapshot,
+          });
+          if (!turnIsCurrent()) return;
+          intro = deck.some((question) => question.source === 'weak_item')
+            ? (isDE ? 'Ein paar Antworten von neulich bekommen eine zweite Chance.' : 'I picked something you missed recently. Let’s give it another go.')
+            : (isDE ? 'Drei kleine Fragen für dich. Los geht’s!' : 'Three little questions. Ready, set, hoot!');
+          if (!store.startQuiz(deck, mode === 'practice' ? 'listen' : 'choice')) {
+            addMessage({
+              id: nextMessageId(),
+              role: 'assistant',
+              content: isDE
+                ? 'Ich habe noch nicht genug Material für eine Runde. Lerne zuerst ein paar Wörter, dann frag mich nochmal.'
+                : "I don't have enough material for a round yet. Learn a few words first, then ask me again.",
+              createdAt: Date.now(),
+            });
+            setFace('concerned');
+            return;
+          }
+        }
 
-      // ── DETERMINISTIC MODE: render reply immediately, no streaming ────────
-      if (CHATBOT_CONFIG.useLocalModel) {
-        const assistantId = nextMessageId();
         addMessage({
-          id: assistantId,
+          id: nextMessageId(),
           role: 'assistant',
-          content: plan.fallbackReply,
+          content: intro ?? plan.fallbackReply,
           createdAt: Date.now(),
-          streaming: false,
           intent,
           inReplyTo: text,
+          audioUrl: vocabHit?.audioUrl ?? undefined,
           payload: plan.payload,
-        });
-        setFace(plan.mood);
-        return;
-      }
-
-      // A drill is built from real data and rendered as an interactive card,
-      // so the model only contributes the one-line encouragement.
-      if (intent === 'start_quiz') {
-        const deck = await buildPracticeDeck({
-          count: 3,
-          mode: mode === 'practice' ? 'listen' : 'choice',
-          ctx: snapshot,
-        });
-        if (!store.startQuiz(deck, mode === 'practice' ? 'listen' : 'choice')) {
-          addMessage({
-            id: nextMessageId(),
-            role: 'assistant',
-            content: isDE
-              ? 'Ich habe noch nicht genug Material für eine Runde. Lerne zuerst ein paar Wörter, dann frag mich nochmal.'
-              : "I don't have enough material for a round yet. Learn a few words first, then ask me again.",
-            createdAt: Date.now(),
-          });
-          setFace('concerned');
-          return;
-        }
-      }
-
-      const assistantId = nextMessageId();
-      addMessage({
-        id: assistantId,
-        role: 'assistant',
-        content: '',
-        createdAt: Date.now(),
-        streaming: true,
-        intent,
-        // Powers the per-message "ask again" button.
-        inReplyTo: text,
-        // A real recording for this word, when the lookup found one. Preferred
-        // over synthesis so the learner hears the app's own pronunciation.
-        audioUrl: vocabHit?.audioUrl ?? undefined,
-        // The structured card. Attached immediately so it is on screen while
-        // the prose is still streaming.
-        payload: plan.payload,
-      });
-
-      // No server: answer from the deterministic fallback and stop. The panel
-      // stays useful with Ollama switched off — that is the whole point of
-      // ResponsePlan carrying a fallback.
-      if (!store.status.reachable) {
-        patchMessage(assistantId, {
-          content: plan.fallbackReply,
-          streaming: false,
           action: plan.suggestedAction,
         });
         setFace(plan.mood);
-        return;
-      }
-
-      const wire: WireMessage[] = [
-        {
-          role: 'system',
-          content: buildSystemPrompt({ context: snapshot, plan, settings, conversation, page }),
-        },
-        // Read history from the store, not the render closure: `addMessage`
-        // above already pushed the user's turn, and a closure would omit it.
-        ...recentHistory(useChatStore.getState().messages),
-        { role: 'user', content: buildUserPrompt(text, snapshot, conversation) },
-      ];
-
-      const controller = new AbortController();
-      abortRef.current = controller;
-      setBusy(true);
-
-      let acc = '';
-      try {
-        await streamChat(
-          wire,
-          {
-            baseUrl: settings.baseUrl,
-            model: settings.model,
-            temperature: settings.temperature,
-            maxTokens: settings.maxTokens,
-          },
-          (delta) => {
-            acc += delta;
-            patchMessage(assistantId, { content: acc });
-          },
-          controller.signal,
-        );
-        patchMessage(assistantId, {
-          content: acc.trim() ? acc : plan.fallbackReply,
-          streaming: false,
-          action: plan.suggestedAction,
+      } catch {
+        if (!turnIsCurrent()) return;
+        addMessage({
+          id: nextMessageId(),
+          role: 'assistant',
+          content: isDE ? 'Das hat gerade nicht geklappt. Versuch es noch einmal.' : 'I couldn’t finish that. Give it another try.',
+          createdAt: Date.now(),
         });
-        setFace(plan.mood);
-      } catch (err) {
-        if (controller.signal.aborted) {
-          patchMessage(assistantId, {
-            content: acc || (isDE ? 'Abgebrochen.' : 'Stopped.'),
-            streaming: false,
-          });
-        } else {
-          const hint =
-            err instanceof OllamaError ? `${err.message} ${err.hint}`.trim() : String(err);
-          patchMessage(assistantId, {
-            content: `${plan.fallbackReply}\n\n---\n_${isDE ? 'Hinweis' : 'Note'}_: ${hint}`,
-            streaming: false,
-            error: true,
-            action: plan.suggestedAction,
-          });
-        }
         setFace('concerned');
       } finally {
-        setBusy(false);
-        abortRef.current = null;
+        if (turnIsCurrent()) store.setBusy(false);
       }
     },
-    [snapshot, conversation, settings, isStreaming, isDE, mode, setConversation],
+    [snapshot, conversation, isDE, mode, setConversation, pathname],
   );
 
   // The pending-prompt effect above is declared before `send`, so it reaches it
@@ -415,8 +283,22 @@ export function ChatSidebar() {
   sendRef.current = send;
 
   const stop = useCallback(() => {
-    abortRef.current?.abort();
+    useChatStore.getState().endQuiz();
+    useChatStore.getState().setMood('idle');
   }, []);
+
+  const petMero = () => {
+    const store = useChatStore.getState();
+    store.setMood('happy');
+    const content = snapshot.review.due > 0
+      ? (isDE ? 'Huhu! Lust auf eine Wiederholungsrunde?' : 'Hoot! I’ve got some review for us when you’re ready.')
+      : settings.intensity === 'serious'
+        ? (isDE ? 'Bereit zum Üben.' : 'Ready to practise.')
+        : (isDE ? 'Huhu! Jetzt sind meine Federn ganz zerzaust.' : 'Hoot! You ruffled my feathers.');
+    if (store.messages.at(-1)?.content !== content) {
+      store.addMessage({ id: nextMessageId(), role: 'assistant', content, createdAt: Date.now() });
+    }
+  };
 
   const onAction = useCallback((to: string) => navigateTo(to), [navigateTo]);
 
@@ -463,18 +345,14 @@ export function ChatSidebar() {
       }
 
       const finished = !store.activeQuestion();
+      const feedback = correct
+        ? (isDE ? `✅ Richtig! **${question.correct}**` : `✅ Correct! **${question.correct}**`)
+        : (isDE ? `Fast. Richtig: **${question.correct}**` : `Not quite. Correct: **${question.correct}**`)
+          + (question.hint ? `\n\n_${isDE ? question.hint.de : question.hint.en}_` : '');
       store.addMessage({
         id: nextMessageId(),
         role: 'assistant',
-        content: finished
-          ? quizSummary(store.quiz, isDE)
-          : correct
-            ? isDE
-              ? `✅ Richtig! **${question.correct}**`
-              : `✅ Correct! **${question.correct}**`
-            : isDE
-              ? `❌ Fast. Richtig: **${question.correct}**${question.hint ? `\n\n_${question.hint.de}_` : ''}`
-              : `❌ Not quite. Correct: **${question.correct}**${question.hint ? `\n\n_${question.hint.en}_` : ''}`,
+        content: finished ? `${feedback}\n\n${quizSummary(useChatStore.getState().quiz, isDE)}` : feedback,
         createdAt: Date.now(),
       });
 
@@ -503,7 +381,7 @@ export function ChatSidebar() {
   // than restarting a fixed menu. Only shown once a reply has settled.
   const lastAssistant = [...messages].reverse().find((m) => m.role === 'assistant' && !m.streaming);
   const followUps = lastAssistant?.intent ? followUpsFor(lastAssistant.intent, isDE) : [];
-  const showFollowUps = followUps.length > 0 && !isStreaming;
+  const showFollowUps = followUps.length > 0 && !isBusy;
 
   return (
     <>
@@ -523,13 +401,7 @@ export function ChatSidebar() {
           // `sm:mb-0 sm:bottom-6` keeps the original desktop position.
           className="fixed right-4 bottom-0 z-[54] mb-[calc(var(--mobile-content-clearance)+0.5rem)] inline-flex h-14 w-14 items-center justify-center rounded-full bg-accent-600 text-white shadow-lg transition hover:bg-accent-700 active:scale-95 sm:bottom-6 sm:mb-0"
         >
-          <MessageCircle className="h-6 w-6" aria-hidden="true" />
-          {!status.reachable && !status.checking && (
-            <span
-              className="absolute -top-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-2 border-white bg-danger-500 dark:border-ink-900"
-              aria-hidden="true"
-            />
-          )}
+          <MeroAvatar mood={mood} size={42} />
         </button>
       )}
 
@@ -541,10 +413,10 @@ export function ChatSidebar() {
         >
           <ChatHeader
             isDE={isDE}
-            status={status}
             mood={mood}
             mode={mode}
             onToggleMode={() => setMode(mode === 'coach' ? 'practice' : 'coach')}
+            onPet={petMero}
             onExplainPage={() => void send('/page')}
             preferenceCount={(settings.preferences ?? []).length}
             onClose={() => setOpen(false)}
@@ -552,28 +424,6 @@ export function ChatSidebar() {
           />
 
           {/* Offline notice — an actionable fix, not just a failure. */}
-          {!status.reachable && !status.checking && (
-            <div className="flex items-start gap-2 border-b border-warning-200 bg-warning-50 px-3 py-2 text-meta text-warning-900 dark:border-warning-800/50 dark:bg-warning-950/40 dark:text-warning-200">
-              <WifiOff className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
-              <div className="min-w-0 flex-1">
-                <p className="font-semibold">
-                  {isDE ? 'Kein lokales Modell gefunden' : 'No local model found'}
-                </p>
-                <p className="mt-0.5 break-words">
-                  {isDE
-                    ? 'Mero antwortet trotzdem — mit geprüften App-Daten. Für freie Antworten starte Ollama.'
-                    : "Mero still answers from real app data. For free-form replies, start Ollama."}{' '}
-                  <button
-                    type="button"
-                    onClick={() => navigateTo('/settings')}
-                    className="font-semibold underline underline-offset-2"
-                  >
-                    {isDE ? 'Einstellungen' : 'Settings'}
-                  </button>
-                </p>
-              </div>
-            </div>
-          )}
 
           {/* transcript */}
           <div ref={scrollRef} className="flex-1 space-y-3 overflow-y-auto p-3">
@@ -581,11 +431,6 @@ export function ChatSidebar() {
               <div className="space-y-3">
                 {!settings.onboarded && (
                   <OnboardingCard
-                    payload={{
-                      kind: 'onboarding',
-                      canGenerate: status.reachable,
-                      baseUrl: settings.baseUrl,
-                    }}
                     isDE={isDE}
                     onAction={(to) => {
                       useChatStore.getState().markOnboarded();
@@ -627,7 +472,7 @@ export function ChatSidebar() {
                   // Retry only on the newest settled reply — retrying an old
                   // one from the middle of the thread is never what was meant.
                   onRetry={
-                    !isStreaming && message.role === 'assistant' && index === messages.length - 1
+                    !isBusy && message.role === 'assistant' && index === messages.length - 1
                       ? (text) => void send(text)
                       : undefined
                   }
@@ -650,7 +495,6 @@ export function ChatSidebar() {
               </div>
             )}
 
-            {/* `/help` listing — rendered locally, the model is never asked. */}
             {helpOpen && (
               <div className="rounded-md border border-ink-200 bg-white p-3 dark:border-ink-700 dark:bg-ink-900">
                 <p className="text-body font-semibold text-ink-900 dark:text-ink-100">
@@ -682,6 +526,7 @@ export function ChatSidebar() {
                 on screen. */}
             {activeQuestion && (
               <QuizCard
+                key={quiz?.index}
                 payload={{ kind: 'quiz', question: activeQuestion, index: quiz?.index ?? 0, total: quiz?.deck.length ?? 1 }}
                 isDE={isDE}
                 onAnswer={onQuizAnswer}
@@ -689,12 +534,21 @@ export function ChatSidebar() {
             )}
           </div>
 
+          <div className="flex gap-2 border-t border-ink-200 px-3 py-2 dark:border-ink-800">
+            <button type="button" disabled={Boolean(activeQuestion) || isBusy} onClick={() => void send('/quiz')} className="min-h-11 rounded-full bg-accent-600 px-3 text-body font-semibold text-white disabled:opacity-50">
+              {isDE ? 'Mit Mero spielen' : 'Play with Mero'}
+            </button>
+            {activeQuestion && (
+              <button type="button" onClick={stop} className="min-h-11 rounded-full px-3 text-body text-ink-700 dark:text-ink-200">
+                {isDE ? 'Runde beenden' : 'End round'}
+              </button>
+            )}
+          </div>
           <ChatInput
             isDE={isDE}
-            isStreaming={isStreaming}
+            busy={isBusy}
             disabled={!enabled}
             onSend={(text) => void send(text)}
-            onStop={stop}
           />
         </aside>
       )}

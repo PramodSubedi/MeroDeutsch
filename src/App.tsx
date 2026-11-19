@@ -5,6 +5,7 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { SkeletonLoader } from './components/SkeletonLoader';
 import { useDexieInit } from './hooks/useDexieInit';
 import { useSyncBridge } from './hooks/useSyncBridge';
+import { PremiumGate } from './components/premium/PremiumGate';
 import { useAuth } from './hooks/useAuth';
 import { LearningContextProvider } from './context/LearningContext';
 import { useAdminModeBootstrap } from './hooks/useAdminModeBootstrap';
@@ -90,7 +91,8 @@ function RapidBlitzRedirect() {
  * AuthProvider (it is).
  */
 function RootRedirect() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
+  if (isLoading) return <SkeletonLoader />;
   const target = isAuthenticated ? '/home' : '/welcome';
   return <Navigate to={target} replace />;
 }
@@ -175,7 +177,7 @@ export default function App() {
                 <Route path="levels" element={<CefrLevelIndexPage />} />
                 <Route path="levels/:levelId" element={<ContinueLearningPage />} />
                 {/* A1 unit checkpoint — additive route; soft-locked by unit unlock */}
-                <Route path="checkpoint/:unitIndex" element={<A1CheckpointPage />} />
+                <Route path="checkpoint/:unitIndex" element={<PremiumGate><A1CheckpointPage /></PremiumGate>} />
                 {/* A unit's full lesson — the imported document content (lexicon,
                     grammar, traps, culture, dialogue, practice bank). Soft-locked
                     like every other module route: deep links always load. */}
@@ -183,7 +185,7 @@ export default function App() {
     <Route path="lesson/:unitIndex/notes" element={<LessonPage />} />
     {/* FREE: the interactive lesson — resolved through the `lesson_render`
         switch so the step-flow can be piloted and rolled back by config. */}
-    <Route path="lesson/:unitIndex" element={<LessonRoute />} />
+    <Route path="lesson/:unitIndex" element={<PremiumGate><LessonRoute /></PremiumGate>} />
                 {/* Unit 2 optional practice — bonus node on the /learn spine */}
                 <Route path="sentence-builder" element={<SentenceBuilderPage />} />
                 {/* NotebookLM mechanics: games hub + Goethe A1 Schreiben trainer.

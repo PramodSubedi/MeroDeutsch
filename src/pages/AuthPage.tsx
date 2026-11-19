@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { Cloud, Map, RefreshCw } from 'lucide-react';
 import { theme } from '../config/theme';
 import { useAuth } from '../hooks/useAuth';
@@ -12,9 +12,8 @@ export function AuthPage() {
   const { langMode } = useLang();
   const isDE = langMode === 'german';
   usePageTitle(isDE ? 'Anmelden' : 'Sign in');
-  const navigate = useNavigate();
-  const { register, login, loginWithGoogle } = useAuth();
-  const [mode, setMode] = useState<'login' | 'register'>('register');
+  const { register, login, loginWithGoogle, isAuthenticated } = useAuth();
+  const [mode, setMode] = useState<'login' | 'register'>('login');
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -45,7 +44,7 @@ export function AuthPage() {
         return;
       }
       try {
-        await register(email, password, username);
+        await register(email.trim(), password, username.trim());
         setMessage(isDE ? 'Prüfe deine E-Mails auf den Bestätigungslink.' : 'Check your email for a confirmation link!');
       } catch (registerError: unknown) {
         setError(registerError instanceof Error ? registerError.message : isDE ? 'Registrierung fehlgeschlagen.' : 'Registration failed.');
@@ -56,11 +55,10 @@ export function AuthPage() {
     }
 
     try {
-      await login(email, password);
-      setMessage(isDE ? 'Willkommen zurück! Weiterleitung zur Startseite…' : 'Welcome back! Redirecting to your home...');
-      window.setTimeout(() => navigate('/home'), 600);
+      await login(email.trim(), password);
     } catch (loginError: unknown) {
       setError(loginError instanceof Error ? loginError.message : isDE ? 'Anmeldung fehlgeschlagen.' : 'Login failed.');
+    } finally {
       setIsLoading(false);
     }
   };
@@ -79,6 +77,8 @@ export function AuthPage() {
       setIsGoogleLoading(false);
     }
   };
+
+  if (isAuthenticated) return <Navigate to="/home" replace />;
 
   return (
     <div className="min-h-screen bg-ink-50 dark:bg-ink-950">
@@ -105,7 +105,7 @@ export function AuthPage() {
                     <Map className="h-5 w-5" aria-hidden="true" />
                   </span>
                   <div>
-                    <p className="font-semibold">{isDE ? 'Geführter A1-Lernpfad' : 'Guided A1 path'}</p>
+                    <p className="font-semibold">{isDE ? 'Geführter A1-Lernpfad mit Premium' : 'Guided A1 path with Premium'}</p>
                     <p className="mt-0.5 text-body text-accent-100">
                       {isDE ? 'Einheiten in fester Reihenfolge mit Fortschrittsprüfungen.' : 'Units in a fixed order with checkpoints that gate real progress.'}
                     </p>
@@ -130,7 +130,7 @@ export function AuthPage() {
               <Logo size="sm" />
               <p className="mt-4 text-body leading-6 text-ink-600 dark:text-ink-300">
                 {mode === 'register'
-                  ? isDE ? 'Speichere deinen Fortschritt, folge dem A1-Lernpfad und wiederhole Fehler gezielt.' : 'Save your progress, unlock your guided A1 path, and review mistakes smartly.'
+                  ? isDE ? 'Speichere deinen Fortschritt und wiederhole Fehler gezielt.' : 'Save your progress and review the questions you missed.'
                   : isDE ? 'Melde dich an, um dort weiterzulernen, wo du aufgehört hast.' : 'Sign in to continue where you left off.'}
               </p>
 

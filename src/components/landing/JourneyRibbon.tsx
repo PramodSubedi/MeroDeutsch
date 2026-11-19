@@ -35,7 +35,7 @@ export function JourneyRibbon() {
     },
     {
       icon: Flag,
-      title: isDE ? 'Geführter Lernpfad freigeschaltet' : 'Your guided path unlocks',
+      title: isDE ? 'Geführter Lernpfad mit Premium' : 'Guided A1 with Premium',
       line: isDE ? 'Einheiten, Checkpoints & kluge Wiederholung.' : 'Units, checkpoints & smart review.',
       highlight: true,
     },

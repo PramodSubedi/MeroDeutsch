@@ -115,7 +115,7 @@ export default defineConfig({
         // whole admin shell to every learner in the Cache Storage API; excluding
         // it keeps the main app's offline budget unchanged now that the build is
         // multi-page. See `pwaMainEntryOnly()` above for the registration half.
-        globIgnores: ['admin.html', 'workbox-*.js'],
+        globIgnores: ['admin.html', 'assets/admin-*.js', 'workbox-*.js'],
         cleanupOutdatedCaches: true,
         navigateFallback: '/index.html',
         navigateFallbackDenylist: [/^\/api\//],

@@ -1,6 +1,8 @@
 import { supabase } from '../lib/supabase';
 import type { Progress, UserAchievements, WrongAnswerItem } from '../types';
 import type { PathMode } from '../data/a1Path';
+import { mergeA1Progress } from './a1Progress';
+import { normalizeState } from '../hooks/a1PathUtils';
 
 
 /** Cloud mirror of the A1 campaign state (`useA1Path`). */
@@ -15,6 +17,34 @@ export interface A1PathState {
   pathMode?: PathMode;
 
   checkpointBestByUnit: Record<number, number>;
+}
+
+async function readA1PathRow(userId: string) {
+  const { data, error } = await supabase
+    .from('a1_path_state')
+    .select('unlocked_unit_index, completed_node_ids, checkpoint_best_by_unit, path_mode, updated_at')
+    .eq('user_id', userId)
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
+function toA1PathState(row: NonNullable<Awaited<ReturnType<typeof readA1PathRow>>>): A1PathState {
+  return {
+    unlockedUnitIndex: row.unlocked_unit_index ?? 0,
+    completedNodeIds: Array.isArray(row.completed_node_ids) ? row.completed_node_ids : [],
+    checkpointBestByUnit: row.checkpoint_best_by_unit ?? {},
+    pathMode: row.path_mode === 'self' ? 'self' : 'guided',
+  };
+}
+
+function toA1PathRow(state: A1PathState) {
+  return {
+    unlocked_unit_index: state.unlockedUnitIndex,
+    completed_node_ids: state.completedNodeIds,
+    checkpoint_best_by_unit: state.checkpointBestByUnit,
+    path_mode: state.pathMode ?? 'guided',
+  };
 }
 
 /**
@@ -252,49 +282,40 @@ export const userDataService = {
 
   /** Fetch the user's A1 path state. Returns null when no row exists yet. */
   async getA1PathState(userId: string): Promise<A1PathState | null> {
-    const { data, error } = await supabase
-      .from('a1_path_state')
-      .select('unlocked_unit_index, completed_node_ids, checkpoint_best_by_unit, path_mode')
-      .eq('user_id', userId)
-      .maybeSingle();
-
-    if (error) {
-      console.warn('Failed to fetch A1 path state:', error);
-      return null;
-    }
-    if (!data) return null;
-
-    return {
-      unlockedUnitIndex: data.unlocked_unit_index ?? 0,
-      completedNodeIds: Array.isArray(data.completed_node_ids)
-        ? (data.completed_node_ids as string[])
-        : [],
-      checkpointBestByUnit:
-        data.checkpoint_best_by_unit && typeof data.checkpoint_best_by_unit === 'object'
-          ? (data.checkpoint_best_by_unit as Record<number, number>)
-          : {},
-      // Coerce anything unrecognised to 'guided'. A row written before the
-      // migration has no path_mode at all, and a hand-edited row could hold
-      // anything — both must load as the behaviour they had, never as 'self'.
-      pathMode: data.path_mode === 'self' ? 'self' : 'guided',
-    };
+    const row = await readA1PathRow(userId);
+    return row ? toA1PathState(row) : null;
   },
 
   /**
-   * Upsert the user's A1 path state. Never deletes — a failed write cannot
-   * wipe cloud progress. Local Dexie remains the primary store.
+   * Merge progress and retry if a concurrent writer changed the row.
+   * An explicit reset replaces the snapshot using the same revision check.
    */
-  async saveA1PathState(userId: string, state: A1PathState): Promise<void> {
-    const { error } = await supabase.from('a1_path_state').upsert({
-      user_id: userId,
-      unlocked_unit_index: state.unlockedUnitIndex,
-      completed_node_ids: state.completedNodeIds,
-      checkpoint_best_by_unit: state.checkpointBestByUnit,
-      path_mode: state.pathMode ?? 'guided',
-      updated_at: new Date().toISOString(),
-    });
+  async saveA1PathState(userId: string, state: A1PathState, reset = false): Promise<void> {
+    const local = normalizeState(state);
+    for (let attempt = 0; attempt < 4; attempt++) {
+      const row = await readA1PathRow(userId);
+      if (!row) {
+        const { error } = await supabase.from('a1_path_state').insert({
+          user_id: userId,
+          ...toA1PathRow(local),
+        });
+        if (!error) return;
+        if (error.code === '23505') continue;
+        throw error;
+      }
 
-    if (error) throw error;
+      const next = reset ? local : mergeA1Progress(local, normalizeState(toA1PathState(row)));
+      const { data, error } = await supabase
+        .from('a1_path_state')
+        .update(toA1PathRow(next))
+        .eq('user_id', userId)
+        .eq('updated_at', row.updated_at)
+        .select('user_id')
+        .maybeSingle();
+      if (error) throw error;
+      if (data) return;
+    }
+    throw new Error('A1 progress changed during sync. Retrying on the next sync.');
   },
 
   // --- Migration Helpers ---

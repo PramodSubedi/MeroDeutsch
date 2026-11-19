@@ -1,7 +1,7 @@
 /**
  * src/components/lesson/LessonModulePage.tsx — the interactive lesson surface
  *
- * This is the FREE tier, and it is deliberately built from the primitives the
+ * This is the legacy interactive renderer, built from the primitives the
  * existing learning modules already use, so a lesson looks and behaves like
  * /greetings or /numbers rather than like a document:
  *
@@ -25,8 +25,7 @@
  *
  * THE DOCUMENT VERSION IS NOT HERE
  * The NotebookLM lesson read as an article lives behind `<PremiumGate />`. This
- * page is what a free learner gets, and it is the more interactive of the two by
- * design.
+ * page provides interactive study and practice inside the A1 campaign.
  */
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
@@ -34,7 +33,7 @@ import { ArrowLeft, ArrowRight, Lock } from 'lucide-react';
 import { useLang } from '../../hooks/useLang';
 import { useA1Path } from '../../hooks/useA1Path';
 import { useExerciseSession, type ExerciseQuestion } from '../../hooks/useExerciseSession';
-import { A1_UNITS, A1_UNIT_COUNT } from '../../data/a1Path';
+import { A1_UNITS, A1_UNIT_COUNT, getNodeByRoute } from '../../data/a1Path';
 import { loadLesson } from '../../data/curriculum/lessons';
 import { StandardStudyCard } from '../StandardStudyCard';
 import { SectionGrid } from '../SectionGrid';
@@ -226,11 +225,12 @@ export function LessonModulePage() {
   const { unitIndex } = useParams();
   const { langMode } = useLang();
   const isDE = langMode === 'german';
-  const { getUnitPhase } = useA1Path();
+  const { getUnitPhase, completeNode, isNodeComplete } = useA1Path();
 
   const index = Number(unitIndex);
   const unit = Number.isFinite(index) ? A1_UNITS[index] : undefined;
   const isLocked = unit ? getUnitPhase(unit.index) === 'locked' : false;
+  const learnNode = unit ? getNodeByRoute(`/lesson/${unit.index}`) : undefined;
 
   const [lesson, setLesson] = useState<UnitLessonContent | undefined>(undefined);
   const [loading, setLoading] = useState(true);
@@ -495,6 +495,19 @@ export function LessonModulePage() {
       )}
 
       <LessonPracticeInline unitIndex={index} />
+
+      {learnNode && !isLocked && (
+        <button
+          type="button"
+          onClick={() => completeNode(learnNode.id)}
+          disabled={isNodeComplete(learnNode)}
+          className={`${theme.button.primary} mt-6 min-h-[44px] disabled:opacity-60`}
+        >
+          {isNodeComplete(learnNode)
+            ? (isDE ? 'Lektion abgeschlossen' : 'Lesson complete')
+            : (isDE ? 'Lektion als abgeschlossen markieren' : 'Mark lesson complete')}
+        </button>
+      )}
 
       <nav
         aria-label={isDE ? 'Lektionsnavigation' : 'Lesson navigation'}

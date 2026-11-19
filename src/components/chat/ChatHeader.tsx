@@ -1,23 +1,15 @@
-/**
- * src/components/chat/ChatHeader.tsx — identity + connection state.
- *
- * The status dot is the most important element in the whole feature. A user
- * whose model server is not running must be able to tell that WITHOUT typing a
- * message and reading an error — otherwise "Mero is broken" and "Ollama is not
- * running" look identical from the outside.
- */
+/** Identity and controls for Mero. */
 
 import { HelpCircle, Minus, Trash2 } from 'lucide-react';
-import { serverLabel, statusHint } from '../../lib/ollamaHealth';
-import type { OllamaStatus, ChatMode } from '../../types/chatbot';
+import type { ChatMode } from '../../types/chatbot';
 import { MeroAvatar } from './MeroAvatar';
 
 export interface ChatHeaderProps {
   isDE: boolean;
-  status: OllamaStatus;
   mood: Parameters<typeof MeroAvatar>[0]['mood'];
   mode: ChatMode;
   onToggleMode: () => void;
+  onPet: () => void;
   /** One-tap grounding in whatever the learner is looking at right now. */
   onExplainPage: () => void;
   /** Active style preferences, shown as a compact count. */
@@ -26,17 +18,12 @@ export interface ChatHeaderProps {
   onClear: () => void;
 }
 
-function dotClass(status: OllamaStatus): string {
-  if (status.checking) return 'bg-ink-400 animate-pulse';
-  return status.reachable ? 'bg-success-500' : 'bg-danger-500';
-}
-
 export function ChatHeader({
   isDE,
-  status,
   mood,
   mode,
   onToggleMode,
+  onPet,
   onExplainPage,
   preferenceCount,
   onClose,
@@ -45,7 +32,9 @@ export function ChatHeader({
   const practice = mode === 'practice';
   return (
     <div className="flex items-center gap-2.5 border-b border-ink-200 px-3 py-2.5 dark:border-ink-800">
-      <MeroAvatar mood={status.reachable ? mood : 'sleeping'} size={32} />
+      <button type="button" onClick={onPet} aria-label={isDE ? 'Mero streicheln' : 'Pet Mero'} className="rounded-full p-1 transition active:scale-90">
+        <MeroAvatar mood={mood} size={38} />
+      </button>
 
       <div className="min-w-0 flex-1">
         <p className="truncate text-body font-bold text-ink-950 dark:text-white">
@@ -64,14 +53,8 @@ export function ChatHeader({
             </span>
           )}
         </p>
-        <p className="flex items-center gap-1.5 text-meta text-ink-500 dark:text-ink-400">
-          <span
-            className={`inline-block h-2 w-2 shrink-0 rounded-full ${dotClass(status)}`}
-            aria-hidden="true"
-          />
-          <span className="truncate" title={statusHint(status)}>
-            {serverLabel(status)}
-          </span>
+        <p className="text-meta text-ink-500 dark:text-ink-400">
+          {isDE ? 'Deine Lerneule' : 'Your study owl'}
         </p>
       </div>
 

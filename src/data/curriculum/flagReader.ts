@@ -10,7 +10,7 @@
  * readable before anyone signs in, and the flag is read during boot.
  */
 import { supabase } from '../../lib/supabase';
-import { CURRICULUM_SOURCE_KEY } from './source';
+import { CURRICULUM_SOURCE_KEY } from './publishedCurriculum';
 
 /**
  * Read the raw flag value. Returns `undefined` on any failure.

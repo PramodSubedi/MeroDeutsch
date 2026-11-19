@@ -26,8 +26,7 @@
  * a guarantee rather than an intention; without it, "falls back to bundle" is
  * only true for failures that eventually finish.
  */
-import { CURRICULUM_SOURCE_KEY } from './source';
-import { isUsableDbContent } from './source';
+import { CURRICULUM_SOURCE_KEY, isUsableDbContent } from './publishedCurriculum';
 import { decideApply, decisionKey, readReloadMarker, writeReloadMarker } from './sourceApply';
 import { setDbSeed } from './dbSeed';
 

@@ -69,12 +69,12 @@ export function SentenceBuilderPage() {
   // Verben — Band D routine batch + NotebookLM conversation pool sentences).
   // Deep-linked from the /learn spine chip (/sentence-builder?focus=separable).
   const [searchParams, setSearchParams] = useSearchParams();
-  const [focus, setFocusState] = useState<'akkusativ' | 'separable'>(() =>
-    searchParams.get('focus') === 'separable' ? 'separable' : 'akkusativ'
-  );
+  const focus = searchParams.get('focus') === 'separable' ? 'separable' : 'akkusativ';
   const setFocus = (next: 'akkusativ' | 'separable') => {
-    setFocusState(next);
-    setSearchParams(next === 'separable' ? { focus: next } : {}, { replace: true });
+    const params = new URLSearchParams(searchParams);
+    if (next === 'separable') params.set('focus', next);
+    else params.delete('focus');
+    setSearchParams(params, { replace: true });
   };
 
   useEffect(() => {
@@ -123,8 +123,13 @@ export function SentenceBuilderPage() {
         }
       } catch (e) {
         if (!cancelled) {
-          const generated = TemplateResolver.generateOriginExercises(TEMPLATE_COUNTRIES, ['ich', 'du', 'wir'], 4);
-          setItems(generated.map((exercise) => toTemplateSentenceItem(exercise, isDE ? 'Fokus: Herkunft mit "aus" / "aus der".' : 'Focus: origin with "aus" / "aus der".')));
+          if (focus === 'separable') {
+            setItems([]);
+            setSeparableEmpty(true);
+          } else {
+            const generated = TemplateResolver.generateOriginExercises(TEMPLATE_COUNTRIES, ['ich', 'du', 'wir'], 4);
+            setItems(generated.map((exercise) => toTemplateSentenceItem(exercise, isDE ? 'Fokus: Herkunft mit "aus" / "aus der".' : 'Focus: origin with "aus" / "aus der".')));
+          }
           setError(e instanceof Error ? e.message : 'Failed to load sentences');
         }
       } finally {
@@ -282,12 +287,6 @@ export function SentenceBuilderPage() {
         <div className="py-8 text-center text-ink-500 dark:text-ink-400">
           {isDE ? 'Sätze werden geladen…' : 'Loading sentences…'}
         </div>
-      ) : error ? (
-        <div className="rounded-md bg-warning-50 p-4 text-body text-warning-800 dark:bg-warning-950/40 dark:text-warning-200">
-          {isDE
-            ? `Fehler beim Laden: ${error}. Zeige gecachte Sätze.`
-            : `Load error: ${error}. Showing cached fallback.`}
-        </div>
       ) : items.length === 0 ? (
         <div className="py-8 text-center text-ink-500 dark:text-ink-400">
           {separableEmpty
@@ -300,6 +299,13 @@ export function SentenceBuilderPage() {
         </div>
       ) : (
         <div className="mx-auto max-w-3xl">
+          {error && (
+            <p role="status" className="mb-4 rounded-md bg-warning-50 p-4 text-body text-warning-800 dark:bg-warning-950/40 dark:text-warning-200">
+              {isDE
+                ? 'Der Satzpool ist gerade nicht verfügbar. Du kannst mit Ersatzübungen weiterlernen.'
+                : 'The sentence pool is unavailable. You can keep practising with fallback exercises.'}
+            </p>
+          )}
           <SentenceBuilder items={items} module="grammar" mode={mode} difficulty={difficulty} />
         </div>
       )}

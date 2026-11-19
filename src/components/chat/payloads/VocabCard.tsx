@@ -12,6 +12,7 @@
 import { GenderBadge } from '../../ui/GenderBadge';
 import { CompactAudioButton } from '../../CompactAudioButton';
 import type { VocabHit } from '../../../lib/vocabLookup';
+import { useChatStore } from '../../../lib/chatStore';
 
 /** `VocabCard.article` is a loose string; the badge wants the narrow union. */
 function narrowArticle(article: string | null): 'der' | 'die' | 'das' | null {
@@ -24,6 +25,7 @@ export interface VocabCardProps {
 }
 
 export function VocabCard({ hit, isDE }: VocabCardProps) {
+  const languageMix = useChatStore((state) => state.settings.languageMix);
   const article = narrowArticle(hit.article);
   return (
     <div className="rounded-md border border-ink-200 bg-white p-3 dark:border-ink-700 dark:bg-ink-900">
@@ -37,8 +39,8 @@ export function VocabCard({ hit, isDE }: VocabCardProps) {
         </span>
       </div>
 
-      <p className="mt-1.5 text-body text-ink-700 dark:text-ink-300">{hit.en}</p>
-      {!isDE && hit.np && (
+      {!isDE && <p className="mt-1.5 text-body text-ink-700 dark:text-ink-300">{hit.en}</p>}
+      {!isDE && languageMix === 'de_en_ne' && hit.np && (
         <p className="text-meta text-ink-500 dark:text-ink-400">{hit.np}</p>
       )}
 

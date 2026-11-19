@@ -16,7 +16,7 @@
  *     attempt that would quietly inflate the score.
  */
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Volume2 } from 'lucide-react';
 
 import { speakText } from '../../../hooks/useSpeech';
@@ -34,9 +34,11 @@ export function QuizCard({ payload, isDE, onAnswer }: QuizCardProps) {
   const { question, index, total } = payload;
   const [typed, setTyped] = useState('');
   const [locked, setLocked] = useState(false);
+  const submitted = useRef(false);
 
   const commit = (given: string) => {
-    if (locked || !given.trim()) return;
+    if (submitted.current || !given.trim()) return;
+    submitted.current = true;
     setLocked(true);
     onAnswer(given.trim());
   };
@@ -58,14 +60,14 @@ export function QuizCard({ payload, isDE, onAnswer }: QuizCardProps) {
         <p className="flex-1 text-body font-semibold text-ink-900 dark:text-ink-100">
           {question.prompt}
         </p>
-        <button
+        {question.speakPrompt && <button
           type="button"
           onClick={() => speakText(question.speakPrompt)}
           aria-label={isDE ? 'Frage vorlesen' : 'Hear the question'}
           className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-accent-700 transition hover:bg-accent-200/50 active:scale-95 dark:text-accent-300 dark:hover:bg-accent-900/40"
         >
           <Volume2 className="h-4 w-4" aria-hidden="true" />
-        </button>
+        </button>}
       </div>
 
       {question.mode === 'choice' && question.options.length > 0 ? (

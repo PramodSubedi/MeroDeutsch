@@ -1,22 +1,4 @@
-/**
- * src/lib/responseHandlers.ts — per-intent grounding.
- *
- * THE ONE IMPORTANT DESIGN DECISION HERE
- * --------------------------------------
- * These handlers DO NOT write the answer. Each returns a `ResponsePlan`:
- *
- *   contextBlock   — authoritative facts pasted into the system prompt
- *   fallbackReply  — a deterministic reply used when the model is unreachable
- *
- * Why not let the handler answer directly? Because then this is a rules engine
- * wearing a mascot costume, and the "AI companion" does nothing. Why not let
- * the model answer ungrounded? Because a 3B model asked "how am I doing?"
- * invents a confident, wrong streak count.
- *
- * So: the handler decides WHAT IS TRUE, the prompt carries it, and the model
- * decides HOW TO SAY IT IN CHARACTER. The fallback guarantees the feature is
- * still useful with Ollama switched off.
- */
+/** Replies grounded in the learner progress, vocabulary, and curriculum. */
 
 import { A1_CURRICULUM } from '../data/a1Path';
 import { ANCHORS } from './anchors';
@@ -567,15 +549,10 @@ export function handleMotivation(ctx: ContextSnapshot): ResponsePlan {
 export function handleSettings(ctx: ContextSnapshot): ResponsePlan {
   return {
     intent: 'settings',
-    contextBlock: [
-      "THE LEARNER IS ASKING ABOUT THE COMPANION'S OWN SETTINGS (model, server, tone).",
-      'Explain: the companion runs entirely on THEIR OWN machine via Ollama or LM Studio.',
-      'The URL and model are configured in Settings — that is the only thing needed.',
-      'Do not claim any setting is stored on a server. There is no server.',
-    ].join('\n'),
+    contextBlock: 'Mero can be turned on or off in Settings.',
     fallbackReply: ctx.isDE
-      ? 'Alles über mich stellst du in den Einstellungen ein: Server-URL, Modell und wie neckisch ich sein darf. Ich laufe komplett auf deinem Rechner.'
-      : 'Everything about me lives in Settings: server URL, model, and how cheeky I am allowed to be. I run entirely on your own machine.',
+      ? 'Du kannst mich in den Einstellungen ein- oder ausschalten. Wenn ich da bin, können wir gemeinsam üben.'
+      : 'You can turn me on or off in Settings. When I’m around, tap Play with Mero for a quick round.',
     suggestedAction: { label: ctx.isDE ? 'Einstellungen' : 'Settings', to: '/settings' },
     mood: 'idle',
   };
@@ -598,10 +575,17 @@ export function handleConversation(
     'Keep it to 1-2 short sentences and end with ONE question so the learner has to answer. Never correct them mid-flow; if you correct anything, correct at most one thing, briefly, at the very end.',
   ].join('\n');
 
+  const prompts = [
+    ['Wie geht es dir heute?', 'How are you today?'],
+    ['Was machst du gern?', 'What do you like doing?'],
+    ['Was isst du gern?', 'What do you like eating?'],
+    ['Wo wohnst du?', 'Where do you live?'],
+  ];
+  const [de, en] = prompts[Math.max(0, (conversation?.turnCount ?? 1) - 1) % prompts.length];
   return {
     intent: 'conversation',
     contextBlock,
-    fallbackReply: 'Hallo! Wie geht es dir? — Hello! How are you?',
+    fallbackReply: ctx.isDE ? de : `${de} — ${en}`,
     mood: 'happy',
   };
 }

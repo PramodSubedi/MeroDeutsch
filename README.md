@@ -34,9 +34,9 @@ Installable as a PWA, it works with or without an account, and it ships with its
 - **PWA** — installable, `standalone` with `minimal-ui` fallback, app shortcuts, staged updates via prompt
 - **Offline-first** — Dexie/IndexedDB (`MeroDeutsch` DB) with a 60s + `online` sync bridge
 - **Audio** — 813 bundled MP3s (Goethe-Institut A1 wordlist, CC BY-SA 4.0) with `speechSynthesis` fallback; slow/normal/fast rates
-- **Mero AI companion** — local Ollama/LM Studio chat (default `qwen2.5:3b`), no cloud fallback by design
+- **Mero companion** — a study owl with progress-aware tips, vocabulary help, and short interactive rounds
 - **Analytics** — 30-day activity trend, skill radar, weak items, mastery indicators
-- **Guest Mode** — full learning without signing up
+- **Guest Mode** — foundation modules and practice tools without signing up
 - **Auth** — email/password + Google, via Supabase Auth
 - **Language Mode** — EN/DE UI toggle with German-only mode; Nepali appears in content, not chrome
 
@@ -84,7 +84,6 @@ All privileged writes go through the service-role `admin-action` Edge Function. 
 | Testing | Vitest 5, Testing Library, MSW |
 | Linting | Oxlint |
 
-> The AI companion is a local **Ollama / LM Studio** client (`src/lib/ollamaClient.ts`), not a cloud API. The `openai` package is a devDependency used only by content-generation scripts and is never bundled.
 
 ---
 
@@ -101,7 +100,7 @@ npm run dev
 
 Both entries run from one dev server. Leave `VITE_APP_URL` / `VITE_ADMIN_URL` empty locally and the control center resolves to same-origin `/admin.html`.
 
-Apply the SQL files in `supabase/migrations/` in order (45 migrations, see [DEPLOY.md](./DEPLOY.md)).
+Apply the SQL files in `supabase/migrations/` in order. See [DEPLOY.md](./DEPLOY.md).
 
 ---
 
@@ -115,9 +114,7 @@ Client bundle (`src/`) — all optional except the first two:
 | `VITE_SUPABASE_ANON_KEY` | Supabase anon key. |
 | `VITE_APP_URL` | Learner origin, for the QA bridge and cross-app links. |
 | `VITE_ADMIN_URL` | Control-centre origin. |
-| `VITE_CHATBOT_ENABLED` | `false` compiles the AI companion out entirely. |
-| `VITE_OLLAMA_BASE_URL` | Defaults to `http://localhost:11434`. |
-| `VITE_OLLAMA_DEFAULT_MODEL` | Defaults to `qwen2.5:3b`. |
+| `VITE_CHATBOT_ENABLED` | `false` disables the Mero companion. |
 
 Scripts and Edge Functions only (`process.env` / Deno env):
 
@@ -146,12 +143,12 @@ npm run typecheck      # tsc -b
 ### Testing
 
 ```bash
-npm test               # vitest run (9 suites)
+npm test               # run the Vitest suite
 npm run test:watch
 npm run test:coverage
 ```
 
-The repo also uses **33 standalone assertion suites** (`*.check.ts`), each with its own `check:*` script and its own CI step:
+The repo also uses standalone assertion suites (`*.check.ts`), each with its own `check:*` script and CI step:
 
 ```bash
 npm run check:answers      # answer normalization
@@ -203,7 +200,7 @@ src/
 └── utils/
 scripts/                # seeding, CI checks, curriculum tooling
 supabase/
-├── migrations/         # 45 SQL migrations
+├── migrations/         # SQL migrations
 └── functions/          # admin-action Edge Function
 ```
 
@@ -245,7 +242,7 @@ Full instructions, including the deploy-filter exit-code gotcha and the origin-s
 - [`scripts/data/a1-curriculum/README.md`](./scripts/data/a1-curriculum/README.md) — curriculum regression fixture
 - [`public/audio/anki/ATTRIBUTION.md`](./public/audio/anki/ATTRIBUTION.md) and [LICENCE.md](./public/audio/anki/LICENCE.md) — audio credits
 
-CI runs on every push to `main` and every PR: 33 `check:*` suites → `typecheck` → `lint` → curriculum gates → `build`.
+CI runs the standalone checks, Vitest, TypeScript, lint, curriculum validation, and the production build.
 
 ---
 

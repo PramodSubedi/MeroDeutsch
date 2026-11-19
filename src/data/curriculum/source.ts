@@ -26,12 +26,11 @@
  * bundle, and the reason is reported for telemetry rather than swallowed.
  */
 import { CURRICULUM_FILE, RESOLVED_PATH, type ResolvedPath } from './index';
-import { hasCurriculumErrors, validateCurriculum, type CurriculumFile } from './schema';
+import type { CurriculumFile } from './schema';
+import { isUsableDbContent } from './publishedCurriculum';
+export { CURRICULUM_SOURCE_KEY, isUsableDbContent } from './publishedCurriculum';
 
 export type CurriculumSource = 'bundle' | 'db';
-
-/** The only flag that selects the source. Absent or unrecognised = bundle. */
-export const CURRICULUM_SOURCE_KEY = 'curriculum_source';
 
 export interface SourceDecision {
   source: CurriculumSource;
@@ -62,18 +61,6 @@ export function resolveSource(raw: unknown): SourceDecision {
   if (v === 'bundle') return { source: 'bundle', reason: 'flag-is-bundle' };
   if (v !== 'db') return { source: 'bundle', reason: 'flag-unreadable' };
   return { source: 'db', reason: 'db-ok' };
-}
-
-/** True when a fetched document is usable as curriculum content. */
-export function isUsableDbContent(raw: unknown): raw is CurriculumFile {
-  if (raw === null || typeof raw !== 'object') return false;
-  const file = raw as Partial<CurriculumFile>;
-  if (!Array.isArray(file.clusters) || file.clusters.length === 0) return false;
-  if (!Array.isArray(file.units) || file.units.length === 0) return false;
-  // The SAME validator the build runs. Content that would fail CI is refused
-  // here too, so a bad publish cannot reach a learner.
-  if (hasCurriculumErrors(validateCurriculum(raw as CurriculumFile))) return false;
-  return true;
 }
 
 /** The always-available baseline. Never fails, never throws. */

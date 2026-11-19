@@ -205,6 +205,12 @@ jobs:
       - name: check:steps
         run: npm run check:steps
 
+      - name: check:audio
+        run: npm run check:audio
+
+      - name: test
+        run: npm test
+
       # ── Gates ────────────────────────────────────────────────────────────
       - name: typecheck
         run: npx tsc -b --force

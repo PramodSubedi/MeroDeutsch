@@ -1,43 +1,11 @@
-/**
- * src/admin/pages/ChatbotSettingsPage.tsx
- *
- * The global configuration for the AI companion.
- *
- * ── WHAT THIS PAGE IS AND IS NOT ─────────────────────────────────────────────
- * It sets the DEFAULTS every learner starts from, and one global on/off. It does
- * not set any individual's companion: a learner's own choices live in their
- * per-user localStorage and are never overwritten by anything written here.
- *
- * That distinction is why the page says so in its header. An admin who believes
- * this page reaches into a learner's settings will reasonably expect a change to
- * apply to everyone immediately, and will be right about everything except that.
- *
- * ── THE WRITE IS AN ESCALATED ONE ────────────────────────────────────────────
- * `app_config` is public-read and service-role-write, so saving goes through
- * `runAdminAction({action:'config.set'})` like ban and promote. The result is
- * rendered through `AdminActionResult.message`, which is deliberately explicit
- * about partial application and unreadable responses — a config write that
- * reports success when it 400'd, or failure when the browser merely blocked the
- * reply, sends an operator to entirely the wrong layer.
- *
- * ── WHY ONE CROSS-KEY RULE LIVES HERE ────────────────────────────────────────
- * "The default model must appear in the allowed list" cannot be enforced by
- * `validateConfigWrite`, which sees one key and one spec and has no access to the
- * current state of another. It is enforced here instead, and the disabled Save
- * button says which rule was broken rather than going silently dead.
- */
+/** Global settings for the Mero companion. */
 import { useCallback, useEffect, useState } from 'react';
-import { AlertTriangle, Bot, RefreshCw, Save } from 'lucide-react';
+import { Bot, RefreshCw } from 'lucide-react';
 import { theme } from '../../config/theme';
 import { KpiCard } from '../components/KpiCard';
 import { runAdminAction, type AdminActionResult } from '../data/adminActions';
-import {
-  fetchChatbotConfig,
-  formatAllowedModelsField,
-  parseAllowedModelsField,
-  validateDefaultModel,
-} from '../data/chatbotConfig';
-import { CHATBOT_KEYS, UNRESTRICTED_MODELS_SENTINEL } from '../../data/chatbot/config';
+import { fetchChatbotConfig } from '../data/chatbotConfig';
+import { CHATBOT_KEYS } from '../../data/chatbot/config';
 import type { LanguageMix, PersonalityIntensity } from '../../types/chatbot';
 import { AdminPageHeader } from '../components/AdminPageHeader';
 
@@ -58,38 +26,9 @@ const LANGUAGE_MIXES: ReadonlyArray<{ id: LanguageMix; label: string }> = [
  */
 interface Draft {
   enabled: boolean;
-  baseUrl: string;
-  model: string;
-  allowedModelsField: string;
   intensity: PersonalityIntensity;
   languageMix: LanguageMix;
   autoOpen: boolean;
-}
-
-/**
- * The text fields that are EDITED and SAVED, as opposed to chosen from a fixed
- * set.
- *
- * This is the second half of the `SaveButton` contract, and it is the half that
- * was missing. `SaveButton` renders only when `draftValue !== savedValue`, so a
- * caller has to be able to say what the LAST SAVED value was — not what the form
- * currently shows. Every call site passed `draft.<field>` for both props, which
- * is trivially equal, so the button returned `null` on every render and
- * `chatbot_base_url`, `chatbot_allowed_models` and `chatbot_default_model` could
- * not be saved at all. The values below are written ONLY by `load()` and by a
- * successful save, which is what makes the comparison mean "edited".
- */
-type TextDraftKey = 'baseUrl' | 'allowedModelsField' | 'model';
-type SavedText = Record<TextDraftKey, string>;
-
-const EMPTY_TEXT: SavedText = { baseUrl: '', allowedModelsField: '', model: '' };
-
-function textOf(draft: Draft): SavedText {
-  return {
-    baseUrl: draft.baseUrl,
-    allowedModelsField: draft.allowedModelsField,
-    model: draft.model,
-  };
 }
 
 const toggleClass = (on: boolean) => (on ? theme.button.toggleActive : theme.button.toggleInactive);
@@ -101,9 +40,6 @@ export function ChatbotSettingsPage() {
   const [readError, setReadError] = useState<string | null>(null);
   const [seeded, setSeeded] = useState(false);
   const [result, setResult] = useState<AdminActionResult | null>(null);
-  // The last values known to be STORED. Distinct from `draft`, which is what the
-  // form currently shows. See `SavedText`.
-  const [saved, setSaved] = useState<SavedText>(EMPTY_TEXT);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -113,17 +49,11 @@ export function ChatbotSettingsPage() {
     if (!read.error) {
       const next: Draft = {
         enabled: read.current.enabled,
-        baseUrl: read.current.baseUrl,
-        model: read.current.model,
-        allowedModelsField: formatAllowedModelsField(read.current.allowedModels),
         intensity: read.current.intensity,
         languageMix: read.current.languageMix,
         autoOpen: read.current.autoOpenOnMistake,
       };
       setDraft(next);
-      // A successful read IS the definition of "saved" — the form was just
-      // populated from storage, so nothing is edited.
-      setSaved(textOf(next));
     }
     setLoading(false);
   }, []);
@@ -139,7 +69,7 @@ export function ChatbotSettingsPage() {
   if (!draft) {
     return (
       <div className="admin-page space-y-4">
-        <AdminPageHeader eyebrow="Configuration / companion" title="Chatbot" description="The current companion configuration could not be read." />
+        <AdminPageHeader eyebrow="Configuration / companion" title="Mero companion" description="The current companion configuration could not be read." />
         <div
           className="rounded-md border border-danger-200 bg-danger-50 p-4 text-body text-danger-800 dark:border-danger-900 dark:bg-danger-950/40 dark:text-danger-200"
           role="alert"
@@ -158,8 +88,6 @@ export function ChatbotSettingsPage() {
     );
   }
 
-  const allowed = parseAllowedModelsField(draft.allowedModelsField);
-  const modelCheck = validateDefaultModel(draft.model, allowed);
   const busy = busyKey !== null;
 
   /**
@@ -192,7 +120,7 @@ export function ChatbotSettingsPage() {
     <div className="admin-page space-y-7">
       <AdminPageHeader
         eyebrow="Configuration / companion"
-        title="Chatbot"
+        title="Mero companion"
         description="Global defaults for Mero. These seed learners who have not overridden a value; they never overwrite personal settings."
         actions={<button
           type="button"
@@ -225,18 +153,6 @@ export function ChatbotSettingsPage() {
           icon={Bot}
           loading={loading}
           tone={draft.enabled ? 'good' : 'bad'}
-        />
-        <KpiCard
-          label="Default model"
-          value={draft.model}
-          hint="seeded for new learners"
-          loading={loading}
-        />
-        <KpiCard
-          label="Allowed models"
-          value={allowed.length === 0 ? 'Any' : String(allowed.length)}
-          hint={allowed.length === 0 ? 'unrestricted' : allowed.join(', ')}
-          loading={loading}
         />
       </section>
 
@@ -274,100 +190,6 @@ export function ChatbotSettingsPage() {
       {/* ── the defaults ── */}
       <section className="space-y-4 rounded-lg border border-ink-200 bg-white p-4 dark:border-ink-800 dark:bg-ink-900">
         <h2 className={theme.type.section}>Defaults for new learners</h2>
-
-        <Field label="Server URL" code={CHATBOT_KEYS.baseUrl} hint="Where the companion looks for Ollama or LM Studio.">
-          <input
-            type="text"
-            inputMode="url"
-            value={draft.baseUrl}
-            onChange={(e) => setDraft({ ...draft, baseUrl: e.target.value })}
-            disabled={busy}
-            className={`${theme.input} mt-1.5`}
-          />
-          <SaveButton
-            busyKey={busyKey}
-            currentKey={CHATBOT_KEYS.baseUrl}
-            draftValue={draft.baseUrl}
-            savedValue={saved.baseUrl}
-            disabled={draft.baseUrl.trim() === ''}
-            onSave={(v) => void save(CHATBOT_KEYS.baseUrl, v, `Default server URL set to ${v}`)}
-          />
-        </Field>
-
-        <Field
-          label="Allowed models"
-          code={CHATBOT_KEYS.allowedModels}
-          hint="Comma-separated. Empty means any model is permitted. It constrains what may be chosen as the default below — it does not filter the models a learner sees, because those come from their own machine."
-        >
-          <input
-            type="text"
-            value={draft.allowedModelsField}
-            onChange={(e) => setDraft({ ...draft, allowedModelsField: e.target.value })}
-            disabled={busy}
-            placeholder="qwen2.5:3b, llama3.2:3b"
-            className={`${theme.input} mt-1.5`}
-          />
-          <SaveButton
-            busyKey={busyKey}
-            currentKey={CHATBOT_KEYS.allowedModels}
-            draftValue={draft.allowedModelsField}
-            savedValue={saved.allowedModelsField}
-            disabled={false}
-            onSave={(v) => {
-              const list = parseAllowedModelsField(v);
-              // An empty list is a legitimate value meaning "unrestricted", but
-              // `validateConfigWrite` refuses a blank string for every string
-              // key. Writing an explicit sentinel is the honest way to express it
-              // without teaching the validator a special case — and the reader
-              // recognises that sentinel, in `src/data/chatbot/config.ts`.
-              //
-              // The previous comment here claimed "the reader treats a single
-              // unrecognised entry as unrestricted anyway". That was false:
-              // `isModelAllowed` compares against the list, so a stored `any`
-              // restricted every learner to a model literally named `any`, and
-              // the admin's own default-model save then refused every real model.
-              void save(
-                CHATBOT_KEYS.allowedModels,
-                list.length === 0 ? UNRESTRICTED_MODELS_SENTINEL : list.join(', '),
-                list.length === 0
-                  ? 'Model allow-list cleared (any model permitted)'
-                  : `Allowed models set to ${list.join(', ')}`,
-              );
-            }}
-          />
-        </Field>
-
-        <Field
-          label="Default model"
-          code={CHATBOT_KEYS.defaultModel}
-          hint="Must appear in the allowed list above, unless that list is empty."
-        >
-          <input
-            type="text"
-            value={draft.model}
-            onChange={(e) => setDraft({ ...draft, model: e.target.value })}
-            disabled={busy}
-            className={`${theme.input} mt-1.5`}
-          />
-          {/* The cross-key rule, enforced here because the server cannot be. */}
-          {!modelCheck.ok && (
-            <p
-              className="mt-1.5 flex items-start gap-1.5 text-meta text-warning-700 dark:text-warning-300"
-              role="status"
-            >
-              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
-              {modelCheck.message}
-            </p>
-          )}
-          <SaveButton
-            busyKey={busyKey}
-            currentKey={CHATBOT_KEYS.defaultModel}
-            draftValue={draft.model}
-            savedValue={saved.model}
-            disabled={!modelCheck.ok}
-            onSave={(v) => void save(CHATBOT_KEYS.defaultModel, v, `Default model set to ${v}`)}
-          />
-        </Field>
 
         <Field label="Personality" code={CHATBOT_KEYS.intensity}>
           <div className="mt-1.5 flex flex-wrap gap-2">
@@ -464,35 +286,6 @@ function Field({
  * draft is being held somewhere — which, without a dirty-tracking store, it is
  * not. The edited value IS the draft; nothing is buffered.
  */
-function SaveButton({
-  busyKey,
-  currentKey,
-  draftValue,
-  savedValue,
-  disabled,
-  onSave,
-}: {
-  busyKey: string | null;
-  currentKey: string;
-  draftValue: string;
-  savedValue: string;
-  disabled: boolean;
-  onSave: (value: string) => void;
-}) {
-  if (draftValue === savedValue) return null;
-  return (
-    <button
-      type="button"
-      onClick={() => onSave(draftValue)}
-      disabled={disabled || busyKey !== null}
-      title={disabled ? 'Fix the problem above before saving' : undefined}
-      className={`mt-1.5 ${theme.button.primary} disabled:opacity-50`}
-    >
-      <Save className="h-4 w-4" aria-hidden="true" />
-      {busyKey === currentKey ? 'Saving…' : 'Save'}
-    </button>
-  );
-}
 
 /**
  * The action result, rendered honestly.

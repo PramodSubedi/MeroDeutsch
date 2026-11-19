@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { theme } from '../config/theme';
 import { useLang } from '../hooks/useLang';
@@ -13,11 +13,8 @@ import { removeItem } from '../utils/safeStorage';
 import { supabase } from '../lib/supabase';
 import { db } from '../lib/db';
 import { useChatStore } from '../lib/chatStore';
-import { healthCheck, serverLabel, statusHint } from '../lib/ollamaHealth';
-import { resetFormatCache } from '../lib/ollamaClient';
 import { AdminPanelLink } from '../components/debug/AdminPanelLink';
 // Only the build-time kill switch is needed here. The intensity, language-mix,
-// preference and URL helpers moved to the control centre's Chatbot page, which
 // owns them as global defaults; this page keeps the personal on/off toggle.
 import { CHATBOT_ENABLED } from '../config/chatbot';
 
@@ -92,35 +89,9 @@ export function SettingsPage() {
   const [resettingCourse, setResettingCourse] = useState(false);
   const [resetCourseMessage, setResetCourseMessage] = useState<string | null>(null);
 
-  /* ── AI companion (Mero) ────────────────────────────────────────────── */
-  // PERSONAL ONLY. The base URL, model, personality, language mix and the
-  // proactive nudge are global defaults now, owned by the control centre and
-  // published through `app_config` (`src/data/chatbot/`). What is left here is
-  // the one thing that is genuinely per-learner: whether THIS person wants the
-  // companion at all. It is stored per user in localStorage and is ANDed with
-  // the admin's global switch, so turning the feature off globally overrides
-  // this toggle without overwriting it.
   const chatSettings = useChatStore((s) => s.settings);
   const setChatSettings = useChatStore((s) => s.setSettings);
-  const chatStatus = useChatStore((s) => s.status);
-  const setChatStatus = useChatStore((s) => s.setStatus);
   const adminEnabled = useChatStore((s) => s.adminEnabled);
-  const companionActive = adminEnabled && chatSettings.enabled;
-
-  // Probe once when the panel becomes active, so it opens with an accurate
-  // status instead of an optimistic green dot the learner has to disprove.
-  // Read-only: it reports whether the configured server answers, and nothing
-  // here can change that configuration.
-  useEffect(() => {
-    if (!companionActive) return;
-    void (async () => {
-      resetFormatCache();
-      setChatStatus(await healthCheck(chatSettings.baseUrl));
-    })();
-    // Intentionally keyed on the active flag only: re-probing on every settings
-    // change would fire a request per keystroke.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [companionActive]);
 
   /**
    * Restart the A1 course only — XP, streak, badges and the review queue stay.
@@ -329,23 +300,17 @@ export function SettingsPage() {
           </div>
         )}
 
-        {/* AI companion — PERSONAL toggle only.
-            The server URL, model, personality, language mix and the proactive
-            nudge are global defaults now, published through `app_config` by the
-            control centre's Chatbot page and read at boot by
-            `src/data/chatbot/`. This panel keeps exactly the one decision that is
-            genuinely per-learner. */}
         {CHATBOT_ENABLED && (
           <div className={theme.panel.surface}>
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <h2 className="text-lg font-semibold text-ink-950 dark:text-white">
-                  {isDE ? 'KI-Begleiter (Mero)' : 'AI Companion (Mero)'}
+                  {isDE ? 'Lernbegleiter Mero' : 'Mero, your study owl'}
                 </h2>
                 <p className="mt-1 text-body text-ink-500 dark:text-ink-400">
                   {isDE
-                    ? 'Läuft vollständig auf deinem Rechner über Ollama oder LM Studio. Nichts wird hochgeladen.'
-                    : 'Runs entirely on your own machine via Ollama or LM Studio. Nothing is uploaded.'}
+                    ? 'Mero kennt deinen Lernfortschritt und übt mit dir in kurzen Runden.'
+                    : 'Mero uses your progress to suggest what to practise and play short rounds with you.'}
                 </p>
               </div>
               <button
@@ -375,21 +340,6 @@ export function SettingsPage() {
               </p>
             )}
 
-            {/* A read-only status line, so a lone toggle is not a black box. It
-                reports whether the configured server answers; nothing here can
-                change the configuration. */}
-            {companionActive && (
-              <div
-                className={`mt-4 rounded-md border px-3 py-2 text-meta ${
-                  chatStatus.reachable
-                    ? 'border-success-200 bg-success-50 text-success-700 dark:border-success-900 dark:bg-success-900/30 dark:text-success-300'
-                    : 'border-warning-200 bg-warning-50 text-warning-800 dark:border-warning-800/50 dark:bg-warning-950/40 dark:text-warning-200'
-                }`}
-              >
-                <span className="font-semibold">{serverLabel(chatStatus)}</span> —{' '}
-                {statusHint(chatStatus)}
-              </div>
-            )}
           </div>
         )}
 

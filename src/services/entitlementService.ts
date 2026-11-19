@@ -9,7 +9,7 @@
  *            the practice tools - an open grid for guests, a designed ordered
  *            path for signed-in free learners. See
  *            `components/learning/LearningPath`.
- *   PREMIUM  the A1 curriculum. The 15-module linear spine with its 80%
+ *   PREMIUM  the A1 curriculum. The 16-unit spine with its 80%
  *            checkpoint gates, the per-unit lesson documents, and the guided
  *            vs self-guided mode. See `components/path/UnitSpine`.
  *
@@ -17,9 +17,8 @@
  * surface AND the checkpoint on free and sold only the document-style "notes"
  * deep-dive; Premium is now the whole campaign, so the free tier no longer
  * promises checkpoints. Any copy elsewhere claiming "checkpoints are free" is
- * stale. The boundary is presentation-tier gating only: the lesson and
- * checkpoint routes still deep-link for everyone (no 404s, no broken
- * bookmarks) and simply do not appear in free navigation.
+ * stale. The lesson and checkpoint routes use the same presentation gate as
+ * notes, so bookmarks still resolve and show the account's available action.
  *
  * WHY A SERVICE AND NOT A HOOK-ONLY READ
  * The tier is a property of the ACCOUNT, not of the session, so it is read from
@@ -55,25 +54,35 @@ function coercePlan(value: unknown): Plan {
   return value === 'premium' ? 'premium' : 'free';
 }
 
+const pendingPlans = new Map<string, Promise<EntitlementRead>>();
+
+async function fetchPlan(userId: string): Promise<EntitlementRead> {
+  try {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('plan')
+      .eq('id', userId)
+      .maybeSingle();
+    if (error) return { plan: null, error: error.message };
+    if (!data) return { plan: 'free', error: null };
+    return { plan: coercePlan(data.plan), error: null };
+  } catch (error) {
+    return {
+      plan: null,
+      error: error instanceof Error ? error.message : 'Entitlement read failed',
+    };
+  }
+}
+
 export const entitlementService = {
-  /** Read the account tier without turning an unavailable account into free. */
+  /** Share simultaneous reads from navigation, gates, and the dashboard. */
   async readPlan(userId: string | null): Promise<EntitlementRead> {
     if (!userId) return { plan: 'free', error: null };
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('plan')
-        .eq('id', userId)
-        .maybeSingle();
-      if (error) return { plan: null, error: error.message };
-      if (!data) return { plan: 'free', error: null };
-      return { plan: coercePlan(data.plan), error: null };
-    } catch (error) {
-      return {
-        plan: null,
-        error: error instanceof Error ? error.message : 'Entitlement read failed',
-      };
-    }
+    const pending = pendingPlans.get(userId);
+    if (pending) return pending;
+    const request = fetchPlan(userId).finally(() => pendingPlans.delete(userId));
+    pendingPlans.set(userId, request);
+    return request;
   },
 
   /**

@@ -9,19 +9,18 @@
  */
 
 import { useEffect, useRef, useState } from 'react';
-import { Send, Square } from 'lucide-react';
+import { Send } from 'lucide-react';
 
 const MAX_HEIGHT = 120;
 
 export interface ChatInputProps {
   isDE: boolean;
-  isStreaming: boolean;
+  busy: boolean;
   disabled: boolean;
   onSend: (text: string) => void;
-  onStop: () => void;
 }
 
-export function ChatInput({ isDE, isStreaming, disabled, onSend, onStop }: ChatInputProps) {
+export function ChatInput({ isDE, busy, disabled, onSend }: ChatInputProps) {
   const [value, setValue] = useState('');
   const ref = useRef<HTMLTextAreaElement | null>(null);
 
@@ -33,7 +32,7 @@ export function ChatInput({ isDE, isStreaming, disabled, onSend, onStop }: ChatI
     node.style.height = `${Math.min(node.scrollHeight, MAX_HEIGHT)}px`;
   }, [value]);
 
-  const canSend = !disabled && !isStreaming && value.trim().length > 0;
+  const canSend = !disabled && !busy && value.trim().length > 0;
 
   const submit = () => {
     if (!canSend) return;
@@ -68,26 +67,15 @@ export function ChatInput({ isDE, isStreaming, disabled, onSend, onStop }: ChatI
         className="max-h-[120px] min-h-[44px] flex-1 resize-none rounded-md border border-ink-200 bg-white px-3 py-2.5 text-body text-ink-900 placeholder:text-ink-400 focus-visible:border-accent-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500/30 disabled:opacity-60 dark:border-ink-800 dark:bg-ink-900 dark:text-ink-100 dark:placeholder:text-ink-500"
       />
 
-      {isStreaming ? (
-        <button
-          type="button"
-          onClick={onStop}
-          aria-label={isDE ? 'Antwort stoppen' : 'Stop generating'}
-          className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-ink-200 bg-white text-ink-600 transition hover:bg-ink-50 active:scale-95 dark:border-ink-800 dark:bg-ink-900 dark:text-ink-300 dark:hover:bg-ink-800"
-        >
-          <Square className="h-4 w-4" aria-hidden="true" />
-        </button>
-      ) : (
-        <button
-          type="button"
-          onClick={submit}
-          disabled={!canSend}
-          aria-label={isDE ? 'Senden' : 'Send'}
-          className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-accent-600 text-white transition hover:bg-accent-700 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          <Send className="h-4 w-4" aria-hidden="true" />
-        </button>
-      )}
+      <button
+        type="button"
+        onClick={submit}
+        disabled={!canSend}
+        aria-label={isDE ? 'Senden' : 'Send'}
+        className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-accent-600 text-white transition hover:bg-accent-700 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
+      >
+        <Send className="h-4 w-4" aria-hidden="true" />
+      </button>
     </div>
   );
 }
